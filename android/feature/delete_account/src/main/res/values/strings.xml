@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
     <string name="delete_account_title">Delete account</string>
     <string name="delete_account_offline_title">No internet.</string>
     <string name="delete_account_offline_body">Deleting your account needs an internet connection. Connect and try again.</string>

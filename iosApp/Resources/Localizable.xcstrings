@@ -21801,6 +21801,24 @@
             "value" : "Οι ειδοποιήσεις του Blitz Split φτάνουν αθόρυβα στο Κέντρο ειδοποιήσεων, χωρίς ήχο ή banner."
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split notifications arrive quietly in Notification Centre, without a sound or banner."
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split notifications arrive quietly in Notification Centre, without a sound or banner."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split notifications arrive quietly in Notification Centre, without a sound or banner."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -32422,259 +32440,1030 @@
         }
       }
     },
-    "English" : {
+    "English (US)" : {
       "comment" : "A language of Profile › Language, in the app's language",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "الإنجليزية"
+            "value" : "الإنجليزية (الولايات المتحدة)"
           }
         },
         "bg" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Английски"
+            "value" : "Английски (САЩ)"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ইংরেজি"
+            "value" : "ইংরেজি (মার্কিন যুক্তরাষ্ট্র)"
           }
         },
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anglès"
+            "value" : "Anglès (Estats Units)"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Angličtina"
+            "value" : "Angličtina (USA)"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Engelsk"
+            "value" : "Engelsk (USA)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Englisch"
+            "value" : "Englisch (USA)"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Αγγλικά"
+            "value" : "Αγγλικά (ΗΠΑ)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inglés"
+            "value" : "Inglés (EE. UU.)"
           }
         },
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "انگلیسی"
+            "value" : "انگلیسی (آمریکا)"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "englanti"
+            "value" : "Englanti (Yhdysvallat)"
           }
         },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingles"
+            "value" : "Ingles (US)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anglais"
+            "value" : "Anglais (États-Unis)"
           }
         },
         "he" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "אנגלית"
+            "value" : "אנגלית (ארצות הברית)"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "अंग्रेज़ी"
+            "value" : "अंग्रेज़ी (अमेरिका)"
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Engleski"
+            "value" : "Engleski (SAD)"
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Angol"
+            "value" : "Angol (Egyesült Államok)"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bahasa Inggris"
+            "value" : "Bahasa Inggris (AS)"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inglese"
+            "value" : "Inglese (Stati Uniti)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "英語"
+            "value" : "英語（アメリカ）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "영어"
+            "value" : "영어(미국)"
           }
         },
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "इंग्रजी"
+            "value" : "इंग्रजी (अमेरिका)"
           }
         },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bahasa Inggeris"
+            "value" : "Bahasa Inggeris (AS)"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Engelsk"
+            "value" : "Engelsk (USA)"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Engels"
+            "value" : "Engels (Verenigde Staten)"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Angielski"
+            "value" : "Angielski (USA)"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inglês"
+            "value" : "Inglês (EUA)"
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Engleză"
+            "value" : "Engleză (SUA)"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Английский"
+            "value" : "Английский (США)"
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Angličtina"
+            "value" : "Angličtina (USA)"
           }
         },
         "sr-Latn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Engleski"
+            "value" : "Engleski (SAD)"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Engelska"
+            "value" : "engelska (USA)"
           }
         },
         "sw" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kiingereza"
+            "value" : "Kiingereza (Marekani)"
           }
         },
         "ta" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ஆங்கிலம்"
+            "value" : "ஆங்கிலம் (அமெரிக்கா)"
           }
         },
         "te" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ఇంగ్లీష్"
+            "value" : "ఇంగ్లీష్ (అమెరికా)"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "อังกฤษ"
+            "value" : "อังกฤษ (สหรัฐอเมริกา)"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "İngilizce"
+            "value" : "İngilizce (ABD)"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Англійська"
+            "value" : "Англійська (США)"
           }
         },
         "ur" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "انگریزی"
+            "value" : "انگریزی (امریکہ)"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tiếng Anh"
+            "value" : "Tiếng Anh (Mỹ)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "英语"
+            "value" : "英语（美国）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "英文"
+            "value" : "英文（美國）"
+          }
+        }
+      }
+    },
+    "English (UK)" : {
+      "comment" : "A language of Profile › Language, in the app's language",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإنجليزية (المملكة المتحدة)"
+          }
+        },
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Английски (Обединеното кралство)"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ইংরেজি (যুক্তরাজ্য)"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anglès (Regne Unit)"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angličtina (Spojené království)"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engelsk (Storbritannien)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Englisch (Vereinigtes Königreich)"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αγγλικά (Ηνωμένο Βασίλειο)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglés (Reino Unido)"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انگلیسی (بریتانیا)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Englanti (Iso-Britannia)"
+          }
+        },
+        "fil" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingles (UK)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anglais (Royaume-Uni)"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "אנגלית (בריטניה)"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अंग्रेज़ी (यूनाइटेड किंगडम)"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engleski (Ujedinjeno Kraljevstvo)"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angol (Egyesült Királyság)"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bahasa Inggris (Britania Raya)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglese (Regno Unito)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英語（イギリス）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영어(영국)"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इंग्रजी (युनायटेड किंगडम)"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bahasa Inggeris (UK)"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engelsk (Storbritannia)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engels (Verenigd Koninkrijk)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angielski (Wielka Brytania)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglês (Reino Unido)"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engleză (Regatul Unit)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Английский (Великобритания)"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angličtina (Spojené kráľovstvo)"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engleski (Ujedinjeno Kraljevstvo)"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "engelska (Storbritannien)"
+          }
+        },
+        "sw" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kiingereza (Uingereza)"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ஆங்கிலம் (யுனைடெட் கிங்டம்)"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇంగ్లీష్ (యునైటెడ్ కింగ్‌డమ్)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "อังกฤษ (สหราชอาณาจักร)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İngilizce (Birleşik Krallık)"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Англійська (Велика Британія)"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انگریزی (برطانیہ)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiếng Anh (Anh)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英语（英国）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英文（英國）"
+          }
+        }
+      }
+    },
+    "English (Australia)" : {
+      "comment" : "A language of Profile › Language, in the app's language",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإنجليزية (أستراليا)"
+          }
+        },
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Английски (Австралия)"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ইংরেজি (অস্ট্রেলিয়া)"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anglès (Austràlia)"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angličtina (Austrálie)"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engelsk (Australien)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Englisch (Australien)"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αγγλικά (Αυστραλία)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglés (Australia)"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انگلیسی (استرالیا)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Englanti (Australia)"
+          }
+        },
+        "fil" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingles (Australia)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anglais (Australie)"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "אנגלית (אוסטרליה)"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अंग्रेज़ी (ऑस्ट्रेलिया)"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engleski (Australija)"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angol (Ausztrália)"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bahasa Inggris (Australia)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglese (Australia)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英語（オーストラリア）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영어(오스트레일리아)"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इंग्रजी (ऑस्ट्रेलिया)"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bahasa Inggeris (Australia)"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engelsk (Australia)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engels (Australië)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angielski (Australia)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglês (Austrália)"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engleză (Australia)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Английский (Австралия)"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angličtina (Austrália)"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engleski (Australija)"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "engelska (Australien)"
+          }
+        },
+        "sw" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kiingereza (Australia)"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ஆங்கிலம் (ஆஸ்திரேலியா)"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇంగ్లీష్ (ఆస్ట్రేలియా)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "อังกฤษ (ออสเตรเลีย)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İngilizce (Avustralya)"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Англійська (Австралія)"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انگریزی (آسٹریلیا)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiếng Anh (Úc)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英语（澳大利亚）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英文（澳洲）"
+          }
+        }
+      }
+    },
+    "English (Canada)" : {
+      "comment" : "A language of Profile › Language, in the app's language",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإنجليزية (كندا)"
+          }
+        },
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Английски (Канада)"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ইংরেজি (কানাডা)"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anglès (Canadà)"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angličtina (Kanada)"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engelsk (Canada)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Englisch (Kanada)"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αγγλικά (Καναδάς)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglés (Canadá)"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انگلیسی (کانادا)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Englanti (Kanada)"
+          }
+        },
+        "fil" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingles (Canada)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anglais (Canada)"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "אנגלית (קנדה)"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अंग्रेज़ी (कनाडा)"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engleski (Kanada)"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angol (Kanada)"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bahasa Inggris (Kanada)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglese (Canada)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英語（カナダ）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영어(캐나다)"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इंग्रजी (कॅनडा)"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bahasa Inggeris (Kanada)"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engelsk (Canada)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engels (Canada)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angielski (Kanada)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglês (Canadá)"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engleză (Canada)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Английский (Канада)"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angličtina (Kanada)"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engleski (Kanada)"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "engelska (Kanada)"
+          }
+        },
+        "sw" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kiingereza (Kanada)"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ஆங்கிலம் (கனடா)"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇంగ్లీష్ (కెనడా)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "อังกฤษ (แคนาดา)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İngilizce (Kanada)"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Англійська (Канада)"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انگریزی (کینیڈا)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiếng Anh (Canada)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英语（加拿大）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英文（加拿大）"
           }
         }
       }
@@ -44160,6 +44949,24 @@
             "value" : "Χρώμα"
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Colour"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Colour"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Colour"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -46734,6 +47541,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Χρώμα εικονιδίου"
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Icon colour"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Icon colour"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Icon colour"
           }
         },
         "es" : {
@@ -77027,6 +77852,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Φτάνουν στο Κέντρο ειδοποιήσεων χωρίς ήχο ή banner. Ενεργοποίησέ τες για να βλέπεις τα έξοδα μόλις καταχωρούνται."
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "They go to Notification Centre without a sound or banner. Turn them on to see bills as they come in."
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "They go to Notification Centre without a sound or banner. Turn them on to see bills as they come in."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "They go to Notification Centre without a sound or banner. Turn them on to see bills as they come in."
           }
         },
         "es" : {
@@ -231299,6 +232142,24 @@
             "value" : "Χρώμα avatar"
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avatar colour"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avatar colour"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avatar colour"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -236745,6 +237606,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Άλλαξε το χρώμα της ομάδας"
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change the group's colour"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change the group's colour"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change the group's colour"
           }
         },
         "es" : {
@@ -247945,6 +248824,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Μετράει σε όσα χρωστάς σε %@ στα Υπόλοιπα."
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Counts towards what you owe %@ in Balances."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Counts towards what you owe %@ in Balances."
           }
         },
         "es" : {
@@ -287379,6 +288270,24 @@
             "value" : "Όνομα, φωτογραφία και χρώμα avatar"
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name, photo and avatar colour"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name, photo and avatar colour"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name, photo and avatar colour"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -306803,6 +307712,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Το τυχαίο κλειδί αναγνωρίστηκε (32 χαρακτήρες)"
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Random key recognised (32 characters)"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Random key recognised (32 characters)"
           }
         },
         "es" : {
@@ -337298,6 +338219,24 @@
             "value" : "Όποιος μπήκε ως %@ φεύγει από την ομάδα. Το όνομα, το χρώμα και τα έξοδα του μέλους %@ μένουν, και το μέλος %@ μπορεί να επιλεγεί ξανά μέσω του συνδέσμου της ομάδας."
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Whoever joined as %@ leaves the group. %@'s name, colour and bills stay, and %@ can be picked again through the group's link."
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Whoever joined as %@ leaves the group. %@'s name, colour and bills stay, and %@ can be picked again through the group's link."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Whoever joined as %@ leaves the group. %@'s name, colour and bills stay, and %@ can be picked again through the group's link."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -346744,6 +347683,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Το προφίλ σου (όνομα, φωτογραφία και χρώμα)"
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your profile (name, photo and colour)"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your profile (name, photo and colour)"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your profile (name, photo and colour)"
           }
         },
         "es" : {
@@ -387118,6 +388075,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Γεια σου %@! Με βάση τους υπολογισμούς του Blitz Split, μου χρωστάς %@ από %@."
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi %@! By the Blitz Split maths, you owe me %@ from %@."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi %@! By the Blitz Split maths, you owe me %@ from %@."
           }
         },
         "es" : {
@@ -487041,6 +488010,18 @@
             "value" : "Αν έχεις ήδη στείλει τα χρήματα, σημείωσέ το ως πληρωμένο ούτως ή άλλως: η εφαρμογή ξανακάνει τους υπολογισμούς."
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you already sent the money, mark it as paid anyway: the app redoes the maths."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you already sent the money, mark it as paid anyway: the app redoes the maths."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -503000,6 +503981,24 @@
             "value" : "Γκρι"
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grey"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grey"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grey"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -503257,6 +504256,24 @@
             "value" : "Αλλαγή χρώματος: %@"
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change colour of %@"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change colour of %@"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change colour of %@"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -503512,6 +504529,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Επαναφορά χρώματος"
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restore colour"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restore colour"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restore colour"
           }
         },
         "es" : {
@@ -522085,6 +523120,24 @@
             "value" : "Προσθήκη χρώματος"
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add colour"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add colour"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add colour"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -522347,6 +523400,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Νέο χρώμα"
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New colour"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New colour"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New colour"
           }
         },
         "es" : {
@@ -523903,6 +524974,24 @@
             "value" : "Προσαρμοσμένο χρώμα %@"
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Custom colour %@"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Custom colour %@"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Custom colour %@"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -524159,6 +525248,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Η παλέτα σου είναι γεμάτη: πάτα παρατεταμένα ένα από τα χρώματά σου για να το διαγράψεις."
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your palette is full: long press one of your colours to delete it."
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your palette is full: long press one of your colours to delete it."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your palette is full: long press one of your colours to delete it."
           }
         },
         "es" : {
@@ -524431,6 +525538,24 @@
             "value" : "Πάτα παρατεταμένα ένα από τα χρώματά σου για να το διαγράψεις."
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long press one of your colours to delete it."
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long press one of your colours to delete it."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long press one of your colours to delete it."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -524699,6 +525824,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Διαγραφή αυτού του χρώματος;"
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete this colour?"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete this colour?"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete this colour?"
           }
         },
         "es" : {
@@ -525229,6 +526372,24 @@
             "value" : "Αυτό το χρώμα χρησιμοποιείται"
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This colour is in use"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This colour is in use"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This colour is in use"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -525485,6 +526646,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Η κατηγορία %@ χρησιμοποιεί αυτό το χρώμα. Άλλαξε πρώτα το χρώμα της και μετά διάγραψέ το."
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ uses this colour. Change its colour first, then delete it."
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ uses this colour. Change its colour first, then delete it."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ uses this colour. Change its colour first, then delete it."
           }
         },
         "es" : {
@@ -525751,6 +526930,24 @@
             "value" : "Κάνε δεξί κλικ σε ένα από τα χρώματά σου για να το διαγράψεις."
           }
         },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Right-click one of your colours to delete it."
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Right-click one of your colours to delete it."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Right-click one of your colours to delete it."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -526013,6 +527210,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Η παλέτα σου είναι γεμάτη: κάνε δεξί κλικ σε ένα από τα χρώματά σου για να το διαγράψεις."
+          }
+        },
+        "en-AU" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your palette is full: right-click one of your colours to delete it."
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your palette is full: right-click one of your colours to delete it."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your palette is full: right-click one of your colours to delete it."
           }
         },
         "es" : {

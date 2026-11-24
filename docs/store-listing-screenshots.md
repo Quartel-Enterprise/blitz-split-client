@@ -2,7 +2,7 @@
 
 The Google Play and App Store screenshots are **generated, not taken by hand**. Each one is a real screen of the app,
 showing a sample trip among five friends, laid out in the listing art's design: a blue background, one phrase, the
-device, a part of the screen drawn larger and, on some, a ticket or a receipt, in all 45 languages of the listings.
+device, a part of the screen drawn larger and, on some, a ticket or a receipt, in all 48 languages of the listings.
 None of the images is versioned: every run rebuilds them from source. Words, colors and the placement of each image
 are `scripts/store-screenshots/listing-art/` (`compose.mjs`, `copy.tsv`); there is no other drawing of them.
 
@@ -52,7 +52,8 @@ The lane runs, each step under `scripts/heavy-check.sh`:
    `-PcreativeAssets` what the tickets write; `compose.mjs` lays them out, `watch/draw-wear.sh` draws the Wear OS
    watch's ([The watches' screenshots](#the-watches-screenshots)) and `listing-art/stage-play.mjs` copies the result to
    `fastlane/metadata/android/<locale>/images/` where supply uploads from. Latin America's Spanish goes out
-   to each regional code (`es-419` and `es-US`), and Spain's to `es-ES`, as the listing text does
+   to each regional code (`es-419` and `es-US`), Spain's to `es-ES`, and Britain's English to `en-GB`, `en-IN`,
+   `en-SG` and `en-ZA`, as the listing text does
    ([store-listing.md](store-listing.md)).
 2. **App Store:** `scripts/store-screenshots/listing-art/capture.sh` runs `capture-ios.sh`, which builds the
    `BoraRachar-iOS-StoreScreenshots` UI tests once and runs them on one simulator per slot, one language at a time
@@ -424,7 +425,7 @@ measured. Should Google Play refuse to open that edit for the quota, the group w
 
 ## The watches' screenshots
 
-The two watch apps' screens at the size each store takes, in all 45 languages, written to
+The two watch apps' screens at the size each store takes, in all 48 languages, written to
 `store_listings/watch/<store>/<locale>/` to look at (`store_listings/` is git-ignored: none of the images is versioned).
 
 - **Wear OS goes to Google Play with the rest**: `watch/draw-wear.sh` draws it into `build/outputs/store-screenshots-wear/`
@@ -484,7 +485,7 @@ show the watch screen bare too, with the art on the iPhone's screenshots alone.
 
 Besides the screenshots, an App Store product page takes two images of its own, under **Product Page Information ›
 Header and Search Results** in App Store Connect. They appear on iOS and iPadOS 27 and later, and are generated like
-the screenshots, in all 45 languages:
+the screenshots, in all 48 languages:
 
 ```bash
 ./scripts/store-screenshots/creative-assets/generate.sh                               # capture, then draw
@@ -730,7 +731,10 @@ scripts/store-screenshots/local-set.mjs        # the check of a set made on a Ma
   (`PLAY_LOCALES`, `APP_STORE_LOCALES`). Its `language` is the app language's code, which keys the trip. Portugal's
   Portuguese goes by its whole tag, `pt-PT`, since `pt` is Brazil's: its own words and trip (in euros, "tu",
   Blitz Split), over the app's `pt-PT` strings. Spain's Spanish goes by `es-ES` the same way, since `es` is Latin
-  America's: its own words and trip ("ha pagado", "coche", "ticket"), over the app's `es-ES` strings.
+  America's: its own words and trip ("ha pagado", "coche", "ticket"), over the app's `es-ES` strings. Britain's,
+  Australia's and Canada's English go by `en-GB`, `en-AU` and `en-CA`, since `en` is the American one: their own trip
+  in pounds, Australian and Canadian dollars ("Flatmates", "Car hire", "Friday football" in Britain), over the app's
+  British (`values-b+en+001`) and Canadian strings, the dates and amounts written as each region writes them.
 
 ## The locale every image is drawn in
 

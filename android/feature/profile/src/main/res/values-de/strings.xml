@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">Suche löschen</string>
     <string name="profile_language_no_results">Keine Sprache passt zu „%1$s“</string>
     <string name="profile_language_system">System</string>
-    <string name="profile_language_english">Englisch</string>
+    <string name="profile_language_english">Englisch (USA)</string>
+    <string name="profile_language_english_uk">Englisch (Vereinigtes Königreich)</string>
+    <string name="profile_language_english_australia">Englisch (Australien)</string>
+    <string name="profile_language_english_canada">Englisch (Kanada)</string>
     <string name="profile_language_portuguese">Portugiesisch (Brasilien)</string>
     <string name="profile_language_portuguese_portugal">Portugiesisch (Portugal)</string>
     <string name="profile_language_spanish">Spanisch (Lateinamerika)</string>

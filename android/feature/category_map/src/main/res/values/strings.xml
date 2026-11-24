@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
     <string name="category_map_no_terms">No terms</string>
     <string name="category_map_title">Category map</string>
     <string name="category_map_search">Search terms</string>

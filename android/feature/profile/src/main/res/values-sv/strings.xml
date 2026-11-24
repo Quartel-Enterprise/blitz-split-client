@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">Rensa sökningen</string>
     <string name="profile_language_no_results">Inget språk matchar ”%1$s”</string>
     <string name="profile_language_system">System</string>
-    <string name="profile_language_english">engelska</string>
+    <string name="profile_language_english">engelska (USA)</string>
+    <string name="profile_language_english_uk">engelska (Storbritannien)</string>
+    <string name="profile_language_english_australia">engelska (Australien)</string>
+    <string name="profile_language_english_canada">engelska (Kanada)</string>
     <string name="profile_language_portuguese">portugisiska (Brasilien)</string>
     <string name="profile_language_portuguese_portugal">portugisiska (Portugal)</string>
     <string name="profile_language_spanish">spanska (Latinamerika)</string>

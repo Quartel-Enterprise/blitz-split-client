@@ -65,7 +65,8 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    // Lists English, Portuguese (pt and pt-PT), Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish,
+    // Lists English (en-US, en-GB and en-AU, whose empty values-en-rGB and values-en-rAU only name them here, en-CA,
+    // and en-001, the British strings), Portuguese (pt and pt-PT), Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish,
     // Indonesian (values-in, Android's legacy code for id), Russian, Ukrainian, Korean, Hindi, Arabic, Simplified
     // Chinese (values-b+zh+Hans), Hebrew (values-iw, Android's legacy code for he), Thai, Vietnamese, Traditional
     // Chinese (values-b+zh+Hant), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian, Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish and Finnish in the system's per-app language setting (Android 13+)

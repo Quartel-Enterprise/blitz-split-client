@@ -53,7 +53,10 @@
     <string name="profile_language_search_clear">検索をクリア</string>
     <string name="profile_language_no_results">「%1$s」に一致する言語はありません</string>
     <string name="profile_language_system">システム</string>
-    <string name="profile_language_english">英語</string>
+    <string name="profile_language_english">英語（アメリカ）</string>
+    <string name="profile_language_english_uk">英語（イギリス）</string>
+    <string name="profile_language_english_australia">英語（オーストラリア）</string>
+    <string name="profile_language_english_canada">英語（カナダ）</string>
     <string name="profile_language_portuguese">ポルトガル語（ブラジル）</string>
     <string name="profile_language_portuguese_portugal">ポルトガル語（ポルトガル）</string>
     <string name="profile_language_spanish">スペイン語（ラテンアメリカ）</string>

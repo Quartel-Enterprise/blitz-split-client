@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">پاک کردن جستجو</string>
     <string name="profile_language_no_results">هیچ زبانی با «%1$s» مطابقت ندارد</string>
     <string name="profile_language_system">سیستم</string>
-    <string name="profile_language_english">انگلیسی</string>
+    <string name="profile_language_english">انگلیسی (آمریکا)</string>
+    <string name="profile_language_english_uk">انگلیسی (بریتانیا)</string>
+    <string name="profile_language_english_australia">انگلیسی (استرالیا)</string>
+    <string name="profile_language_english_canada">انگلیسی (کانادا)</string>
     <string name="profile_language_portuguese">پرتغالی (برزیل)</string>
     <string name="profile_language_portuguese_portugal">پرتغالی (پرتغال)</string>
     <string name="profile_language_spanish">اسپانیایی (آمریکای لاتین)</string>

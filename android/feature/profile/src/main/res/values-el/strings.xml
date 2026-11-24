@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">Καθαρισμός αναζήτησης</string>
     <string name="profile_language_no_results">Καμία γλώσσα δεν ταιριάζει με «%1$s»</string>
     <string name="profile_language_system">Σύστημα</string>
-    <string name="profile_language_english">Αγγλικά</string>
+    <string name="profile_language_english">Αγγλικά (ΗΠΑ)</string>
+    <string name="profile_language_english_uk">Αγγλικά (Ηνωμένο Βασίλειο)</string>
+    <string name="profile_language_english_australia">Αγγλικά (Αυστραλία)</string>
+    <string name="profile_language_english_canada">Αγγλικά (Καναδάς)</string>
     <string name="profile_language_portuguese">Πορτογαλικά (Βραζιλία)</string>
     <string name="profile_language_portuguese_portugal">Πορτογαλικά (Πορτογαλία)</string>
     <string name="profile_language_spanish">Ισπανικά (Λατινική Αμερική)</string>

@@ -4,6 +4,9 @@
 # with the code ("EUR 1,145.80"), and the United States' the month before the day (docs/store-listing-screenshots.md).
 # tag	language	appleLanguage	appleLocale
 en-US	en	en-US	en_US
+en-GB	en-GB	en-GB	en_GB
+en-AU	en-AU	en-AU	en_AU
+en-CA	en-CA	en-CA	en_CA
 pt-BR	pt	pt-BR	pt_BR
 pt-PT	pt-PT	pt-PT	pt_PT
 es	es	es-419	es_GQ

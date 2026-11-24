@@ -53,7 +53,10 @@
     <string name="profile_language_search_clear">Kosongkan carian</string>
     <string name="profile_language_no_results">Tiada bahasa sepadan dengan “%1$s”</string>
     <string name="profile_language_system">Sistem</string>
-    <string name="profile_language_english">Bahasa Inggeris</string>
+    <string name="profile_language_english">Bahasa Inggeris (AS)</string>
+    <string name="profile_language_english_uk">Bahasa Inggeris (UK)</string>
+    <string name="profile_language_english_australia">Bahasa Inggeris (Australia)</string>
+    <string name="profile_language_english_canada">Bahasa Inggeris (Kanada)</string>
     <string name="profile_language_portuguese">Bahasa Portugis (Brazil)</string>
     <string name="profile_language_portuguese_portugal">Bahasa Portugis (Portugal)</string>
     <string name="profile_language_spanish">Bahasa Sepanyol (Amerika Latin)</string>

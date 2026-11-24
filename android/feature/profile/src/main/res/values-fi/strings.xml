@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">Tyhjennä haku</string>
     <string name="profile_language_no_results">Mikään kieli ei vastaa hakua ”%1$s”</string>
     <string name="profile_language_system">Järjestelmä</string>
-    <string name="profile_language_english">Englanti</string>
+    <string name="profile_language_english">Englanti (Yhdysvallat)</string>
+    <string name="profile_language_english_uk">Englanti (Iso-Britannia)</string>
+    <string name="profile_language_english_australia">Englanti (Australia)</string>
+    <string name="profile_language_english_canada">Englanti (Kanada)</string>
     <string name="profile_language_portuguese">Portugali (Brasilia)</string>
     <string name="profile_language_portuguese_portugal">Portugali (Portugali)</string>
     <string name="profile_language_spanish">Espanja (Latinalainen Amerikka)</string>

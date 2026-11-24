@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Why: the words Britain writes differently from the American English of values/ ("colour", "grey", "maths"): Android reads them for en-GB, en-AU and every other English region whose parent is en-001 (New Zealand, Ireland, India...), Pierre's call. A key missing here keeps the American wording. -->
+<resources>
+    <string name="category_map_change_color">Change colour of %1$s</string>
+    <string name="category_map_restore_color">Restore colour</string>
+</resources>

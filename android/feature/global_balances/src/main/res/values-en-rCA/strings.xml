@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Why: Canada's spelling ("colour", "grey", but "math" and "recognized" as the US). Every key en-001 changes is here, whichever parent Android gives en-CA. A key missing here keeps the American wording. -->
+<resources>
+    <string name="global_balances_message">Hi %1$s! By the Blitz Split math, you owe me %2$s from %3$s.</string>
+</resources>

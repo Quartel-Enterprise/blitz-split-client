@@ -41,6 +41,9 @@ object SampleTrips {
     private const val SOCCER_PHOTO = "event-soccer"
     private val currencies = mapOf(
         "en" to GroupCurrency.USD,
+        "en-GB" to GroupCurrency.GBP,
+        "en-AU" to GroupCurrency.AUD,
+        "en-CA" to GroupCurrency.CAD,
         "pt" to GroupCurrency.BRL,
         "pt-PT" to GroupCurrency.EUR,
         "es" to GroupCurrency.EUR,
@@ -258,6 +261,9 @@ object SampleTrips {
     ): Long {
         val (rate, step) = when (currency) {
             GroupCurrency.BRL -> 5.0 to 10L
+            GroupCurrency.GBP -> 0.8 to 50L
+            GroupCurrency.AUD -> 1.5 to 50L
+            GroupCurrency.CAD -> 1.4 to 50L
             GroupCurrency.PLN -> 4.0 to 50L
             GroupCurrency.TRY -> 40.0 to 500L
             GroupCurrency.IDR -> 16_000.0 to 1_000L

@@ -55,7 +55,10 @@
     <string name="profile_language_search_clear">Očisti pretragu</string>
     <string name="profile_language_no_results">Nijedan jezik ne odgovara „%1$s“</string>
     <string name="profile_language_system">Sustav</string>
-    <string name="profile_language_english">Engleski</string>
+    <string name="profile_language_english">Engleski (SAD)</string>
+    <string name="profile_language_english_uk">Engleski (Ujedinjeno Kraljevstvo)</string>
+    <string name="profile_language_english_australia">Engleski (Australija)</string>
+    <string name="profile_language_english_canada">Engleski (Kanada)</string>
     <string name="profile_language_portuguese">Portugalski (Brazil)</string>
     <string name="profile_language_portuguese_portugal">Portugalski (Portugal)</string>
     <string name="profile_language_spanish">Španjolski (Latinska Amerika)</string>

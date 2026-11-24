@@ -345,7 +345,7 @@ export function openLabel(item: JsActivityItem): string {
 // Why: Portuguese says "no sábado" and "no domingo" but "na sexta"; English "on" and Spanish "el" for every day.
 // Why: mid-sentence, the Romance languages and Polish write the weekday in lower case; English, German, Indonesian and
 // Swahili keep its capital ("am Freitag", "pada Jumat", "Ijumaa").
-const capitalizedWeekdayLocales: ReadonlySet<Locale> = new Set<Locale>(['en', 'de', 'id', 'sw'])
+const capitalizedWeekdayLocales: ReadonlySet<Locale> = new Set<Locale>(['en', 'en-GB', 'en-AU', 'en-CA', 'de', 'id', 'sw'])
 
 function onDay(millis: number): string {
   const relative = relativeDayOf(millis)

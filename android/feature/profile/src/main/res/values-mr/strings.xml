@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">शोध साफ करा</string>
     <string name="profile_language_no_results">जुळणारी भाषा नाही: “%1$s”</string>
     <string name="profile_language_system">सिस्टम</string>
-    <string name="profile_language_english">इंग्रजी</string>
+    <string name="profile_language_english">इंग्रजी (अमेरिका)</string>
+    <string name="profile_language_english_uk">इंग्रजी (युनायटेड किंगडम)</string>
+    <string name="profile_language_english_australia">इंग्रजी (ऑस्ट्रेलिया)</string>
+    <string name="profile_language_english_canada">इंग्रजी (कॅनडा)</string>
     <string name="profile_language_portuguese">पोर्तुगीज (ब्राझील)</string>
     <string name="profile_language_portuguese_portugal">पोर्तुगीज (पोर्तुगाल)</string>
     <string name="profile_language_spanish">स्पॅनिश (लॅटिन अमेरिका)</string>
