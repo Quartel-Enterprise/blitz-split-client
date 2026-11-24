@@ -51,6 +51,8 @@ data class SharedBillUiState(
     val likesCommentId: String?,
     // Why: the comment the link was shared at: scrolled to and highlighted once, then null.
     val focusedCommentId: String?,
+    // Why: the comment or reply just posted, once the page read it again: scrolled into view once, then null.
+    val postedCommentId: String?,
     // Why: an edit, a deletion or a like on its way to the server, which the page reads again after.
     val isChangingComment: Boolean,
 ) {

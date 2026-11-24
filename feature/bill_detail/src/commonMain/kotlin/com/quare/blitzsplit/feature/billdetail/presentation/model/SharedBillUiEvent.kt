@@ -51,6 +51,7 @@ sealed interface SharedBillUiEvent : UiEvent {
             OnCommentLikesDismissed,
             OnViewerDismissed,
             OnFocusedCommentShown,
+            OnPostedCommentShown,
             -> EventAnalytics.NotTracked
         }
 
@@ -108,6 +109,9 @@ sealed interface SharedBillUiEvent : UiEvent {
     ) : SharedBillUiEvent
 
     data object OnFocusedCommentShown : SharedBillUiEvent
+
+    // Why: the comment just posted was scrolled into view.
+    data object OnPostedCommentShown : SharedBillUiEvent
 
     data class OnAttachmentClicked(
         val id: String,

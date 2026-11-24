@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
@@ -36,9 +37,16 @@ fun BillDetailScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val snackbarHostState = remember { SnackbarHostState() }
+    val focusManager = LocalFocusManager.current
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             val message = when (action) {
+                // Why: the keyboard closes at once; the comment is scrolled to once drawn (postedCommentId).
+                BillDetailUiAction.CommentPosted -> {
+                    focusManager.clearFocus()
+                    null
+                }
+
                 // Why: a comment's "Compartilhar" goes through the system share, the only action that isn't a message.
                 is BillDetailUiAction.ShareComment -> {
                     context.shareText(shareCommentTextOf(resources, action.share))

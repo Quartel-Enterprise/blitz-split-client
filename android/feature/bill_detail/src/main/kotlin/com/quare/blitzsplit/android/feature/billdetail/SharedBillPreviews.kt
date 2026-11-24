@@ -51,6 +51,7 @@ private fun createPreviewSharedBillState(
         commentToDelete = null,
         likesCommentId = null,
         focusedCommentId = null,
+        postedCommentId = null,
         isChangingComment = false,
     )
 }

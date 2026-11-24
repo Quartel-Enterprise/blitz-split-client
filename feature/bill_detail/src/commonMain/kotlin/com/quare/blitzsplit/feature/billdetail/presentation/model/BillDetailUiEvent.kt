@@ -17,6 +17,7 @@ sealed interface BillDetailUiEvent : UiEvent {
             // Why: a close, or a comment a link opened at shown, which nobody tapped.
             OnCommentLikesDismissed,
             OnFocusedCommentShown,
+            OnPostedCommentShown,
             OnViewerDismissed,
             -> EventAnalytics.NotTracked
 
@@ -156,6 +157,9 @@ sealed interface BillDetailUiEvent : UiEvent {
 
     // Why: the comment a link opened at was scrolled to and highlighted.
     data object OnFocusedCommentShown : CommentEvent
+
+    // Why: the comment just posted was scrolled into view.
+    data object OnPostedCommentShown : CommentEvent
 
     // Why: "Desfazer" on the history's latest edit.
     data object OnUndoClicked : BillDetailUiEvent

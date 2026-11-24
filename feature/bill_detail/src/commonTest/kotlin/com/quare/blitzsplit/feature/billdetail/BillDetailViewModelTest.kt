@@ -2192,7 +2192,10 @@ class BillDetailViewModelTest {
             assertEquals("Paguei no Pix", row.body)
             assertEquals(1, state.commentCount)
             assertFalse(state.showsNoComments)
-            assertTrue(actions.isEmpty())
+            assertEquals(
+                listOf<BillDetailUiAction>(BillDetailUiAction.CommentPosted),
+                actions,
+            )
         }
 
     @Test
@@ -2209,6 +2212,38 @@ class BillDetailViewModelTest {
         assertEquals("   ", viewModel.uiState.value.commentDraft)
         assertTrue(actions.isEmpty())
     }
+
+    @Test
+    fun `GIVEN a reply typed WHEN the device keeps it THEN scrolls to the reply once drawn`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(comment(id = "c1")))
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // Then
+            val reply = comments.comments.value.single { it.id != "c1" }
+            assertEquals(reply.id, viewModel.uiState.value.postedCommentId)
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.CommentPosted), actions)
+        }
+
+    @Test
+    fun `GIVEN the posted comment scrolled to WHEN the screen says so THEN scrolls to it no more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Paguei no Pix"))
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPostedCommentShown)
+
+            // Then
+            assertNull(viewModel.uiState.value.postedCommentId)
+        }
 
     @Test
     fun `GIVEN a comment the device fails to keep WHEN another was typed meanwhile THEN keeps the new text`() =

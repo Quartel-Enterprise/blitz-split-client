@@ -686,6 +686,27 @@ struct BillCommentFocus: ViewModifier {
     }
 }
 
+/// The comment or reply this device just posted (`postedCommentId`, set once it is drawn): scrolled into view, the
+/// least needed and with no tint, then the ViewModel is told, once. Only on the scroll view that holds the comments.
+struct BillPostedCommentScroll: ViewModifier {
+    let postedCommentId: String?
+    let proxy: ScrollViewProxy
+    var isEnabled = true
+    /// Tells the ViewModel the comment was shown, which clears it.
+    let onShown: () -> Void
+
+    func body(content: Content) -> some View {
+        content.task(id: postedCommentId) {
+            guard isEnabled, let id = postedCommentId else { return }
+            // Why: the new row lays out first, or there is nothing to scroll to yet
+            try? await Task.sleep(for: .milliseconds(150))
+            guard !Task.isCancelled else { return }
+            withAnimation { proxy.scrollTo(id) }
+            onShown()
+        }
+    }
+}
+
 /// What went wrong with a comment, said in the glass toast of Bill and of a bill's link page.
 enum BillCommentToasts {
     static func messages(goneCount: Int, sendErrorCount: Int, changeErrorCount: Int) -> [GlassToastMessage] {

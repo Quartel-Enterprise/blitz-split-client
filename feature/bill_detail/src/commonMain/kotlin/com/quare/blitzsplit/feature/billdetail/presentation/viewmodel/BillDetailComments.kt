@@ -55,6 +55,8 @@ internal class BillDetailComments(
     // Why: the comment a link opened at is looked for once, when the comments first show.
     private var focusCommentId: String? = route.focusCommentId
 
+    private val postedWatch = PostedCommentWatch()
+
     fun onEvent(event: BillDetailUiEvent.CommentEvent) {
         when (event) {
             is BillDetailUiEvent.OnCommentChanged -> uiState.update { it.copy(commentDraft = event.text) }
@@ -93,6 +95,8 @@ internal class BillDetailComments(
             is BillDetailUiEvent.OnCommentShareClicked -> share(event.commentId)
 
             BillDetailUiEvent.OnFocusedCommentShown -> uiState.update { it.copy(focusedCommentId = null) }
+
+            BillDetailUiEvent.OnPostedCommentShown -> uiState.update { it.copy(postedCommentId = null) }
         }
     }
 
@@ -105,6 +109,7 @@ internal class BillDetailComments(
         comments: List<BillComment>,
     ) {
         focusLinkedComment(threads, comments)
+        postedWatch.findDrawnIn(threads)?.let { id -> uiState.update { it.copy(postedCommentId = id) } }
         likesSet.entries.removeAll { (commentId, isLiked) ->
             threads.findComment(commentId)?.isLikedByMe in
                 setOf(isLiked, null)
@@ -177,7 +182,10 @@ internal class BillDetailComments(
                 replyToName = replyTarget?.answeredName,
                 authorMemberId = me?.id,
                 authorName = me?.name,
-            ).onFailure {
+            ).onSuccess { id ->
+                postedWatch.posted(id)
+                emit(BillDetailUiAction.CommentPosted)
+            }.onFailure {
                 // Why: back in the field only while nothing new was typed there, which would be lost.
                 uiState.update {
                     if (it.commentDraft.isEmpty() && it.replyTarget == null) {

@@ -70,6 +70,23 @@ class AddBillCommentUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a comment WHEN adding it THEN gives the id it was saved under`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val result = addComment(body = "Quem trouxe o gelo?")
+
+        // Then
+        assertEquals(
+            repository.comments.value
+                .single()
+                .id,
+            result.getOrNull(),
+        )
+    }
+
+    @Test
     fun `GIVEN spaces and line breaks around the text WHEN adding the comment THEN saves the text trimmed`() = runTest {
         // Given
         prepareScenario()
@@ -158,7 +175,7 @@ class AddBillCommentUseCaseTest {
         assertTrue(repository.comments.value.isEmpty())
     }
 
-    private suspend fun addComment(body: String): Result<Unit> = useCase(
+    private suspend fun addComment(body: String): Result<String> = useCase(
         expenseId = BILL_ID,
         groupId = GROUP_ID,
         body = body,

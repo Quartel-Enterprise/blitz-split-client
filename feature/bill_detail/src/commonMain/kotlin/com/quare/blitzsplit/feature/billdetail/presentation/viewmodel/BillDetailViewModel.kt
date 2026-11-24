@@ -153,6 +153,7 @@ class BillDetailViewModel(
                 commentToDelete = null,
                 likesCommentId = null,
                 focusedCommentId = null,
+                postedCommentId = null,
                 history = Loadable.Loading,
                 isHistoryFromDeviceOnly = false,
                 isOnline = true,

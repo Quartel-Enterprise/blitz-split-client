@@ -6,6 +6,7 @@ import SwiftUI
 final class SharedBillModel {
     private(set) var state: SharedBillUiState
     private(set) var commentErrorCount = 0
+    private(set) var commentPostedCount = 0
     private(set) var needsNameCount = 0
     private(set) var commentChangeErrorCount = 0
     private(set) var commentGoneCount = 0
@@ -23,6 +24,7 @@ final class SharedBillModel {
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
             case is SharedBillUiActionShowCommentError: self?.commentErrorCount += 1
+            case is SharedBillUiActionCommentPosted: self?.commentPostedCount += 1
             case is SharedBillUiActionShowNeedsName: self?.needsNameCount += 1
             case is SharedBillUiActionShowCommentChangeError: self?.commentChangeErrorCount += 1
             case is SharedBillUiActionShowCommentGone: self?.commentGoneCount += 1
@@ -371,7 +373,14 @@ private struct PhoneSharedBill: View {
                 highlighted: $highlightedCommentId,
                 onShown: { model.send(SharedBillUiEventOnFocusedCommentShown.shared) },
             ))
+            .modifier(BillPostedCommentScroll(
+                postedCommentId: state.postedCommentId,
+                proxy: proxy,
+                onShown: { model.send(SharedBillUiEventOnPostedCommentShown.shared) },
+            ))
         }
+        // The keyboard goes down as soon as a comment is posted
+        .onChange(of: model.commentPostedCount) { isComposing = false }
         .measuringScreenLayout($layout)
         .fullScreenCover(isPresented: model.isViewerOpen) {
             BillAttachmentViewer(viewer: model.viewer)
@@ -415,6 +424,12 @@ private struct MacSharedBill: View {
                     proxy: proxy,
                     highlighted: $highlightedCommentId,
                     onShown: { model.send(SharedBillUiEventOnFocusedCommentShown.shared) },
+                ))
+                // The Mac keeps the field focused for the next comment
+                .modifier(BillPostedCommentScroll(
+                    postedCommentId: state.postedCommentId,
+                    proxy: proxy,
+                    onShown: { model.send(SharedBillUiEventOnPostedCommentShown.shared) },
                 ))
             }
             if state.showsComposer {

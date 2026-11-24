@@ -162,6 +162,8 @@ internal fun BillCommentsSection(
     showsNoComments: Boolean,
     replyTargetId: String?,
     focusedCommentId: String?,
+    // Why: the comment or reply this device just posted, brought into view once drawn, with no tint.
+    postedCommentId: String?,
     dates: DateTimeTextFormatter,
     callbacks: BillCommentCallbacks,
 ) {
@@ -221,7 +223,7 @@ internal fun BillCommentsSection(
                         row = row,
                         isReply = index > 0,
                         isReplyTarget = row.id == replyTargetId,
-                        isFocused = isFocused,
+                        bringsIntoView = isFocused || row.id == postedCommentId,
                         highlight = when {
                             isFocused -> 1f
                             row.id == highlightedId -> highlight.value
@@ -230,9 +232,13 @@ internal fun BillCommentsSection(
                         shape = groupedRowShapeOf(index, rows.size),
                         dates = dates,
                         callbacks = callbacks,
-                        onFocusShown = {
-                            highlightedId = row.id
-                            callbacks.onFocusedCommentShown()
+                        onShownInView = {
+                            if (isFocused) {
+                                highlightedId = row.id
+                                callbacks.onFocusedCommentShown()
+                            } else {
+                                callbacks.onPostedCommentShown()
+                            }
                         },
                         modifier = if (index == 0 && threadIndex > 0) Modifier.padding(top = 8.dp) else Modifier,
                     )
@@ -247,23 +253,26 @@ private fun CommentRow(
     row: BillCommentRow,
     isReply: Boolean,
     isReplyTarget: Boolean,
-    // Why: the comment a link opened Conta at, scrolled into view once laid out, in whichever column scrolls it.
-    isFocused: Boolean,
+    /*
+     * Why: the comment a link opened Conta at, or the one just posted, scrolled into view once laid out, in whichever
+     * column scrolls it.
+     */
+    bringsIntoView: Boolean,
     // Why: 1 for the comment a link opened Conta at, fading to 0.
     highlight: Float,
     shape: Shape,
     dates: DateTimeTextFormatter,
     callbacks: BillCommentCallbacks,
-    onFocusShown: () -> Unit,
+    onShownInView: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val bringIntoView = remember { BringIntoViewRequester() }
-    if (isFocused) {
-        val currentOnFocusShown by rememberUpdatedState(onFocusShown)
+    if (bringsIntoView) {
+        val currentOnShownInView by rememberUpdatedState(onShownInView)
         LaunchedEffect(bringIntoView) {
             withFrameNanos {}
             bringIntoView.bringIntoView()
-            currentOnFocusShown()
+            currentOnShownInView()
         }
     }
     val baseColor = if (isReplyTarget) {

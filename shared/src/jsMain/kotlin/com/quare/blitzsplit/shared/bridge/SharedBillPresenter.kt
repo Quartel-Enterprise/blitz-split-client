@@ -62,6 +62,8 @@ class JsSharedBillState(
     val likesComment: JsBillCommentRow?,
     // Why: the comment the link was shared at, scrolled to and highlighted once (focusedCommentShown), then null.
     val focusedCommentId: String?,
+    // Why: the comment just posted, once drawn: scrolled into view once (postedCommentShown), then null.
+    val postedCommentId: String?,
     // Why: the heart, "Editar" and "Apagar" go straight to the server: online, signed in and with none on its way.
     val canChangeComments: Boolean,
     // Why: an edit, a deletion or a like on its way, which "Apagar comentário?" waits for.
@@ -69,8 +71,8 @@ class JsSharedBillState(
 )
 
 /*
- * Why: type is "comment-error", "needs-name", "comment-change-error", "comment-gone" or "share-comment" (share); share
- * is null for anything but "share-comment".
+ * Why: type is "comment-error", "comment-posted", "needs-name", "comment-change-error",
+ * "comment-gone" or "share-comment" (share); share is null for anything but "share-comment".
  */
 class JsSharedBillAction(
     val type: String,
@@ -122,6 +124,7 @@ class SharedBillPresenter(
                 commentToDelete = state.commentToDelete,
                 likesComment = state.likesComment?.let(::toJsBillCommentRow),
                 focusedCommentId = state.focusedCommentId,
+                postedCommentId = state.postedCommentId,
                 canChangeComments = state.canChangeComments,
                 isChangingComment = state.isChangingComment,
             )
@@ -134,6 +137,8 @@ class SharedBillPresenter(
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 SharedBillUiAction.ShowCommentError -> JsSharedBillAction("comment-error", null)
+
+                SharedBillUiAction.CommentPosted -> JsSharedBillAction("comment-posted", null)
 
                 SharedBillUiAction.ShowNeedsName -> JsSharedBillAction("needs-name", null)
 
@@ -227,6 +232,10 @@ class SharedBillPresenter(
 
     fun focusedCommentShown() {
         viewModel.onEvent(SharedBillUiEvent.OnFocusedCommentShown)
+    }
+
+    fun postedCommentShown() {
+        viewModel.onEvent(SharedBillUiEvent.OnPostedCommentShown)
     }
 
     fun openAttachment(id: String) {

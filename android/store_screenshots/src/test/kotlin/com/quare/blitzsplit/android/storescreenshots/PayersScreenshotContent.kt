@@ -91,6 +91,7 @@ private fun SampleTrip.billDetailState(bill: SampleBill): BillDetailUiState {
         commentToDelete = null,
         likesCommentId = null,
         focusedCommentId = null,
+        postedCommentId = null,
         history = emptyList<BillHistoryDay>().toLoaded(),
         isHistoryFromDeviceOnly = false,
         isOnline = true,

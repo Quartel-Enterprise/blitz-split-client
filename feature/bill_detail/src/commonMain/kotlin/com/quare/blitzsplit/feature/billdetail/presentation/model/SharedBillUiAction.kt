@@ -4,6 +4,9 @@ sealed interface SharedBillUiAction {
     // Why: "Não deu para enviar o comentário. Tente de novo."
     data object ShowCommentError : SharedBillUiAction
 
+    // Why: as Conta's: the keyboard closes at once, before the page is read again to show the comment.
+    data object CommentPosted : SharedBillUiAction
+
     // Why: "Crie seu perfil para comentar.": someone signed in whose name neither the server nor the device knows.
     data object ShowNeedsName : SharedBillUiAction
 

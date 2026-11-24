@@ -7,6 +7,7 @@ final class BillDetailModel {
     private(set) var state: BillDetailUiState
     private(set) var deleteErrorCount = 0
     private(set) var commentErrorCount = 0
+    private(set) var commentPostedCount = 0
     private(set) var commentChangeErrorCount = 0
     private(set) var commentGoneCount = 0
     private(set) var undoErrorCount = 0
@@ -30,6 +31,7 @@ final class BillDetailModel {
             switch action {
             case is BillDetailUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is BillDetailUiActionShowCommentError: self?.commentErrorCount += 1
+            case is BillDetailUiActionCommentPosted: self?.commentPostedCount += 1
             case is BillDetailUiActionShowCommentChangeError: self?.commentChangeErrorCount += 1
             case is BillDetailUiActionShowCommentGone: self?.commentGoneCount += 1
             case let share as BillDetailUiActionShareComment: SystemShare.share(BillCopy.shareMessage(share.share))
@@ -139,6 +141,11 @@ extension BillDetailModel {
     /// The comment a link or Activity opened Bill at was scrolled to.
     func focusedCommentShown() {
         send(BillDetailUiEventOnFocusedCommentShown.shared)
+    }
+
+    /// The comment just posted was scrolled to.
+    func postedCommentShown() {
+        send(BillDetailUiEventOnPostedCommentShown.shared)
     }
 
     var comments: BillCommentsValues {
@@ -434,7 +441,14 @@ private struct PhoneBillDetail: View {
                     highlighted: $highlightedCommentId,
                     onShown: model.focusedCommentShown,
                 ))
+                .modifier(BillPostedCommentScroll(
+                    postedCommentId: state.postedCommentId,
+                    proxy: proxy,
+                    onShown: model.postedCommentShown,
+                ))
         }
+        // The keyboard goes down as soon as a comment is posted
+        .onChange(of: model.commentPostedCount) { isComposing = false }
         .safeAreaInset(edge: .top, spacing: 0) {
             if !state.isOnline {
                 BillOfflineBanner()
@@ -795,6 +809,13 @@ private struct MacBillDetail: View {
                     highlighted: $highlightedCommentId,
                     isEnabled: showsComments,
                     onShown: model.focusedCommentShown,
+                ))
+                // The Mac keeps the field focused for the next comment
+                .modifier(BillPostedCommentScroll(
+                    postedCommentId: state.postedCommentId,
+                    proxy: proxy,
+                    isEnabled: showsComments,
+                    onShown: model.postedCommentShown,
                 ))
             }
             if showsComments {

@@ -20,27 +20,29 @@ class AddBillCommentUseCase(
         replyToName: String?,
         authorMemberId: String?,
         authorName: String?,
-    ): Result<Unit> {
+    ): Result<String> {
         if (!BillCommentRules.isBodyValid(body)) return Result.failure(IllegalArgumentException("Invalid comment"))
-        return repository.addComment(
-            BillComment(
-                id = Uuid.random().toString(),
-                expenseId = expenseId,
-                groupId = groupId,
-                authorUserId = null,
-                authorMemberId = authorMemberId,
-                authorName = authorName,
-                threadId = threadId,
-                replyToName = replyToName,
-                body = body.trim(),
-                viaLink = false,
-                postedAt = currentTimeMillis(),
-                editedAt = null,
-                isDeleted = false,
-                isMine = false,
-                likes = emptyList(),
-                isPending = true,
-            ),
-        )
+        val id = Uuid.random().toString()
+        return repository
+            .addComment(
+                BillComment(
+                    id = id,
+                    expenseId = expenseId,
+                    groupId = groupId,
+                    authorUserId = null,
+                    authorMemberId = authorMemberId,
+                    authorName = authorName,
+                    threadId = threadId,
+                    replyToName = replyToName,
+                    body = body.trim(),
+                    viaLink = false,
+                    postedAt = currentTimeMillis(),
+                    editedAt = null,
+                    isDeleted = false,
+                    isMine = false,
+                    likes = emptyList(),
+                    isPending = true,
+                ),
+            ).map { id }
     }
 }
