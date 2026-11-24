@@ -306,10 +306,10 @@ struct HomeSummaryCard: View {
                 RoundedRectangle(cornerRadius: 26).fill(Palette.card)
             }
             .buttonStyle(.plain)
+            // On the button behind, not the card: over "Owe you" or "You owe", disabled or not, only that button answers
+            .hoverHighlight(in: .rect(cornerRadius: 26))
             .accessibilityLabel(Text("See balances"))
         }
-        // On the card, not the button behind it, so the content on top doesn't hide the pointer from it
-        .hoverHighlight(in: .rect(cornerRadius: 26))
     }
 
     private var balance: some View {

@@ -22,6 +22,8 @@ private struct HoverHighlight<S: Shape>: ViewModifier {
                 }
             }
             .onHover { isHovered = $0 }
+            // A click that pushes a screen or opens a sheet may leave without an exit event: no stale tint on return
+            .onDisappear { isHovered = false }
             .animation(.easeOut(duration: 0.15), value: isHovered)
         #else
         content
@@ -42,6 +44,8 @@ private struct HoverDim: ViewModifier {
         content
             .opacity(isHovered && isEnabled ? 0.75 : 1)
             .onHover { isHovered = $0 }
+            // A click that pushes a screen or opens a sheet may leave without an exit event: no stale tint on return
+            .onDisappear { isHovered = false }
             .animation(.easeOut(duration: 0.15), value: isHovered)
         #else
         content.hoverEffect(.lift, isEnabled: isEnabled)
