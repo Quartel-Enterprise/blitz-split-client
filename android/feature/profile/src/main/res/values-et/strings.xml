@@ -102,6 +102,7 @@
     <string name="profile_language_catalan">Katalaani</string>
     <string name="profile_language_danish">Taani</string>
     <string name="profile_language_finnish">Soome</string>
+    <string name="profile_language_latvian">Läti</string>
     <string name="profile_language_estonian">Eesti</string>
     <string name="profile_language_system_detail">Seadme keel</string>
     <string name="profile_notifications">Teavitused</string>

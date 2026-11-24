@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Atgūsti savas grupas</string>
+    <string name="restore_subtitle">Iepriekš izmantoji kontu? Vienkārši pieraksties vēlreiz. Ja nē, izmanto atkopšanas kodu vai QR kodu no vecās ierīces.</string>
+    <string name="restore_no_connection_title">Nav savienojuma</string>
+    <string name="restore_no_connection_body">Lai pierakstītos ar kontu vai kodu, vajag internetu, lai lejupielādētu tavas grupas. Ievadītais tiek saglabāts.</string>
+    <string name="restore_code_label">Vai izmanto atkopšanas kodu</string>
+    <string name="restore_code_hint">12 vārdi pareizā secībā. Ielīmē tos visus vienā laukā, lai aizpildītu visus laukus.</string>
+    <string name="restore_scan_qr_title">Skenē QR kodu no vecās ierīces</string>
+    <string name="restore_scan_qr_body">Tur: Profils › Atkopšana › Rādīt QR kodu</string>
+    <string name="restore_recover">Atjaunot</string>
+    <string name="restore_try_again">Mēģināt vēlreiz</string>
+    <string name="restore_start_fresh">Sākt no jauna šajā ierīcē</string>
+    <string name="restore_error_invalid_code">Kods nav atrasts. Pārbaudi vārdus un to secību un mēģini vēlreiz.</string>
+    <string name="restore_error_too_many_attempts">Pārāk daudz mēģinājumu. Pagaidi dažas minūtes un mēģini vēlreiz.</string>
+    <string name="restore_error_sign_in_failed">Pašlaik neizdevās pierakstīties. Mēģini vēlreiz.</string>
+    <string name="restore_error_unknown">Kaut kas nogāja greizi. Mēģini vēlreiz.</string>
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Atgādinājums norēķināties</string>
+    <string name="push_bill_created">%1$s pievienoja rēķinu „%2$s”, kurā esi arī tu</string>
+    <string name="push_bill_edited">%1$s rediģēja rēķinu „%2$s”</string>
+    <string name="push_bill_deleted">%1$s izdzēsa rēķinu „%2$s”</string>
+    <string name="push_comment_added">%1$s komentēja rēķinu „%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s atzīmēja, ka samaksāja tev</string>
+    <string name="push_payment_to_you">%1$s atzīmēja, ka %2$s samaksāja tev</string>
+    <string name="push_payment_received_yours">%1$s atzīmēja tavu maksājumu kā saņemtu</string>
+    <string name="push_payment_from_you">%1$s atzīmēja, ka tu samaksāji dalībniekam %2$s</string>
+    <string name="push_payment_undone">%1$s atsauca maksājumu, kas saistīts ar tevi</string>
+    <string name="push_charge_sent">%1$s nosūtīja tev atgādinājumu norēķināties</string>
+    <string name="push_settle_reminder">Tev ir neslēgta bilance grupā %1$s</string>
+    <string name="push_settle_reminders">Tev ir neslēgtas bilances grupās: %1$s</string>
+    <string name="push_added_to_group">%1$s pievienoja tevi grupai</string>
+    <string name="push_member_joined">%1$s pievienojās grupai</string>
+    <string name="push_debts_simplified_to_you">%1$s vienkāršoja parādus. Tagad %2$s maksā tev %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s vienkāršoja parādus. Tagad tu maksā dalībniekam %2$s %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s vienkāršoja parādus. Apskati, kā tas ietekmē tevi.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s izslēdza Vienkāršot parādus. Tagad %2$s maksā tev %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s izslēdza Vienkāršot parādus. Tagad tu maksā dalībniekam %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s izslēdza Vienkāršot parādus. Apskati, kā tas ietekmē tevi.</string>
+    <!-- The channels, one per row of Notifications (4.8), which the phone and the watch create alike -->
+    <string name="notification_settings_bills">Rēķini</string>
+    <string name="notification_settings_bills_detail">Jauni, rediģēti vai izdzēsti rēķini, kuros esi tu</string>
+    <string name="notification_settings_payments">Maksājumi un norēķini</string>
+    <string name="notification_settings_payments_detail">Maksājumi tev vai no tevis un vienkāršoti parādi</string>
+    <string name="notification_settings_comments">Komentāri</string>
+    <string name="notification_settings_comments_detail">Rēķinos, kuros esi tu, un sarunās, kurās rakstīji</string>
+    <string name="notification_settings_people_and_groups">Cilvēki un grupas</string>
+    <string name="notification_settings_people_and_groups_detail">Kas pievienojas tavām grupām vai tās pamet un kas tajās mainās</string>
+    <string name="notification_settings_payment_requests">Maksājumu pieprasījumi</string>
+    <string name="notification_settings_payment_requests_detail">Kad kāds lūdz tev samaksāt</string>
+    <string name="notification_settings_balance_reminder">Atgādinājums par neslēgtu bilanci</string>
+    <string name="notification_settings_balance_reminder_detail">Reizi nedēļā, ja ir neslēgta bilance</string>
+</resources>

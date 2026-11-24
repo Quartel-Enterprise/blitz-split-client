@@ -32,6 +32,9 @@ private const val BULGARIAN = "bg"
 private const val CATALAN = "ca"
 private const val DANISH = "da"
 private const val FINNISH = "fi"
+private const val LATVIAN = "lv"
+private const val LATVIAN_REFLEXIVE_PAST = "ās"
+private const val LATVIAN_PAST = "a"
 private const val ESTONIAN = "et"
 private val czechPast = Regex("""^\S*l\(a\)(?=[\s,:]|$)""")
 private const val ROMANIAN = "ro"
@@ -46,7 +49,7 @@ private val greekPast = Regex("""^(?:(?:το|τη|την|τον|τα|τους|τ
 private const val HUNGARIAN = "hu"
 private const val FILIPINO = "fil"
 private const val LEGACY_TAGALOG = "tl"
-private val hungarianFirstWord = Regex("""^[^\s,:]+""")
+private val firstWord = Regex("""^[^\s,:]+""")
 private val hungarianDefinitePast = Regex("""t[ae]$""")
 private val hungarianIndefinitePast = mapOf(
     "felosztott" to "felosztottál",
@@ -126,6 +129,7 @@ private val youSubjectLanguages = setOf(
     CATALAN,
     DANISH,
     FINNISH,
+    LATVIAN,
     ESTONIAN,
     HUNGARIAN,
     URDU,
@@ -192,7 +196,9 @@ private val irregularSecondPerson = mapOf(
  * apart after a name, which the user's "तुम्ही" doesn't take: every Marathi verb phrase starts with "यांनी", which the
  * user's drops ("Ana यांनी खर्च वाटला", "तुम्ही खर्च वाटला"). Swahili's verb carries the subject's prefix, so every Swahili
  * verb phrase starts with a perfect "a-me-" or a past "a-li-", whose "a" the user's turns into "u": "Ana amegawanya",
- * "Wewe umegawanya". Same rules as the web's and the Apple app's `verbForYou`.
+ * "Wewe umegawanya". Latvian starts every verb phrase with a simple past, which says the person but not the gender: its
+ * third person in "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji";
+ * "Ana pievienojās", "Tu pievienojies"). Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -228,11 +234,20 @@ fun toSecondPerson(
 
     GREEK -> greekPast.replace(verb) { match -> match.value + "ς" }
 
-    HUNGARIAN -> hungarianFirstWord.replace(verb) { match -> toHungarianSecondPerson(match.value) }
+    HUNGARIAN -> firstWord.replace(verb) { match -> toHungarianSecondPerson(match.value) }
 
     SWAHILI -> swahiliThirdPersonPrefix.replace(verb, "u")
 
+    LATVIAN -> firstWord.replace(verb) { match -> toLatvianSecondPerson(match.value) }
+
     else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
+}
+
+// Why: "sadalīja" → "sadalīji", "pievienojās" → "pievienojies"; a word that is no third-person past stays as it is.
+private fun toLatvianSecondPerson(past: String): String = when {
+    past.endsWith(LATVIAN_REFLEXIVE_PAST) -> past.removeSuffix(LATVIAN_REFLEXIVE_PAST) + "ies"
+    past.endsWith(LATVIAN_PAST) -> past.removeSuffix(LATVIAN_PAST) + "i"
+    else -> past
 }
 
 // Why: "felosztott" → "felosztottál", "létrehozta" → "létrehoztad"; any other word stays as it is.
@@ -317,7 +332,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
- * Swedish "Du raderade…", Norwegian "Du slettet…", Danish "Du slettede…", Finnish "Sinä olet poistanut…" and Estonian "Sina oled kustutanud…" (with their verb rule), Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
+ * Swedish "Du raderade…", Norwegian "Du slettet…", Danish "Du slettede…", Finnish "Sinä olet poistanut…" and Estonian "Sina oled kustutanud…" (with their verb rule), Latvian "Tu izdzēsi…" (with its own), Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
  * حذف کردید…", with its verb rule. Czech says "Ty jsi
  * smazal(a)…", Slovak "Ty si vymazal(a)…", Bulgarian "Ти изтри…", Catalan "Tu has suprimit…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
