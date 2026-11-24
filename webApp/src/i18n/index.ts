@@ -105,7 +105,7 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk`, `fa`, `ta` , `nb` (or Norwegian's `no` and Nynorsk's `nn`) `te` , `bg`, `mr`, `sw`, `ca`, `da`, `fi`, `lv` or `gu` tag
  * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN,
  * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK, nb-NO, nn-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, ca-ES-valencia, da-DK, fi-FI, lv-LV, gu-IN…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
- * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil , Norwegian (Bokmål, whichever of the three) Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too), Danish, Finnish, Latvian, Gujarati or Gujarati, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
+ * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil , Norwegian (Bokmål, whichever of the three) Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too), Danish, Finnish, Latvian or Gujarati, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, `en-GB`, `en-AU` and `en-CA` are their regions'
  * English, an `en` tag of a region that writes as Britain (en-NZ, en-IE, en-IN, en-DE…) British English, any other
  * `en` tag (en, en-US, en-JP…) American English, and American English when none matches.
@@ -250,7 +250,7 @@ export function isolated(text: string): string {
 }
 
 /**
- * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic, Thai, Bengali, Urdu, Persian, Tamil, Telugu and Marathi,
+ * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic, Thai, Bengali, Urdu, Persian, Tamil, Telugu, Marathi and Gujarati,
  * whose own ("١٢٫٥٠", "๑๒.๕๐", "১২.৫০", "۱۲٫۵۰", "௧௨.௫௦") the amount fields can't parse, and the Gregorian calendar for Thai,
  * whose default is the Buddhist era (2569 for 2026), and Persian, whose default is the Solar Hijri one (1405 for 2026),
  * so the web writes the year Android writes.
@@ -263,6 +263,7 @@ const formattingKeys: Readonly<Record<string, Readonly<Record<string, string>>>>
   ta: { nu: 'latn' },
   te: { nu: 'latn' },
   mr: { nu: 'latn' },
+  gu: { nu: 'latn' },
   th: { nu: 'latn', ca: 'gregory' },
 }
 

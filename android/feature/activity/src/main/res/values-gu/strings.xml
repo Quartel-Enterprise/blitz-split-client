@@ -80,8 +80,8 @@
     <string name="activity_deleted_notice_group">%2$s એ %3$s ના રોજ ‘%1$s’ ગ્રુપ ડિલીટ કર્યું. રેકોર્ડ પ્રવૃત્તિમાં રહે છે, પણ આ ગ્રુપ હવે ખૂલતું નથી.</string>
     <string name="activity_deleted_notice_bill_unknown">‘%s’ ખર્ચ ડિલીટ થયો. રેકોર્ડ પ્રવૃત્તિમાં રહે છે, પણ આ ખર્ચ હવે ખૂલતો નથી.</string>
     <string name="activity_deleted_notice_group_unknown">‘%s’ ગ્રુપ ડિલીટ થયું. રેકોર્ડ પ્રવૃત્તિમાં રહે છે, પણ આ ગ્રુપ હવે ખૂલતું નથી.</string>
-    <string name="activity_this_bill">આ ખર્ચ</string>
-    <string name="activity_this_group">આ ગ્રુપ</string>
+    <string name="activity_this_bill">નામ વિના</string>
+    <string name="activity_this_group">નામ વિના</string>
     <string name="activity_you_lowercase">તમે</string>
     <string name="activity_field_amount">રકમ</string>
     <string name="activity_field_description">વર્ણન</string>
