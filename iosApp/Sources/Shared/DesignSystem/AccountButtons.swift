@@ -129,6 +129,7 @@ struct GoogleButton: View {
             .overlay(Capsule().strokeBorder(.separator, lineWidth: 1))
         }
         .buttonStyle(.plain)
+        .hoverHighlight(in: .capsule)
         .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : 0.4)
     }

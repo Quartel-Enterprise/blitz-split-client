@@ -23,6 +23,7 @@ private struct UndoNotice: ViewModifier {
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(Palette.accent)
                             .buttonStyle(.plain)
+                            .hoverDim()
                     }
                     .padding(.leading, 18)
                     .padding(.trailing, 16)

@@ -356,6 +356,8 @@ private struct ContactsSummaryCard: View {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
+            // The row has no padding of its own: the highlight reaches past it into the card's, so it frames the text
+            .hoverHighlight(in: RoundedRectangle(cornerRadius: 12).inset(by: -8))
             .foregroundStyle(Palette.accent)
         }
         .padding(16)
@@ -388,6 +390,7 @@ private struct ContactsSummaryCard: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .hoverHighlight(in: .rect(cornerRadius: 16))
         .disabled(amountMinor == 0)
     }
 }

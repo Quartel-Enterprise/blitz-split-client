@@ -622,7 +622,7 @@ private struct StatsPersonLine: View {
                     .foregroundStyle(person.amountMinor > 0 ? .primary : .secondary)
             }
         }
-        .opensProfile(person.opensProfile ? onOpen : nil)
+        .opensProfile(person.opensProfile ? onOpen : nil, hover: .row)
     }
 }
 
@@ -746,6 +746,7 @@ private struct StatsGrainSegments: View {
                         .contentShape(.capsule)
                 }
                 .buttonStyle(.plain)
+                .hoverHighlight(in: .capsule)
                 .disabled(!option.isEnabled)
                 .opacity(option.isEnabled ? 1 : 0.38)
                 .accessibilityAddTraits(isSelected ? .isSelected : [])
@@ -799,6 +800,7 @@ private struct StatsBiggestSection: View {
                     .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
+                .hoverHighlight(in: .rect(cornerRadius: 26))
                 .background(Palette.card, in: .rect(cornerRadius: 26))
             }
         }

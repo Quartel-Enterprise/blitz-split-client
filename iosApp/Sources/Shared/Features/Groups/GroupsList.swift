@@ -227,6 +227,8 @@ private struct GroupsSummaryCard: View {
                 RoundedRectangle(cornerRadius: isStacked ? 26 : 28).fill(Palette.card)
             }
             .buttonStyle(.plain)
+            // On the button behind, not the card: over "Owe you" or "You owe", disabled or not, only that button answers
+            .hoverHighlight(in: .rect(cornerRadius: isStacked ? 26 : 28))
             .accessibilityLabel(Text("See balances"))
         }
     }
@@ -438,6 +440,7 @@ struct SummaryButton: View {
             .background(Palette.groupedBackground, in: .rect(cornerRadius: 16))
         }
         .buttonStyle(.plain)
+        .hoverHighlight(in: .rect(cornerRadius: 16))
         .disabled(!isEnabled)
         .accessibilityHint(isEnabled ? Text(hint) : Text(verbatim: ""))
     }

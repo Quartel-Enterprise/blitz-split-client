@@ -262,6 +262,7 @@ private struct SummaryCard: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .hoverHighlight(in: .rect(cornerRadius: 12))
         .disabled(!isEnabled)
     }
 }

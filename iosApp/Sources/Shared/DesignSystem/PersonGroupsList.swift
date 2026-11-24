@@ -32,10 +32,12 @@ struct PersonGroupsList: View {
                             .contentShape(.rect)
                     }
                     .buttonStyle(.plain)
+                    .hoverRowHighlight()
                 } else {
                     groupRow(part)
                 }
                 Divider()
+                    .padding(.horizontal, 14)
             }
             HStack {
                 Text(netLabel)
@@ -46,8 +48,8 @@ struct PersonGroupsList: View {
             }
             .font(.subheadline.weight(.semibold))
             .padding(.vertical, 9)
+            .padding(.horizontal, 14)
         }
-        .padding(.horizontal, 14)
         .background(Palette.groupedBackground, in: .rect(cornerRadius: 16))
     }
 
@@ -74,5 +76,7 @@ struct PersonGroupsList: View {
         }
         .font(.subheadline)
         .padding(.vertical, 8)
+        // In the row, not around the list, so the row's hover highlight inset from its edges clears the badge and amount
+        .padding(.horizontal, 14)
     }
 }

@@ -90,6 +90,7 @@ struct StatsCategoriesSection: View {
                             StatsCategoryLine(row: row, currency: state.currency)
                         }
                         .buttonStyle(.plain)
+                        .hoverRowHighlight()
                         .accessibilityHint(Text("See expenses"))
                         if index < state.categories.count - 1 {
                             Divider().padding(.leading, 70)

@@ -329,6 +329,7 @@ struct TermChipsRow: View {
                     .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
+                .hoverHighlight(in: .rect(cornerRadius: 8))
                 .accessibilityLabel(CategoryMapCopy.termLabel(term, path: path))
             }
         }

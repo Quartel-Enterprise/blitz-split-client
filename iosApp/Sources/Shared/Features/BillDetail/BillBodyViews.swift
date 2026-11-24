@@ -106,7 +106,20 @@ struct BillShareRowView: View {
                 .foregroundStyle(row.shareMinor == nil ? .secondary : .primary)
         }
         .accessibilityElement(children: .combine)
-        .opensProfile(row.opensProfile ? onPerson.map { open in { open(row.memberId) } } : nil, zoomingFrom: faceId)
+        .opensProfile(
+            row.opensProfile ? onPerson.map { open in { open(row.memberId) } } : nil,
+            zoomingFrom: faceId,
+            hover: Self.hover,
+        )
+    }
+
+    /// A row of the Mac's card takes the row's highlight; one of the iPhone's and iPad's `List` takes nothing.
+    private static var hover: HoverFeedback {
+        #if os(macOS)
+        return .row
+        #else
+        return .none
+        #endif
     }
 
     /// Apart from the same person's row on another bill still in the stack, which back must not zoom into.
@@ -304,6 +317,7 @@ struct MacBillTitles: View {
                     if let onGroupPhoto {
                         Button(action: onGroupPhoto) { groupAvatar }
                             .buttonStyle(.plain)
+                            .hoverDim()
                             .accessibilityLabel("View group photo")
                     } else {
                         groupAvatar

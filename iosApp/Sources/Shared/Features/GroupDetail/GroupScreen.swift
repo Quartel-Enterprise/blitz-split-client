@@ -349,6 +349,7 @@ struct GroupFaces: View {
             .fingerTarget()
         }
         .buttonStyle(.plain)
+        .hoverDim()
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text("See members"))
         .accessibilityValue(facesValue)
@@ -761,6 +762,7 @@ struct GroupPhotoButton: View {
             )
         }
         .buttonStyle(.plain)
+        .hoverDim()
         .accessibilityLabel("View group photo")
     }
 }
