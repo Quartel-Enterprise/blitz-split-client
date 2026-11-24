@@ -47,6 +47,8 @@ export const TAG_PREFIX = "store-screenshots-";
 export const tagOf = (name) => `${TAG_PREFIX}${name}`;
 export const SET_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]{0,59}$/;
 export const CHECKSUMS = "SHA256SUMS";
+/** The line of CHECKSUMS that names the shelves a set was sent for with --devices. */
+export const DEVICES_LINE = "# devices: ";
 /** GitHub takes a release asset under 2 GiB, with no limit on a release's total size. */
 export const MAX_ASSET_BYTES = 2 * 1024 ** 3;
 
@@ -479,6 +481,9 @@ async function send(options) {
       sums.push(`${await sha256(archive)}  ${archive.slice(out.length + 1)}`);
       console.log(`Packed ${archive.slice(out.length + 1)}, ${megabytes(size)}`);
     }
+    // The shelves a set sent with --devices was packed for, on a line of its own that `sha256sum --check` never
+    // reads (the workflow checks each archive's own line): a dispatch must name the same ones.
+    if (options.devices) sums.push(`${DEVICES_LINE}${options.devices.join(",")}`);
     writeFileSync(join(out, CHECKSUMS), `${sums.join("\n")}\n`);
     if (options.dryRun) {
       console.log(`--dry-run: the set is complete and packs. Nothing was sent; it would travel as the draft release ${tag}.`);

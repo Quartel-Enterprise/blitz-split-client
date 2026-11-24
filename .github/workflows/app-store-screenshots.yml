@@ -193,6 +193,7 @@ jobs:
           SET: ${{ inputs.set }}
           IOS: ${{ inputs.ios }}
           MACOS: ${{ inputs.macos }}
+          DEVICES: ${{ inputs.devices }}
         run: |
           if ! release="$(gh release view "$SET_TAG" --json isDraft,assets)"; then
             echo "::error::No set named $SET: no draft release $SET_TAG. Send it from the Mac first, with node scripts/store-screenshots/local-set.mjs send."
@@ -229,6 +230,13 @@ jobs:
             tar -xf "$set_dir/$archive" -C "$folder"
           }
           gh release download "$SET_TAG" --dir "$set_dir" --pattern SHA256SUMS
+          # A set sent with --devices holds those shelves alone: dispatched without them (allow_missing_devices) the
+          # upload would empty every other shelf, so the run names the same ones (DEVICES_LINE of local-set.mjs).
+          sent="$(sed -n 's/^# devices: //p' "$set_dir/SHA256SUMS")"
+          if [ "$sent" != "$DEVICES" ]; then
+            echo "::error::The set $SET was sent for the shelves '${sent:-every one}', and the run names '${DEVICES:-every one}': dispatch it as local-set.mjs printed, with devices '$sent'."
+            exit 1
+          fi
           if [ "$IOS" = true ]; then fetch ios.tar fastlane/screenshots ios; fi
           if [ "$MACOS" = true ]; then fetch mac.tar fastlane/screenshots-mac macos; fi
 

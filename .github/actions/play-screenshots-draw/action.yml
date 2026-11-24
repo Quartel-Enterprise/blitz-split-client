@@ -63,7 +63,7 @@ runs:
         {
           echo "ART_DEVICES=$art"
           echo "PLAY_DEVICES=$devices"
-          echo "ART_LOCALES=${LOCALES// /}"
+          echo "ART_LOCALES=$(tr -s ' ,' ',,' <<< "$LOCALES" | sed 's/^,//; s/,$//')"
         } >> "$GITHUB_ENV"
         echo "art=$art" >> "$GITHUB_OUTPUT"
         if [[ ",$devices," == *",wear,"* ]]; then echo "wear=true" >> "$GITHUB_OUTPUT"; fi

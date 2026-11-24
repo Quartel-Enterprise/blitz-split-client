@@ -12,6 +12,7 @@ import { dirname, join } from "node:path";
 import { afterEach, beforeEach, describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
+  DEVICES_LINE,
   PLATFORMS,
   REQUIRED_SHELVES,
   REPOSITORY,
@@ -642,6 +643,17 @@ describe("the workflow's report", () => {
     const types = Object.fromEntries([...table[1].matchAll(/"(\w+)" => "(\w+)"/g)].map(([, shelf, type]) => [shelf, type]));
     assert.deepEqual(Object.keys(types).sort(), Object.keys(SHELF_LABELS).sort());
     assert.equal(types.watch_ultra_3, WATCH_SHELF_TYPE);
+    // Every device whose images go on another device's shelf, as the lane picks a devices: list's images by file name.
+    const extra = fastfile.match(/APP_STORE_SHELF_DEVICES = \{ (.*) \}\.freeze/);
+    assert.ok(extra, "no APP_STORE_SHELF_DEVICES in the Fastfile");
+    const lane = Object.fromEntries([...extra[1].matchAll(/"(\w+)" => %w\[([\w ]+)\]/g)].map(([, shelf, devices]) => [shelf, devices.split(" ").sort()]));
+    const others = {};
+    for (const { devices } of Object.values(PLATFORMS)) {
+      for (const [device, { shelf }] of Object.entries(devices)) if (device !== shelf) (others[shelf] ??= []).push(device);
+    }
+    assert.deepEqual(lane, Object.fromEntries(Object.entries(others).map(([shelf, devices]) => [shelf, devices.sort()])));
+    // A set sent with --devices names them in its checksums, which the workflow reads back.
+    assert.ok(readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots.yml"), "utf8").includes(`sed -n 's/^${DEVICES_LINE}//p'`));
     const upload = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots-upload.yml"), "utf8");
     assert.ok(upload.includes("format('devices:{0}', inputs.devices)"));
     const dispatch = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots.yml"), "utf8");
