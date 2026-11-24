@@ -147,13 +147,13 @@
         <item quantity="other">prisegė %d nuotraukų</item>
     </plurals>
     <plurals name="bill_detail_owe_you_each">
-        <item quantity="one" tools:ignore="ImpliedQuantity">%1$s turi tau grąžinti %2$s.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">%1$s turi tau grąžinti po %2$s.</item>
         <item quantity="few">%1$s turi tau grąžinti po %2$s.</item>
         <item quantity="many">%1$s turi tau grąžinti po %2$s.</item>
         <item quantity="other">%1$s turi tau grąžinti po %2$s.</item>
     </plurals>
     <plurals name="bill_detail_owe_you_total">
-        <item quantity="one" tools:ignore="ImpliedQuantity">%1$s turi tau grąžinti %2$s.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">%1$s iš viso turi tau grąžinti %2$s.</item>
         <item quantity="few">%1$s iš viso turi tau grąžinti %2$s.</item>
         <item quantity="many">%1$s iš viso turi tau grąžinti %2$s.</item>
         <item quantity="other">%1$s iš viso turi tau grąžinti %2$s.</item>

@@ -130,12 +130,10 @@ enum SecondPerson {
             return verb.replacingCharacters(in: past, with: word + "d")
         case "lt":
             // Why: the past may be followed by a comma or a colon ("ištrynė:"), and a reflexive one ends in "-si".
-            guard let past = verb.range(of: #"^\S*?[oė](si)?(?=[\s,:]|$)"#, options: .regularExpression) else { return verb }
-            let word = verb[past]
-            let isReflexive = word.count > 2 && word.hasSuffix("si")
-            let core = isReflexive ? word.dropLast(2) : word[...]
-            let ending = (core.last == "o" ? "ai" : "ei") + (isReflexive ? "si" : "")
-            return verb.replacingCharacters(in: past, with: core.dropLast() + ending)
+            let boundary = #"(si)?(?=[\s,:]|$)"#
+            let saidO = verb.replacingOccurrences(of: #"^(\S*?)o"# + boundary, with: "$1ai$2", options: .regularExpression)
+            guard saidO == verb else { return saidO }
+            return verb.replacingOccurrences(of: #"^(\S*?)ė"# + boundary, with: "$1ei$2", options: .regularExpression)
         case "sw":
             // Why: "amegawanya" → "umegawanya", "alilipa" → "ulilipa": only the subject prefix changes.
             guard verb.range(of: #"^a(?=(me|li)\S)"#, options: .regularExpression) != nil else { return verb }

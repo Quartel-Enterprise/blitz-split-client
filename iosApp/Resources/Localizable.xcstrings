@@ -47419,7 +47419,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ ištrynė „%@“ %@."
+            "value" : "%@ ištrynė „%@“ (%@)."
           }
         },
         "mr" : {
@@ -125403,25 +125403,25 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Pavadinimo ar vietos pakeitimas galioja visai grupei %@ ir %lld išlaidai, kuri jau naudoja %@."
+                  "value" : "Pavadinimo ar vietos pakeitimas galioja visai grupei %@ ir %lld išlaidai, kuri jau naudoja kategoriją %@."
                 }
               },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Pavadinimo ar vietos pakeitimas galioja visai grupei %@ ir %lld išlaidoms, kurios jau naudoja %@."
+                  "value" : "Pavadinimo ar vietos pakeitimas galioja visai grupei %@ ir %lld išlaidoms, kurios jau naudoja kategoriją %@."
                 }
               },
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Pavadinimo ar vietos pakeitimas galioja visai grupei %@ ir %lld išlaidos, kurios jau naudoja %@."
+                  "value" : "Pavadinimo ar vietos pakeitimas galioja visai grupei %@ ir %lld išlaidos, kurios jau naudoja kategoriją %@."
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Pavadinimo ar vietos pakeitimas galioja visai grupei %@ ir %lld išlaidų, kurios jau naudoja %@."
+                  "value" : "Pavadinimo ar vietos pakeitimas galioja visai grupei %@ ir %lld išlaidų, kurios jau naudoja kategoriją %@."
                 }
               }
             }
@@ -140990,7 +140990,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pašalinama iš %@: pavadinimai su „%@“ pateks į %@."
+            "value" : "Palieka kategoriją %@: pavadinimai su „%@“ pateks į kategoriją %@."
           }
         },
         "mr" : {
@@ -144421,7 +144421,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Naujas žemėlapyje. Pavadinimai su „%@“ pateks į %@."
+            "value" : "Naujas žemėlapyje. Pavadinimai su „%@“ pateks į kategoriją %@."
           }
         },
         "mr" : {
@@ -152654,7 +152654,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pasirink subkategoriją arba palik tik %@"
+            "value" : "Pasirink subkategoriją arba palik tik kategoriją %@"
           }
         },
         "mr" : {
@@ -160685,25 +160685,25 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld išlaida iš kategorijos %@ perkeliama į %@. Kategorija dingsta visai grupei %@."
+                  "value" : "%lld išlaida iš kategorijos %@ perkeliama į kategoriją %@. Kategorija dingsta visai grupei %@."
                 }
               },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld išlaidos iš kategorijos %@ perkeliamos į %@. Kategorija dingsta visai grupei %@."
+                  "value" : "%lld išlaidos iš kategorijos %@ perkeliamos į kategoriją %@. Kategorija dingsta visai grupei %@."
                 }
               },
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld išlaidos iš kategorijos %@ perkeliama į %@. Kategorija dingsta visai grupei %@."
+                  "value" : "%lld išlaidos iš kategorijos %@ perkeliama į kategoriją %@. Kategorija dingsta visai grupei %@."
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld išlaidų iš kategorijos %@ perkeliama į %@. Kategorija dingsta visai grupei %@."
+                  "value" : "%lld išlaidų iš kategorijos %@ perkeliama į kategoriją %@. Kategorija dingsta visai grupei %@."
                 }
               }
             }
@@ -166541,7 +166541,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kuris „%@“ žodis turėtų parinkti %@ kitoms išlaidoms?"
+            "value" : "Kuris „%@“ žodis turėtų parinkti kategoriją %@ kitoms išlaidoms?"
           }
         },
         "mr" : {

@@ -342,7 +342,7 @@
     <string name="split_bill_category_none_title">Nėra kategorijos su „%s“</string>
     <string name="split_bill_category_none_text">Sukurk ją: visi grupėje „%s“ galės ja naudotis.</string>
     <string name="split_bill_category_create_short">Sukurti „%s“</string>
-    <string name="split_bill_category_side_hint">Pasirink subkategoriją arba palik tik %s</string>
+    <string name="split_bill_category_side_hint">Pasirink subkategoriją arba palik tik kategoriją %s</string>
     <string name="split_bill_category_hold_hint">Paspausk ir palaikyk vieną iš grupės kategorijų, kad ją redaguotum arba ištrintum.</string>
     <string name="split_bill_category_edit_action">Redaguoti</string>
     <string name="split_bill_group_exception">Grupės išimtis kategorijai „%s“</string>

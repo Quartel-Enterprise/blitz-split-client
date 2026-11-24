@@ -295,9 +295,9 @@ const everyFormOrder: readonly Intl.LDMLPluralRule[] | undefined = (() => {
 // being Czech's fractions, which say the few form ("1,5 skupiny"), where Polish's is the one its `many` takes.
 const secondFormIsOther = locale === 'cs' || locale === 'sk' || locale === 'ro'
 
-// Why: Croatian's third form is the one its other takes ("5 grupa"), its plural having no many, and so is Lithuanian's
-// ("10 grupių"), whose many is only its fractions, which no count the app passes has.
-const thirdFormIsOther = !pluralRules.resolvedOptions().pluralCategories.includes('many') || locale === 'lt'
+// Why: the third form is the one other takes when no whole count takes many: Croatian's ("5 grupa"), its plural having
+// no many, and Lithuanian's ("10 grupių"), whose many is only its fractions, which no count the app passes has.
+const thirdFormIsOther = !Array.from({ length: 200 }, (_, count) => pluralRules.select(count)).includes('many')
 
 /**
  * Polish says "2 grupy" but "5 grup": where the other languages have one plural, it has few (2–4, 22–24…) and many (0,

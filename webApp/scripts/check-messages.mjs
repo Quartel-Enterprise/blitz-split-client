@@ -39,6 +39,12 @@ const everyForm = (language) => {
 
 // Why: Russian's, Ukrainian's and Croatian's 21 takes the singular, which an …Other message must then hold too:
 // one|few|many, or one|few|other.
+// Why: whether a whole count takes many, as Russian's 5 does; Lithuanian's many is only its fractions.
+const wholeCountTakesMany = (language) => {
+  const rules = new Intl.PluralRules(language.slice(0, 2))
+  return Array.from({ length: 200 }, (_, count) => rules.select(count)).includes('many')
+}
+
 const pluralFormCount = (language) => (new Intl.PluralRules(language.slice(0, 2)).select(21) === 'one' ? 3 : 2)
 
 let failures = 0
@@ -76,8 +82,8 @@ for (const language of languages) {
       if (forms.length !== formCount || forms.some((form) => form.trim() === '')) {
         // Why: Polish's second form is its many; Czech's and Romanian's is their other.
         const twoForms = language === 'pl' ? '"few|many"' : '"few|other"'
-        // Why: Lithuanian's many is only its fractions, so its third form is the one its other takes.
-        const threeForms = categoriesOf(language).includes('many') && language !== 'lt' ? '"one|few|many"' : '"one|few|other"'
+        // Why: a many that no whole count takes (Lithuanian's, only its fractions) leaves the third form to other.
+        const threeForms = wholeCountTakesMany(language) ? '"one|few|many"' : '"one|few|other"'
         const expected = every ? `"${every.join('|')}"` : formCount === 3 ? threeForms : twoForms
         fail(language, key, `must hold exactly ${formCount} plural forms, ${expected}`)
         continue
