@@ -171,6 +171,7 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1        # 4. upload it to 
    | `ios`, `macos` | on | The iPhone's and iPad's version, the Mac's version: each is a version of its own on App Store Connect |
    | `app_version` | blank | The version to write on, X.Y.Z, created when it is missing. Blank writes on the one open for editing, whatever its number: a release renames it later and keeps its screenshots |
    | `allow_missing_devices` | off | The set leaves a device out on purpose, never the iPhone Duo |
+   | `devices` | blank | Replaces these shelves alone, with commas (`iphone_duo,watch_ultra_3`), as the set was sent with `--devices`: the other shelves of each locale stay as they are ([Some devices alone](#some-devices-alone)) |
    | `locales` | blank | Send these locales of the set alone, App Store codes with a space between (`en-US de-DE`): [Repairing shelves](#repairing-shelves) |
    | `tidy_only` | off | Send nothing and fetch no set: only the tidy-up and its check ([Repairing shelves](#repairing-shelves)) |
 
@@ -265,6 +266,30 @@ Connect that behaves as those shelves did (one screenshot under two ids, both go
 order refused unless it names all 11), with a shelf short of a file, a locale with no shelf, one of 215 screenshots
 over two pages and one whose lists disagree; it has not talked to App Store Connect itself.
 
+### Some devices alone
+
+deliver's `overwrite_screenshots` deletes every shelf of a locale before it uploads, which is why a set holds every
+device. To send one device, the iPhone Duo after its capture or the Apple Watch's four, without staging the others
+again:
+
+```bash
+node scripts/store-screenshots/local-set.mjs send --platform ios --devices iphone_duo --name 3.2.0-duo
+gh workflow run app-store-screenshots.yml -f set=3.2.0-duo -f macos=false -f devices=iphone_duo
+```
+
+`--devices` (the names of `SHELF_LABELS`: `iphone_6_3`, `iphone_6_7`, `ipad_13`, `ipad_11`, `iphone_duo`,
+`watch_ultra_3`, `mac`) checks and packs only those shelves, which every locale must have whole, and leaves the
+other staged images out. The lane (`upload_screenshots devices:…`) then deletes those shelves alone, by their display
+types (`APP_STORE_SHELF_TYPES` in the Fastfile), and runs deliver without `overwrite_screenshots`, so it adds the
+staged images and keeps every other shelf. A set without the iPhone Duo is refused only when it replaces the Duo's
+shelf. `-f locales="…"` narrows it further, to some languages.
+
+The workflow refuses `devices` for a set that holds other shelves (`--no-left-out`): such a set was sent whole, and
+the run would remove it with those shelves never sent. It refuses a version left on whose shelves `devices` doesn't
+name (dispatch it with `-f macos=false` or `-f ios=false`), and the lane refuses `devices` on an `app_version` that
+doesn't exist yet, since App Store Connect fills a new version with the previous one's screenshots and deliver would
+add to them: send the whole set to create it.
+
 ## Sending Google Play's alone
 
 Robolectric draws Play's screens, so nothing is captured on a device and they need no set sent from a Mac. Chrome
@@ -274,7 +299,13 @@ workflow draws them and sends them, with no release and without touching the App
 ```bash
 gh workflow run play-store-screenshots.yml -f validate_only=true   # draw them and ask Google Play: nothing changes
 gh workflow run play-store-screenshots.yml                         # draw them and send them
+gh workflow run play-store-screenshots.yml -f locales=hr,hu -f devices=play_phone,wear   # those alone
 ```
+
+**Some languages or image types alone.** `locales` (listing tags of `locales.tsv`, with commas) and `devices`
+(`play_phone`, `play_tablet_7`, `play_tablet_10`, `wear`) narrow the drawing and the staging (`ART_LOCALES`,
+`ART_DEVICES` and `PLAY_DEVICES` of `stage-play.mjs`): supply replaces only the image types it finds staged, so the
+others stay on Google Play as they are, and a run of the phone alone skips the watch's drawing.
 
 **Google Play shows a listing's screenshots to everyone the moment they change**, whatever release is out, so the
 second command is the whole publication. Dispatch it, an administrator, on `main`, once no release and no listing

@@ -12,6 +12,7 @@ import { dirname, join } from "node:path";
 import { afterEach, beforeEach, describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
+  DEVICES_LINE,
   PLATFORMS,
   REQUIRED_SHELVES,
   REPOSITORY,
@@ -29,11 +30,13 @@ import {
   listingScreens,
   pack,
   parseArguments,
+  platformsOf,
   readPng,
   resolveFolders,
   screensOfDevice,
   stagedImage,
   WATCH_SCREENS,
+  WATCH_SHELF_TYPE,
 } from "./local-set.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -174,6 +177,28 @@ describe("the check of a set", () => {
     assert.deepEqual(allowed.missingShelves, ["ipad_11"]);
   });
 
+  // deliver's overwrite_screenshots would empty every shelf of a locale: with --devices the lane replaces theirs alone.
+  test("checks and packs only the shelves --devices names, and leaves the other staged images out", () => {
+    const whole = stage("ios", { name: "whole" });
+    const report = checkPlatform("ios", whole, { devices: ["iphone_duo"] });
+    assert.deepEqual(report.problems, []);
+    assert.equal(report.files.length, LOCALES.length * 10);
+    assert.ok(report.files.every((file) => /_iphone_duo(_open)?\.png$/.test(file)));
+    assert.equal(report.leftOut, LOCALES.length * 44);
+    assert.equal(describeShelves(report), "iPhone Duo 10 (3 open, 7 closed)");
+    const duoAlone = stage("ios", { name: "duo", keep: ({ device }) => device.startsWith("iphone_duo") });
+    assert.deepEqual(problemsOf("ios", duoAlone, { devices: ["iphone_duo"] }), []);
+    // Without --devices, the same set would empty every other shelf.
+    assert.ok(problemsOf("ios", duoAlone).length > 0);
+  });
+
+  test("refuses a set without a shelf --devices names, or with that shelf short of a screen", () => {
+    const folder = stage("ios", { keep: ({ device }) => device !== "watch_ultra_3" });
+    assert.deepEqual(problemsOf("ios", folder, { devices: ["watch_ultra_3", "iphone_duo"] }), ["No Apple Watch Ultra 3 image in the set, which --devices names"]);
+    const short = stage("ios", { name: "short", keep: ({ locale, screen, device }) => !(locale === "ja" && device === "iphone_duo" && screen === "07_home") });
+    assert.deepEqual(problemsOf("ios", short, { devices: ["iphone_duo"] }), ["iPhone Duo has 9 of 10 screens, without 07_home (ja)"]);
+  });
+
   test("refuses a set without the iPhone Duo even when devices may be left out", () => {
     assert.deepEqual(Object.keys(REQUIRED_SHELVES), ["iphone_duo"]);
     const folder = stage("ios", { keep: ({ device }) => !device.startsWith("iphone_duo") });
@@ -273,6 +298,27 @@ describe("the check of a set", () => {
       (error) => error instanceof SetError && /2 problem\(s\)/.test(error.message) && /iPhone and iPad: The listing has ja/.test(error.message) && /Mac: No Mac screenshots/.test(error.message),
     );
   });
+
+  test("with --devices, sends only the versions holding their shelves, and refuses one named outright with none", () => {
+    stage("ios");
+    stage("mac");
+    const duo = checkSet({ folder: root, platforms: ["ios", "mac"], devices: ["iphone_duo"] });
+    assert.deepEqual(duo.map((report) => report.platform), ["ios"]);
+    assert.throws(() => checkSet({ folder: root, platforms: ["mac"], devices: ["iphone_duo"] }), /--devices names no shelf of Mac: iphone_duo/);
+    assert.throws(
+      () => checkSet({ folder: root, platforms: ["ios", "mac"], platformsNamed: true, devices: ["iphone_duo"] }),
+      /Mac: --devices names none of its shelves, so nothing of it would be sent/,
+    );
+  });
+
+  // The workflow's check: a set sent whole and dispatched with devices would be removed with its other shelves unsent.
+  test("with --no-left-out, refuses a set that holds shelves --devices doesn't name", () => {
+    stage("ios");
+    assert.throws(() => checkSet({ folder: root, platforms: ["ios"], devices: ["iphone_duo"], noLeftOut: true }), /holds \d+ image\(s\) of shelves --devices doesn't name: it was sent whole/);
+    rmSync(join(root, PLATFORMS.ios.folders[0]), { recursive: true });
+    stage("ios", { keep: ({ device }) => device.startsWith("iphone_duo") });
+    assert.equal(checkSet({ folder: root, platforms: ["ios"], devices: ["iphone_duo"], noLeftOut: true }).length, 1);
+  });
 });
 
 describe("the set's folders and options", () => {
@@ -286,6 +332,14 @@ describe("the set's folders and options", () => {
   });
 
   test("takes both platforms unless one is named", () => {
+    assert.deepEqual(parseArguments(["--devices", "iphone_duo, watch_ultra_3,iphone_duo"]).devices, ["iphone_duo", "watch_ultra_3"]);
+    assert.equal(parseArguments(["--devices", "iphone_duo", "--no-left-out"]).noLeftOut, true);
+    assert.equal(parseArguments(["--platform", "ios"]).platformsNamed, true);
+    assert.equal(parseArguments([]).platformsNamed, false);
+    for (const devices of ["", "iphone_duo_open", "ipad"]) assert.throws(() => parseArguments(["--devices", devices]), /--devices names shelves of/, devices);
+    assert.deepEqual(platformsOf({ platforms: ["ios", "mac"], devices: ["iphone_duo"] }), ["ios"]);
+    assert.deepEqual(platformsOf({ platforms: ["ios", "mac"], devices: ["mac", "ipad_13"] }), ["ios", "mac"]);
+    assert.deepEqual(platformsOf({ platforms: ["ios", "mac"] }), ["ios", "mac"]);
     assert.deepEqual(parseArguments([]).platforms, ["ios", "mac"]);
     assert.deepEqual(parseArguments([root, "--dry-run"]).platforms, ["ios", "mac"]);
     assert.deepEqual(parseArguments(["--platform", "mac"]).platforms, ["mac"]);
@@ -467,6 +521,7 @@ describe("sending a set", () => {
 
   test("says in the command only what differs from the workflow's defaults", () => {
     assert.equal(dispatchCommand("a", { platforms: ["ios", "mac"] }), "gh workflow run app-store-screenshots.yml --repo Quartel-Enterprise/blitz-split-client -f set=a");
+    assert.equal(dispatchCommand("a", { platforms: ["ios", "mac"], devices: ["iphone_duo", "watch_ultra_3"] }), "gh workflow run app-store-screenshots.yml --repo Quartel-Enterprise/blitz-split-client -f set=a -f macos=false -f devices=iphone_duo,watch_ultra_3");
     assert.equal(dispatchCommand("a", { platforms: ["ios"], allowMissingDevices: true }), "gh workflow run app-store-screenshots.yml --repo Quartel-Enterprise/blitz-split-client -f set=a -f macos=false -f allow_missing_devices=true");
   });
 });
@@ -581,6 +636,31 @@ describe("the workflow's report", () => {
     assert.equal(tidied.output, "landed=true\ntidied=false\n");
   });
 
+  test("names the same shelves as the Fastfile, which deletes a devices: list's shelves by their display types", () => {
+    const fastfile = readFileSync(join(REPO_ROOT, "fastlane/Fastfile"), "utf8");
+    const table = fastfile.match(/APP_STORE_SHELF_TYPES = \{\n([\s\S]*?)\n\}\.freeze/);
+    assert.ok(table, "no APP_STORE_SHELF_TYPES in the Fastfile");
+    const types = Object.fromEntries([...table[1].matchAll(/"(\w+)" => "(\w+)"/g)].map(([, shelf, type]) => [shelf, type]));
+    assert.deepEqual(Object.keys(types).sort(), Object.keys(SHELF_LABELS).sort());
+    assert.equal(types.watch_ultra_3, WATCH_SHELF_TYPE);
+    // Every device whose images go on another device's shelf, as the lane picks a devices: list's images by file name.
+    const extra = fastfile.match(/APP_STORE_SHELF_DEVICES = \{ (.*) \}\.freeze/);
+    assert.ok(extra, "no APP_STORE_SHELF_DEVICES in the Fastfile");
+    const lane = Object.fromEntries([...extra[1].matchAll(/"(\w+)" => %w\[([\w ]+)\]/g)].map(([, shelf, devices]) => [shelf, devices.split(" ").sort()]));
+    const others = {};
+    for (const { devices } of Object.values(PLATFORMS)) {
+      for (const [device, { shelf }] of Object.entries(devices)) if (device !== shelf) (others[shelf] ??= []).push(device);
+    }
+    assert.deepEqual(lane, Object.fromEntries(Object.entries(others).map(([shelf, devices]) => [shelf, devices.sort()])));
+    // A set sent with --devices names them in its checksums, which the workflow reads back.
+    assert.ok(readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots.yml"), "utf8").includes(`sed -n 's/^${DEVICES_LINE}//p'`));
+    const upload = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots-upload.yml"), "utf8");
+    assert.ok(upload.includes("format('devices:{0}', inputs.devices)"));
+    const dispatch = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots.yml"), "utf8");
+    assert.ok(dispatch.includes('options+=(--devices "$DEVICES" --no-left-out)'));
+    assert.equal(dispatch.split("      devices: ${{ inputs.devices }}\n").length, 3);
+  });
+
   // The report reads the jobs by the names the two workflows give them, and the workflow builds the release's tag
   // and checks the set's name by itself, in shell: held here to what the script does.
   test("matches what the workflows name and check", () => {
@@ -610,6 +690,6 @@ describe("the workflow's report", () => {
     assert.ok(dispatch.includes("options+=(--tidy-only)") && dispatch.includes('options+=(--only "$LOCALES")'));
     // The set goes only when nothing is left to send again from it: both of the report's answers, by their names.
     assert.ok(dispatch.includes("if: ${{ steps.report.outputs.landed == 'true' && steps.report.outputs.tidied == 'true' && inputs.locales == '' && !inputs.tidy_only }}\n"));
-    assert.deepEqual(parseArguments(["--tidy-only", "--only", "ja en-US", "--staged", "[]"]), { tidyOnly: true, only: "ja en-US", staged: "[]", platforms: ["ios", "mac"] });
+    assert.deepEqual(parseArguments(["--tidy-only", "--only", "ja en-US", "--staged", "[]"]), { tidyOnly: true, only: "ja en-US", staged: "[]", platforms: ["ios", "mac"], platformsNamed: false });
   });
 });

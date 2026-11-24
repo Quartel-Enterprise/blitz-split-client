@@ -54,6 +54,10 @@ on:
         description: "The version to write on, X.Y.Z, created when it is missing. Blank writes on the editable one"
         type: string
         default: ""
+      devices:
+        description: "Send these shelves alone, with commas (iphone_duo,watch_ultra_3), as the set was sent: the others stay as they are. Blank sends every one"
+        type: string
+        default: ""
       allow_missing_devices:
         description: "The set leaves a device out on purpose, never the iPhone Duo: its shelf is emptied in every locale"
         type: boolean
@@ -131,6 +135,7 @@ jobs:
           MACOS: ${{ inputs.macos }}
           APP_VERSION: ${{ inputs.app_version }}
           LOCALES: ${{ inputs.locales }}
+          DEVICES: ${{ inputs.devices }}
           TIDY_ONLY: ${{ inputs.tidy_only }}
         run: |
           if [ "$IOS" != true ] && [ "$MACOS" != true ]; then
@@ -140,8 +145,8 @@ jobs:
           # The tidy-up works on the version that is open for editing, and sends nothing: an input that names
           # something to send, or a version to write on, was meant for another run.
           if [ "$TIDY_ONLY" = true ]; then
-            if [ -n "$SET$LOCALES$APP_VERSION" ]; then
-              echo "::error::tidy_only sends nothing: leave set, locales and app_version blank."
+            if [ -n "$SET$LOCALES$APP_VERSION$DEVICES" ]; then
+              echo "::error::tidy_only sends nothing: leave set, locales, devices and app_version blank."
               exit 1
             fi
             exit 0
@@ -150,6 +155,11 @@ jobs:
           # through (SET_NAME of scripts/store-screenshots/local-set.mjs).
           if [[ ! "$SET" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,59}$ ]]; then
             echo "::error::set is the name local-set.mjs printed: letters, digits, dots, dashes and underscores."
+            exit 1
+          fi
+          # It reaches the lane's command line, where a space would split it: shelf names and commas alone.
+          if [[ -n "$DEVICES" && ! "$DEVICES" =~ ^[a-z0-9_]+(,[a-z0-9_]+)*$ ]]; then
+            echo "::error::devices is shelf names with commas and no spaces, as local-set.mjs printed: iphone_duo,watch_ultra_3."
             exit 1
           fi
           # It reaches a lane's environment, so nothing but a version goes through.
@@ -183,6 +193,7 @@ jobs:
           SET: ${{ inputs.set }}
           IOS: ${{ inputs.ios }}
           MACOS: ${{ inputs.macos }}
+          DEVICES: ${{ inputs.devices }}
         run: |
           if ! release="$(gh release view "$SET_TAG" --json isDraft,assets)"; then
             echo "::error::No set named $SET: no draft release $SET_TAG. Send it from the Mac first, with node scripts/store-screenshots/local-set.mjs send."
@@ -219,13 +230,21 @@ jobs:
             tar -xf "$set_dir/$archive" -C "$folder"
           }
           gh release download "$SET_TAG" --dir "$set_dir" --pattern SHA256SUMS
+          # A set sent with --devices holds those shelves alone: dispatched without them (allow_missing_devices) the
+          # upload would empty every other shelf, so the run names the same ones (DEVICES_LINE of local-set.mjs).
+          sent="$(sed -n 's/^# devices: //p' "$set_dir/SHA256SUMS")"
+          if [ "$sent" != "$DEVICES" ]; then
+            echo "::error::The set $SET was sent for the shelves '${sent:-every one}', and the run names '${DEVICES:-every one}': dispatch it as local-set.mjs printed, with devices '$sent'."
+            exit 1
+          fi
           if [ "$IOS" = true ]; then fetch ios.tar fastlane/screenshots ios; fi
           if [ "$MACOS" = true ]; then fetch mac.tar fastlane/screenshots-mac macos; fi
 
       # The Mac checked it before sending, and this is what decides: a locale of the listing missing, a device with a
       # screen missing, an image of another size, a file that isn't a PNG. deliver replaces every screenshot of a
       # locale with what it is handed, so a set without one of a version's devices would empty that shelf: refused,
-      # unless allow_missing_devices says it is meant, and always for the iPhone Duo (REQUIRED_SHELVES).
+      # unless allow_missing_devices says it is meant, and always for the iPhone Duo (REQUIRED_SHELVES). With devices,
+      # only those shelves are checked, and only they are replaced.
       - name: Check the set
         if: ${{ !inputs.tidy_only }}
         id: set
@@ -234,9 +253,11 @@ jobs:
           IOS: ${{ inputs.ios }}
           MACOS: ${{ inputs.macos }}
           ALLOW_MISSING_DEVICES: ${{ inputs.allow_missing_devices }}
+          DEVICES: ${{ inputs.devices }}
           APP_VERSION: ${{ inputs.app_version }}
         run: |
           options=()
+          if [ -n "$DEVICES" ]; then options+=(--devices "$DEVICES" --no-left-out); fi
           if [ "$IOS" = true ]; then options+=(--ios fastlane/screenshots); fi
           if [ "$MACOS" = true ]; then options+=(--mac fastlane/screenshots-mac); fi
           if [ "$ALLOW_MISSING_DEVICES" = true ]; then options+=(--allow-missing-devices); fi
@@ -329,6 +350,7 @@ jobs:
       locales: ${{ inputs.tidy_only && '["none"]' || needs.check.outputs.ios_locales }}
       artifact: app-store-screenshots-ios
       app_version: ${{ inputs.app_version }}
+      devices: ${{ inputs.devices }}
     secrets:
       APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
@@ -352,6 +374,7 @@ jobs:
       locales: ${{ inputs.tidy_only && '["none"]' || needs.check.outputs.mac_locales }}
       artifact: app-store-screenshots-mac
       app_version: ${{ inputs.app_version }}
+      devices: ${{ inputs.devices }}
     secrets:
       APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}

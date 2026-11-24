@@ -3,12 +3,16 @@
 // the key is: the `app-store-screenshots` workflow uploads it (docs/store-listing-screenshots.md#sending-a-set-made-on-a-mac).
 //
 //   node scripts/store-screenshots/local-set.mjs check [<folder>] [--platform ios|mac] [--allow-missing-devices]
+//                                                       [--devices <shelf>,<shelf>]
 //       Fails on a set App Store Connect would take wrong, saying what is wrong with it: a locale of the listing it
 //       lacks, a device with a screen missing, an image whose size isn't its device's, a file that isn't a PNG.
 //   node scripts/store-screenshots/local-set.mjs send [<folder>] [--name <name>] [--platform ios|mac]
-//                                                      [--allow-missing-devices] [--replace] [--dry-run]
+//                                                      [--allow-missing-devices] [--devices <shelf>,<shelf>]
+//                                                      [--replace] [--dry-run]
 //       Checks the set, packs it and uploads it as the assets of a draft GitHub release, then prints the command that
 //       dispatches the workflow. --dry-run checks and packs, and sends nothing.
+//   --devices iphone_duo,watch_ultra_3 checks and sends only those shelves (SHELF_LABELS' names): the upload replaces
+//       them alone and leaves every other shelf of a locale as it is.
 //   node scripts/store-screenshots/local-set.mjs locales --staged <json> --only "<locale> <locale>"
 //       The workflow's matrix when it sends chosen locales alone: those of the set's, or a failure naming one the
 //       set lacks.
@@ -43,6 +47,8 @@ export const TAG_PREFIX = "store-screenshots-";
 export const tagOf = (name) => `${TAG_PREFIX}${name}`;
 export const SET_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]{0,59}$/;
 export const CHECKSUMS = "SHA256SUMS";
+/** The line of CHECKSUMS that names the shelves a set was sent for with --devices. */
+export const DEVICES_LINE = "# devices: ";
 /** GitHub takes a release asset under 2 GiB, with no limit on a release's total size. */
 export const MAX_ASSET_BYTES = 2 * 1024 ** 3;
 
@@ -177,15 +183,16 @@ class Problems {
  * A device missing from the whole set is refused unless `allowMissingDevices` says it is left out on purpose, and
  * always for a shelf of REQUIRED_SHELVES; one that some locales have and others lack is always refused.
  */
-export function checkPlatform(platform, folder, { allowMissingDevices = false } = {}) {
+export function checkPlatform(platform, folder, { allowMissingDevices = false, devices: chosen } = {}) {
   const { label, devices } = PLATFORMS[platform];
   const expectedLocales = listingLocales();
   const listing = listingScreens();
   const screens = [...listing, ...WATCH_SCREENS];
   const screensOf = Object.fromEntries(Object.keys(devices).map((device) => [device, screensOfDevice(device, devices, listing)]));
   const problems = new Problems();
-  const shelves = [...new Set(Object.values(devices).map((device) => device.shelf))];
-  const report = { platform, folder, locales: [], files: [], bytes: 0, ignored: [], shelves: {}, missingShelves: [] };
+  // With `devices`, only their shelves are sent and replaced; the images of the others are left out of the set.
+  const shelves = [...new Set(Object.values(devices).map((device) => device.shelf))].filter((shelf) => !chosen || chosen.includes(shelf));
+  const report = { platform, folder, locales: [], files: [], bytes: 0, ignored: [], leftOut: 0, shelves: {}, missingShelves: [], devices: chosen ?? null };
 
   if (!existsSync(folder) || !statSync(folder).isDirectory()) {
     return { ...report, problems: [`No ${label} screenshots: ${folder} is not a folder`] };
@@ -226,6 +233,10 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
         problems.add(`${name} is not <screen>_<device>.png: no screen of screens.tsv or of the watch's four, with a device of ${Object.keys(devices).join(", ")}`, locale);
         continue;
       }
+      if (!shelves.includes(devices[device].shelf)) {
+        report.leftOut += 1;
+        continue;
+      }
       if (!screensOf[device].includes(screen)) {
         problems.add(`${name}: ${screen} is not a screen of ${device}'s shelf (${screensOf[device].join(", ")})`, locale);
         continue;
@@ -262,6 +273,10 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
   for (const shelf of shelves) {
     const ofLocale = held[shelf];
     if (ofLocale.size === 0) {
+      if (chosen) {
+        problems.add(`No ${SHELF_LABELS[shelf]} image in the set, which --devices names`);
+        continue;
+      }
       if (shelf in REQUIRED_SHELVES) {
         problems.add(
           `No ${SHELF_LABELS[shelf]} image in the set: the upload would empty that shelf, and it can't be left out, even with --allow-missing-devices (capture it: ${REQUIRED_SHELVES[shelf]})`,
@@ -332,11 +347,32 @@ export function resolveFolders({ folder, ios, mac, platforms }) {
   );
 }
 
+/** The versions a run sends: those asked for, and with `devices` only the ones that hold one of their shelves. */
+export const platformsOf = ({ platforms, devices }) =>
+  platforms.filter((platform) => !devices || Object.values(PLATFORMS[platform].devices).some(({ shelf }) => devices.includes(shelf)));
+
 /** Checks every platform asked for. Throws a SetError that lists every problem; answers the reports otherwise. */
 export function checkSet(options) {
   const folders = resolveFolders(options);
-  const reports = options.platforms.map((platform) => checkPlatform(platform, folders[platform], options));
-  const problems = reports.flatMap((report) => report.problems.map((problem) => `${PLATFORMS[report.platform].label}: ${problem}`));
+  const sent = platformsOf(options);
+  if (sent.length === 0) {
+    throw new SetError(`--devices names no shelf of ${options.platforms.map((platform) => PLATFORMS[platform].label).join(" or ")}: ${options.devices.join(", ")}`);
+  }
+  // A version the command named outright (--platform, --ios, --mac, the workflow's inputs) and --devices leaves out
+  // would be sent nothing: refused, rather than a run that ends green with that version untouched.
+  const named = options.platformsNamed ? options.platforms.filter((platform) => !sent.includes(platform)) : [];
+  const reports = sent.map((platform) => checkPlatform(platform, folders[platform], options));
+  const problems = [
+    ...named.map((platform) => `${PLATFORMS[platform].label}: --devices names none of its shelves, so nothing of it would be sent: leave it out`),
+    ...reports.flatMap((report) => report.problems.map((problem) => `${PLATFORMS[report.platform].label}: ${problem}`)),
+  ];
+  // The workflow's check: a set sent with --devices holds those shelves alone, so one that holds others was sent
+  // whole, and a run replacing some of its shelves would then remove it with the rest never sent.
+  if (options.noLeftOut) {
+    for (const report of reports.filter((each) => each.leftOut > 0)) {
+      problems.push(`${PLATFORMS[report.platform].label}: the set holds ${report.leftOut} image(s) of shelves --devices doesn't name: it was sent whole, so dispatch it without devices, or send it again with --devices`);
+    }
+  }
   if (problems.length > 0) {
     throw new SetError(`The set is not sent, ${problems.length} problem(s):\n${problems.map((problem) => `  - ${problem}`).join("\n")}`);
   }
@@ -351,6 +387,9 @@ function describe(reports) {
     ];
     if (report.missingShelves.length > 0) {
       lines.push(`  left out on purpose, so emptied in every locale: ${report.missingShelves.map((shelf) => SHELF_LABELS[shelf]).join(", ")}`);
+    }
+    if (report.devices) {
+      lines.push(`  only these shelves are replaced, the others are left as they are${report.leftOut > 0 ? ` (${report.leftOut} staged image(s) of theirs left out)` : ""}`);
     }
     if (report.ignored.length > 0) lines.push(`  ${report.ignored.length} hidden file(s) left out (${report.ignored[0]}…)`);
     return lines;
@@ -396,11 +435,13 @@ export function pack(report, out) {
 const defaultName = (now = new Date()) => now.toISOString().replace(/[-:]/g, "").replace("T", "-").slice(0, 13);
 
 /** The command that dispatches the workflow for a set: only what differs from its defaults is said. */
-export function dispatchCommand(name, { platforms, allowMissingDevices }) {
+export function dispatchCommand(name, { platforms, allowMissingDevices, devices }) {
   const fields = [`set=${name}`];
-  if (!platforms.includes("ios")) fields.push("ios=false");
-  if (!platforms.includes("mac")) fields.push("macos=false");
+  const sent = platformsOf({ platforms, devices });
+  if (!sent.includes("ios")) fields.push("ios=false");
+  if (!sent.includes("mac")) fields.push("macos=false");
   if (allowMissingDevices) fields.push("allow_missing_devices=true");
+  if (devices) fields.push(`devices=${devices.join(",")}`);
   return `gh workflow run ${WORKFLOW} --repo ${REPOSITORY} ${fields.map((field) => `-f ${field}`).join(" ")}`;
 }
 
@@ -440,6 +481,9 @@ async function send(options) {
       sums.push(`${await sha256(archive)}  ${archive.slice(out.length + 1)}`);
       console.log(`Packed ${archive.slice(out.length + 1)}, ${megabytes(size)}`);
     }
+    // The shelves a set sent with --devices was packed for, on a line of its own that `sha256sum --check` never
+    // reads (the workflow checks each archive's own line): a dispatch must name the same ones.
+    if (options.devices) sums.push(`${DEVICES_LINE}${options.devices.join(",")}`);
     writeFileSync(join(out, CHECKSUMS), `${sums.join("\n")}\n`);
     if (options.dryRun) {
       console.log(`--dry-run: the set is complete and packs. Nothing was sent; it would travel as the draft release ${tag}.`);
@@ -572,16 +616,18 @@ function report(options) {
 
 const USAGE = `Usage:
   local-set.mjs check [<folder>] [--platform ios|mac] [--ios <folder>] [--mac <folder>] [--allow-missing-devices]
+                      [--devices <shelf>,<shelf>]
   local-set.mjs send  [<folder>] [--name <name>] [--platform ios|mac] [--ios <folder>] [--mac <folder>]
-                      [--allow-missing-devices] [--replace] [--dry-run]
+                      [--allow-missing-devices] [--devices <shelf>,<shelf>] [--replace] [--dry-run]
   local-set.mjs locales --staged <json> --only "<locale> <locale>"
   local-set.mjs report --jobs <file> (--set <name> | --tidy-only) [--version <X.Y.Z>] [--only "<locale> <locale>"]
                       [--ios-job <name> --ios-locales <json> --ios-shelves <text>]
                       [--mac-job <name> --mac-locales <json> --mac-shelves <text>]`;
 
-const FLAGS = { "--allow-missing-devices": "allowMissingDevices", "--replace": "replace", "--dry-run": "dryRun", "--tidy-only": "tidyOnly" };
+const FLAGS = { "--no-left-out": "noLeftOut", "--allow-missing-devices": "allowMissingDevices", "--replace": "replace", "--dry-run": "dryRun", "--tidy-only": "tidyOnly" };
 const VALUES = {
   "--platform": "platform",
+  "--devices": "devices",
   "--ios": "ios",
   "--mac": "mac",
   "--name": "name",
@@ -614,9 +660,18 @@ export function parseArguments(args) {
     }
   }
   if (options.platform && !Object.hasOwn(PLATFORMS, options.platform)) throw new SetError(`--platform is ios or mac\n${USAGE}`);
+  if (options.devices !== undefined) {
+    const devices = [...new Set(options.devices.split(",").map((device) => device.trim()).filter(Boolean))];
+    const unknown = devices.filter((device) => !Object.hasOwn(SHELF_LABELS, device));
+    if (devices.length === 0 || unknown.length > 0) {
+      throw new SetError(`--devices names shelves of ${Object.keys(SHELF_LABELS).join(", ")}, with commas: ${options.devices}\n${USAGE}`);
+    }
+    options.devices = devices;
+  }
   // A folder named for one version alone is a set of that version.
   const named = ["ios", "mac"].filter((platform) => options[platform]);
   options.platforms = options.platform ? [options.platform] : named.length > 0 && !options.folder ? named : ["ios", "mac"];
+  options.platformsNamed = Boolean(options.platform) || (named.length > 0 && !options.folder);
   return options;
 }
 
