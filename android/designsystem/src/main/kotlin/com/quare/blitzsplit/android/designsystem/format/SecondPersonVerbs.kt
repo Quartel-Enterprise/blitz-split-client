@@ -99,6 +99,8 @@ private const val TAMIL = "ta"
 private const val TELUGU = "te"
 private const val MARATHI = "mr"
 private const val MARATHI_RESPECTFUL_AGENT = "यांनी"
+private const val GUJARATI = "gu"
+private const val GUJARATI_AGENT = "એ"
 private const val TAMIL_THIRD_PERSON_PAST = "ார்"
 private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
 private const val SWAHILI = "sw"
@@ -143,6 +145,7 @@ private val youSubjectLanguages = setOf(
     TELUGU,
     MARATHI,
     SWAHILI,
+    GUJARATI,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -203,7 +206,9 @@ private val irregularSecondPerson = mapOf(
  * verb phrase starts with a perfect "a-me-" or a past "a-li-", whose "a" the user's turns into "u": "Ana amegawanya",
  * "Wewe umegawanya". Latvian starts every verb phrase with a simple past, which says the person but not the gender: its
  * third person in "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji";
- * "Ana pievienojās", "Tu pievienojies"). Same rules as the web's and the Apple app's `verbForYou`.
+ * "Ana pievienojās", "Tu pievienojies"). Gujarati does as Hindi with its agent "એ", written apart
+ * after a name, which the user's "તમે" doesn't take: every Gujarati verb phrase starts with "એ", which the user's drops
+ * ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ વહેંચ્યો"). Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -232,6 +237,8 @@ fun toSecondPerson(
     HINDI -> dropSubjectParticle(verb, HINDI_ERGATIVE)
 
     MARATHI -> dropSubjectParticle(verb, MARATHI_RESPECTFUL_AGENT)
+
+    GUJARATI -> dropSubjectParticle(verb, GUJARATI_AGENT)
 
     CZECH -> if (czechPast.containsMatchIn(verb)) "$CZECH_SECOND_PERSON_AUXILIARY $verb" else verb
 
@@ -343,8 +350,8 @@ private fun toSpanishSecondPerson(verb: String): String {
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
  * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule, and
- * Telugu "మీరు తొలగించారు: …", its verb not changing with the person, Marathi "तुम्ही … हटवला", with its rule, and
- * Swahili "Wewe ulifuta…", with its own.
+ * Telugu "మీరు తొలగించారు: …", its verb not changing with the person, Marathi "तुम्ही … हटवला", with its rule,
+ * Swahili "Wewe ulifuta…", with its own, and Gujarati "તમે … ડિલીટ કર્યો", with its rule.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

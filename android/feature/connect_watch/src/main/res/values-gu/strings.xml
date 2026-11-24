@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">વૉચ કનેક્ટ કરો</string>
+    <string name="connect_watch_close">બંધ કરો</string>
+    <string name="connect_watch_body">તમારી વૉચ બતાવે તે કોડ લખો. તે તમારા એકાઉન્ટમાં સાઇન ઇન કરે છે અને પછી જાતે સિંક થાય છે.</string>
+    <string name="connect_watch_code_label">વૉચ કોડ</string>
+    <string name="connect_watch_error_invalid">ખોટો કે સમાપ્ત થયેલો કોડ. વૉચ પર નવો કોડ મેળવો.</string>
+    <string name="connect_watch_error_too_many">ઘણા બધા ખોટા કોડ. થોડી મિનિટ રાહ જુઓ અને ફરી પ્રયાસ કરો.</string>
+    <string name="connect_watch_error_needs_account">પહેલાં એકાઉન્ટ કનેક્ટ કરો: તમારો ડેટા ફક્ત આ ડિવાઇસ પર છે.</string>
+    <string name="connect_watch_error_failed">વૉચ કનેક્ટ થઈ શકી નહીં. ફરી પ્રયાસ કરો.</string>
+    <string name="connect_watch_offline">વૉચ કનેક્ટ કરવા માટે ઇન્ટરનેટ જોઈએ.</string>
+    <string name="connect_watch_own_watch_only">ફક્ત તમારી પોતાની વૉચ પર દેખાતો કોડ જ લખો: જેની પાસે તે વૉચ હશે તે તમારા એકાઉન્ટમાં પ્રવેશી શકશે.</string>
+    <string name="connect_watch_validity">કોડ 5 મિનિટ માટે, એક જ વાર માન્ય છે.</string>
+    <string name="connect_watch_button">કનેક્ટ કરો</string>
+    <string name="connect_watch_connected_title">વૉચ કનેક્ટ થઈ</string>
+    <string name="connect_watch_connected_body">તે તમારા ગ્રુપ જુએ છે અને જાતે સિંક થાય છે. તેને ડિસ્કનેક્ટ કરવા, વૉચ પર સાઇન આઉટ કરો.</string>
+</resources>

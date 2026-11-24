@@ -877,6 +877,7 @@ export const ur: Record<MessageKey, string> = {
   profile_languageFinnish: 'فنش',
   profile_languageLatvian: 'لیٹوین',
   profile_languageEstonian: 'اسٹونین',
+  profile_languageGujarati: 'گجراتی',
   profile_languageSlovenian: 'سلووینیائی',
   profile_bitcoinInSats: 'Bitcoin ساتوشی میں',
   profile_bitcoinInSatsDetail: 'Bitcoin کی رقمیں sats میں دکھاتا اور لکھواتا ہے (1 ₿ = 100,000,000 sats)۔',

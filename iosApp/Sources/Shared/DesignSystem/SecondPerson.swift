@@ -29,6 +29,8 @@ import SwiftUI
 /// Telugu's respectful past "-ారు" is the same for a name and for "మీరు", so its verb stays as it is. Marathi does as
 /// Hindi with its respectful agent "यांनी", which the user's "तुम्ही" doesn't take, so its verb phrases all start with
 /// "यांनी", which the user's drops ("Ana यांनी खर्च वाटला", "तुम्ही खर्च वाटला").
+/// Gujarati does the same with its agent "એ", which the user's "તમે" doesn't take ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ
+/// વહેંચ્યો").
 ///
 /// Latvian starts each verb phrase with a simple past, which says the person but not the gender: its third person in
 /// "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji"; "Ana
@@ -116,6 +118,7 @@ enum SecondPerson {
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
         case "mr": return verbWithoutSubjectParticle(verb, particle: "यांनी")
+        case "gu": return verbWithoutSubjectParticle(verb, particle: "એ")
         case let .some(code) where pastAuxiliaries[code] != nil:
             // Why: the past may be followed by a comma or a colon ("změnil(a), kdo platil").
             guard verb.range(of: #"^\S*l\(a\)(?=[\s,:]|$)"#, options: .regularExpression) != nil,
