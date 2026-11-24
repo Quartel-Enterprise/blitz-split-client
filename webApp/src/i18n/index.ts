@@ -468,7 +468,7 @@ export function verbForYou(verb: string): string {
   if (locale === 'tr') return turkishVerbForYou(verb)
   if (locale === 'fa') return persianVerbForYou(verb)
   if (locale === 'ta') return tamilVerbForYou(verb)
-  if (locale === 'kn') return verb.replace(/^([^:]*?[ಕ-ಹ])ರು(\s*(?::|$))/u, '$1ಿರಿ$2')
+  if (locale === 'kn') return kannadaVerbForYou(verb)
   if (locale === 'ko') return verb.replace(/^님이(?: |$)/, '')
   if (locale === 'hi') return verb.replace(/^ने(?: |$)/, '')
   if (locale === 'mr') return verb.replace(/^यांनी(?: |$)/, '')
@@ -523,13 +523,12 @@ function turkishVerbForYou(verb: string): string {
 }
 
 /**
- * A language that puts its verb last (Turkish, Persian): the clause before the colon that leads to the object, if any,
- * ends with a simple past matching `past`, which takes `ending` for the user. Same rule as Android's
- * `toVerbLastSecondPerson` and the Apple app's `verbLastForYou`.
+ * A language that puts its verb last (Turkish, Persian, Tamil, Kannada): the clause before the colon that leads to the
+ * object, if any, ends with a simple past matching `past` and then `dropped`, which the user's turns into `ending`.
+ * Same rule as Android's `toVerbLastSecondPerson` and the Apple app's `verbLastForYou`.
  */
-function verbLastForYou(verb: string, past: string, ending: string, dropsPast = false): string {
-  const kept = dropsPast ? `([^:]*?)(?:${past})` : `([^:]*?${past})`
-  return verb.replace(new RegExp(`^${kept}(\\s*(?::|$))`, 'u'), `$1${ending}$2`)
+function verbLastForYou(verb: string, past: string, ending: string, dropped = ''): string {
+  return verb.replace(new RegExp(`^([^:]*?${past})${dropped}(\\s*(?::|$))`, 'u'), `$1${ending}$2`)
 }
 
 /**
@@ -537,7 +536,16 @@ function verbLastForYou(verb: string, past: string, ending: string, dropsPast = 
  * respectful past in "-ார்", which the second person drops for "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்").
  */
 function tamilVerbForYou(verb: string): string {
-  return verbLastForYou(verb, 'ார்', 'ீர்கள்', true)
+  return verbLastForYou(verb, '', 'ீர்கள்', 'ார்')
+}
+
+/**
+ * Kannada puts the verb last as Tamil does, so every Kannada verb phrase ends, before the colon that leads to the
+ * object, with a respectful past in "-ರು" after a consonant, whose "ರು" the second person turns into "ಿರಿ" ("ಹಂಚಿದರು" →
+ * "ಹಂಚಿದಿರಿ").
+ */
+function kannadaVerbForYou(verb: string): string {
+  return verbLastForYou(verb, '[ಕ-ಹ]', 'ಿರಿ', 'ರು')
 }
 
 /**

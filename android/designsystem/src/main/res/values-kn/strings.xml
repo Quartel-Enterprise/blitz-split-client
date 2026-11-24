@@ -129,7 +129,7 @@
     <string name="designsystem_settled_pair_owes_less">ಬದಲಾವಣೆಯೊಂದಿಗೆ, %1$s ಇನ್ನು %2$s ಮಾತ್ರ ಕೊಡಬೇಕು, ಪಡೆಯುವವರು: %3$s.</string>
     <string name="designsystem_settled_pair_i_owe_less">ಬದಲಾವಣೆಯೊಂದಿಗೆ, ನೀವು ಇನ್ನು %1$s ಮಾತ್ರ ಕೊಡಬೇಕು, ಪಡೆಯುವವರು: %2$s.</string>
     <string name="designsystem_settled_pair_owes_me_less">ಬದಲಾವಣೆಯೊಂದಿಗೆ, %1$s ಇನ್ನು ನಿಮಗೆ %2$s ಮಾತ್ರ ಕೊಡಬೇಕು.</string>
-    <string name="designsystem_settled_pair_even">ಬದಲಾವಣೆಯೊಂದಿಗೆ, ಇವರಿಬ್ಬರ ಲೆಕ್ಕ ಚುಕ್ತಾ ಆಗಿದೆ: %1$s, %2$s.</string>
+    <string name="designsystem_settled_pair_even">ಬದಲಾವಣೆಯೊಂದಿಗೆ, %1$s ಮತ್ತು %2$s, ಇಬ್ಬರ ಲೆಕ್ಕವೂ ಚುಕ್ತಾ ಆಗಿದೆ.</string>
     <string name="designsystem_settled_pair_even_with_me">ಬದಲಾವಣೆಯೊಂದಿಗೆ, ನಿಮ್ಮ ಮತ್ತು ಇವರ ಲೆಕ್ಕ ಚುಕ್ತಾ ಆಗಿದೆ: %s.</string>
     <string name="designsystem_category_food">ಆಹಾರ</string>
     <string name="designsystem_category_food_restaurant">ರೆಸ್ಟೋರೆಂಟ್</string>
