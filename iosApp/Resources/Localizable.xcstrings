@@ -47407,7 +47407,7 @@
         "lv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ izdzēsa %@ (%@)."
+            "value" : "%@ izdzēsa: %@ (%@)."
           }
         },
         "mr" : {
@@ -483987,7 +483987,7 @@
         "lv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu vairs nesaņem naudu no %@."
+            "value" : "Tu vairs nesaņem no: %@."
           }
         },
         "mr" : {
@@ -484256,7 +484256,7 @@
         "lv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vairs nesaņem naudu no %@."
+            "value" : "Vairs nesaņem no: %@."
           }
         },
         "mr" : {
@@ -484525,7 +484525,7 @@
         "lv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu saņem naudu no %@."
+            "value" : "Tu saņem no: %@."
           }
         },
         "mr" : {
@@ -484788,7 +484788,7 @@
         "lv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Saņem naudu no %@."
+            "value" : "Saņem no: %@."
           }
         },
         "mr" : {
@@ -554925,7 +554925,7 @@
         "lv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Norvēģu"
+            "value" : "Norvēģu (bukmols)"
           }
         },
         "mr" : {
