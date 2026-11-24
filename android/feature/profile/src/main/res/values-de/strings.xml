@@ -106,6 +106,7 @@
     <string name="profile_language_estonian">Estnisch</string>
     <string name="profile_language_gujarati">Gujarati</string>
     <string name="profile_language_slovenian">Slowenisch</string>
+    <string name="profile_language_malayalam">Malayalam</string>
     <string name="profile_language_system_detail">Sprache des Geräts</string>
     <string name="profile_notifications">Mitteilungen</string>
     <plurals name="profile_notifications_active">

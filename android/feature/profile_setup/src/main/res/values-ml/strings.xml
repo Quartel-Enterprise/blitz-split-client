@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">സുഹൃത്തുക്കൾ നിങ്ങളെ എന്താണ് വിളിക്കുന്നത്?</string>
+    <string name="profile_setup_subtitle">നിങ്ങളുടെ ഗ്രൂപ്പുകൾക്കും നിങ്ങളുടെ പ്രൊഫൈൽ ലിങ്ക് ഉള്ള ആർക്കും നിങ്ങളുടെ പേര് കാണാം.</string>
+    <string name="profile_setup_avatar_color">അവതാർ നിറം</string>
+    <string name="profile_setup_add_photo">ഫോട്ടോ ചേർക്കുക</string>
+    <string name="profile_setup_photo_error">ഈ ഫോട്ടോ ഉപയോഗിക്കാനായില്ല. മറ്റൊന്ന് പരീക്ഷിക്കുക.</string>
+    <string name="profile_setup_name_label">നിങ്ങളുടെ പേര്</string>
+    <string name="profile_setup_name_placeholder">അനു മാത്യു</string>
+    <string name="profile_setup_name_too_short">കുറഞ്ഞത് %d അക്ഷരങ്ങൾ ടൈപ്പ് ചെയ്യുക.</string>
+    <string name="profile_setup_name_too_long">പരമാവധി %d അക്ഷരങ്ങൾ ഉപയോഗിക്കുക.</string>
+    <string name="profile_setup_name_hint">പിന്നീട് പ്രൊഫൈലിൽ ഇത് മാറ്റാം.</string>
+    <string name="profile_setup_saved_locally">ഇപ്പോൾ ഈ ഉപകരണത്തിൽ മാത്രം സേവ് ചെയ്തു.</string>
+    <string name="profile_setup_continue">തുടരുക</string>
+</resources>

@@ -1,0 +1,61 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Malayalam: pick \"മലയാളം\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala malaiala: escolha \"മലയാളം\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora malaiala: escolhe \"മലയാളം\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla malayalam: elige \"മലയാളം\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais malayalam : choisis « മലയാളം » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Malayalam: Wähle „മലയാളം“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla malayalam: scegli \"മലയാളം\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz w języku malajalam: wybierz „മലയാളം” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Malayalam: kies \"മലയാളം\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがマラヤーラム語に対応しました。プロフィール › 言語で「മലയാളം」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Malayalamca konuşuyor: Profil › Dil'de \"മലയാളം\" seçeneğini seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Malayalam: pilih \"മലയാളം\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на малаялам: выбери «മലയാളം» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить мовою малаялам: обери «മലയാളം» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 말라얄람어를 쓸 수 있어요. 프로필 › 언어에서 ‘മലയാളം’을 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप मलयालम में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “മലയാളം” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث المالايالامية: يمكنك اختيار «മലയാളം» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持马拉雅拉姆语：在“个人资料 › 语言”中选择“മലയാളം”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו מלאיאלאם: אפשר לבחור \"മലയാളം\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษามาลายาลัมแล้ว เลือก “മലയാളം” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Malayalam: chọn “മലയാളം” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援馬拉雅拉姆文：在「個人資料 › 語言」中選擇「മലയാളം」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu malayalam: välj ”മലയാളം” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví malajálamsky: vyber „മലയാളം“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum malayalam: alege „മലയാളം” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন মালয়ালম ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “മലയാളം” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Malayalam: pilih \"മലയാളം\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον μαλαγιαλάμ: διάλεξε «മലയാളം» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hr": "Aplikacija sada govori malajalamski: odaberi „മലയാളം“ u Profil › Jezik ili ostavi jezik svog uređaja.",
+        "hu": "Az app mostantól malajálamul is beszél: válaszd a „മലയാളം” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
+        "ur": "اب ایپ ملیالم میں بھی دستیاب ہے: پروفائل › زبان میں “മലയാളം” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
+        "fil": "Marunong na ng Malayalam ang app: piliin ang \"മലയാളം\" sa Profile › Wika, o hayaan itong sundin ang device mo.",
+        "sr": "Aplikacija sada govori malajalam: izaberi „മലയാളം“ u Profil › Jezik ili je pusti da prati tvoj uređaj.",
+        "sk": "Aplikácia teraz hovorí po malajálamsky: vyber „മലയാളം“ v Profil › Jazyk, alebo nechaj jazyk zariadenia.",
+        "fa": "برنامه حالا مالایالامی صحبت می‌کند: «മലയാളം» را در پروفایل › زبان انتخاب کنید، یا بگذارید از زبان دستگاه شما پیروی کند.",
+        "ta": "ஆப் இப்போது மலையாள மொழியில் கிடைக்கிறது: சுயவிவரம் › மொழி என்பதில் \"മലയാളം\" என்பதைத் தேர்ந்தெடுங்கள், அல்லது உங்கள் சாதனத்தின் மொழியைப் பின்பற்ற விடுங்கள்.",
+        "nb": "Appen snakker nå malayalam: velg «മലയാളം» i Profil › Språk, eller la den følge enheten din.",
+        "te": "యాప్ ఇప్పుడు మలయాళంలో అందుబాటులో ఉంది: ప్రొఫైల్ › భాషలో \"മലയാളം\" ఎంచుకోండి, లేదా మీ పరికరం భాషను అనుసరించనివ్వండి.",
+        "bg": "Приложението вече говори малаялам: избери „മലയാളം“ в Профил › Език или остави езика на устройството.",
+        "mr": "ॲप आता मल्याळममध्ये उपलब्ध आहे: प्रोफाइल › भाषा मध्ये \"മലയാളം\" निवडा, किंवा ते तुमच्या डिव्हाइसच्या भाषेनुसार राहू द्या.",
+        "sw": "Programu sasa inazungumza Kimalayalam: chagua \"മലയാളം\" katika Wasifu › Lugha, au iache ifuate kifaa chako.",
+        "ca": "L’app ara parla malaiàlam: tria «മലയാളം» a Perfil › Idioma, o deixa que segueixi el teu dispositiu.",
+        "da": "Appen taler nu malayalam: vælg »മലയാളം« i Profil › Sprog, eller lad den følge din enhed.",
+        "fi": "Sovellus puhuu nyt malajalamia: valitse ”മലയാളം” kohdassa Profiili › Kieli tai anna sen seurata laitteesi kieltä.",
+        "lv": "Lietotne tagad runā malajalu valodā: izvēlies „മലയാളം” sadaļā Profils › Valoda vai ļauj tai sekot tavas ierīces valodai.",
+        "et": "Rakendus räägib nüüd malajalami keelt: vali „മലയാളം“ jaotises Profiil › Keel või lase sel järgida su seadet.",
+        "gu": "ઍપ હવે મલયાલમમાં ઉપલબ્ધ છે: પ્રોફાઇલ › ભાષામાં “മലയാളം” પસંદ કરો, અથવા તેને તમારા ડિવાઇસની ભાષા મુજબ રહેવા દો.",
+        "sl": "Aplikacija je zdaj na voljo v malajalamščini: v Profil › Jezik izberi „മലയാളം“ ali pa naj sledi jeziku tvoje naprave.",
+        "ml": "ആപ്പ് ഇപ്പോൾ മലയാളത്തിൽ ലഭ്യമാണ്: പ്രൊഫൈൽ › ഭാഷ എന്നതിൽ ‘മലയാളം’ തിരഞ്ഞെടുക്കുക, അല്ലെങ്കിൽ നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഭാഷ പിന്തുടരാൻ അനുവദിക്കുക."
+      }
+    }
+  ]
+}

@@ -108,6 +108,7 @@
     <string name="profile_language_estonian">Эстонский</string>
     <string name="profile_language_gujarati">Гуджарати</string>
     <string name="profile_language_slovenian">Словенский</string>
+    <string name="profile_language_malayalam">Малаялам</string>
     <string name="profile_language_system_detail">Язык устройства</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_notifications">Уведомления</string>

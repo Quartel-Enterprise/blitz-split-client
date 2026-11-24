@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">സപ്പോർട്ടുമായി ബന്ധപ്പെടുക</string>
+    <string name="contact_support_description">തയ്യാറാക്കിയ ഒരു മെസേജോടെ ഞങ്ങൾ നിങ്ങളുടെ ഇമെയിൽ ആപ്പ് തുറക്കും. എന്താണ് സംഭവിച്ചതെന്ന് വിവരിച്ച് അയയ്ക്കുക: ഓരോ മെസേജും യഥാർത്ഥ ആളുകൾ വായിക്കുന്നു.</string>
+    <string name="contact_support_to">സ്വീകർത്താവ്</string>
+    <string name="contact_support_diagnostics">ഇമെയിലിൽ ഉൾപ്പെടുത്തും</string>
+    <string name="contact_support_app_version">ആപ്പ് പതിപ്പ്</string>
+    <string name="contact_support_platform">പ്ലാറ്റ്‌ഫോം</string>
+    <string name="contact_support_language">ഭാഷ</string>
+    <string name="contact_support_account">അക്കൗണ്ട്</string>
+    <string name="contact_support_profile">പ്രൊഫൈൽ</string>
+    <string name="contact_support_language_system">സിസ്റ്റം</string>
+    <string name="contact_support_account_local">ഈ ഉപകരണത്തിൽ മാത്രം</string>
+    <string name="contact_support_account_anonymous">കണക്റ്റ് ചെയ്തിട്ടില്ല</string>
+    <string name="contact_support_open_email">ഇമെയിൽ തുറക്കുക</string>
+    <string name="contact_support_copy_email">ഇമെയിൽ വിലാസം കോപ്പി ചെയ്യുക</string>
+    <string name="contact_support_notice_copied">ഇമെയിൽ വിലാസം കോപ്പി ചെയ്തു.</string>
+    <string name="contact_support_notice_no_app">ഇമെയിൽ ആപ്പ് കണ്ടെത്തിയില്ല. പകരം വിലാസം കോപ്പി ചെയ്തു.</string>
+    <string name="contact_support_close">അടയ്ക്കുക</string>
+</resources>

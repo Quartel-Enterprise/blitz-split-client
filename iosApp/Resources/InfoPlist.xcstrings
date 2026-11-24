@@ -155,6 +155,12 @@
             "value" : "Blitz Split"
           }
         },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -444,6 +450,12 @@
           }
         },
         "lv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "ml" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -743,6 +755,12 @@
             "value" : "Lai skenētu uzaicinājuma vai vecās ierīces QR kodu un uzņemtu tavu profila fotoattēlu un rēķinu fotoattēlus."
           }
         },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഒരു ക്ഷണത്തിന്റെയോ നിങ്ങളുടെ പഴയ ഉപകരണത്തിന്റെയോ QR കോഡ് സ്കാൻ ചെയ്യാനും, നിങ്ങളുടെ പ്രൊഫൈൽ ഫോട്ടോയും ചെലവുകളുടെ ഫോട്ടോകളും എടുക്കാനും."
+          }
+        },
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1037,6 +1055,12 @@
             "value" : "Lai uzaicinātu cilvēkus no taviem kontaktiem ar grupas saiti. Viņu numuri paliek šajā ierīcē."
           }
         },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഗ്രൂപ്പിന്റെ ലിങ്ക് ഉപയോഗിച്ച് നിങ്ങളുടെ കോൺടാക്റ്റുകളിലെ ആളുകളെ ക്ഷണിക്കാൻ. അവരുടെ നമ്പറുകൾ ഈ ഉപകരണത്തിൽ തന്നെ തുടരും."
+          }
+        },
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1329,6 +1353,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lai saglabātu rēķinu fotoattēlus tavā bibliotēkā."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ചെലവുകളുടെ ഫോട്ടോകൾ നിങ്ങളുടെ ലൈബ്രറിയിൽ സേവ് ചെയ്യാൻ."
           }
         },
         "mr" : {

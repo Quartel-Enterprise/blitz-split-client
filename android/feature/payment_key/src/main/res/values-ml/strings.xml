@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">പുതിയ Pix കീ</string>
+    <string name="payment_key_title_pix_edit">Pix കീ എഡിറ്റ് ചെയ്യുക</string>
+    <string name="payment_key_title_bitcoin_new">പുതിയ Bitcoin കീ</string>
+    <string name="payment_key_title_bitcoin_edit">Bitcoin കീ എഡിറ്റ് ചെയ്യുക</string>
+    <string name="payment_key_save">സേവ് ചെയ്യുക</string>
+
+    <string name="payment_key_pix_intro">നിങ്ങൾക്ക് പണം നൽകുന്നവർ സെറ്റിൽ ചെയ്യുമ്പോൾ ഈ കീ കാണും. ഏത് തരം കീ?</string>
+    <string name="payment_key_pix_question">ഏത് തരം കീ?</string>
+    <string name="payment_key_pix_explanation">നിങ്ങൾക്ക് പണം നൽകുന്നവർ സെറ്റിൽ ചെയ്യുമ്പോൾ ഈ കീ കാണും.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">ഫോൺ</string>
+    <string name="payment_key_type_email">ഇമെയിൽ</string>
+    <string name="payment_key_type_random">റാൻഡം</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">ഏരിയ കോഡ് സഹിതമുള്ള മൊബൈൽ നമ്പർ</string>
+    <string name="payment_key_label_email">ഇമെയിൽ</string>
+    <string name="payment_key_label_random">റാൻഡം കീ</string>
+
+    <string name="payment_key_bitcoin_intro">നിങ്ങൾ എങ്ങനെ സ്വീകരിക്കാൻ ആഗ്രഹിക്കുന്നു?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">വേഗത്തിൽ, കുറഞ്ഞ ഫീസ്</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">ബ്ലോക്ക്‌ചെയിനിൽ</string>
+    <string name="payment_key_label_lightning">Lightning Address അല്ലെങ്കിൽ LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin വിലാസം</string>
+
+    <string name="payment_key_paste">പേസ്റ്റ് ചെയ്യുക</string>
+
+    <string name="payment_key_hint_cpf">ഫോർമാറ്റ് 000.000.000-00</string>
+    <string name="payment_key_hint_phone">ഫോർമാറ്റ് +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">ഫോർമാറ്റ് name@domain.com</string>
+    <string name="payment_key_hint_random">നിങ്ങളുടെ ബാങ്ക് കാണിക്കുന്നതുപോലെ 32 അക്ഷരങ്ങളും അക്കങ്ങളും</string>
+    <string name="payment_key_hint_lightning">name@wallet.com അല്ലെങ്കിൽ LNURL1… പോലെ</string>
+    <string name="payment_key_hint_onchain">bc1q അല്ലെങ്കിൽ bc1p-ൽ തുടങ്ങുന്ന mainnet വിലാസം</string>
+
+    <string name="payment_key_valid_cpf">ഫോർമാറ്റ് 000.000.000-00 · ചെക്ക് ഡിജിറ്റുകൾ ശരിയാണ്</string>
+    <string name="payment_key_valid_phone">ഫോർമാറ്റ് +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">ഫോർമാറ്റ് name@domain.com</string>
+    <string name="payment_key_valid_random">റാൻഡം കീ തിരിച്ചറിഞ്ഞു (32 അക്ഷരങ്ങൾ)</string>
+    <string name="payment_key_valid_lightning_address">സാധുവായ Lightning Address</string>
+    <string name="payment_key_valid_lnurl">സാധുവായ LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">അസാധുവായ CPF: ചെക്ക് ഡിജിറ്റുകൾ ശരിയല്ല.</string>
+    <string name="payment_key_error_invalid_phone">മൊബൈൽ നമ്പർ അപൂർണ്ണമാണ്: ഏരിയ കോഡും 9-ൽ തുടങ്ങുന്ന 9 അക്കങ്ങളും ഉപയോഗിക്കുക.</string>
+    <string name="payment_key_error_invalid_email">ഇമെയിൽ അപൂർണ്ണമാണ്: .com അല്ലെങ്കിൽ .com.br പോലുള്ള ഡൊമെയ്ൻ ഇല്ല.</string>
+    <string name="payment_key_error_invalid_random">റാൻഡം കീ അപൂർണ്ണമാണ്: അതിൽ 32 അക്ഷരങ്ങളും അക്കങ്ങളും ഉണ്ട്.</string>
+    <string name="payment_key_error_invalid_lightning">ഇത് ഒരു Lightning Address (name@wallet) അല്ലെങ്കിൽ LNURL അല്ല.</string>
+    <string name="payment_key_error_lightning_invoice">ഇത് ഒരു Lightning ഇൻവോയ്സ് (lnbc…) ആണ്: ഇത് ഒരിക്കൽ മാത്രം പണം നൽകുന്നു, പിന്നെ കാലഹരണപ്പെടും. ഒരു Lightning Address അല്ലെങ്കിൽ LNURL പേസ്റ്റ് ചെയ്യുക.</string>
+    <string name="payment_key_error_invalid_onchain">അസാധുവായ വിലാസം. ഒരു mainnet bc1q അല്ലെങ്കിൽ bc1p വിലാസം ഉപയോഗിക്കുക.</string>
+    <string name="payment_key_error_testnet_address">ഇത് ഒരു testnet വിലാസമാണ് (tb1…). ഇവിടെ Bitcoin mainnet മാത്രമേ പ്രവർത്തിക്കൂ, bc1… വിലാസങ്ങളോടെ.</string>
+    <string name="payment_key_error_already_saved">നിങ്ങൾക്ക് ഇതിനകം ഈ കീ ഉണ്ട്.</string>
+
+    <string name="payment_key_switched_to_onchain">ഇത് ഒരു on-chain വിലാസമാണ്, അതിനാൽ ഞങ്ങൾ On-chain-ലേക്ക് മാറി.</string>
+    <string name="payment_key_switched_to_lightning">ഇത് ഒരു Lightning Address ആണ്, അതിനാൽ ഞങ്ങൾ Lightning-ലേക്ക് മാറി.</string>
+    <string name="payment_key_cpf_notice">നിങ്ങൾക്ക് പണം നൽകുന്നവർ നിങ്ങളുടെ പൂർണ്ണ CPF കാണും. അത് ഷെയർ ചെയ്യാൻ താൽപ്പര്യമില്ലെങ്കിൽ, ഫോൺ, ഇമെയിൽ അല്ലെങ്കിൽ റാൻഡം കീ ഉപയോഗിക്കുക.</string>
+    <string name="payment_key_held_notice">ഈ തരത്തിലുള്ള ഒരു Pix കീ മാത്രമേ നിങ്ങൾക്ക് ഉണ്ടാകൂ, അതിനാൽ നിങ്ങൾ സേവ് ചെയ്തത് ഇതാണ്. വേണമെങ്കിൽ ഇവിടെ അത് മാറ്റുക.</string>
+
+    <string name="payment_key_accepted_title">ഞങ്ങൾ സ്വീകരിക്കുന്നവ</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">ഡിഫോൾട്ട് Pix കീ</string>
+    <string name="payment_key_default_bitcoin_title">ഡിഫോൾട്ട് Bitcoin കീ</string>
+    <string name="payment_key_default_pix_detail">സെറ്റിൽ ചെയ്യുമ്പോൾ ആദ്യം കാണിക്കും.</string>
+    <string name="payment_key_default_bitcoin_detail">ആരെങ്കിലും BTC-യിൽ പണം നൽകുമ്പോൾ ആദ്യം കാണിക്കും.</string>
+    <string name="payment_key_default_now">ഇപ്പോൾ: %1$s.</string>
+    <string name="payment_key_default_locked_editing">ഇത് മാറ്റാൻ, മറ്റൊരു കീ ഡിഫോൾട്ട് ആക്കുക.</string>
+    <string name="payment_key_default_locked_new">ഈ തരത്തിലുള്ള നിങ്ങളുടെ ആദ്യ കീയാണ് ഡിഫോൾട്ട്.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">ഫോൺ</string>
+    <string name="payment_key_default_type_email">ഇമെയിൽ</string>
+    <string name="payment_key_default_type_random">റാൻഡം കീ</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split പണം കൈമാറുന്നില്ല: പണം നൽകുന്നയാൾ തന്റെ ബാങ്ക് ആപ്പിൽ പണം നൽകുന്നു. കീ നിങ്ങളുടെ പേരിലാണെന്ന് ഉറപ്പാക്കുക.</string>
+    <string name="payment_key_footer_bitcoin">സെറ്റിൽ ചെയ്യുമ്പോൾ, നിലവിലെ നിരക്കിൽ തുക sats-ൽ ഞങ്ങൾ കാണിക്കും. ഇതൊരു ഏകദേശ കണക്ക് മാത്രമാണ്: പണം നൽകുന്നയാൾ തന്റെ വാലറ്റിൽ അത് സ്ഥിരീകരിക്കും.</string>
+
+    <string name="payment_key_delete">കീ ഡിലീറ്റ് ചെയ്യുക</string>
+    <string name="payment_key_delete_title">ഈ കീ ഡിലീറ്റ് ചെയ്യണോ?</string>
+    <string name="payment_key_delete_body">നിങ്ങൾക്ക് പണം നൽകാനുള്ളവർ സെറ്റിൽ ചെയ്യുമ്പോൾ ഇനി ഇത് കാണില്ല.</string>
+    <string name="payment_key_delete_confirm">ഡിലീറ്റ് ചെയ്യുക</string>
+</resources>

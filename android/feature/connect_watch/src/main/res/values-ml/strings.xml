@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">വാച്ച് കണക്റ്റ് ചെയ്യുക</string>
+    <string name="connect_watch_close">അടയ്ക്കുക</string>
+    <string name="connect_watch_body">നിങ്ങളുടെ വാച്ച് കാണിക്കുന്ന കോഡ് ടൈപ്പ് ചെയ്യുക. അത് നിങ്ങളുടെ അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്ത്, പിന്നീട് സ്വയം സിങ്ക് ചെയ്യും.</string>
+    <string name="connect_watch_code_label">വാച്ച് കോഡ്</string>
+    <string name="connect_watch_error_invalid">തെറ്റായതോ കാലഹരണപ്പെട്ടതോ ആയ കോഡ്. വാച്ചിൽ പുതിയൊരെണ്ണം എടുക്കുക.</string>
+    <string name="connect_watch_error_too_many">വളരെയധികം തെറ്റായ കോഡുകൾ. കുറച്ച് മിനിറ്റ് കാത്തിരുന്ന് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="connect_watch_error_needs_account">ആദ്യം ഒരു അക്കൗണ്ട് കണക്റ്റ് ചെയ്യുക: നിങ്ങളുടെ ഡാറ്റ ഈ ഉപകരണത്തിൽ മാത്രമാണ്.</string>
+    <string name="connect_watch_error_failed">വാച്ച് കണക്റ്റ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="connect_watch_offline">വാച്ച് കണക്റ്റ് ചെയ്യാൻ ഇന്റർനെറ്റ് ആവശ്യമാണ്.</string>
+    <string name="connect_watch_own_watch_only">നിങ്ങളുടെ സ്വന്തം വാച്ചിൽ കാണിക്കുന്ന കോഡ് മാത്രം ടൈപ്പ് ചെയ്യുക: ആ വാച്ച് കൈവശമുള്ളയാൾക്ക് നിങ്ങളുടെ അക്കൗണ്ടിൽ പ്രവേശിക്കാം.</string>
+    <string name="connect_watch_validity">കോഡ് 5 മിനിറ്റ്, ഒരു തവണ മാത്രം സാധുവാണ്.</string>
+    <string name="connect_watch_button">കണക്റ്റ് ചെയ്യുക</string>
+    <string name="connect_watch_connected_title">വാച്ച് കണക്റ്റ് ചെയ്തു</string>
+    <string name="connect_watch_connected_body">ഇതിന് നിങ്ങളുടെ ഗ്രൂപ്പുകൾ കാണാം, സ്വയം സിങ്ക് ചെയ്യും. ഇത് ഡിസ്‌കണക്റ്റ് ചെയ്യാൻ, വാച്ചിൽ സൈൻ ഔട്ട് ചെയ്യുക.</string>
+</resources>

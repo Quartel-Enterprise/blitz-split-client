@@ -68,6 +68,7 @@ class ProfileUiStateTest {
             AppLanguage.ESTONIAN -> listOf("Eesti", "Estonian")
             AppLanguage.GUJARATI -> listOf("ગુજરાતી", "Gujarati")
             AppLanguage.SLOVENIAN -> listOf("Slovenščina", "Slovenian")
+            AppLanguage.MALAYALAM -> listOf("മലയാളം", "Malayalam")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -135,6 +136,7 @@ class ProfileUiStateTest {
         AppLanguage.ESTONIAN,
         AppLanguage.GUJARATI,
         AppLanguage.SLOVENIAN,
+        AppLanguage.MALAYALAM,
     )
 
     @Test
@@ -745,6 +747,7 @@ class ProfileUiStateTest {
                 AppLanguage.ESTONIAN,
                 AppLanguage.GUJARATI,
                 AppLanguage.SLOVENIAN,
+                AppLanguage.MALAYALAM,
             ),
             options,
         )
@@ -814,6 +817,7 @@ class ProfileUiStateTest {
                 AppLanguage.ESTONIAN,
                 AppLanguage.GUJARATI,
                 AppLanguage.SLOVENIAN,
+                AppLanguage.MALAYALAM,
             ),
             options,
         )

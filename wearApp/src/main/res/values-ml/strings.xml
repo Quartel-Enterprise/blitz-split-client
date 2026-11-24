@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">നിങ്ങളുടെ ഫോണിലെ അതേ അക്കൗണ്ട് ഇവിടെ ഉപയോഗിക്കുക. പിന്നെ വാച്ച് സ്വന്തമായി പ്രവർത്തിക്കും.</string>
+    <string name="pair_connect">കണക്റ്റ് ചെയ്യുക</string>
+    <string name="pair_connecting">നിങ്ങളുടെ ഫോണിൽ നിന്ന് അക്കൗണ്ട് എടുക്കുന്നു…</string>
+    <string name="pair_connected_title">തയ്യാർ, %1$s</string>
+    <string name="pair_connected_title_unnamed">തയ്യാർ</string>
+    <string name="pair_connected_body">ഫോണിൽ നിന്ന് അകലെയായിരിക്കുമ്പോഴും വാച്ച് സ്വയം സിങ്ക് ചെയ്യും.</string>
+    <string name="pair_continue">തുടരുക</string>
+    <string name="pair_local_only_title">നിങ്ങളുടെ ഡാറ്റ ഫോണിൽ മാത്രമാണ്</string>
+    <string name="pair_local_only_body">ഫോണിൽ, പ്രൊഫൈലിൽ ഒരു അക്കൗണ്ട് കണക്റ്റ് ചെയ്ത്, ഇവിടെ വീണ്ടും കണക്റ്റ് ചെയ്യുക ടാപ്പ് ചെയ്യുക.</string>
+    <string name="pair_ok">ശരി</string>
+    <string name="pair_far_title">ഫോൺ പരിധിക്ക് പുറത്താണ്</string>
+    <string name="pair_far_body">ഫോൺ അടുത്തേക്ക് കൊണ്ടുവരിക, അല്ലെങ്കിൽ ഒരു കോഡ് ഉപയോഗിച്ച് കണക്റ്റ് ചെയ്യുക.</string>
+    <string name="pair_try_again">വീണ്ടും ശ്രമിക്കുക</string>
+    <string name="pair_use_code">കോഡ് ഉപയോഗിക്കുക</string>
+    <string name="pair_code_label">നിങ്ങളുടെ കോഡ്</string>
+    <string name="pair_code_description">കോഡ് %1$s</string>
+    <string name="pair_code_where">ഫോണിൽ: പ്രൊഫൈൽ › വാച്ച് കണക്റ്റ് ചെയ്യുക</string>
+    <string name="pair_code_validity">5 മിനിറ്റ് സാധുവാണ്</string>
+    <string name="pair_cancel">റദ്ദാക്കുക</string>
+    <string name="pair_signed_out_title">നിങ്ങൾ ഫോണിൽ സൈൻ ഔട്ട് ചെയ്തു</string>
+    <string name="pair_signed_out_body">ഡാറ്റ ഈ വാച്ചിൽ നിന്നും നീക്കം ചെയ്തു.</string>
+    <string name="pair_connect_again">വീണ്ടും കണക്റ്റ് ചെയ്യുക</string>
+    <string name="pair_error_offline">വാച്ച് കണക്റ്റ് ചെയ്യാൻ ഇന്റർനെറ്റ് ആവശ്യമാണ്.</string>
+    <string name="pair_error_too_many">വളരെയധികം ശ്രമങ്ങൾ. കുറച്ച് മിനിറ്റ് കാത്തിരുന്ന് വീണ്ടും കണക്റ്റ് ചെയ്യുക.</string>
+    <string name="pair_error_failed">വാച്ച് കണക്റ്റ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">ബാലൻസുകൾ</string>
+    <string name="balances_offline">ഓഫ്‌ലൈൻ</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">ഓഫ്‌ലൈൻ · %d മാറ്റം ക്യൂവിൽ</item>
+        <item quantity="other">ഓഫ്‌ലൈൻ · %d മാറ്റങ്ങൾ ക്യൂവിൽ</item>
+    </plurals>
+    <string name="balances_overall">ആകെ ബാലൻസ്</string>
+    <string name="balances_to_receive">ലഭിക്കാനുണ്ട്</string>
+    <string name="balances_you_owe">നിങ്ങൾ നൽകാനുണ്ട്</string>
+    <string name="balances_group_to_receive">%1$s ലഭിക്കാനുണ്ട്</string>
+    <string name="balances_group_you_owe">%1$s നിങ്ങൾ നൽകാനുണ്ട്</string>
+    <string name="balances_group_even">ആകെ തുല്യം</string>
+    <string name="balances_waiting">അയയ്ക്കാൻ കാത്തിരിക്കുന്നു</string>
+    <string name="balances_updated_at">അപ്‌ഡേറ്റ് ചെയ്തത്: %1$s</string>
+    <string name="balances_sign_out">സൈൻ ഔട്ട് ചെയ്യുക</string>
+    <string name="balances_sign_out_title">ഈ വാച്ചിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യണോ?</string>
+    <string name="balances_sign_out_body">ക്യൂവിലുള്ളത് അയച്ചുകഴിഞ്ഞാൽ ഇതിലെ ഡാറ്റ മായ്ക്കും. നിങ്ങളുടെ ഫോൺ സൈൻ ഇൻ ചെയ്ത നിലയിൽ തുടരും.</string>
+    <string name="balances_sign_out_scheduled">സൈൻ ഔട്ട് ഷെഡ്യൂൾ ചെയ്തു</string>
+    <string name="balances_sign_out_scheduled_detail">എല്ലാം അപ്‌ലോഡ് ചെയ്താലുടൻ സൈൻ ഔട്ട് ചെയ്യും</string>
+    <string name="balances_settled_title">ഒന്നും ബാക്കിയില്ല</string>
+    <string name="balances_settled_body">നിങ്ങൾ ഒന്നും നൽകാനില്ല, ആരും നിങ്ങൾക്കും നൽകാനില്ല. പുതിയ ഗ്രൂപ്പുകളും ചെലവുകളും ഇവിടെ സ്വയം കാണിക്കും.</string>
+    <string name="group_you_owe_person">നിങ്ങൾ നൽകാനുണ്ട്: %1$s</string>
+    <string name="group_owes_you">%1$s നിങ്ങൾക്ക് നൽകാനുണ്ട്</string>
+    <string name="group_former_member">മുൻ അംഗം</string>
+    <string name="group_i_paid">ഞാൻ പണം നൽകി</string>
+    <string name="group_confirm_title">%1$s നൽകിയോ: %2$s?</string>
+    <string name="group_confirm_body">%1$s. ഗ്രൂപ്പ് ഇത് ഉടൻ കാണും, അല്ലെങ്കിൽ ഇന്റർനെറ്റ് തിരികെ വരുമ്പോൾ.</string>
+    <string name="group_payment_recorded">പേയ്‌മെന്റ് രേഖപ്പെടുത്തി</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">ബാലൻസുകൾ</string>
+    <string name="tile_to_receive_total">ആകെ ലഭിക്കാനുള്ളത്</string>
+    <string name="tile_to_pay_total">ആകെ നൽകാനുള്ളത്</string>
+    <string name="tile_owed_to_you">നിങ്ങൾക്ക് ലഭിക്കാനുണ്ട് %1$s</string>
+    <string name="tile_you_owe">നിങ്ങൾ നൽകാനുണ്ട് %1$s</string>
+    <string name="tile_settled_title">എല്ലാം സെറ്റിൽ ആയി</string>
+    <string name="tile_settled_body">നൽകാനോ ലഭിക്കാനോ ഒന്നുമില്ല</string>
+    <string name="tile_open">തുറക്കുക</string>
+    <string name="complication_name">ആകെ ബാലൻസ്</string>
+    <string name="complication_you_owe">നിങ്ങൾ നൽകാനുണ്ട് %1$s</string>
+    <string name="complication_owed_to_you">നിങ്ങൾക്ക് ലഭിക്കാനുണ്ട് %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">ലഭിച്ചു</string>
+    <string name="push_view_group">ഗ്രൂപ്പ് കാണുക</string>
+</resources>

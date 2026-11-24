@@ -878,6 +878,7 @@ export const fr: Record<MessageKey, string> = {
   profile_languageEstonian: 'Estonien',
   profile_languageGujarati: 'Goudjarati',
   profile_languageSlovenian: 'Slovène',
+  profile_languageMalayalam: 'Malayalam',
   profile_bitcoinInSats: 'Bitcoin en satoshis',
   profile_bitcoinInSatsDetail: 'Affiche et saisit les montants en bitcoin en sats (1 ₿ = 100 000 000 sats).',
   profile_shareUsageData: "Partager les données d’utilisation",

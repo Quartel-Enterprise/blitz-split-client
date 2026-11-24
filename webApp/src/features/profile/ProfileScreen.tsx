@@ -98,6 +98,7 @@ const nativeLanguageNames: Record<string, string> = {
   et: 'Eesti',
   gu: 'ગુજરાતી',
   sl: 'Slovenščina',
+  ml: 'മലയാളം',
 }
 
 /** The same language in the app's language, "Portuguese (Brazil)", under its own name. */
@@ -154,6 +155,7 @@ const languageNames: Record<string, MessageKey> = {
   et: 'profile_languageEstonian',
   gu: 'profile_languageGujarati',
   sl: 'profile_languageSlovenian',
+  ml: 'profile_languageMalayalam',
 }
 
 /**

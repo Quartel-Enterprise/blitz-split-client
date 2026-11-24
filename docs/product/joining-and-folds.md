@@ -25,7 +25,8 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     Rachar"), ARS, CLP, COP, MXN, PEN, UYU, PYG, BOB, VES, CRC, GTQ, HNL, NIO, DOP and CUP Spanish, JPY Japanese, TRY Turkish, IDR Indonesian, PLN Polish, RUB Russian, UAH Ukrainian, KRW Korean, INR Hindi, SAR and EGP Arabic, CNY Simplified Chinese, ILS Hebrew, THB Thai, VND Vietnamese, TWD Traditional Chinese, SEK Swedish, CZK Czech, RON Romanian, BDT Bengali, MYR Malay, HUF Hungarian, PKR Urdu, PHP Filipino, RSD Serbian, IRR Persian, NOK Norwegian, KES and TZS Swahili, DKK Danish,
     any other English. No currency picks French, German, Italian, Dutch, Greek, Croatian, Slovak, Bulgarian, Catalan, Finnish, Latvian, Estonian or Slovenian, since the euro, the Swiss franc and the
     Canadian dollar are each spoken in more than one language, and a USD or EUR group of Spanish speakers gets English
-    too: an accepted trade-off. The UAE dirham and the Moroccan dirham pick none either, English and French being as
+    too: an accepted trade-off. INR picks Hindi, so a Tamil, Telugu, Marathi, Gujarati or Malayalam preview shows only
+    when the link asks for it (`?lang=`). The UAE dirham and the Moroccan dirham pick none either, English and French being as
     common there as Arabic. The picking happens in the `blitz-split-api` repository (a separate one), so a PHP group's preview speaks Filipino, an RSD group's Serbian,
     an IRR group's Persian and a NOK group's Norwegian, a KES or TZS group's Swahili and a DKK group's Danish only once that side maps the peso, the dinar, the rial, the
     kroner and the shillings to them.

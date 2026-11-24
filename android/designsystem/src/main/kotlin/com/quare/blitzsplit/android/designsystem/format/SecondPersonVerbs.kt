@@ -101,6 +101,7 @@ private const val MARATHI = "mr"
 private const val MARATHI_RESPECTFUL_AGENT = "यांनी"
 private const val GUJARATI = "gu"
 private const val GUJARATI_AGENT = "એ"
+private const val MALAYALAM = "ml"
 private const val TAMIL_THIRD_PERSON_PAST = "ார்"
 private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
 private const val SWAHILI = "sw"
@@ -146,6 +147,7 @@ private val youSubjectLanguages = setOf(
     MARATHI,
     SWAHILI,
     GUJARATI,
+    MALAYALAM,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -351,7 +353,8 @@ private fun toSpanishSecondPerson(verb: String): String {
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
  * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule, and
  * Telugu "మీరు తొలగించారు: …", its verb not changing with the person, Marathi "तुम्ही … हटवला", with its rule,
- * Swahili "Wewe ulifuta…", with its own, and Gujarati "તમે … ડિલીટ કર્યો", with its rule.
+ * Swahili "Wewe ulifuta…", with its own, Gujarati "તમે … ડિલીટ કર્યો", with its rule, and Malayalam
+ * "നിങ്ങൾ ഡിലീറ്റ് ചെയ്തു: …", its verb not changing with the person.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages
