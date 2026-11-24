@@ -128,11 +128,13 @@ struct StoreScreenshotsRun {
     /// A launch behind the other apps may run this before its view has a window: it tries again a moment later, for
     /// a few seconds. The window goes to the screen with the menu bar, whichever display the last run left it on:
     /// another display may not be Retina, and capture-mac.sh refuses a capture that isn't.
-    static func sizeWindow(attemptsLeft: Int = 25) {
+    static func sizeWindow(attemptsLeft: Int = windowAttempts) {
         guard current != nil else { return }
         guard let window = mainWindow ?? NSApplication.shared.windows.first(where: \.canBecomeMain) else {
             if attemptsLeft > 0 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { sizeWindow(attemptsLeft: attemptsLeft - 1) }
+                DispatchQueue.main.asyncAfter(deadline: .now() + windowAttemptInterval) {
+                    sizeWindow(attemptsLeft: attemptsLeft - 1)
+                }
             }
             return
         }
@@ -141,9 +143,10 @@ struct StoreScreenshotsRun {
         if let screen = NSScreen.screens.first {
             let visible = screen.visibleFrame
             let size = window.frame.size
-            // Its title bar kept below the menu bar on a screen shorter than the window
+            // Its title bar kept below the menu bar, and its left edge on screen, on a screen smaller than the window
             let top = min(visible.midY + size.height / 2, visible.maxY)
-            window.setFrameOrigin(NSPoint(x: visible.midX - size.width / 2, y: top - size.height))
+            let left = max(visible.midX - size.width / 2, visible.minX)
+            window.setFrameOrigin(NSPoint(x: left, y: top - size.height))
         } else {
             window.center()
         }
@@ -151,6 +154,11 @@ struct StoreScreenshotsRun {
         print("\(windowNumberLine) \(window.windowNumber)")
         fflush(stdout)
     }
+
+    /// How often, and how many times, a launch with no window yet looks for it again: a few seconds in all.
+    private static let windowAttemptInterval: TimeInterval = 0.2
+    /// Not private: a default argument may only read what the function's own callers can.
+    static let windowAttempts = 25
 
     /// What capture-mac.sh looks for in the app's output, followed by the window's number.
     private static let windowNumberLine = "store-screenshots-window"
