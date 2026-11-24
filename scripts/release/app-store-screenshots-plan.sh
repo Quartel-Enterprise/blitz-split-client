@@ -33,7 +33,7 @@ if [ "$SCREENSHOTS" = true ]; then
     row="$row. The App Store's are captured on $(jq -r 'map("`" + . + "`") | join(", ")' <<< "$captured")"
     # Only a device the run releases is one it leaves out.
     if [ "$IOS" = true ] && ! captures iphoneduo; then
-      row="$row, without the iPhone Duo (\`screenshots_iphone_duo\`)"
+      row="$row, without the iPhone Duo (\`screenshots_iphone_duo\`), so the iPhone's and the iPad's aren't uploaded"
     fi
     if [ "$MACOS" = true ] && ! captures mac; then
       row="$row, without the Mac (\`screenshots_mac\`)"

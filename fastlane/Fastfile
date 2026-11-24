@@ -175,7 +175,8 @@ desc "reuses the Apple captures already in build/; skip_mac:true leaves the Mac 
 desc "screen); locale:<store code> uploads that locale alone (es-419, es-MX…); locales:<store code>,<store code> sends"
 desc "those to Google Play through one edit, which is one of its daily saves (platform:android), and"
 desc "save_quota_is_no_failure:true ends the lane well when Google Play refuses that save for the quota. The open"
-desc "iPhone Duo is captured by hand (listing-art/capture-duo-open.py), and without it the Duo's art is left out."
+desc "iPhone Duo is captured by hand (listing-art/capture-duo-open.py): without it the Duo's art is left out, and the"
+desc "App Store's upload is refused before any store is touched, since it would empty the Duo's shelf."
 desc "Uploading needs PLAY_STORE_JSON_KEY_PATH (Play) and the APP_STORE_CONNECT_API_KEY_ID / _ISSUER_ID with KEY_PATH"
 desc "or APP_STORE_CONNECT_API_KEY_P8 (App Store)."
 lane :screenshots do |options|
@@ -254,6 +255,12 @@ def upload_store_screenshots(repo_root, platforms, options)
     platforms.include?(platform) && (locale.nil? || File.directory?(File.join(path, locale)))
   end
   UI.user_error!("No store has screenshots staged for #{locale}") if stores.empty?
+  # deliver replaces every screenshot of a locale, so a staged folder without the iPhone Duo would empty its shelf, as
+  # a set did on 24 November 2026. Checked before any store is touched, as local-set.mjs refuses such a set
+  if stores.key?("ios") && Dir.glob(File.join(app_store_path, locale || "*", "*_iphone_duo*.png")).empty?
+    UI.user_error!("No iPhone Duo screenshots staged in fastlane/screenshots: the upload would empty its shelf. " \
+                   "Capture it (listing-art/capture.sh and capture-duo-open.py, or a release with screenshots_iphone_duo)")
+  end
   if stores.key?("android")
     upload_play_screenshots(play_path, play_locales.empty? ? [locale].compact : play_locales, validates_only, quota_is_no_failure)
   end

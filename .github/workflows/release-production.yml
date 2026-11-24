@@ -754,9 +754,9 @@ jobs:
   # The iPhone Duo has two, closed and open, each on a runner of its own. Both fail on a runner whose Xcode
   # has no runtime for the Duo, and the open one where the script can't press Open in Device Hub: nobody is there to
   # press it, so once its own attempt is over (up to a minute and a half) it waits half a minute more and gives up,
-  # and the job fails for having captured nothing. The Duo's art needs both slots: when either fails, the listing goes
-  # without the Duo (and deliver's overwrite_screenshots clears its shelf). The two slots stay apart, although one job could
-  # share their build: the open capture is the one nobody has seen work, and a run of it that breaks halfway must
+  # and the job fails for having captured nothing. The Duo's art needs both slots: when either fails, the art goes
+  # without the Duo, and the App Store's upload stops (the Fastfile's upload_store_screenshots) rather than let
+  # deliver's overwrite_screenshots clear its shelf. The two slots stay apart, although one job could share their build: the open capture is the one nobody has seen work, and a run of it that breaks halfway must
   # not take the closed Duo's captures with it.
   apple-screenshots-capture:
     name: App Store, capture the ${{ matrix.slot }} screenshots
@@ -902,6 +902,12 @@ jobs:
         id: staged
         run: |
           ios_locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/screenshots)"
+          # The upload refuses a set without the iPhone Duo (the Fastfile), which would empty its shelf: rather than a
+          # failed job per locale, the iPhone's and the iPad's are left as they are
+          if [ -n "$ios_locales" ] && ! compgen -G "fastlane/screenshots/*/*_iphone_duo*.png" > /dev/null; then
+            echo "::warning::No iPhone Duo screenshots staged: the iPhone's and the iPad's App Store screenshots are left as they are (screenshots_iphone_duo, or a set sent from a Mac)"
+            ios_locales=""
+          fi
           mac_locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/screenshots-mac)"
           {
             echo "ios_locales=$ios_locales"
