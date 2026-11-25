@@ -178,7 +178,7 @@ function AttachmentTile({ attachment, src, onClick }: { attachment: JsBillAttach
   const title = `${labelOf(attachment)} · ${adderText(attachment)} · ${postedText(attachment.addedAt, attachment.addedDay)}`
   const badge = attachment.isPending ? t('billDetail_attachmentQueued') : attachment.isReceipt ? t('billDetail_receiptBadge') : null
   return (
-    <button type="button" aria-label={badge ? `${title} · ${badge}` : title} title={title} onClick={onClick} className={cn(tileClass, 'bg-muted hover:opacity-90')}>
+    <button type="button" aria-label={badge ? `${title} · ${badge}` : title} title={title} onClick={onClick} className={cn(tileClass, attachment.thumbnailPlacement ? 'bg-white' : 'bg-muted', 'hover:opacity-90')}>
       {/* Why: online its signed URL is on its way; offline, or once it failed, it can't come, which the neutral icon says. */}
       {isDownloading || (!src && attachment.isImageLoading) ? (
         <Skeleton className="absolute inset-0 rounded-none" />

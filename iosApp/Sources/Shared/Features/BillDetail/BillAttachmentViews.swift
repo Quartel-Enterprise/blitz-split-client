@@ -288,7 +288,8 @@ private struct BillAttachmentTileView: View {
             }
         }
         .frame(width: metrics.tile.width, height: metrics.tile.height)
-        .background(Palette.card)
+        // Why: a photo kept whole and zoomed out to fit shows the editor's white past its edges.
+        .background(attachment.thumbnailPlacement == nil ? Palette.card : Color.white)
         .clipShape(.rect(cornerRadius: metrics.cornerRadius))
         .overlay(alignment: .bottomLeading) {
             if attachment.isPending {

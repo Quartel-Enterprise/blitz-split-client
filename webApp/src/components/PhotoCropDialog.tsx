@@ -187,7 +187,8 @@ function useFrameSide(area: RefObject<HTMLDivElement | null>): number {
 
 function PhotoCropControls({ crop, presenter, extraControl }: { crop: JsPhotoCropState; presenter: PhotoCropPresenter; extraControl?: ReactNode }) {
   return (
-    <div className="flex shrink-0 flex-col gap-3 px-6 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+    // Why: a short screen lying down (a bill's extra switch) scrolls the controls rather than squeezing the photo away.
+    <div className="flex max-h-[55dvh] shrink-0 flex-col gap-3 overflow-y-auto px-6 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
       <div className="flex items-center gap-3">
         <ImageIcon aria-hidden className="size-4 text-white/70" />
         <input

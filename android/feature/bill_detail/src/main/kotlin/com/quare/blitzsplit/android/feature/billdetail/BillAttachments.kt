@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -198,7 +199,16 @@ private fun AttachmentTile(
             modifier = Modifier
                 .size(size.width, size.thumbHeight)
                 .clip(thumbShape)
-                .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                // Why: a photo kept whole and zoomed out to fit shows the editor's white past its edges.
+                .background(
+                    if (attachment.thumbnailPlacement !=
+                        null
+                    ) {
+                        Color.White
+                    } else {
+                        MaterialTheme.colorScheme.surfaceContainerHigh
+                    },
+                ),
             contentAlignment = Alignment.Center,
         ) {
             // Why: the photo added here until it is up, else the bucket's signed URL.
