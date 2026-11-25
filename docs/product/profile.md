@@ -300,7 +300,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     sheet on the Mac and a 560 px dialog on the web from the tablet up. The photo moves under a fixed frame, a circle
     for a profile and a rounded square for a group (the group's one shape, its corners 8% of the side, see [General rules](general.md)): drag,
     pinch around the fingers (the trackpad's too; on the web a scroll moves it, Ctrl and the wheel zoom) and a 1× to 3× slider zoom, "Rotate" turns it 90°
-    clockwise, "Horizontal" and "Vertical" mirror it; the photo always covers the frame. "Done" makes the 512x512
+    clockwise, "Horizontal" and "Vertical" mirror it; the photo always covers the frame (a bill photo may zoom out until it fits whole, see [The group screen and its bills](group-and-bills.md)). "Done" makes the 512x512
     JPEG of what the frame holds; ✕, Cancel or back leave the photo shown as it was. The framing is the shared
     `PhotoCrop` (fractions of the frame, so a turned device keeps it), the photo the upright, at most 1600 px JPEG of
     `LoadCropPhoto`, and each platform's canvas draws the result from `CropTransform`. On a fold the photo and the

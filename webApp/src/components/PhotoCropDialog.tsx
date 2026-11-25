@@ -110,6 +110,14 @@ function PhotoCropArea({ crop, presenter, frame }: { crop: JsPhotoCropState; pre
     >
       {side > 0 && (
         <>
+          {/* Why: a receipt zoomed out to fit leaves the frame white around it, as the square kept is. */}
+          {crop.canFit && (
+            <div
+              aria-hidden
+              className={cn('pointer-events-none absolute top-1/2 left-1/2 bg-white', frame === 'circle' ? 'rounded-full' : GROUP_SHAPE)}
+              style={{ width: side, height: side, marginLeft: -side / 2, marginTop: -side / 2 }}
+            />
+          )}
           <img
             src={crop.photoUrl}
             alt=""
@@ -171,7 +179,7 @@ function PhotoCropControls({ crop, presenter }: { crop: JsPhotoCropState; presen
           aria-label={t('photoCrop_zoom')}
           min={crop.minZoom}
           max={crop.maxZoom}
-          step={0.01}
+          step="any"
           value={crop.zoom}
           onChange={(event) => presenter.changeZoom(Number(event.target.value))}
           className="h-1 flex-1 accent-white"
