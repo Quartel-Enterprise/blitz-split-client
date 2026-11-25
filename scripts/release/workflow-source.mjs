@@ -5,13 +5,18 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
-const HEADER = /^(#!.*|#.*|set -[a-z]+|)$/;
-
-/** The script's lines after its header: the shebang, the leading comments and `set -e...`. */
+/** The script's lines after its header: the shebang, the comments under it and its `set -e...` line. */
 function body(script) {
   const lines = script.replace(/\n$/, "").split("\n");
-  let start = 0;
-  while (start < lines.length && HEADER.test(lines[start])) start += 1;
+  // Up to the first `set -e`, `set -eo pipefail` or `set -euo pipefail`, so a comment the body opens with stays.
+  const set = lines.findIndex((line) => /^set -[a-z]+( pipefail)?$/.test(line));
+  let start = set + 1;
+  if (set < 0) {
+    start = 0;
+    while (start < lines.length && /^(#.*|)$/.test(lines[start])) start += 1;
+  } else if (lines[start] === "") {
+    start += 1;
+  }
   return lines.slice(start);
 }
 
@@ -19,7 +24,7 @@ function body(script) {
 export function readWithScripts(repoRoot, path) {
   const source = readFileSync(join(repoRoot, path), "utf8");
   return source.replace(
-    /^(\s*)((?:- )?)run: '?"?(?:\$GITHUB_WORKSPACE\/|\$GITHUB_ACTION_PATH\/)?((?:scripts\/ci\/)?[A-Za-z0-9._-]+\.sh)"?'?\n/gm,
+    /^([ \t]*)((?:- )?)run: '?"?(?:\$GITHUB_WORKSPACE\/|\$GITHUB_ACTION_PATH\/|\.\/)?((?:scripts\/ci\/)?[A-Za-z0-9._-]+\.sh)"?'?\n/gm,
     (_, indent, dash, name) => {
       const file = name.includes("/") ? name : join(dirname(path), name);
       const lines = body(readFileSync(join(repoRoot, file), "utf8"));
