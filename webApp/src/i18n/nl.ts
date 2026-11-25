@@ -1517,6 +1517,7 @@ export const nl: Record<MessageKey, string> = {
   home_people: 'Saldi met personen',
   home_peopleCount: 'Saldi met personen · {count}',
   home_seeBalances: 'Saldi bekijken',
+  home_seeBalancesMore: 'Saldi bekijken (+{count})',
   home_owesYouWord: 'is je schuldig',
   home_personOwesYou: '{name} is je {amount} schuldig',
   home_youOwePerson: 'Je bent {name} {amount} schuldig',

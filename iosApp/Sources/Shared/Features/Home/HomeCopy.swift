@@ -33,6 +33,11 @@ enum HomeCopy {
         )
     }
 
+    /// "See balances (+5)": what VoiceOver reads for the "+N" row or tile of the people the Mac's list or cards leave out.
+    static func seeMore(hidden: Int) -> String {
+        String(localized: "See balances (+\(hidden))", bundle: .appLanguage, locale: AppNumbers.locale)
+    }
+
     /// Someone no longer in the group is "Former member".
     static func name(_ person: HomePerson) -> String {
         PaymentCopy.name(person.name)

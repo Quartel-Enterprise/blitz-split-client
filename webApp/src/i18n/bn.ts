@@ -1516,6 +1516,7 @@ export const bn: Record<MessageKey, string> = {
   home_people: 'ব্যক্তিদের সঙ্গে ব্যালেন্স',
   home_peopleCount: 'ব্যক্তিদের সঙ্গে ব্যালেন্স · {count}',
   home_seeBalances: 'ব্যালেন্স দেখুন',
+  home_seeBalancesMore: 'ব্যালেন্স দেখুন (+{count})',
   home_owesYouWord: 'আপনাকে দেবেন',
   home_personOwesYou: '{name} আপনাকে {amount} দেবেন',
   home_youOwePerson: 'আপনি {name}-কে {amount} দেবেন',

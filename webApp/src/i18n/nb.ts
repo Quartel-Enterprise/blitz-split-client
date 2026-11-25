@@ -1514,6 +1514,7 @@ export const nb: Record<MessageKey, string> = {
   home_people: 'Saldoer med personer',
   home_peopleCount: 'Saldoer med personer · {count}',
   home_seeBalances: 'Se saldoer',
+  home_seeBalancesMore: 'Se saldoer (+{count})',
   home_owesYouWord: 'skylder deg',
   home_personOwesYou: '{name} skylder deg {amount}',
   home_youOwePerson: 'Du skylder {name} {amount}',

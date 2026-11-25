@@ -1517,6 +1517,7 @@ export const fil: Record<MessageKey, string> = {
   home_people: 'Mga balanse sa mga tao',
   home_peopleCount: 'Mga balanse sa mga tao · {count}',
   home_seeBalances: 'Tingnan ang mga balanse',
+  home_seeBalancesMore: 'Tingnan ang mga balanse (+{count})',
   home_owesYouWord: 'may utang sa iyo',
   home_personOwesYou: 'May utang sa iyo si {name} na {amount}',
   home_youOwePerson: 'May utang ka kay {name} na {amount}',

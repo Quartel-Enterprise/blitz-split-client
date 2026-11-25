@@ -1518,6 +1518,7 @@ export const fi: Record<MessageKey, string> = {
   home_people: 'Saldot henkilöiden kanssa',
   home_peopleCount: 'Saldot henkilöiden kanssa · {count}',
   home_seeBalances: 'Näytä saldot',
+  home_seeBalancesMore: 'Näytä saldot (+{count})',
   home_owesYouWord: 'on sinulle velkaa',
   home_personOwesYou: '{name} on sinulle velkaa {amount}',
   home_youOwePerson: 'Olet velkaa {amount} henkilölle {name}',

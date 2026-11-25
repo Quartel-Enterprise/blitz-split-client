@@ -1517,6 +1517,7 @@ export const sr: Record<MessageKey, string> = {
   home_people: 'Stanja sa osobama',
   home_peopleCount: 'Stanja sa osobama · {count}',
   home_seeBalances: 'Pogledaj stanja',
+  home_seeBalancesMore: 'Pogledaj stanja (+{count})',
   home_owesYouWord: 'duguje ti',
   home_personOwesYou: '{name} ti duguje {amount}',
   home_youOwePerson: 'Duguješ {name} {amount}',

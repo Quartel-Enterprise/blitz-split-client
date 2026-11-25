@@ -2,6 +2,7 @@ import { ChevronRight, Pin } from 'lucide-react'
 import { getHomePeopleLayout, type HomePresenter, type JsBillMenu, type JsHomeBill, type JsHomeGroup, type JsHomePerson, type JsHomeState, type JsHomeTotal } from 'blitzsplit-shared'
 import { useEffect, useId, useLayoutEffect, useRef, useState, type FocusEvent, type MouseEvent, type PointerEvent, type ReactNode, type RefObject } from 'react'
 import { homeBillMenuOptions, RowMenuButton } from '@/components/BillRowMenu'
+import { AvatarStack } from '@/components/AvatarStack'
 import { Avatar, PendingDot } from '@/components/common'
 import { SummaryCardSkeleton } from '@/components/PageSkeletons'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
@@ -9,7 +10,9 @@ import { balanceTone, nameOrFormer } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { FaceStack, GroupBalance, lastActivityText, membersText } from '@/features/groups/GroupRowParts'
 import { paidText as payersText } from '@/features/groups/SearchDialog'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
+import { uiTag } from '@/lib/currency'
 import { formatDayLabel } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { CategoryBadge } from '@/lib/categories'
@@ -166,18 +169,22 @@ interface GuestTip {
 
 /**
  * "Saldos com pessoas": each person you have an open balance with, whom you owe first. The shared HomePeopleLayout picks
- * by the card's width and the count, as Android and Apple do (beta feedback): rows (face, name, amount and "te deve" on
- * one line) while they take two lines at most, in as many columns as fit; else a face each in a row that scrolls
- * sideways, " · 9" once it does. A face opens settling up with them for the net. A guest (a name nobody joined as)
- * wears the crossed-out phone, and hovering it, focusing it or a long press shows why they get no notice. Gone,
- * leaving no gap, once everyone is settled; faces of gray while the first download hasn't brought anyone yet.
+ * by the card's own content width, the input (`(pointer: coarse)` or `(hover: none)` is touch) and the count, as
+ * Android and Apple do: a list for 1–3 on a narrow card (each row 560px at most), fixed-width cards aligned to the start
+ * on a wide one, and for 4 or more a carousel on touch, or with a mouse the first rows or two lines of cards, the last
+ * row or slot being the rest's faces and "+N". The title gets " · 9" once the carousel scrolls or someone is left out. A person opens
+ * settling up with them for the net. A guest (a name nobody joined as) wears the crossed-out phone, and hovering it,
+ * focusing it or a long press shows why they get no notice. Gone, leaving no gap, once everyone is settled; faces of
+ * gray while the first download hasn't brought anyone yet.
  */
 export function PeopleCard({ presenter, state }: SectionProps) {
   const cardRef = useRef<HTMLElement>(null)
   const rowRef = useRef<HTMLDivElement>(null)
   const tipId = useId()
   const [tip, setTip] = useState<GuestTip | null>(null)
-  const isScrolling = useOverflows(rowRef, state.people?.length ?? 0)
+  const isTouch = useMediaQuery('(pointer: coarse), (hover: none)')
+  // Why: a switch between touch and a mouse swaps the layout at the same width, so it measures the row again too.
+  const isScrolling = useOverflows(rowRef, `${state.people?.length ?? 0}-${isTouch}`)
   // Why: the card mounts once there is someone to show, so the width is followed from then.
   const width = useContentWidth(cardRef, state.showsPeople || state.isLoadingPeople)
   // Why: a long press shows the tip until the next touch anywhere, which a touch screen has instead of hover's end.
@@ -194,8 +201,11 @@ export function PeopleCard({ presenter, state }: SectionProps) {
   if (!state.showsPeople && !state.isLoadingPeople) return null
 
   const people = Array.from(state.people ?? [])
-  const layout = state.isLoadingPeople || people.length === 0 ? null : getHomePeopleLayout(people.length, width)
-  const showsRows = layout?.showsRows === true
+  const layout = state.isLoadingPeople || people.length === 0 ? null : getHomePeopleLayout(people.length, width, isTouch)
+  const mode = layout?.mode ?? 'CAROUSEL'
+  const shown = layout ? people.slice(0, layout.shownCount) : people
+  // Why: no count while the people load: the skeleton may overflow, but there is nobody to count yet.
+  const isCounted = layout ? (isScrolling ? layout.countsInTitleIfOverflowing : layout.countsInTitleOtherwise) : false
   const showTip = (person: JsHomePerson, face: HTMLElement, isTouch: boolean) => {
     const card = cardRef.current
     if (!card) return
@@ -206,30 +216,42 @@ export function PeopleCard({ presenter, state }: SectionProps) {
     <section ref={cardRef} aria-labelledby="home-people-title" className="relative flex flex-col gap-1.5 rounded-lg border bg-card p-3 md:px-4 md:py-3.5">
       <SectionHeader
         id="home-people-title"
-        title={isScrolling && !showsRows ? t('home_peopleCount', { count: people.length }) : t('home_people')}
+        title={isCounted ? t('home_peopleCount', { count: people.length }) : t('home_people')}
         action={t('home_seeBalances')}
         onAction={() => presenter.seeBalances()}
       />
       <div
         ref={rowRef}
-        style={showsRows ? { gridTemplateColumns: `repeat(${layout?.columns ?? 1}, minmax(0, 1fr))` } : undefined}
-        className={showsRows ? '-mx-1 grid gap-x-2 gap-y-1 px-1' : '-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:gap-2'}
+        style={
+          mode === 'LIST'
+            ? undefined
+            : mode === 'CARDS'
+              ? { gridTemplateColumns: `repeat(${layout?.columns ?? 1}, ${layout?.cardWidth ?? 0}px)`, gap: layout?.cardGap }
+              : { gap: layout?.cardGap }
+        }
+        className={cn(
+          mode === 'LIST' && 'flex flex-col gap-1',
+          mode === 'CARDS' && 'grid justify-start',
+          mode === 'CAROUSEL' && '-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:gap-2',
+        )}
         onScroll={() => tip && setTip(null)}
       >
         {state.isLoadingPeople ? (
           <FacesSkeleton />
         ) : (
-          people.map((person) => (
+          shown.map((person) => (
             <PersonFace
               key={`${person.key}/${person.currency}`}
               person={person}
-              isRow={showsRows}
+              isRow={mode === 'LIST'}
+              cardWidth={mode === 'LIST' ? undefined : layout?.cardWidth}
               tipId={tip?.key === person.key ? tipId : undefined}
               onOpen={() => presenter.openPerson(person.key, person.currency)}
               onTip={(face, isTouch) => (face ? showTip(person, face, isTouch) : setTip(null))}
             />
           ))
         )}
+        {layout?.showsMore && <PeopleMore hidden={people.slice(shown.length)} isTile={mode === 'CARDS'} onOpen={() => presenter.seeBalances()} />}
       </div>
       {tip && (
         <div
@@ -247,6 +269,30 @@ export function PeopleCard({ presenter, state }: SectionProps) {
         </div>
       )}
     </section>
+  )
+}
+
+/**
+ * The people the layout leaves out, as the list's last row or the cards' last tile (`isTile`): the first ones' faces and
+ * "+N", which opens Saldos. A screen reader reads "Ver saldos (+5)"; the header's "Ver saldos" stays the only link of words.
+ */
+function PeopleMore({ hidden, isTile, onOpen }: { hidden: JsHomePerson[]; isTile: boolean; onOpen: () => void }) {
+  const number = hidden.length.toLocaleString(uiTag)
+  // Why: someone no longer in the group has no face to show.
+  const faces = hidden.flatMap((person) => (person.color ? [{ initials: person.initials, color: person.color, photoUrl: person.photoUrl }] : [])).slice(0, 3)
+  return (
+    <button
+      type="button"
+      aria-label={t('home_seeBalancesMore', { count: number })}
+      onClick={onOpen}
+      className={cn(
+        'rounded-lg outline-none select-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring',
+        isTile ? 'flex flex-col items-center justify-center gap-2 border px-2 py-3' : 'flex min-h-14 items-center gap-3 px-2 py-2 text-start',
+      )}
+    >
+      <AvatarStack faces={faces} extraCount={0} size={isTile ? 'lg' : 'md'} />
+      <span className={cn('font-semibold tabular-nums', isTile ? 'text-xl' : 'text-sm')}>+{number}</span>
+    </button>
   )
 }
 
@@ -278,18 +324,20 @@ function NoAppIcon({ className, strokeWidth = 2 }: { className?: string; strokeW
 const longPressMillis = 500
 
 /**
- * One person: avatar (with the guest's badge), name, the net with its sign and its word; stacked as a face of the row,
- * or on one line as a row (`isRow`).
+ * One person: avatar (with the guest's badge), name, the net with its sign and its word; stacked as a card of
+ * `cardWidth` (the carousel's or the grid's, which never stretches), or on one line as a row (`isRow`).
  */
 function PersonFace({
   person,
   isRow,
+  cardWidth,
   tipId,
   onOpen,
   onTip,
 }: {
   person: JsHomePerson
   isRow: boolean
+  cardWidth: number | undefined
   tipId: string | undefined
   onOpen: () => void
   onTip: (face: HTMLElement | null, isTouch: boolean) => void
@@ -343,9 +391,10 @@ function PersonFace({
         onOpen()
       }}
       {...guestHandlers}
+      style={isRow ? undefined : { width: cardWidth }}
       className={cn(
         'rounded-lg outline-none select-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring',
-        isRow ? 'flex min-h-14 min-w-0 items-center gap-3 px-2 py-2 text-start' : 'flex w-[72px] shrink-0 flex-col items-center gap-0.5 py-1.5 md:w-[88px]',
+        isRow ? 'flex min-h-14 min-w-0 items-center gap-3 px-2 py-2 text-start' : 'flex shrink-0 flex-col items-center gap-0.5 border px-2 py-3',
       )}
     >
       <span className="relative flex shrink-0">
@@ -400,7 +449,7 @@ function useContentWidth(ref: RefObject<HTMLElement | null>, isMounted: boolean)
 }
 
 /** Whether the row is wider than its box, so it scrolls; checked again as the window or the row changes. */
-function useOverflows(ref: RefObject<HTMLElement | null>, itemCount: number): boolean {
+function useOverflows(ref: RefObject<HTMLElement | null>, key: string): boolean {
   const [overflows, setOverflows] = useState(false)
   useLayoutEffect(() => {
     const element = ref.current
@@ -410,7 +459,7 @@ function useOverflows(ref: RefObject<HTMLElement | null>, itemCount: number): bo
     const observer = new ResizeObserver(measure)
     observer.observe(element)
     return () => observer.disconnect()
-  }, [ref, itemCount])
+  }, [ref, key])
   return overflows
 }
 

@@ -1519,6 +1519,7 @@ export const gu: Record<MessageKey, string> = {
   home_people: 'લોકો સાથેના બેલેન્સ',
   home_peopleCount: 'લોકો સાથેના બેલેન્સ · {count}',
   home_seeBalances: 'બેલેન્સ જુઓ',
+  home_seeBalancesMore: 'બેલેન્સ જુઓ (+{count})',
   home_owesYouWord: 'તમને આપવાના છે',
   home_personOwesYou: '{name} પાસેથી તમને {amount} મળવાના છે',
   home_youOwePerson: 'તમારે {name} ને {amount} આપવાના છે',

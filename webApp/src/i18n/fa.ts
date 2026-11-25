@@ -1480,6 +1480,7 @@ export const fa: Record<MessageKey, string> = {
   home_people: 'تراز با افراد',
   home_peopleCount: 'تراز با افراد · {count}',
   home_seeBalances: 'دیدن ترازها',
+  home_seeBalancesMore: 'دیدن ترازها (+{count})',
   home_owesYouWord: 'به شما بدهکار است',
   home_personOwesYou: '{name} مبلغ {amount} به شما بدهکار است',
   home_youOwePerson: 'شما مبلغ {amount} به {name} بدهکارید',

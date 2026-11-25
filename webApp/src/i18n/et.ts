@@ -1479,6 +1479,7 @@ export const et: Record<MessageKey, string> = {
   home_people: 'Saldod inimestega',
   home_peopleCount: 'Saldod inimestega · {count}',
   home_seeBalances: 'Vaata saldosid',
+  home_seeBalancesMore: 'Vaata saldosid (+{count})',
   home_owesYouWord: 'võlgneb sulle',
   home_personOwesYou: '{name} võlgneb sulle {amount}',
   home_youOwePerson: 'Sa võlgned kasutajale {name} {amount}',

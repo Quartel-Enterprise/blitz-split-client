@@ -1516,6 +1516,7 @@ export const zh: Record<MessageKey, string> = {
   home_people: '与他人的余额',
   home_peopleCount: '与他人的余额 · {count}',
   home_seeBalances: '查看余额',
+  home_seeBalancesMore: '查看余额 (+{count})',
   home_owesYouWord: '欠你',
   home_personOwesYou: '{name}欠你{amount}',
   home_youOwePerson: '你欠{name} {amount}',

@@ -1515,6 +1515,7 @@ export const vi: Record<MessageKey, string> = {
   home_people: 'Số dư với mọi người',
   home_peopleCount: 'Số dư với mọi người · {count}',
   home_seeBalances: 'Xem số dư',
+  home_seeBalancesMore: 'Xem số dư (+{count})',
   home_owesYouWord: 'nợ bạn',
   home_personOwesYou: '{name} nợ bạn {amount}',
   home_youOwePerson: 'Bạn nợ {name} {amount}',

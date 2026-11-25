@@ -1517,6 +1517,7 @@ export const th: Record<MessageKey, string> = {
   home_people: 'ยอดคงเหลือกับแต่ละคน',
   home_peopleCount: 'ยอดคงเหลือกับแต่ละคน · {count}',
   home_seeBalances: 'ดูยอดคงเหลือ',
+  home_seeBalancesMore: 'ดูยอดคงเหลือ (+{count})',
   home_owesYouWord: 'ค้างคุณ',
   home_personOwesYou: '{name} ค้างคุณ {amount}',
   home_youOwePerson: 'คุณค้าง {name} {amount}',

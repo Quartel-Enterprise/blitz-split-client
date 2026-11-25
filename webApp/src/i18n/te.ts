@@ -1514,6 +1514,7 @@ export const te: Record<MessageKey, string> = {
   home_people: 'వ్యక్తులతో బ్యాలెన్స్‌లు',
   home_peopleCount: 'వ్యక్తులతో బ్యాలెన్స్‌లు · {count}',
   home_seeBalances: 'బ్యాలెన్స్‌లను చూడండి',
+  home_seeBalancesMore: 'బ్యాలెన్స్‌లను చూడండి (+{count})',
   home_owesYouWord: 'మీకు రావాలి',
   home_personOwesYou: '{name} మీకు {amount} ఇవ్వాలి',
   home_youOwePerson: 'మీరు వీరికి {amount} ఇవ్వాలి: {name}',

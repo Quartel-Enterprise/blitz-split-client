@@ -198,25 +198,37 @@ Saldos sit in `HomeShell`: the sidebar on the desktop, the icon rail on the tabl
 
 ### Home's "Balances with people"
 
-One shared rule, `HomePeopleLayout.of(peopleCount, sectionWidth)` in `:feature:groups`, picks how the section draws
-its people on the three UIs, from the section's own width (dp on Android, pt on Apple, CSS px on the web; Android
-and Apple take the column's width less the gutters, the web the card's content box) and the count, never the device:
+One shared rule, `HomePeopleLayout.of(peopleCount, blockWidth, isTouch)` in `:feature:groups`, picks how the block
+draws its people on the three UIs. It reads three things only, never the device: the width the block itself gets (dp
+on Android, pt on Apple, CSS px on the web; Android and Apple take the column's width less the gutters, the web the
+card's content box), the input, and the count.
 
-- A list row (face, name, amount and "owes you" on one line) is about 56 tall, under half a face of the scrolling row
-  (about 130 with its name, amount and word), so rows free height while they take **two lines at most**
-  (`MAX_ROW_LINES`), and use the width a lone face left empty (beta feedback).
-- The rows sit in as many columns as **280** fit with **8** between them (`ROW_MIN_WIDTH`: a face, a name of about ten
-  letters and the amount without cutting either; `COLUMN_GAP`, which the three UIs use), never more columns than
-  people. The section's width is what counts, not the
-  window's: where Home is two columns (a phone or a tablet lying down, a book, an iPhone or iPad lying down, the
-  Duo open) the section sits in the narrow first one (300–520), so it gets **one** column there, rows for 1 or 2
-  people, as on a phone upright. An Android tablet or an iPad upright (about 576–620) gets two (up to 4 people); the
-  web's card and the Mac's wide window get two to four (up to 8).
-- Past that the scrolling row of faces takes less height than the rows would, and its count joins the title once it
-  scrolls. While the people are read, the faces' shimmer holds the place.
+| Block | Input | 1–3 people | 4+ people |
+| --- | --- | --- | --- |
+| < 560 | touch | list | carousel of everyone, about 2.5 cards in sight |
+| < 560 | pointer | list | the first 3 rows, then a "+N" row |
+| ≥ 560 | either | fixed-width cards, aligned to the start | touch: carousel; pointer: cards on 2 lines at most, the last slot a "+N" tile |
 
-One column reads as one card of rows (Android's grouped row shapes, Apple's `GroupedCard`); several put each person in
-a card of their own.
+- A list row is the face, the name, the amount with its sign and its word on one line; it is never wider than
+  **560**, so a name never sits far from its amount: the list only comes below the threshold, **560**
+  (`WIDE_BLOCK_MIN_WIDTH`, the design system's `column-android-portrait`), which caps it.
+- A card stacks the face, the name, the amount and the word, **200** wide (`CARD_WIDTH`) with **8** between cards
+  (`CARD_GAP`). Cards never stretch: the space after them stays empty on purpose. A carousel's cards narrow so about
+  2.5 show (never under 112, never over 200), the cut one saying the row scrolls.
+- The input: Android, iOS and iPadOS are always touch (an iPad with a trackpad and a Chromebook with a mouse keep the
+  carousel); the Mac is always a pointer; the web is touch on `(pointer: coarse), (hover: none)`.
+- So a phone, a foldable, the Duo, a phone lying down and the narrow first column of a two-column tablet (~440) get the
+  list or the carousel; a tablet or an iPad upright sits at the threshold; the web's desktop and the Mac's default
+  window get cards; the Mac's narrow window and the web's tablet with a mouse get the list (the web's phone, touch,
+  the carousel from 4).
+- The people left out show as the hidden ones' first three faces and "+N", in the list's last row or the cards' last
+  slot (so one person fewer shows), and open Balances; a screen reader reads "See balances (+N)", a string of its own.
+  Only the Mac and the web reach it: Android and iOS are touch, where nobody is left out. The header's "See
+  balances" stays the only link in words: a "See balances (+N)" button under the cards repeated it (Pierre's call,
+  2026-11-24).
+- The order is the ViewModel's: whom you owe first, then who owes you, the largest first. The title counts everyone
+  (" · 9") once the carousel scrolls or someone is left out. While the people are read, the faces' shimmer holds the
+  place.
 
 ### A flow's responsive slice
 

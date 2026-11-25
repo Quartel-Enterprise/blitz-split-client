@@ -1518,6 +1518,7 @@ export const ro: Record<MessageKey, string> = {
   home_people: 'Solduri cu persoane',
   home_peopleCount: 'Solduri cu persoane · {count}',
   home_seeBalances: 'Vezi soldurile',
+  home_seeBalancesMore: 'Vezi soldurile (+{count})',
   home_owesYouWord: 'îți datorează',
   home_personOwesYou: '{name} îți datorează {amount}',
   home_youOwePerson: 'Datorezi {amount}: {name}',

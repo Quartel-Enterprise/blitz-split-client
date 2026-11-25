@@ -1516,6 +1516,7 @@ export const el: Record<MessageKey, string> = {
   home_people: 'Υπόλοιπα με άτομα',
   home_peopleCount: 'Υπόλοιπα με άτομα · {count}',
   home_seeBalances: 'Δες τα υπόλοιπα',
+  home_seeBalancesMore: 'Δες τα υπόλοιπα (+{count})',
   home_owesYouWord: 'σου χρωστάει',
   home_personOwesYou: '{name} σου χρωστάει {amount}',
   home_youOwePerson: 'Χρωστάς {amount} σε {name}',
