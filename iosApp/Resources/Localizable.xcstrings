@@ -243893,6 +243893,12 @@
             "value" : "残高を見る (+%lld)"
           }
         },
+        "km" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "មើលសមតុល្យ (+%lld)"
+          }
+        },
         "kn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -243933,6 +243939,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lihat baki (+%lld)"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "လက်ကျန်များ ကြည့်ရန် (+%lld)"
           }
         },
         "nb" : {
@@ -630214,7 +630226,7 @@
         "km" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "អ្នកផ្សេងបានបង់"
+            "value" : "%@ បានបង់"
           }
         },
         "kn" : {
@@ -630262,7 +630274,7 @@
         "my" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "အခြားသူများ ပေးချေခဲ့သည်"
+            "value" : "%@ ပေးချေခဲ့သည်"
           }
         },
         "nb" : {
