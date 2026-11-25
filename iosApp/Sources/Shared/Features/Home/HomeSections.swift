@@ -21,11 +21,12 @@ struct HomeSectionHeader: View {
     }
 }
 
-/// "Balances with people", whom you owe first, then who owes you. `HomePeopleLayout` picks by the section's width and
-/// the count, as Android and the web do: rows (face, name, amount and "owes you" on one line) while they take two lines
-/// at most, in as many columns as fit, else a row of faces. A person settles up with them, or records what they paid
-/// you; a guest (no app) wears a crossed-out phone and explains itself on a long press, a hover on the Mac. Until they
-/// are read (nil), and while the first download fills the device, faces shimmer in their place.
+/// "Balances with people", whom you owe first, then who owes you. `HomePeopleLayout` picks by the block's own width,
+/// the input (iOS and iPadOS are always touch, a trackpad included; the Mac always a pointer) and the count, as Android
+/// and the web do: a list for 1–3 on a narrow block, fixed-width cards aligned to the start on a wide one, and for 4 or
+/// more a carousel on touch, or on the Mac the first lines with "See balances (+N)". A person settles up with them, or
+/// records what they paid you; a guest (no app) wears a crossed-out phone and explains itself on a long press, a hover
+/// on the Mac. Until they are read (nil), and while the first download fills the device, faces shimmer in their place.
 struct HomePeopleSection: View {
     let people: [HomePerson]?
     /// Nobody to show yet: still read, or the first download may bring them.
@@ -33,43 +34,66 @@ struct HomePeopleSection: View {
     let faceSize: CGFloat
     let send: (any HomeUiEvent) -> Void
 
-    /// The faces run past the row, so the title counts them.
+    /// The carousel runs past the block, so the title counts them.
     @State private var isCounted = false
-    /// Nil until measured, so the first frame doesn't draw the faces where rows belong.
+    /// Nil until measured, so the first frame doesn't draw one mode where another belongs.
     @State private var width: CGFloat?
+
+    #if os(macOS)
+    private let isTouch = false
+    #else
+    private let isTouch = true
+    #endif
 
     private var layout: HomePeopleLayout? {
         guard !isLoading, let people, !people.isEmpty, let width else { return nil }
-        let layout = HomePeopleLayout.companion.of(peopleCount: Int32(people.count), sectionWidth: Float(width))
-        return layout.showsRows ? layout : nil
+        return HomePeopleLayout.companion.of(peopleCount: Int32(people.count), blockWidth: Float(width), isTouch: isTouch)
     }
 
     var body: some View {
+        let layout = layout
+        let counts = (isCounted && layout?.mode == .carousel) || (layout?.hiddenCount ?? 0) > 0
         VStack(alignment: .leading, spacing: 4) {
             HomeSectionHeader(
-                title: HomeCopy.peopleTitle(count: people?.count ?? 0, isCounted: isCounted && people != nil && layout == nil),
+                title: HomeCopy.peopleTitle(count: people?.count ?? 0, isCounted: counts && people != nil),
                 action: String(localized: "See balances", bundle: .appLanguage),
             ) {
                 send(HomeUiEventOnSeeBalancesClicked.shared)
             }
             if let layout, let people {
-                rows(people, columns: Int(layout.columns))
-            } else if width != nil || isLoading {
-                faces
+                let shown = Array(people.prefix(Int(layout.shownCount)))
+                switch layout.mode {
+                case .list:
+                    list(shown)
+                case .cards:
+                    cards(shown, layout: layout)
+                default:
+                    carousel(shown, cardWidth: CGFloat(layout.cardWidth))
+                }
+                if layout.hiddenCount > 0 {
+                    Button(HomeCopy.seeMore(hidden: Int(layout.hiddenCount))) {
+                        send(HomeUiEventOnSeeBalancesClicked.shared)
+                    }
+                    .font(.subheadline)
+                    .buttonStyle(.borderless)
+                    .frame(minHeight: 44)
+                }
+            } else if isLoading {
+                HomeFacesPlaceholder(faceSize: faceSize)
+                    .shimmering()
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
     }
 
-    private var faces: some View {
+    private var gap: CGFloat { CGFloat(HomePeopleLayout.companion.CARD_GAP) }
+
+    private func carousel(_ people: [HomePerson], cardWidth: CGFloat) -> some View {
         ScrollView(.horizontal) {
-            HStack(alignment: .top, spacing: 8) {
-                if isLoading {
-                    HomeFacesPlaceholder(faceSize: faceSize)
-                        .shimmering()
-                }
-                ForEach(people ?? [], id: \.stableId) { person in
-                    PersonFace(person: person, size: faceSize) { open(person) }
+            HStack(alignment: .top, spacing: gap) {
+                ForEach(people, id: \.stableId) { person in
+                    PersonCard(person: person, width: cardWidth, faceSize: faceSize) { open(person) }
                 }
             }
         }
@@ -81,31 +105,34 @@ struct HomePeopleSection: View {
         }
     }
 
-    /// One column reads as one card, as "Latest expenses" does; several put each person in a card of their own.
-    @ViewBuilder
-    private func rows(_ people: [HomePerson], columns: Int) -> some View {
-        if columns == 1 {
-            GroupedCard {
-                VStack(spacing: 0) {
-                    ForEach(Array(people.enumerated()), id: \.element.stableId) { index, person in
-                        if index > 0 {
-                            Divider().padding(.leading, 68)
-                        }
-                        PersonRow(person: person) { open(person) }
+    /// Fixed-width cards from the start, in lines of the layout's columns; the space after them stays empty on purpose.
+    private func cards(_ people: [HomePerson], layout: HomePeopleLayout) -> some View {
+        let columns = max(Int(layout.columns), 1)
+        let lines = stride(from: 0, to: people.count, by: columns).map { Array(people[$0..<min($0 + columns, people.count)]) }
+        return VStack(alignment: .leading, spacing: gap) {
+            ForEach(lines.indices, id: \.self) { index in
+                HStack(alignment: .top, spacing: gap) {
+                    ForEach(lines[index], id: \.stableId) { person in
+                        PersonCard(person: person, width: CGFloat(layout.cardWidth), faceSize: faceSize) { open(person) }
                     }
                 }
             }
-        } else {
-            LazyVGrid(
-                columns: Array(repeating: GridItem(.flexible(), spacing: CGFloat(HomePeopleLayout.companion.COLUMN_GAP)), count: columns),
-                spacing: 8,
-            ) {
-                ForEach(people, id: \.stableId) { person in
+        }
+    }
+
+    /// The list reads as one card, as "Latest expenses" does, never wider than a row's maximum.
+    private func list(_ people: [HomePerson]) -> some View {
+        GroupedCard {
+            VStack(spacing: 0) {
+                ForEach(Array(people.enumerated()), id: \.element.stableId) { index, person in
+                    if index > 0 {
+                        Divider().padding(.leading, 68)
+                    }
                     PersonRow(person: person) { open(person) }
-                        .background(Palette.card, in: .rect(cornerRadius: 20))
                 }
             }
         }
+        .frame(maxWidth: CGFloat(HomePeopleLayout.companion.MAX_ROW_WIDTH), alignment: .leading)
     }
 
     private func open(_ person: HomePerson) {
@@ -148,33 +175,38 @@ private struct PersonRow: View {
     }
 }
 
-private struct PersonFace: View {
+/// A card of "Balances with people": the face, the name, the amount and the word stacked, at the layout's fixed width.
+private struct PersonCard: View {
     let person: HomePerson
-    let size: CGFloat
+    let width: CGFloat
+    let faceSize: CGFloat
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             VStack(spacing: 2) {
-                PersonAvatar(person: person, size: size)
-                    .padding(.bottom, 2)
+                PersonAvatar(person: person, size: faceSize)
+                    .padding(.bottom, 4)
                 Text(verbatim: HomeCopy.name(person))
-                    .font(.footnote)
+                    .font(.footnote.weight(.medium))
                     .lineLimit(1)
                 Text(verbatim: HomeCopy.amount(person))
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .monospacedDigit()
                     .foregroundStyle(Palette.balance(person.netMinor))
                     .lineLimit(1)
-                    // The amount stays whole in the face's 76 pt, whatever the currency and the text size
+                    // The amount stays whole in the card, whatever the currency and the text size
                     .minimumScaleFactor(0.7)
                 Text(verbatim: HomeCopy.word(person))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
-            .frame(width: 76)
-            .padding(.vertical, 6)
-            .contentShape(.rect)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 12)
+            .frame(width: width)
+            .background(Palette.card, in: .rect(cornerRadius: 20))
+            .contentShape(.rect(cornerRadius: 20))
         }
         .buttonStyle(.plain)
         .hoverDim()

@@ -33,6 +33,11 @@ enum HomeCopy {
         )
     }
 
+    /// "See balances (+5)": the people the Mac's list or cards leave out, under them.
+    static func seeMore(hidden: Int) -> String {
+        "\(String(localized: "See balances", bundle: .appLanguage)) (+\(hidden.formatted()))"
+    }
+
     /// Someone no longer in the group is "Former member".
     static func name(_ person: HomePerson) -> String {
         PaymentCopy.name(person.name)

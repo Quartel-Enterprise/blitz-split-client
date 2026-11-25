@@ -4,10 +4,12 @@ The home tab, its shortcuts and pinned groups.
 
   - "Home" (flow 10, `HomeViewModel` in `:feature:groups`), top to bottom: "Balances with people", each person's net
     across groups as Balances nets it (`PeopleBalances`), whom you owe first, then who owes you, the largest first in
-    each, hidden when nobody owes anybody. It draws rows (the face, the name, the amount and "owes you" or "you owe" on
-    one line) while they take two lines at most, in as many columns as fit, and the scrolling row of faces past that
-    (beta feedback: one person left a phone's width empty): `HomePeopleLayout`, shared by the three UIs, from the
-    section's own width and the count; see [Responsive layouts](../architecture/responsive-layouts.md#homes-balances-with-people)
+    each, hidden when nobody owes anybody. It draws a list (the face, the name, the amount and "owes you" or "you owe" on
+    one line, 560 wide at most) for 1–3 people on a narrow block, fixed-width cards aligned to the start on a wide one,
+    and for 4 or more a carousel of cards on touch, or with a pointer (the Mac, the web with a mouse) the first rows or
+    two lines of cards and "See balances (+N)" (Pierre's call, 2026-11-24: a wide web window stretched one person's row
+    across the whole width): `HomePeopleLayout`, shared by the three UIs, from the block's own width, the input and the
+    count; see [Responsive layouts](../architecture/responsive-layouts.md#homes-balances-with-people)
     for the numbers. A person opens settling up for the net
     (`Route.SettleUp`, Pierre's call: it stays so after beta feedback 18), whose two faces open the profiles, and a
     guest (a name nobody joined as) gets a badge and, on a long press or hover, "Diego is a guest and doesn't have the app…".

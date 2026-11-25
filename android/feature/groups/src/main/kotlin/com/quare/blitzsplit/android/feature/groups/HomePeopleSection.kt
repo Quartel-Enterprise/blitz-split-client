@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -34,7 +35,6 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -53,6 +53,7 @@ import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.groups.presentation.model.HomePeopleLayout
+import com.quare.blitzsplit.feature.groups.presentation.model.HomePeopleMode
 import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
@@ -62,9 +63,10 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 /*
  * Why: "Saldos com pessoas", each person once per currency, netted across the groups. HomePeopleLayout picks by the
- * section's width and the count: rows (face, name, amount and "te deve" on one line) while they take two lines at most,
- * else the row of faces, whose count joins the title once it scrolls. While it is read, or the first download fills
- * the device, a shimmer holds its place; with everyone settled the section goes, leaving no gap.
+ * block's own width, the input (Android is always touch, a tablet with a mouse included) and the count: a list for 1–3
+ * on a narrow block, fixed-width cards aligned to the start on a wide one, and a carousel of cards for 4 or more. The
+ * count joins the title once the carousel scrolls. While it is read, or the first download fills the device, a shimmer
+ * holds its place; with everyone settled the section goes, leaving no gap.
  */
 @Composable
 internal fun HomePeopleSection(
@@ -82,84 +84,122 @@ internal fun HomePeopleSection(
     BoxWithConstraints {
         val layout = HomePeopleLayout.of(
             peopleCount = people.size,
-            sectionWidth = (maxWidth - metrics.gutter * 2).value,
+            blockWidth = (maxWidth - metrics.gutter * 2).value,
+            isTouch = true,
         )
-        val scrolls = !layout.showsRows && (listState.canScrollForward || listState.canScrollBackward)
+        val shown = people.take(layout.shownCount)
+        val scrolls = layout.mode == HomePeopleMode.CAROUSEL &&
+            (listState.canScrollForward || listState.canScrollBackward)
         val onPerson = { person: HomePerson -> onEvent(HomeUiEvent.OnPersonClicked(person.key, person.currency)) }
+        val onSeeBalances = { onEvent(HomeUiEvent.OnSeeBalancesClicked) }
         Column {
             HomeSectionHeader(
-                title = if (scrolls) {
+                title = if (scrolls || layout.hiddenCount > 0) {
                     stringResource(R.string.groups_home_people_title_count, people.size)
                 } else {
                     stringResource(R.string.groups_home_people_title)
                 },
                 action = stringResource(R.string.groups_home_see_balances),
-                onAction = { onEvent(HomeUiEvent.OnSeeBalancesClicked) },
+                onAction = onSeeBalances,
                 modifier = Modifier.padding(horizontal = metrics.gutter),
             )
-            if (layout.showsRows) {
-                PeopleRowsColumn(
-                    people = people,
-                    columns = layout.columns,
+            val padding = Modifier.padding(horizontal = metrics.gutter)
+            when (layout.mode) {
+                HomePeopleMode.LIST -> PeopleList(
+                    people = shown,
                     onPerson = onPerson,
-                    modifier = Modifier.padding(horizontal = metrics.gutter),
+                    modifier = padding,
                 )
-            } else {
-                LazyRow(
+
+                HomePeopleMode.CARDS -> PeopleCardsGrid(
+                    people = shown,
+                    layout = layout,
+                    metrics = metrics,
+                    onPerson = onPerson,
+                    modifier = padding,
+                )
+
+                HomePeopleMode.CAROUSEL -> LazyRow(
                     state = listState,
                     contentPadding = PaddingValues(horizontal = metrics.gutter),
-                    horizontalArrangement = Arrangement.spacedBy(if (metrics.isCompact) 6.dp else 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(HomePeopleLayout.CARD_GAP.dp),
                 ) {
                     items(
-                        people,
+                        shown,
                         key = { person -> person.key + person.currency.code },
                     ) { person ->
-                        PersonFaceItem(
+                        PersonCardItem(
                             person = person,
-                            size = metrics.faceSize,
+                            width = layout.cardWidth.dp,
+                            faceSize = metrics.faceSize,
                             onClick = { onPerson(person) },
                         )
                     }
+                }
+            }
+            if (layout.hiddenCount > 0) {
+                TextButton(
+                    onClick = onSeeBalances,
+                    modifier = padding,
+                ) {
+                    Text(seeMoreText(layout.hiddenCount))
                 }
             }
         }
     }
 }
 
-// Why: the rows in HomePeopleLayout's columns, read as one card in one column as Últimas despesas' rows are.
+// Why: "See balances (+5)", the people the list or the cards leave out; only a pointer's layouts hide anyone.
 @Composable
-private fun PeopleRowsColumn(
+private fun seeMoreText(hiddenCount: Int): String =
+    stringResource(R.string.groups_home_see_balances) + " (+" + "%d".format(hiddenCount) + ")"
+
+// Why: the list's rows read as one card in one column, as Últimas despesas' rows are, never wider than MAX_ROW_WIDTH.
+@Composable
+private fun PeopleList(
     people: List<HomePerson>,
-    columns: Int,
     onPerson: (HomePerson) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val lines = people.chunked(columns)
     Column(
-        modifier = modifier,
+        modifier = modifier.widthIn(max = HomePeopleLayout.MAX_ROW_WIDTH.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        lines.forEachIndexed { lineIndex, line ->
-            Row(horizontalArrangement = Arrangement.spacedBy(HomePeopleLayout.COLUMN_GAP.dp)) {
-                repeat(columns) { column ->
-                    val person = line.getOrNull(column)
-                    if (person == null) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    } else {
-                        PersonRowItem(
-                            person = person,
-                            shape = if (columns == 1) {
-                                groupedRowShapeOf(
-                                    index = lineIndex,
-                                    count = lines.size,
-                                )
-                            } else {
-                                MaterialTheme.shapes.large
-                            },
-                            onClick = { onPerson(person) },
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
+        people.forEachIndexed { index, person ->
+            PersonRowItem(
+                person = person,
+                shape = groupedRowShapeOf(
+                    index = index,
+                    count = people.size,
+                ),
+                onClick = { onPerson(person) },
+            )
+        }
+    }
+}
+
+// Why: fixed-width cards from the start, in lines of HomePeopleLayout's columns; the space after them stays empty.
+@Composable
+private fun PeopleCardsGrid(
+    people: List<HomePerson>,
+    layout: HomePeopleLayout,
+    metrics: HomeMetrics,
+    onPerson: (HomePerson) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(HomePeopleLayout.CARD_GAP.dp),
+    ) {
+        people.chunked(layout.columns).forEach { line ->
+            Row(horizontalArrangement = Arrangement.spacedBy(HomePeopleLayout.CARD_GAP.dp)) {
+                line.forEach { person ->
+                    PersonCardItem(
+                        person = person,
+                        width = layout.cardWidth.dp,
+                        faceSize = metrics.faceSize,
+                        onClick = { onPerson(person) },
+                    )
                 }
             }
         }
@@ -176,7 +216,6 @@ private fun PersonRowItem(
 ) {
     val money = rememberMoneyFormatter(person.currency)
     val texts = personTextsOf(person, money)
-    // Why: the column's weight goes on this Box, the Row's own child; a guest's TooltipBox would swallow it.
     Box(modifier = modifier) {
         PersonTooltipBox(
             person = person,
@@ -319,13 +358,15 @@ private fun PersonTooltipBox(
 }
 
 /*
- * Why: a face, what tapping it settles up (4.5) or records as received (6.5). A guest, a name nobody joined as, wears
- * the crossed-out phone, and a long press says they get no notice.
+ * Why: a card, what tapping it settles up (4.5) or records as received (6.5): the face, the name, the amount and the
+ * word stacked, at the layout's fixed width. A guest, a name nobody joined as, wears the crossed-out phone, and a long
+ * press says they get no notice.
  */
 @Composable
-private fun PersonFaceItem(
+private fun PersonCardItem(
     person: HomePerson,
-    size: Dp,
+    width: Dp,
+    faceSize: Dp,
     onClick: () -> Unit,
 ) {
     val money = rememberMoneyFormatter(person.currency)
@@ -334,40 +375,48 @@ private fun PersonFaceItem(
         person = person,
         name = texts.name,
     ) {
-        Column(
-            modifier = Modifier
-                .width(size + 20.dp)
-                .clip(MaterialTheme.shapes.medium)
-                .clickable(onClick = onClick)
-                .clearAndSetSemantics {
-                    contentDescription = texts.description
-                    role = Role.Button
-                }.padding(vertical = 6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Surface(
+            modifier = Modifier.width(width),
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surfaceContainerLowest,
         ) {
-            PersonFaceBadge(
-                person = person,
-                size = size,
-            )
-            Text(
-                text = texts.name,
-                modifier = Modifier.padding(top = 2.dp),
-                style = MaterialTheme.typography.labelLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            AmountText(
-                text = money.toSignedText(person.netMinor),
-                modifier = Modifier.padding(top = 4.dp),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = amountColorOf(person.netMinor),
-            )
-            Text(
-                text = texts.word,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Column(
+                modifier = Modifier
+                    .clickable(onClick = onClick)
+                    .clearAndSetSemantics {
+                        contentDescription = texts.description
+                        role = Role.Button
+                    }.padding(
+                        horizontal = 8.dp,
+                        vertical = 12.dp,
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                PersonFaceBadge(
+                    person = person,
+                    size = faceSize,
+                )
+                Text(
+                    text = texts.name,
+                    modifier = Modifier.padding(top = 6.dp),
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                AmountText(
+                    text = money.toSignedText(person.netMinor),
+                    modifier = Modifier.padding(top = 4.dp),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = amountColorOf(person.netMinor),
+                )
+                Text(
+                    text = texts.word,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                )
+            }
         }
     }
 }

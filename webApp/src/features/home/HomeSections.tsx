@@ -166,11 +166,13 @@ interface GuestTip {
 
 /**
  * "Saldos com pessoas": each person you have an open balance with, whom you owe first. The shared HomePeopleLayout picks
- * by the card's width and the count, as Android and Apple do (beta feedback): rows (face, name, amount and "te deve" on
- * one line) while they take two lines at most, in as many columns as fit; else a face each in a row that scrolls
- * sideways, " · 9" once it does. A face opens settling up with them for the net. A guest (a name nobody joined as)
- * wears the crossed-out phone, and hovering it, focusing it or a long press shows why they get no notice. Gone,
- * leaving no gap, once everyone is settled; faces of gray while the first download hasn't brought anyone yet.
+ * by the card's own content width, the input (`(pointer: coarse)` or `(hover: none)` is touch) and the count, as
+ * Android and Apple do: a list for 1–3 on a narrow card (each row 560px at most), fixed-width cards aligned to the start
+ * on a wide one, and for 4 or more a carousel on touch, or with a mouse the first rows or two lines of cards with "Ver
+ * saldos (+N)" under them. The title gets " · 9" once the carousel scrolls or someone is left out. A person opens
+ * settling up with them for the net. A guest (a name nobody joined as) wears the crossed-out phone, and hovering it,
+ * focusing it or a long press shows why they get no notice. Gone, leaving no gap, once everyone is settled; faces of
+ * gray while the first download hasn't brought anyone yet.
  */
 export function PeopleCard({ presenter, state }: SectionProps) {
   const cardRef = useRef<HTMLElement>(null)
@@ -178,6 +180,7 @@ export function PeopleCard({ presenter, state }: SectionProps) {
   const tipId = useId()
   const [tip, setTip] = useState<GuestTip | null>(null)
   const isScrolling = useOverflows(rowRef, state.people?.length ?? 0)
+  const isTouch = useIsTouch()
   // Why: the card mounts once there is someone to show, so the width is followed from then.
   const width = useContentWidth(cardRef, state.showsPeople || state.isLoadingPeople)
   // Why: a long press shows the tip until the next touch anywhere, which a touch screen has instead of hover's end.
@@ -194,8 +197,11 @@ export function PeopleCard({ presenter, state }: SectionProps) {
   if (!state.showsPeople && !state.isLoadingPeople) return null
 
   const people = Array.from(state.people ?? [])
-  const layout = state.isLoadingPeople || people.length === 0 ? null : getHomePeopleLayout(people.length, width)
-  const showsRows = layout?.showsRows === true
+  const layout = state.isLoadingPeople || people.length === 0 ? null : getHomePeopleLayout(people.length, width, isTouch)
+  const mode = layout?.mode ?? 'CAROUSEL'
+  const shown = layout ? people.slice(0, layout.shownCount) : people
+  const hiddenCount = layout?.hiddenCount ?? 0
+  const isCounted = (mode === 'CAROUSEL' && isScrolling) || hiddenCount > 0
   const showTip = (person: JsHomePerson, face: HTMLElement, isTouch: boolean) => {
     const card = cardRef.current
     if (!card) return
@@ -206,24 +212,35 @@ export function PeopleCard({ presenter, state }: SectionProps) {
     <section ref={cardRef} aria-labelledby="home-people-title" className="relative flex flex-col gap-1.5 rounded-lg border bg-card p-3 md:px-4 md:py-3.5">
       <SectionHeader
         id="home-people-title"
-        title={isScrolling && !showsRows ? t('home_peopleCount', { count: people.length }) : t('home_people')}
+        title={isCounted ? t('home_peopleCount', { count: people.length }) : t('home_people')}
         action={t('home_seeBalances')}
         onAction={() => presenter.seeBalances()}
       />
       <div
         ref={rowRef}
-        style={showsRows ? { gridTemplateColumns: `repeat(${layout?.columns ?? 1}, minmax(0, 1fr))` } : undefined}
-        className={showsRows ? '-mx-1 grid gap-x-2 gap-y-1 px-1' : '-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:gap-2'}
+        style={
+          mode === 'LIST'
+            ? { maxWidth: layout?.maxRowWidth }
+            : mode === 'CARDS'
+              ? { gridTemplateColumns: `repeat(${layout?.columns ?? 1}, ${layout?.cardWidth ?? 0}px)`, gap: layout?.cardGap }
+              : { gap: layout?.cardGap }
+        }
+        className={cn(
+          mode === 'LIST' && 'flex flex-col gap-1',
+          mode === 'CARDS' && 'grid justify-start',
+          mode === 'CAROUSEL' && '-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:gap-2',
+        )}
         onScroll={() => tip && setTip(null)}
       >
         {state.isLoadingPeople ? (
           <FacesSkeleton />
         ) : (
-          people.map((person) => (
+          shown.map((person) => (
             <PersonFace
               key={`${person.key}/${person.currency}`}
               person={person}
-              isRow={showsRows}
+              isRow={mode === 'LIST'}
+              cardWidth={mode === 'LIST' ? undefined : layout?.cardWidth}
               tipId={tip?.key === person.key ? tipId : undefined}
               onOpen={() => presenter.openPerson(person.key, person.currency)}
               onTip={(face, isTouch) => (face ? showTip(person, face, isTouch) : setTip(null))}
@@ -231,6 +248,15 @@ export function PeopleCard({ presenter, state }: SectionProps) {
           ))
         )}
       </div>
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          onClick={() => presenter.seeBalances()}
+          className="self-start rounded-md px-2 py-1.5 text-sm font-medium text-primary outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
+        >
+          {`${t('home_seeBalances')} (+${hiddenCount.toLocaleString()})`}
+        </button>
+      )}
       {tip && (
         <div
           id={tipId}
@@ -278,18 +304,20 @@ function NoAppIcon({ className, strokeWidth = 2 }: { className?: string; strokeW
 const longPressMillis = 500
 
 /**
- * One person: avatar (with the guest's badge), name, the net with its sign and its word; stacked as a face of the row,
- * or on one line as a row (`isRow`).
+ * One person: avatar (with the guest's badge), name, the net with its sign and its word; stacked as a card of
+ * `cardWidth` (the carousel's or the grid's, which never stretches), or on one line as a row (`isRow`).
  */
 function PersonFace({
   person,
   isRow,
+  cardWidth,
   tipId,
   onOpen,
   onTip,
 }: {
   person: JsHomePerson
   isRow: boolean
+  cardWidth: number | undefined
   tipId: string | undefined
   onOpen: () => void
   onTip: (face: HTMLElement | null, isTouch: boolean) => void
@@ -343,9 +371,10 @@ function PersonFace({
         onOpen()
       }}
       {...guestHandlers}
+      style={isRow ? undefined : { width: cardWidth }}
       className={cn(
         'rounded-lg outline-none select-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring',
-        isRow ? 'flex min-h-14 min-w-0 items-center gap-3 px-2 py-2 text-start' : 'flex w-[72px] shrink-0 flex-col items-center gap-0.5 py-1.5 md:w-[88px]',
+        isRow ? 'flex min-h-14 min-w-0 items-center gap-3 px-2 py-2 text-start' : 'flex shrink-0 flex-col items-center gap-0.5 border px-2 py-3',
       )}
     >
       <span className="relative flex shrink-0">
@@ -397,6 +426,20 @@ function useContentWidth(ref: RefObject<HTMLElement | null>, isMounted: boolean)
     return () => observer.disconnect()
   }, [ref, isMounted])
   return width
+}
+
+/** Whether the input is touch: `(pointer: coarse)` or `(hover: none)`, followed as a mouse or a touch screen comes and goes. */
+function useIsTouch(): boolean {
+  const query = '(pointer: coarse), (hover: none)'
+  const [isTouch, setIsTouch] = useState(() => window.matchMedia(query).matches)
+  useEffect(() => {
+    const media = window.matchMedia(query)
+    const update = () => setIsTouch(media.matches)
+    update()
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
+  return isTouch
 }
 
 /** Whether the row is wider than its box, so it scrolls; checked again as the window or the row changes. */
