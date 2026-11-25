@@ -116,7 +116,7 @@ jobs:
       - name: Check where the run comes from
         env:
           REF: ${{ github.ref }}
-        run: scripts/ci/app-store-screenshots-check-where-the-run-comes-from.sh
+        run: scripts/ci/check-where-the-run-comes-from.sh
 
       - name: Check who sends
         uses: ./.github/actions/release-admin

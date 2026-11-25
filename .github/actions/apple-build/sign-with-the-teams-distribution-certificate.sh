@@ -9,4 +9,4 @@ adhoc=()
 if [ -n "$ADHOC_EXPORT_PATH" ]; then
   adhoc=(adhoc_export_options:"$RUNNER_TEMP/ExportOptions-adhoc.plist")
 fi
-fastlane apple_signing scheme:${INPUTS_SCHEME} export_options:"$RUNNER_TEMP/ExportOptions.plist" "${adhoc[@]}"
+fastlane apple_signing scheme:"${INPUTS_SCHEME}" export_options:"$RUNNER_TEMP/ExportOptions.plist" "${adhoc[@]}"

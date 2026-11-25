@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Check where the run comes from. Run by .github/workflows/app-store-screenshots.yml.
+# Check where the run comes from. Run by the workflows that call it.
 #
 set -eo pipefail
 

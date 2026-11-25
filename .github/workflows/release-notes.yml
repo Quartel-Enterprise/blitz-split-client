@@ -44,6 +44,8 @@ on:
       # The workflows that send Google Play's screenshots, from a release and alone, which a test holds together
       - '.github/workflows/release-production.yml'
       - 'scripts/ci/release-production-*.sh'
+      - 'scripts/ci/check-where-the-run-comes-from.sh'
+      - 'scripts/ci/read-the-releases.sh'
       - '.github/workflows/play-store-screenshots.yml'
       - 'scripts/ci/play-store-screenshots-*.sh'
       - '.github/workflows/play-store-screenshots-upload.yml'
@@ -79,6 +81,8 @@ on:
       # The workflows that send Google Play's screenshots, from a release and alone, which a test holds together
       - '.github/workflows/release-production.yml'
       - 'scripts/ci/release-production-*.sh'
+      - 'scripts/ci/check-where-the-run-comes-from.sh'
+      - 'scripts/ci/read-the-releases.sh'
       - '.github/workflows/play-store-screenshots.yml'
       - 'scripts/ci/play-store-screenshots-*.sh'
       - '.github/workflows/play-store-screenshots-upload.yml'

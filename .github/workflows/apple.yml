@@ -168,7 +168,8 @@ jobs:
       # convention plugin only adds targets no suite runs on, which the schemes and "Compile the
       # device targets" build.
       # The source sets no Apple target compiles and Markdown don't count, as they don't to start
-      # this workflow. A change to this workflow, to the Gradle action or to the script that lists
+      # this workflow. A change to this workflow, to the scripts of its `changes` and `apple-tests` jobs
+      # (scripts/ci/apple-*), to the Gradle action or to the script that lists
       # the modules runs the tests, and the first and the last split them too, so a change to the
       # job is seen working before it merges, on the simulator as well when it is this workflow that
       # changes.

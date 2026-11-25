@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Read the releases. Run by .github/workflows/release-beta.yml.
+# Read the releases. Run by the workflows that call it.
 #
 set -eo pipefail
 

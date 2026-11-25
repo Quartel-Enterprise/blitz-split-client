@@ -113,7 +113,7 @@ jobs:
       - name: Read the releases
         env:
           GH_TOKEN: ${{ github.token }}
-        run: scripts/ci/release-beta-read-the-releases.sh
+        run: scripts/ci/read-the-releases.sh
 
       # Through env, not spliced into the command: the script validates the value, but only after the
       # shell has parsed the line.

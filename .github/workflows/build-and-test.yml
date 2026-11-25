@@ -106,6 +106,7 @@ jobs:
             scripts/ci/build-and-test-look-at-what-the-change-reaches.sh
           sparse-checkout-cone-mode: false
 
+      # A change to this workflow, to the Gradle action or to scripts/ci/build-and-test-*.sh reaches every job.
       # --no-renames lists both paths of a moved file, and without core.quotePath a name with an accent would come
       # quoted and match nothing. A diff that fails or lists no file counts as a change to all of it.
       - name: Look at what the change reaches

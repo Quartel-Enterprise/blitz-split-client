@@ -622,11 +622,15 @@ A `run:` of a workflow or a composite action holds a call, not a script, once th
   and the script reads `$PR_NUMBER`, so a value is never pasted into the shell's code.
 - The job needs the script on disk. A job that has no `actions/checkout` starts with one that checks out `scripts/ci`
   alone (`sparse-checkout: scripts/ci`, `persist-credentials: false`), and a job that checks out only some files lists
-  the script among them. `claude-review-on-request` is the exception, with its two steps left in the YAML: it checks out
+  the script among them. `claude-review-on-request` and `run-checks` are the exceptions, with their steps left in the YAML (the first checks out the pull request's head,
+  the second's steps are a line or two): it checks out
   the pull request's head after the first, and a script of the head would run next to the review's token.
 - A workflow that is path filtered also lists its scripts in `paths`, and so does the regex of its `changes` job that
   says which files are its own, so a change to a script runs what it changes (`apple`'s `scripts/ci/apple-*.sh`).
 - The tests that hold a workflow to a lane or to another workflow read it through `readWithScripts`
   (`scripts/release/workflow-source.mjs`), which writes each script back into its `run:`, so their assertions see the
   script's lines.
+- A script that two workflows share is one file named for what it does (`scripts/ci/read-the-releases.sh`), not for
+  a workflow.
+- `static-analysis`'s `shellcheck` job lints every script (warnings and errors), since actionlint only reads the YAML.
 - A step of a line or two (`./gradlew ...`, a `gh` call) stays in the YAML.

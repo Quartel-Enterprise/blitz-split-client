@@ -86,7 +86,7 @@ jobs:
       - name: Check where the run comes from
         env:
           REF: ${{ github.ref }}
-        run: scripts/ci/play-store-screenshots-check-where-the-run-comes-from.sh
+        run: scripts/ci/check-where-the-run-comes-from.sh
 
       - name: Check the group size
         env:
