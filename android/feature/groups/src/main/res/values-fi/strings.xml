@@ -189,7 +189,7 @@
     <string name="groups_all_expenses_payer">Kuka maksoi</string>
     <string name="groups_all_expenses_payer_all">Kuka tahansa</string>
     <string name="groups_all_expenses_payer_you">Sinä maksoit</string>
-    <string name="groups_all_expenses_payer_others">Muut maksoivat</string>
+    <string name="groups_all_expenses_payer_by">Maksaja: %1$s</string>
     <string name="groups_all_expenses_sort_newest">Uusimmat ensin</string>
     <string name="groups_all_expenses_sort_oldest">Vanhimmat ensin</string>
     <string name="groups_all_expenses_sort_largest">Suurimmat ensin</string>

@@ -198,7 +198,7 @@
     <string name="groups_all_expenses_payer">Chi ha pagato</string>
     <string name="groups_all_expenses_payer_all">Chiunque</string>
     <string name="groups_all_expenses_payer_you">Hai pagato tu</string>
-    <string name="groups_all_expenses_payer_others">Hanno pagato altri</string>
+    <string name="groups_all_expenses_payer_by">Pagato da %1$s</string>
     <string name="groups_all_expenses_sort_newest">Più recenti</string>
     <string name="groups_all_expenses_sort_oldest">Meno recenti</string>
     <string name="groups_all_expenses_sort_largest">Importo più alto</string>

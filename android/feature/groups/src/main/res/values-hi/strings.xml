@@ -189,7 +189,7 @@
     <string name="groups_all_expenses_payer">किसने भुगतान किया</string>
     <string name="groups_all_expenses_payer_all">कोई भी</string>
     <string name="groups_all_expenses_payer_you">आपने भुगतान किया</string>
-    <string name="groups_all_expenses_payer_others">दूसरों ने भुगतान किया</string>
+    <string name="groups_all_expenses_payer_by">%1$s ने भुगतान किया</string>
     <string name="groups_all_expenses_sort_newest">नए पहले</string>
     <string name="groups_all_expenses_sort_oldest">पुराने पहले</string>
     <string name="groups_all_expenses_sort_largest">बड़े पहले</string>

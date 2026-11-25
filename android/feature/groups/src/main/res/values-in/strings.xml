@@ -180,7 +180,7 @@
     <string name="groups_all_expenses_payer">Siapa yang bayar</string>
     <string name="groups_all_expenses_payer_all">Siapa saja</string>
     <string name="groups_all_expenses_payer_you">Kamu yang bayar</string>
-    <string name="groups_all_expenses_payer_others">Orang lain yang bayar</string>
+    <string name="groups_all_expenses_payer_by">Dibayar %1$s</string>
     <string name="groups_all_expenses_sort_newest">Terbaru</string>
     <string name="groups_all_expenses_sort_oldest">Terlama</string>
     <string name="groups_all_expenses_sort_largest">Nominal terbesar</string>

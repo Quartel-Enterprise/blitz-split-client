@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
@@ -47,7 +48,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.BillMenuEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.ExpenseSort
 import com.quare.blitzsplit.feature.groups.presentation.model.FilterGroupOption
-import com.quare.blitzsplit.feature.groups.presentation.model.PayerFilter
+import com.quare.blitzsplit.feature.groups.presentation.model.PAYER_KEY_ME
 import com.quare.blitzsplit.feature.groups.presentation.model.ShareFilter
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.AllExpensesViewModel
 import kotlinx.coroutines.CompletableDeferred
@@ -1471,18 +1472,18 @@ class AllExpensesViewModelTest {
                     ),
                 ),
             )
-            val event = AllExpensesUiEvent.OnPayerFilterPicked(PayerFilter.YOU)
+            val event = AllExpensesUiEvent.OnPayerToggled(PAYER_KEY_ME)
 
             // When
             viewModel.onEvent(event)
 
             // Then
             assertEquals(listOf("alone", "together"), shownIds())
-            assertEquals(PayerFilter.YOU, viewModel.uiState.value.filters.payer)
+            assertEquals(setOf(PAYER_KEY_ME), viewModel.uiState.value.filters.payerKeys)
         }
 
     @Test
-    fun `GIVEN bills Pierre paid alone with Ana and not at all WHEN picking others THEN shows the one he did not`() =
+    fun `GIVEN bills Pierre paid alone with Ana and Ana alone WHEN picking Ana THEN shows the two she paid part of`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -1501,13 +1502,43 @@ class AllExpensesViewModelTest {
                     ),
                 ),
             )
-            val event = AllExpensesUiEvent.OnPayerFilterPicked(PayerFilter.OTHERS)
+            val ana = viewModel.uiState.value.payerOptions
+                .single { it.name == "Ana" }
+            val event = AllExpensesUiEvent.OnPayerToggled(ana.key)
 
             // When
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf("ana"), shownIds())
+            assertEquals(listOf("together", "ana"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN Ana picked in who paid WHEN she leaves every group THEN lets her go and shows every bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("mine", spentAt = hoursAgo(1)),
+                    bill(
+                        "ana",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(2),
+                    ),
+                ),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnPayerToggled(payerKeyNamed("Ana")))
+            val withoutAna = trio().let { group -> group.copy(members = group.members.filter { it.name != "Ana" }) }
+
+            // When
+            groups.groups.value = listOf(withoutAna)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(emptySet(), state.filters.payerKeys)
+            assertFalse(state.filters.isFiltering)
+            assertEquals(listOf("mine", "ana"), shownIds())
         }
 
     @Test
@@ -1687,7 +1718,7 @@ class AllExpensesViewModelTest {
             viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
             viewModel.onEvent(AllExpensesUiEvent.OnCategoryToggled(AppCategory.OTHER.key))
             viewModel.onEvent(AllExpensesUiEvent.OnShareFilterPicked(ShareFilter.TO_RECEIVE))
-            viewModel.onEvent(AllExpensesUiEvent.OnPayerFilterPicked(PayerFilter.YOU))
+            viewModel.onEvent(AllExpensesUiEvent.OnPayerToggled(PAYER_KEY_ME))
             val event = AllExpensesUiEvent.OnClearFiltersClicked
 
             // When
@@ -2175,7 +2206,7 @@ class AllExpensesViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            val event = AllExpensesUiEvent.OnPayerFilterPicked(PayerFilter.OTHERS)
+            val event = AllExpensesUiEvent.OnPayerToggled(PAYER_KEY_ME)
 
             // When
             viewModel.onEvent(event)
@@ -3359,6 +3390,573 @@ class AllExpensesViewModelTest {
             assertEquals(AllExpensesFilter.PERIOD, opened.first())
         }
 
+    @Test
+    fun `GIVEN you picked in who paid WHEN picking Ana too THEN shows the bills either of you paid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("pierre", spentAt = hoursAgo(1)),
+                    bill(
+                        "ana",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(2),
+                    ),
+                    bill(
+                        "bruno",
+                        paidBy = "Bruno",
+                        spentAt = hoursAgo(3),
+                    ),
+                ),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnPayerToggled(PAYER_KEY_ME))
+            val event = AllExpensesUiEvent.OnPayerToggled(payerKeyNamed("Ana"))
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("pierre", "ana"), shownIds())
+            assertEquals(2, viewModel.uiState.value.filters.payerKeys.size)
+        }
+
+    @Test
+    fun `GIVEN Ana picked in who paid WHEN picking her again THEN lets her go and shows every bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("pierre", spentAt = hoursAgo(1)),
+                    bill(
+                        "ana",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(2),
+                    ),
+                ),
+            )
+            val ana = payerKeyNamed("Ana")
+            viewModel.onEvent(AllExpensesUiEvent.OnPayerToggled(ana))
+            val event = AllExpensesUiEvent.OnPayerToggled(ana)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("pierre", "ana"), shownIds())
+            assertEquals(emptySet(), viewModel.uiState.value.filters.payerKeys)
+            assertFalse(viewModel.uiState.value.filters.isFiltering)
+        }
+
+    @Test
+    fun `GIVEN a bill Ana is a payer of with nothing paid WHEN picking Ana THEN leaves that bill out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "zero",
+                        spentAt = hoursAgo(1),
+                        payers = listOf("Pierre" to 9_000L, "Ana" to 0L),
+                    ),
+                    bill(
+                        "ana",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(2),
+                    ),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnPayerToggled(payerKeyNamed("Ana"))
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("ana"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN a bill paid by someone gone from its group WHEN picking their namesake elsewhere THEN leaves it out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip").copy(members = listOf(me, member("Carla")))),
+                storedExpenses = listOf(
+                    bill(
+                        "gone",
+                        paidBy = "Carla",
+                        spentAt = hoursAgo(1),
+                    ),
+                    bill(
+                        "trip",
+                        groupId = "trip",
+                        paidBy = "Carla",
+                        spentAt = hoursAgo(2),
+                        splitOver = listOf("Pierre", "Carla"),
+                    ),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnPayerToggled(payerKeyNamed("Carla"))
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("trip"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN Pierre with an account in one group only WHEN All expenses opens THEN offers you once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio().copy(members = listOf(me.copy(userId = "pierre-account"), member("Ana"))),
+                    trio(id = "trip").copy(members = listOf(me, member("Bruno"))),
+                ),
+            )
+
+            // When
+            val options = viewModel.uiState.value.payerOptions
+
+            // Then
+            val mine = options.filter { it.isMe }
+            assertEquals(1, mine.size)
+            assertEquals(PAYER_KEY_ME, mine.single().key)
+            assertEquals(listOf("Pierre", "Ana", "Bruno"), options.map { it.name })
+        }
+
+    @Test
+    fun `GIVEN Pierre with an account in one group only WHEN picking you THEN shows his bills of both`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio().copy(members = listOf(me.copy(userId = "pierre-account"), member("Ana"))),
+                    trio(id = "trip").copy(members = listOf(me, member("Ana"))),
+                ),
+                storedExpenses = listOf(
+                    bill(
+                        "synced",
+                        spentAt = hoursAgo(1),
+                        splitOver = listOf("Pierre", "Ana"),
+                    ),
+                    bill(
+                        "local",
+                        groupId = "trip",
+                        spentAt = hoursAgo(2),
+                        splitOver = listOf("Pierre", "Ana"),
+                    ),
+                    bill(
+                        "ana",
+                        groupId = "trip",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(3),
+                        splitOver = listOf("Pierre", "Ana"),
+                    ),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnPayerToggled(PAYER_KEY_ME)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("synced", "local"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN Ana joined two groups under different names WHEN All expenses opens THEN offers her once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = anaUnderTwoNames())
+
+            // When
+            val names = viewModel.uiState.value.payerOptions
+                .map { it.name }
+
+            // Then
+            assertEquals(listOf("Pierre", "Ana", "Bruno"), names)
+        }
+
+    @Test
+    fun `GIVEN Ana joined two groups under different names WHEN picking her THEN shows what she paid in both`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = anaUnderTwoNames(),
+                storedExpenses = listOf(
+                    bill(
+                        "apartment",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(1),
+                    ),
+                    bill(
+                        "trip",
+                        groupId = "trip",
+                        paidBy = "Aninha",
+                        spentAt = hoursAgo(2),
+                        splitOver = listOf("Pierre", "Aninha"),
+                    ),
+                    bill("pierre", spentAt = hoursAgo(3)),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnPayerToggled(payerKeyNamed("Ana"))
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("apartment", "trip"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN a name written in other case and spaces in two groups WHEN picking it THEN shows its bills of both`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio(),
+                    trio(id = "trip").copy(members = listOf(me, member("Ana").copy(name = "  ANA "))),
+                ),
+                storedExpenses = listOf(
+                    bill(
+                        "apartment",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(1),
+                    ),
+                    bill(
+                        "trip",
+                        groupId = "trip",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(2),
+                        splitOver = listOf("Pierre", "Ana"),
+                    ),
+                ),
+            )
+            val ana = viewModel.uiState.value.payerOptions
+                .filter { it.name.trim().equals("Ana", ignoreCase = true) }
+            val event = AllExpensesUiEvent.OnPayerToggled(ana.single().key)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("apartment", "trip"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN two accounts both named Ana WHEN All expenses opens THEN offers two Anas`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = twoAnas())
+
+        // When
+        val anas = viewModel.uiState.value.payerOptions
+            .filter { it.name == "Ana" }
+
+        // Then
+        assertEquals(2, anas.map { it.key }.toSet().size)
+    }
+
+    @Test
+    fun `GIVEN two accounts both named Ana WHEN picking the Ana of one group THEN shows only what she paid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = twoAnas(),
+                storedExpenses = listOf(
+                    bill(
+                        "apartment",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(1),
+                    ),
+                    bill(
+                        "trip",
+                        groupId = "trip",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(2),
+                        splitOver = listOf("Pierre", "Ana"),
+                    ),
+                ),
+            )
+            val tripAna = viewModel.uiState.value.payerOptions
+                .single { it.key == PeopleBalances.toUserKey("second-ana") }
+            val event = AllExpensesUiEvent.OnPayerToggled(tripAna.key)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("trip"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN people of two groups in no order WHEN opening THEN offers you first then everyone once by name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio().copy(members = listOf(member("bruno"), me, member("Ana"))),
+                    trio(id = "trip").copy(members = listOf(member("carla"), member("Ana"), me)),
+                ),
+            )
+
+            // When
+            val options = viewModel.uiState.value.payerOptions
+
+            // Then
+            assertEquals(listOf("Pierre", "Ana", "bruno", "carla"), options.map { it.name })
+            assertEquals(listOf(true, false, false, false), options.map { it.isMe })
+        }
+
+    @Test
+    fun `GIVEN more bills than a page all Pierre paid WHEN opening THEN offers every member even who never paid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip").copy(members = listOf(me, member("Carla")))),
+                storedExpenses = manyBills(40),
+            )
+
+            // When
+            val names = viewModel.uiState.value.payerOptions
+                .map { it.name }
+
+            // Then
+            assertEquals(listOf("Pierre", "Ana", "Bruno", "Carla"), names)
+            assertTrue(viewModel.uiState.value.hasMore)
+        }
+
+    @Test
+    fun `GIVEN Ana drawn differently in two groups WHEN All expenses opens THEN draws her as the first group does`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio().copy(
+                        members = listOf(
+                            me,
+                            member("Ana").copy(
+                                userId = "ana-account",
+                                avatarColor = AvatarColor.GREEN,
+                                photoUrl = "https://photos/ana.jpg",
+                            ),
+                        ),
+                    ),
+                    trio(id = "trip").copy(
+                        members = listOf(
+                            me,
+                            member("Aninha").copy(
+                                userId = "ana-account",
+                                avatarColor = AvatarColor.PEACH,
+                            ),
+                        ),
+                    ),
+                ),
+            )
+
+            // When
+            val ana = viewModel.uiState.value.payerOptions
+                .single { !it.isMe }
+
+            // Then
+            assertEquals("Ana", ana.name)
+            assertEquals("A", ana.face.initials)
+            assertEquals(AvatarColor.GREEN, ana.face.color)
+            assertEquals("https://photos/ana.jpg", ana.face.photoUrl)
+        }
+
+    @Test
+    fun `GIVEN two groups WHEN picking one in the Group filter THEN offers only its people`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip").copy(members = listOf(me, member("Carla")))),
+            )
+            val event = AllExpensesUiEvent.OnGroupToggled("trip")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf("Pierre", "Carla"),
+                viewModel.uiState.value.payerOptions
+                    .map { it.name },
+            )
+        }
+
+    @Test
+    fun `GIVEN Ana picked in who paid WHEN picking a group she is not in THEN still offers her`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip").copy(members = listOf(me, member("Carla")))),
+            )
+            val ana = payerKeyNamed("Ana")
+            viewModel.onEvent(AllExpensesUiEvent.OnPayerToggled(ana))
+            val event = AllExpensesUiEvent.OnGroupToggled("trip")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(listOf("Pierre", "Ana", "Carla"), state.payerOptions.map { it.name })
+            assertEquals(setOf(ana), state.filters.payerKeys)
+        }
+
+    @Test
+    fun `GIVEN Ana under two names WHEN picking her second group THEN names her as that group does`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = anaUnderTwoNames())
+            val event = AllExpensesUiEvent.OnGroupToggled("trip")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf("Pierre", "Aninha"),
+                viewModel.uiState.value.payerOptions
+                    .map { it.name },
+            )
+        }
+
+    @Test
+    fun `GIVEN you and Ana picked in who paid WHEN picking anyone THEN lets both go and shows every bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("pierre", spentAt = hoursAgo(1)),
+                    bill(
+                        "ana",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(2),
+                    ),
+                    bill(
+                        "bruno",
+                        paidBy = "Bruno",
+                        spentAt = hoursAgo(3),
+                    ),
+                ),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnPayerToggled(PAYER_KEY_ME))
+            viewModel.onEvent(AllExpensesUiEvent.OnPayerToggled(payerKeyNamed("Ana")))
+            val event = AllExpensesUiEvent.OnAnyPayerPicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(emptySet(), state.filters.payerKeys)
+            assertFalse(state.filters.isFiltering)
+            assertEquals(listOf("pierre", "ana", "bruno"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN Ana picked in who paid WHEN picking anyone THEN tracks the payer filter changed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(AllExpensesUiEvent.OnPayerToggled(payerKeyNamed("Ana")))
+            trackedEvents.clear()
+            val event = AllExpensesUiEvent.OnAnyPayerPicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(filterChanged("payer")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN nobody picked in who paid WHEN picking anyone THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        val event = AllExpensesUiEvent.OnAnyPayerPicked
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Ana picked in who paid WHEN every group is deleted THEN lets her go`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        viewModel.onEvent(AllExpensesUiEvent.OnPayerToggled(payerKeyNamed("Ana")))
+
+        // When
+        groups.groups.value = emptyList()
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(emptySet(), state.filters.payerKeys)
+        assertFalse(state.filters.isFiltering)
+    }
+
+    @Test
+    fun `GIVEN a bill Ana paid older than the first page WHEN picking Ana THEN reads every bill and shows it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(40) + bill(
+                    "ana",
+                    paidBy = "Ana",
+                    spentAt = daysAgo(3),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnPayerToggled(payerKeyNamed("Ana"))
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("ana"), shownIds())
+            assertEquals(Int.MAX_VALUE, expenses.myExpenseLimits.last())
+        }
+
+    @Test
+    fun `GIVEN statistics of a group whose members have no you yet WHEN picking Ana THEN shows the bills she paid`() =
+        runTest(testDispatcher) {
+            // Given
+            val syncing = trio().let { group -> group.copy(members = group.members.map { it.copy(isMe = false) }) }
+            prepareScenario(
+                storedGroups = listOf(syncing),
+                storedExpenses = listOf(
+                    bill(
+                        "pierre",
+                        spentAt = hoursAgo(1),
+                        categoryId = AppCategory.FOOD.key,
+                    ),
+                    bill(
+                        "ana",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(2),
+                        categoryId = AppCategory.FOOD.key,
+                    ),
+                ),
+                route = fromStatistics(period = ExpensePeriod.ALL),
+            )
+            val event = AllExpensesUiEvent.OnPayerToggled(payerKeyNamed("Ana"))
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("ana"), shownIds())
+        }
+
     private val everyone = listOf("Pierre", "Ana", "Bruno")
 
     private val fromAllExpenses: Map<String, Any> = mapOf("source" to "all_expenses")
@@ -3542,6 +4140,37 @@ class AllExpensesViewModelTest {
         customStartMillis = customStartMillis,
         customEndMillis = customEndMillis,
         isFromStatistics = true,
+    )
+
+    // Why: Pierre as this device's user, with no account yet as before the first sync.
+    private val me = GroupMember(
+        id = "member-Pierre",
+        name = "Pierre",
+        avatarColor = AvatarColor.BLUE,
+        isMe = true,
+        hasJoined = false,
+        userId = null,
+        inviteCode = null,
+        photoUrl = null,
+    )
+
+    // Why: the key of the person Who paid offers under that name, as a UI picks them.
+    private fun payerKeyNamed(name: String): String = viewModel.uiState.value.payerOptions
+        .single { it.name == name }
+        .key
+
+    // Why: Ana's account in the trio as "Ana" and in a trip as "Aninha".
+    private fun anaUnderTwoNames(): List<Group> = listOf(
+        trio().let { group ->
+            group.copy(members = group.members.map { if (it.name == "Ana") it.copy(userId = "ana-account") else it })
+        },
+        trio(id = "trip").copy(members = listOf(me, member("Aninha").copy(userId = "ana-account"))),
+    )
+
+    // Why: two accounts both named Ana, one in the trio and one in a trip.
+    private fun twoAnas(): List<Group> = listOf(
+        trio().copy(members = listOf(me, member("Ana").copy(userId = "first-ana"))),
+        trio(id = "trip").copy(members = listOf(me, member("Ana").copy(userId = "second-ana"))),
     )
 
     private fun TestScope.prepareScenario(

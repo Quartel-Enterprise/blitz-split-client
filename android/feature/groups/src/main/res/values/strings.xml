@@ -190,7 +190,7 @@
     <string name="groups_all_expenses_payer">Who paid</string>
     <string name="groups_all_expenses_payer_all">Anyone</string>
     <string name="groups_all_expenses_payer_you">You paid</string>
-    <string name="groups_all_expenses_payer_others">Others paid</string>
+    <string name="groups_all_expenses_payer_by">Paid by %1$s</string>
     <string name="groups_all_expenses_sort_newest">Newest first</string>
     <string name="groups_all_expenses_sort_oldest">Oldest first</string>
     <string name="groups_all_expenses_sort_largest">Largest first</string>

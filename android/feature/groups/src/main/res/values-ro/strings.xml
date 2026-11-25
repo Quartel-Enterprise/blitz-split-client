@@ -198,7 +198,7 @@
     <string name="groups_all_expenses_payer">Cine a plătit</string>
     <string name="groups_all_expenses_payer_all">Oricine</string>
     <string name="groups_all_expenses_payer_you">Ai plătit tu</string>
-    <string name="groups_all_expenses_payer_others">Au plătit alții</string>
+    <string name="groups_all_expenses_payer_by">Plătit de %1$s</string>
     <string name="groups_all_expenses_sort_newest">Cele mai noi întâi</string>
     <string name="groups_all_expenses_sort_oldest">Cele mai vechi întâi</string>
     <string name="groups_all_expenses_sort_largest">Cele mai mari întâi</string>

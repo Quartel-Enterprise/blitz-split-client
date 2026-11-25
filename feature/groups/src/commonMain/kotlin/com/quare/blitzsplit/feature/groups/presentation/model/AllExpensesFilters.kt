@@ -21,7 +21,11 @@ data class AllExpensesFilters(
     val customStartMillis: Long?,
     val customEndMillis: Long?,
     val share: ShareFilter,
-    val payer: PayerFilter,
+    /*
+     * Why: "Who paid": the people picked (FilterPayerOption.key), a bill passing when any of them paid part of it; none
+     * picked: anyone.
+     */
+    val payerKeys: Set<String>,
     val sort: ExpenseSort,
 ) {
     // Why: what the bills are narrowed by, the order aside, which "Clear filters" resets and the empty state names.
@@ -31,7 +35,7 @@ data class AllExpensesFilters(
             categoryIds.isNotEmpty() ||
             period != ExpensePeriod.ALL ||
             share != ShareFilter.ALL ||
-            payer != PayerFilter.ALL
+            payerKeys.isNotEmpty()
 
     /*
      * Why: at the default but for the groups picked, Room reads a window of those groups that grows a page at a time;
@@ -50,7 +54,7 @@ data class AllExpensesFilters(
             customStartMillis = null,
             customEndMillis = null,
             share = ShareFilter.ALL,
-            payer = PayerFilter.ALL,
+            payerKeys = emptySet(),
             sort = ExpenseSort.NEWEST,
         )
     }

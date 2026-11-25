@@ -198,7 +198,7 @@
     <string name="groups_all_expenses_payer">שולם על ידי</string>
     <string name="groups_all_expenses_payer_all">כל אחד</string>
     <string name="groups_all_expenses_payer_you">שולם על ידי: אני</string>
-    <string name="groups_all_expenses_payer_others">שולם על ידי אחרים</string>
+    <string name="groups_all_expenses_payer_by">שולם על ידי %1$s</string>
     <string name="groups_all_expenses_sort_newest">החדשות קודם</string>
     <string name="groups_all_expenses_sort_oldest">הישנות קודם</string>
     <string name="groups_all_expenses_sort_largest">הגדולות קודם</string>

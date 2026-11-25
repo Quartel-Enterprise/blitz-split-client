@@ -188,7 +188,7 @@
     <string name="groups_all_expenses_payer">Aliyelipa</string>
     <string name="groups_all_expenses_payer_all">Yeyote</string>
     <string name="groups_all_expenses_payer_you">Wewe ulilipa</string>
-    <string name="groups_all_expenses_payer_others">Wengine walilipa</string>
+    <string name="groups_all_expenses_payer_by">Alilipa %1$s</string>
     <string name="groups_all_expenses_sort_newest">Mpya kwanza</string>
     <string name="groups_all_expenses_sort_oldest">Za zamani kwanza</string>
     <string name="groups_all_expenses_sort_largest">Kubwa kwanza</string>

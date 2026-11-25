@@ -32,7 +32,10 @@ sealed interface AllExpensesUiEvent : UiEvent {
 
             is OnShareFilterPicked -> filterChanged("share")
 
-            is OnPayerFilterPicked -> filterChanged("payer")
+            is OnPayerToggled -> filterChanged("payer")
+
+            // Why: only when someone was picked, never "Anyone" while it is already on.
+            OnAnyPayerPicked -> EventAnalytics.Manual("all_expenses_filter_changed")
 
             is OnSortPicked -> EventAnalytics.Automatic("all_expenses_sort_changed", mapOf("sort" to sort))
 
@@ -82,9 +85,13 @@ sealed interface AllExpensesUiEvent : UiEvent {
         val share: ShareFilter,
     ) : AllExpensesUiEvent
 
-    data class OnPayerFilterPicked(
-        val payer: PayerFilter,
+    // Why: a person of Who paid, picked or let go (FilterPayerOption.key); several may be picked.
+    data class OnPayerToggled(
+        val key: String,
     ) : AllExpensesUiEvent
+
+    // Why: Who paid's "Anyone", which lets go of every person picked.
+    data object OnAnyPayerPicked : AllExpensesUiEvent
 
     data class OnSortPicked(
         val sort: ExpenseSort,

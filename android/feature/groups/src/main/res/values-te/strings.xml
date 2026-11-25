@@ -188,7 +188,7 @@
     <string name="groups_all_expenses_payer">ఎవరు చెల్లించారు</string>
     <string name="groups_all_expenses_payer_all">ఎవరైనా</string>
     <string name="groups_all_expenses_payer_you">మీరు చెల్లించారు</string>
-    <string name="groups_all_expenses_payer_others">ఇతరులు చెల్లించారు</string>
+    <string name="groups_all_expenses_payer_by">%1$s చెల్లించారు</string>
     <string name="groups_all_expenses_sort_newest">కొత్తవి ముందు</string>
     <string name="groups_all_expenses_sort_oldest">పాతవి ముందు</string>
     <string name="groups_all_expenses_sort_largest">పెద్దవి ముందు</string>

@@ -9,7 +9,6 @@ import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.ExpenseSort
-import com.quare.blitzsplit.feature.groups.presentation.model.PayerFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.ShareFilter
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.AllExpensesViewModel
 import kotlinx.coroutines.flow.map
@@ -21,6 +20,16 @@ import org.koin.mp.KoinPlatform
 class JsFilterGroupOption(
     val id: String,
     val name: String,
+    val initials: String,
+    val color: String,
+    val photoUrl: String?,
+)
+
+// Why: a person Who paid offers; isMe is the user, whom the page calls "You".
+class JsFilterPayerOption(
+    val key: String,
+    val name: String,
+    val isMe: Boolean,
     val initials: String,
     val color: String,
     val photoUrl: String?,
@@ -39,13 +48,15 @@ class JsAllExpensesState(
     val customEndMillis: Double?,
     // Why: AllExpensesFilter's names in the order the row draws its chips ("SORT", "GROUP"…).
     val filterOrder: Array<String>,
-    // Why: ShareFilter's, PayerFilter's and ExpenseSort's names: "ALL", "TO_RECEIVE", "YOU", "LARGEST"…
+    // Why: ShareFilter's and ExpenseSort's names: "ALL", "TO_RECEIVE", "LARGEST"…
     val share: String,
-    val payer: String,
+    // Why: the people Who paid picked (JsFilterPayerOption.key); none: anyone.
+    val payerKeys: Array<String>,
     val sort: String,
     val isFiltering: Boolean,
     val groupOptions: Array<JsFilterGroupOption>,
     val categoryOptions: Array<JsCategory>,
+    val payerOptions: Array<JsFilterPayerOption>,
     val showsNoResults: Boolean,
     val showsSkeleton: Boolean,
     val showsEmpty: Boolean,
@@ -83,7 +94,7 @@ class AllExpensesPresenter(
                 customEndMillis = state.filters.customEndMillis?.toDouble(),
                 filterOrder = state.filterOrder.map { it.name }.toTypedArray(),
                 share = state.filters.share.name,
-                payer = state.filters.payer.name,
+                payerKeys = state.filters.payerKeys.toTypedArray(),
                 sort = state.filters.sort.name,
                 isFiltering = state.filters.isFiltering,
                 groupOptions = state.groupOptions
@@ -91,6 +102,17 @@ class AllExpensesPresenter(
                         JsFilterGroupOption(it.id, it.name, it.initials, it.color.code, it.photoUrl)
                     }.toTypedArray(),
                 categoryOptions = state.categoryOptions.map(::toJsCategory).toTypedArray(),
+                payerOptions = state.payerOptions
+                    .map {
+                        JsFilterPayerOption(
+                            it.key,
+                            it.name,
+                            it.isMe,
+                            it.face.initials,
+                            it.face.color.code,
+                            it.face.photoUrl,
+                        )
+                    }.toTypedArray(),
                 showsNoResults = state.showsNoResults,
                 showsSkeleton = state.showsSkeleton,
                 showsEmpty = state.showsEmpty,
@@ -144,7 +166,7 @@ class AllExpensesPresenter(
         viewModel.onEvent(AllExpensesUiEvent.OnCategoryToggled(categoryId))
     }
 
-    // Why: by ShareFilter's, PayerFilter's and ExpenseSort's names, as the state sends them.
+    // Why: by ShareFilter's and ExpenseSort's names, as the state sends them.
     fun pickShare(share: String) {
         viewModel.onEvent(AllExpensesUiEvent.OnShareFilterPicked(ShareFilter.valueOf(share)))
     }
@@ -161,8 +183,13 @@ class AllExpensesPresenter(
         viewModel.onEvent(AllExpensesUiEvent.OnCustomPeriodPicked(startMillis.toLong(), endMillis.toLong()))
     }
 
-    fun pickPayer(payer: String) {
-        viewModel.onEvent(AllExpensesUiEvent.OnPayerFilterPicked(PayerFilter.valueOf(payer)))
+    fun togglePayer(key: String) {
+        viewModel.onEvent(AllExpensesUiEvent.OnPayerToggled(key))
+    }
+
+    // Why: Who paid's "Anyone".
+    fun pickAnyPayer() {
+        viewModel.onEvent(AllExpensesUiEvent.OnAnyPayerPicked)
     }
 
     fun pickSort(sort: String) {

@@ -198,7 +198,7 @@
     <string name="groups_all_expenses_payer">Kas maksāja</string>
     <string name="groups_all_expenses_payer_all">Jebkurš</string>
     <string name="groups_all_expenses_payer_you">Tu samaksāji</string>
-    <string name="groups_all_expenses_payer_others">Citi samaksāja</string>
+    <string name="groups_all_expenses_payer_by">Maksāja %1$s</string>
     <string name="groups_all_expenses_sort_newest">Jaunākie vispirms</string>
     <string name="groups_all_expenses_sort_oldest">Vecākie vispirms</string>
     <string name="groups_all_expenses_sort_largest">Lielākie vispirms</string>

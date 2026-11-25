@@ -207,7 +207,7 @@
     <string name="groups_all_expenses_payer">Kto platil</string>
     <string name="groups_all_expenses_payer_all">Ktokoľvek</string>
     <string name="groups_all_expenses_payer_you">Platil(a) si ty</string>
-    <string name="groups_all_expenses_payer_others">Platili ostatní</string>
+    <string name="groups_all_expenses_payer_by">Zaplatil(a) %1$s</string>
     <string name="groups_all_expenses_sort_newest">Najnovšie prvé</string>
     <string name="groups_all_expenses_sort_oldest">Najstaršie prvé</string>
     <string name="groups_all_expenses_sort_largest">Najväčšie prvé</string>

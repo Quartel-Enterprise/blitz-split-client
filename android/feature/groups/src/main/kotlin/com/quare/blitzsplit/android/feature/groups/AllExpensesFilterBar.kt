@@ -17,6 +17,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.DateRangeDialog
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
@@ -44,9 +46,9 @@ import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilters
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.ExpenseSort
-import com.quare.blitzsplit.feature.groups.presentation.model.PayerFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.ShareFilter
 import kotlin.time.Duration.Companion.hours
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 /*
  * Why: DateUtils reads an end at midnight as the day before, and Statistics sends a custom period's days as their
@@ -145,23 +147,54 @@ private fun FilterMenuChip(
             }
         }
 
-        AllExpensesFilter.PAYER -> MenuChip(
-            label = if (filters.payer == PayerFilter.ALL) {
-                stringResource(R.string.groups_all_expenses_payer)
-            } else {
-                payerLabel(filters.payer)
-            },
-            isSelected = filters.payer != PayerFilter.ALL,
-        ) { close ->
-            PayerFilter.entries.forEach { payer ->
-                CheckedMenuItem(
-                    text = payerLabel(payer),
-                    isChecked = filters.payer == payer,
-                ) {
-                    close()
-                    onEvent(AllExpensesUiEvent.OnPayerFilterPicked(payer))
-                }
-            }
+        AllExpensesFilter.PAYER -> PayerChip(
+            state = state,
+            onEvent = onEvent,
+        )
+    }
+}
+
+/*
+ * Why: "Anyone", then the people (Pierre's call, 2026-11-24): the user first, as "You", then everyone of the groups;
+ * several may be picked at once, so the menu stays open while they are. One picked names the chip ("You paid", "Paid
+ * by Ana").
+ */
+@Composable
+private fun PayerChip(
+    state: AllExpensesUiState,
+    onEvent: (AllExpensesUiEvent) -> Unit,
+) {
+    val picked = state.filters.payerKeys
+    val single = state.payerOptions.singleOrNull { it.key in picked }?.takeIf { picked.size == 1 }
+    MenuChip(
+        label = when {
+            single == null -> buildCountedLabel(stringResource(R.string.groups_all_expenses_payer), picked.size)
+            single.isMe -> stringResource(R.string.groups_all_expenses_payer_you)
+            else -> stringResource(R.string.groups_all_expenses_payer_by, single.name)
+        },
+        isSelected = picked.isNotEmpty(),
+    ) { close ->
+        CheckedMenuItem(
+            text = stringResource(R.string.groups_all_expenses_payer_all),
+            isChecked = picked.isEmpty(),
+        ) {
+            close()
+            onEvent(AllExpensesUiEvent.OnAnyPayerPicked)
+        }
+        HorizontalDivider()
+        state.payerOptions.forEach { person ->
+            CheckedMenuItem(
+                text = if (person.isMe) stringResource(DesignR.string.designsystem_you) else person.name,
+                isChecked = person.key in picked,
+                leading = {
+                    AvatarBadge(
+                        initial = person.face.initials,
+                        color = person.face.color,
+                        photoUrl = person.face.photoUrl,
+                        size = 24.dp,
+                    )
+                },
+            ) { onEvent(AllExpensesUiEvent.OnPayerToggled(person.key)) }
         }
     }
 }
@@ -400,14 +433,5 @@ private fun shareLabel(share: ShareFilter): String = stringResource(
         ShareFilter.ALL -> R.string.groups_all_expenses_share_all
         ShareFilter.TO_RECEIVE -> R.string.groups_all_expenses_share_receive
         ShareFilter.TO_PAY -> R.string.groups_all_expenses_share_pay
-    },
-)
-
-@Composable
-private fun payerLabel(payer: PayerFilter): String = stringResource(
-    when (payer) {
-        PayerFilter.ALL -> R.string.groups_all_expenses_payer_all
-        PayerFilter.YOU -> R.string.groups_all_expenses_payer_you
-        PayerFilter.OTHERS -> R.string.groups_all_expenses_payer_others
     },
 )

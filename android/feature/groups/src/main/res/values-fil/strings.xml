@@ -188,7 +188,7 @@
     <string name="groups_all_expenses_payer">Sino ang nagbayad</string>
     <string name="groups_all_expenses_payer_all">Sinuman</string>
     <string name="groups_all_expenses_payer_you">Nagbayad ka</string>
-    <string name="groups_all_expenses_payer_others">Nagbayad ang iba</string>
+    <string name="groups_all_expenses_payer_by">Binayaran ni %1$s</string>
     <string name="groups_all_expenses_sort_newest">Pinakabago muna</string>
     <string name="groups_all_expenses_sort_oldest">Pinakaluma muna</string>
     <string name="groups_all_expenses_sort_largest">Pinakamalaki muna</string>

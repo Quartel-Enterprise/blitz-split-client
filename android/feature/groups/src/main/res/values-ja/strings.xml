@@ -180,7 +180,7 @@
     <string name="groups_all_expenses_payer">支払った人</string>
     <string name="groups_all_expenses_payer_all">誰でも</string>
     <string name="groups_all_expenses_payer_you">あなたが支払った</string>
-    <string name="groups_all_expenses_payer_others">ほかの人が支払った</string>
+    <string name="groups_all_expenses_payer_by">%1$sが支払い</string>
     <string name="groups_all_expenses_sort_newest">新しい順</string>
     <string name="groups_all_expenses_sort_oldest">古い順</string>
     <string name="groups_all_expenses_sort_largest">金額が大きい順</string>

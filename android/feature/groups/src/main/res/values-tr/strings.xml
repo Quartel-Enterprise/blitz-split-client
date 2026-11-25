@@ -189,7 +189,7 @@
     <string name="groups_all_expenses_payer">Kim ödedi</string>
     <string name="groups_all_expenses_payer_all">Herkes</string>
     <string name="groups_all_expenses_payer_you">Sen ödedin</string>
-    <string name="groups_all_expenses_payer_others">Başkaları ödedi</string>
+    <string name="groups_all_expenses_payer_by">Ödeyen: %1$s</string>
     <string name="groups_all_expenses_sort_newest">En yeni</string>
     <string name="groups_all_expenses_sort_oldest">En eski</string>
     <string name="groups_all_expenses_sort_largest">En yüksek tutar</string>
