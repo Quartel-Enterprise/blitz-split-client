@@ -469,18 +469,21 @@ token without the Workflows permission, see below) also removes the label, with 
 
 Nothing requires a branch to be up to date with `main` before it merges, so two pull requests can each be green alone
 and red together. That is what broke `main` with #604 and #605: one added Burmese and Khmer while the other added strings
-and changed one, and neither branch ever ran the translation checks with both. So before merging a branch that is behind
-its base, `merge-when-green` compares the files each side changed since the branch left it. When one side adds a language
-(it changes `AppLanguage.kt`, or adds a `values-xx/strings.xml` or a web dictionary under `webApp/src/i18n/`) and the
-other touches localized text (any `strings.xml`, an `.xcstrings`, `webApp/src/i18n/`, `release-notes/` or
-`store-listing/`), it brings the branch up to date instead (GitHub's "Update branch", a merge of the base into it) with
-`MERGE_WHEN_GREEN_TOKEN`. That push runs the checks again, their completion starts `merge-when-green` again, and the
-pull request merges once they pass on the updated branch, keeping its label all along. If the base moves again in the
-meantime the same thing repeats. Any other branch behind `main` merges as it is: updating every labeled branch on every
-merge would run all of its checks again, the Mac's Apple builds included, for a conflict that happens in the localized
-text. A base that gained 300 files or more, all GitHub's comparison lists, counts as both adding a language and
-touching text. When GitHub refuses the update (a conflict with the base), the label goes with a comment saying why:
-merge the base into the branch, then add the label again.
+and changed one, and neither branch ever ran the checks with both. A new language makes every other branch's new strings,
+release notes and code over all the languages incomplete. So before merging a branch that is behind its base,
+`merge-when-green` compares the files each side changed since the branch left it. When either side adds a language (it
+changes `AppLanguage.kt` or the languages `iosApp/check-translations.py` requires, or adds a web dictionary under
+`webApp/src/i18n/` or a `store-listing/` file), it brings the branch up to date instead (GitHub's "Update branch", a
+merge of the base into it) with `MERGE_WHEN_GREEN_TOKEN`. That push runs the checks again, their completion starts
+`merge-when-green` again, and the pull request merges once they pass on the updated branch, keeping its label all along.
+If the base moves again in the meantime the same thing repeats. Any other branch behind `main` merges as it is: updating
+every labeled branch on every merge would run all of its checks again, the Mac's Apple builds included, with nothing new
+to catch. A new Android module's `values-xx/strings.xml` files don't count as a language, and a base that gained 300
+files or more, all GitHub's comparison lists, counts as adding one. When GitHub refuses the update (a conflict with the
+base), the label goes with a comment saying why: merge the base into the branch, then add the label again. A sweep checks
+its pull requests one at a time, so two of them can't both find themselves up to date with the same `main` and merge
+together. Two runs started by separate events can still do so if both read `main` in the same few seconds before either
+merges; `main`'s own checks catch that.
 
 The merge uses the `MERGE_WHEN_GREEN_TOKEN` secret, not `GITHUB_TOKEN`: a merge made with `GITHUB_TOKEN` triggers no
 other workflow, so the push to `main` would run none of its checks. The merge shows up as made by the token's owner.
