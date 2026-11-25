@@ -15,7 +15,9 @@ on:
       - ready_for_review
     paths:
       - '.github/workflows/apple.yml'
+      - 'scripts/ci/apple-*.sh'
       - '.github/actions/gradle/action.yml'
+      - '.github/actions/gradle/*.sh'
       - 'core/**'
       - 'feature/**'
       - 'shared/**'
@@ -40,7 +42,9 @@ on:
       - main
     paths:
       - '.github/workflows/apple.yml'
+      - 'scripts/ci/apple-*.sh'
       - '.github/actions/gradle/action.yml'
+      - '.github/actions/gradle/*.sh'
       - 'core/**'
       - 'feature/**'
       - 'shared/**'
@@ -141,7 +145,9 @@ jobs:
         with:
           fetch-depth: 2
           filter: blob:none
-          sparse-checkout: .github/workflows/apple.yml
+          sparse-checkout: |
+            .github/workflows/apple.yml
+            scripts/ci/apple-look-at-what-the-change-reaches.sh
           sparse-checkout-cone-mode: false
 
       # Markdown is already left out of the paths that start this workflow. --no-renames lists both
@@ -162,49 +168,14 @@ jobs:
       # convention plugin only adds targets no suite runs on, which the schemes and "Compile the
       # device targets" build.
       # The source sets no Apple target compiles and Markdown don't count, as they don't to start
-      # this workflow. A change to this workflow, to the Gradle action or to the script that lists
+      # this workflow. A change to this workflow, to the scripts of its `changes` and `apple-tests` jobs
+      # (scripts/ci/apple-*), to the Gradle action or to the script that lists
       # the modules runs the tests, and the first and the last split them too, so a change to the
       # job is seen working before it merges, on the simulator as well when it is this workflow that
       # changes.
       - name: Look at what the change reaches
         id: diff
-        run: |
-          kotlin=true
-          tests=true
-          simulator=true
-          shards='[1]'
-          own='^\.github/workflows/apple\.yml$|^scripts/modules-with-tests\.sh$'
-          apple='^(core|feature)/.*/src/(apple|ios|macos|native)[A-Za-z0-9]*/'
-          apple="$apple|^gradle/libs\.versions\.toml$|^gradle\.properties$"
-          logic='^build-logic/.*(Multiplatform|Simulator)[A-Za-z]*\.kt$'
-          apple="$apple|$logic|^\.github/actions/gradle/action\.yml$|$own"
-          ios='^(core|feature)/.*/src/ios[A-Za-z0-9]*/|^gradle/libs\.versions\.toml$'
-          ios="$ios|$logic|^\.github/workflows/apple\.yml$"
-          wide="^(core|gradle)/|^gradle\.properties$|$own"
-          not_apple='\.md$|/src/(js|jvm)(Main|Test)/|/src/androidMain/'
-          if files=$(git -c core.quotePath=false diff --name-only --no-renames HEAD^1 HEAD) &&
-            [ -n "$files" ]; then
-            simulator=false
-            if ! grep -q -v -E '^(iosApp|release-notes)/|\.md$' <<< "$files"; then
-              kotlin=false
-              tests=false
-            elif ! grep -q -E "$apple" <<< "$files"; then
-              tests=false
-            else
-              if grep -q -E "$ios" <<< "$files"; then
-                simulator=true
-              fi
-              if grep -v -E "$not_apple" <<< "$files" | grep -q -E "$wide"; then
-                shards='[1, 2]'
-              fi
-            fi
-          fi
-          {
-            echo "kotlin=$kotlin"
-            echo "tests=$tests"
-            echo "simulator=$simulator"
-            echo "shards=$shards"
-          } >> "$GITHUB_OUTPUT"
+        run: scripts/ci/apple-look-at-what-the-change-reaches.sh
 
   # The tests, when they run, and the app's two builds run side by side: each compiles the
   # Kotlin/Native code on its own, and runners side by side finish sooner than one doing it all.
@@ -279,31 +250,7 @@ jobs:
           SHARD_INDEX: ${{ strategy.job-index }}
           SHARD_TOTAL: ${{ strategy.job-total }}
           SIMULATOR: ${{ needs.changes.outputs.simulator }}
-        run: |
-          simulator=''
-          if [ "$SIMULATOR" != false ]; then
-            simulator=iosSimulatorArm64Test
-          fi
-          if [ "$EVENT_NAME" != pull_request ]; then
-            tasks='macosArm64Test :shared:linkDebugFrameworkIosSimulatorArm64'
-            tasks="$tasks compileKotlinIosArm64 compileKotlinWatchosArm64 compileAppleMainKotlinMetadata"
-          elif [ "$SHARD_TOTAL" -eq 1 ]; then
-            tasks="${simulator:+$simulator }macosArm64Test"
-          else
-            modules=$(./scripts/modules-with-tests.sh commonTest)
-            tasks=$(awk -v shard="$SHARD_INDEX" -v total="$SHARD_TOTAL" -v simulator="$simulator" '
-              (NR - 1) % total == shard {
-                gsub("/", ":")
-                printf ":%s:macosArm64Test ", $0
-                if (simulator != "") printf ":%s:%s ", $0, simulator
-              }' <<< "$modules")
-            if [ -z "$tasks" ]; then
-              echo "::error::No module with tests falls on shard $((SHARD_INDEX + 1)) of $SHARD_TOTAL."
-              exit 1
-            fi
-          fi
-          echo "$tasks" | tr ' ' '\n'
-          echo "tasks=$tasks" >> "$GITHUB_OUTPUT"
+        run: scripts/ci/apple-pick-this-shards-tasks.sh
 
       # Recompiling everything took 22 minutes on macOS alone and up to 48 with the simulator too,
       # in one job: 60 minutes for the first and 80 for the second. main takes the 80 as well: its
@@ -316,12 +263,7 @@ jobs:
         timeout-minutes: ${{ (github.event_name == 'push' || needs.changes.outputs.simulator != 'false') && 80 || 60 }}
         env:
           TASKS: ${{ steps.tasks.outputs.tasks }}
-        run: |
-          status=0
-          read -ra tasks <<< "$TASKS"
-          ./gradlew "${tasks[@]}" --continue || status=$?
-          echo "finished=true" >> "$GITHUB_OUTPUT"
-          exit "$status"
+        run: scripts/ci/apple-run-the-tests.sh
 
       # main also links the watchOS Shared for the device (arm64_32) and the simulator, and packs the
       # two into the XCFramework. No pull request links the device slice: apple-app (iOS) links the
@@ -370,15 +312,7 @@ jobs:
         env:
           KEY_PREFIX: ${{ steps.gradle.outputs.konan-key }}
           NEWEST_KEY: ${{ steps.newest.outputs.cache-matched-key }}
-        run: |
-          if [ -n "$KEY_PREFIX" ] && ls -d ~/.konan/kotlin-native-prebuilt-*/klib/cache > /dev/null 2>&1; then
-            libraries=$(find ~/.konan/kotlin-native-prebuilt-*/klib/cache -mindepth 3 -maxdepth 3 -type d |
-              sort | shasum -a 256 | cut -c1-16)
-            case "$NEWEST_KEY" in
-              "$KEY_PREFIX$libraries"*) echo "The newest entry already holds these libraries." ;;
-              *) echo "key=$KEY_PREFIX$libraries-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT" ;;
-            esac
-          fi
+        run: scripts/ci/apple-fingerprint-the-kotlin-native-libraries.sh
 
       - name: Save the Kotlin/Native toolchain
         if: ${{ !cancelled() && steps.konan.outputs.key != '' }}
@@ -459,14 +393,7 @@ jobs:
       - name: Build the app
         env:
           PLATFORM: ${{ matrix.platform }}
-        run: |
-          case "$PLATFORM" in
-            iOS) target=(-destination 'generic/platform=iOS Simulator' ARCHS=arm64) ;;
-            macOS) target=(-destination 'platform=macOS') ;;
-          esac
-          xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme "BoraRachar-$PLATFORM" "${target[@]}" \
-            -derivedDataPath iosApp/build/DerivedData -clonedSourcePackagesDirPath iosApp/build/SourcePackages \
-            CODE_SIGNING_ALLOWED=NO build -quiet
+        run: scripts/ci/apple-build-the-app.sh
 
       # The device targets, which no scheme builds here: iosArm64, watchosArm64 (the watch's
       # arm64_32) and the appleMain shared by the Apple targets, which only a macOS host compiles.
@@ -505,7 +432,16 @@ jobs:
     timeout-minutes: 5
     permissions:
       actions: write
+      # To check out the script.
+      contents: read
     steps:
+      - name: Checkout the scripts
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: scripts/ci
+
       # setup-gradle's key is gradle-home-<version>|<os>|<job>[<hash>]-<commit>. The newest entries
       # come first, and this run's is among them: a hundred are ten commits of every job's. The entry
       # was saved seconds ago and the list may not show it yet, so an empty answer is asked for
@@ -514,23 +450,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: |
-          ids=''
-          for attempt in 1 2 3; do
-            ids=$(gh cache list --ref "$GITHUB_REF" --key gradle-home- --sort created_at --order desc \
-              --limit 100 --json id,key | jq -r --arg sha "$GITHUB_SHA" '.[]
-              | select((.key | contains("|apple-tests[")) and (.key | endswith("-" + $sha))) | .id')
-            if [ -n "$ids" ] || [ "$attempt" -eq 3 ]; then
-              break
-            fi
-            sleep 20
-          done
-          if [ -z "$ids" ]; then
-            echo "::warning::The cache lists no Gradle home of this run's apple-tests. If the run saved one, it is still the newest: see \"Speed and timeouts\" in docs/ci.md."
-          fi
-          for id in $ids; do
-            gh cache delete "$id"
-          done
+        run: scripts/ci/apple-delete-the-gradle-home-the-failed-run-saved.sh
 
   # main has no pull request to show a failure on, and a test that fails on an Apple target alone
   # first fails there, after the merge, since a pull request runs the suite on macOS only when it
@@ -549,8 +469,17 @@ jobs:
     permissions:
       # To look up the run before this one.
       actions: read
+      # To check out the script.
+      contents: read
       issues: write
     steps:
+      - name: Checkout the scripts
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: scripts/ci
+
       - name: Open or update the issue
         env:
           GH_TOKEN: ${{ github.token }}
@@ -565,22 +494,4 @@ jobs:
         # range, never a shorter one. With no answer the issue names this run's commit alone.
         # The list of issues, not the search: the search index lags, and two failures in a row
         # would open two.
-        run: |
-          previous=$(gh api "repos/$GH_REPO/actions/workflows/apple.yml/runs?branch=main&event=push&status=completed&per_page=30" \
-            --jq "[.workflow_runs[] | select(.id != $GITHUB_RUN_ID and (.conclusion == \"success\" or .conclusion == \"failure\"))][0].head_sha // empty" || true)
-          commits=''
-          # Only a commit id: on an error, gh prints GitHub's answer where the id would be.
-          if [[ "$previous" =~ ^[0-9a-f]{40}$ ]] && [ "$previous" != "$GITHUB_SHA" ]; then
-            commits=" The run also stands for the pushes it replaced in the queue, so what broke is in [the commits since the last run that completed]($GITHUB_SERVER_URL/$GH_REPO/compare/$previous...$GITHUB_SHA)."
-          fi
-          body=$(printf '%s\n\n%s\n' \
-            "[This run]($RUN_URL) of \`apple\` failed on \`main\` at $GITHUB_SHA: \`apple-tests\` $TESTS, \`apple-app\` $APP.$commits" \
-            "A pull request runs the Kotlin tests on macOS only when it changes Apple code, so a test that fails on an Apple target alone first fails here, and the pull request that fixes it may not run them. The failed job's log names the task: on \`main\`, \`apple-tests\` runs every module's \`macosArm64Test\`, links \`Shared\` for the iOS simulator, compiles the device targets and builds the watchOS XCFramework. Run that task on the Mac, \`./scripts/heavy-check.sh ./gradlew :<module>:macosArm64Test\` for a test. See \"Speed and timeouts\" in docs/ci.md.")
-          issue=$(gh issue list --state open --limit 200 --json number,title \
-            --jq "map(select(.title == \"$TITLE\"))[0].number // empty")
-          if [ -n "$issue" ]; then
-            gh issue comment "$issue" --body "$body"
-          else
-            gh issue create --title "$TITLE" --body "$body" --assignee "$ACTOR" ||
-              gh issue create --title "$TITLE" --body "$body"
-          fi
+        run: scripts/ci/apple-open-or-update-the-issue.sh

@@ -54,12 +54,7 @@ jobs:
       - name: Check the site's token
         env:
           SITE_RELEASE_NOTES_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
-        run: |
-          ./scripts/release/require-env.sh SITE_RELEASE_NOTES_TOKEN
-          if ! GH_TOKEN="$SITE_RELEASE_NOTES_TOKEN" gh api "repos/$SITE_REPOSITORY" --silent; then
-            echo "::error::GitHub refused the SITE_RELEASE_NOTES_TOKEN secret: it expired or can't reach $SITE_REPOSITORY. See docs/release-process.md#secrets."
-            exit 1
-          fi
+        run: scripts/ci/site-release-notes-check-the-sites-token.sh
 
       # With the token, so the push and the pull request below are made with it: GITHUB_TOKEN can't write to
       # another repository.

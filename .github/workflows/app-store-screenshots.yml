@@ -116,11 +116,7 @@ jobs:
       - name: Check where the run comes from
         env:
           REF: ${{ github.ref }}
-        run: |
-          if [ "$REF" != refs/heads/main ]; then
-            echo "::error::Screenshots are sent from main, and this run was dispatched on $REF. See docs/store-listing-screenshots.md."
-            exit 1
-          fi
+        run: scripts/ci/check-where-the-run-comes-from.sh
 
       - name: Check who sends
         uses: ./.github/actions/release-admin
@@ -137,36 +133,7 @@ jobs:
           LOCALES: ${{ inputs.locales }}
           DEVICES: ${{ inputs.devices }}
           TIDY_ONLY: ${{ inputs.tidy_only }}
-        run: |
-          if [ "$IOS" != true ] && [ "$MACOS" != true ]; then
-            echo "::error::No platform is selected."
-            exit 1
-          fi
-          # The tidy-up works on the version that is open for editing, and sends nothing: an input that names
-          # something to send, or a version to write on, was meant for another run.
-          if [ "$TIDY_ONLY" = true ]; then
-            if [ -n "$SET$LOCALES$APP_VERSION$DEVICES" ]; then
-              echo "::error::tidy_only sends nothing: leave set, locales, devices and app_version blank."
-              exit 1
-            fi
-            exit 0
-          fi
-          # The name becomes the tag of the release that is read and then deleted: nothing but a set's name goes
-          # through (SET_NAME of scripts/store-screenshots/local-set.mjs).
-          if [[ ! "$SET" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,59}$ ]]; then
-            echo "::error::set is the name local-set.mjs printed: letters, digits, dots, dashes and underscores."
-            exit 1
-          fi
-          # It reaches the lane's command line, where a space would split it: shelf names and commas alone.
-          if [[ -n "$DEVICES" && ! "$DEVICES" =~ ^[a-z0-9_]+(,[a-z0-9_]+)*$ ]]; then
-            echo "::error::devices is shelf names with commas and no spaces, as local-set.mjs printed: iphone_duo,watch_ultra_3."
-            exit 1
-          fi
-          # It reaches a lane's environment, so nothing but a version goes through.
-          if [[ -n "$APP_VERSION" && ! "$APP_VERSION" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
-            echo "::error::app_version is a version as the App Store writes it, X.Y.Z, or blank."
-            exit 1
-          fi
+        run: scripts/ci/app-store-screenshots-check-the-inputs.sh
 
       # A release writes on the same App Store version, and submits it: a version waiting for review takes no
       # screenshot, so the locales still to go would be left without theirs. Another run of this workflow would
@@ -194,51 +161,7 @@ jobs:
           IOS: ${{ inputs.ios }}
           MACOS: ${{ inputs.macos }}
           DEVICES: ${{ inputs.devices }}
-        run: |
-          if ! release="$(gh release view "$SET_TAG" --json isDraft,assets)"; then
-            echo "::error::No set named $SET: no draft release $SET_TAG. Send it from the Mac first, with node scripts/store-screenshots/local-set.mjs send."
-            exit 1
-          fi
-          if [ "$(jq -r .isDraft <<< "$release")" != true ]; then
-            echo "::error::$SET_TAG is a published release, not a set."
-            exit 1
-          fi
-          set_dir="$RUNNER_TEMP/set"
-          mkdir -p "$set_dir"
-          fetch() {
-            local archive="$1" folder="$2" input="$3"
-            if ! jq -e --arg name "$archive" 'any(.assets[]; .name == $name)' <<< "$release" > /dev/null; then
-              echo "::error::The set $SET has no $archive: it was sent without that platform. Dispatch with $input off."
-              exit 1
-            fi
-            gh release download "$SET_TAG" --dir "$set_dir" --pattern "$archive"
-            if ! grep -F "  $archive" "$set_dir/SHA256SUMS" > "$set_dir/$archive.sha256"; then
-              echo "::error::The set's SHA256SUMS doesn't list $archive."
-              exit 1
-            fi
-            (cd "$set_dir" && sha256sum --check "$archive.sha256")
-            # Nothing but images in a locale's folder is written on the runner, which is all local-set.mjs packs:
-            # no link, no folder of its own, no path that leaves the staged folder.
-            odd="$(tar -tvf "$set_dir/$archive" | grep -v '^-' || true)"
-            misplaced="$(tar -tf "$set_dir/$archive" | grep -vE '^[A-Za-z]+(-[A-Za-z]+)*/[A-Za-z0-9_]+\.png$' || true)"
-            if [ -n "$odd" ] || [ -n "$misplaced" ]; then
-              printf '%s\n' "$odd" "$misplaced"
-              echo "::error::$archive holds something that isn't <locale>/<image>.png, so local-set.mjs didn't pack it. Nothing was extracted."
-              exit 1
-            fi
-            mkdir -p "$folder"
-            tar -xf "$set_dir/$archive" -C "$folder"
-          }
-          gh release download "$SET_TAG" --dir "$set_dir" --pattern SHA256SUMS
-          # A set sent with --devices holds those shelves alone: dispatched without them (allow_missing_devices) the
-          # upload would empty every other shelf, so the run names the same ones (DEVICES_LINE of local-set.mjs).
-          sent="$(sed -n 's/^# devices: //p' "$set_dir/SHA256SUMS")"
-          if [ "$sent" != "$DEVICES" ]; then
-            echo "::error::The set $SET was sent for the shelves '${sent:-every one}', and the run names '${DEVICES:-every one}': dispatch it as local-set.mjs printed, with devices '$sent'."
-            exit 1
-          fi
-          if [ "$IOS" = true ]; then fetch ios.tar fastlane/screenshots ios; fi
-          if [ "$MACOS" = true ]; then fetch mac.tar fastlane/screenshots-mac macos; fi
+        run: scripts/ci/app-store-screenshots-fetch-the-set.sh
 
       # The Mac checked it before sending, and this is what decides: a locale of the listing missing, a device with a
       # screen missing, an image of another size, a file that isn't a PNG. deliver replaces every screenshot of a
@@ -255,37 +178,7 @@ jobs:
           ALLOW_MISSING_DEVICES: ${{ inputs.allow_missing_devices }}
           DEVICES: ${{ inputs.devices }}
           APP_VERSION: ${{ inputs.app_version }}
-        run: |
-          options=()
-          if [ -n "$DEVICES" ]; then options+=(--devices "$DEVICES" --no-left-out); fi
-          if [ "$IOS" = true ]; then options+=(--ios fastlane/screenshots); fi
-          if [ "$MACOS" = true ]; then options+=(--mac fastlane/screenshots-mac); fi
-          if [ "$ALLOW_MISSING_DEVICES" = true ]; then options+=(--allow-missing-devices); fi
-          said="$RUNNER_TEMP/check.txt"
-          if ! node scripts/store-screenshots/local-set.mjs check "${options[@]}" > "$said" 2>&1; then
-            cat "$said"
-            {
-              echo "## The set \`$SET\` was refused"
-              echo
-              echo '```'
-              cat "$said"
-              echo '```'
-            } >> "$GITHUB_STEP_SUMMARY"
-            echo "::error::The set $SET was refused: the run's summary says what is wrong with it. Nothing was sent."
-            exit 1
-          fi
-          cat "$said"
-          version="the editable version"
-          if [ -n "$APP_VERSION" ]; then version="version $APP_VERSION"; fi
-          {
-            echo "## The set \`$SET\`"
-            echo
-            echo "Going on $version of each platform, one locale per job:"
-            echo
-            echo '```'
-            cat "$said"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+        run: scripts/ci/app-store-screenshots-check-the-set.sh
 
       # The upload jobs' matrices, read off what the set holds, as a release's are read off what it framed. Read
       # into variables first, so a script that fails stops the step. With `locales`, only those of each version's:
@@ -295,18 +188,7 @@ jobs:
         id: staged
         env:
           LOCALES: ${{ inputs.locales }}
-        run: |
-          ios_locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/screenshots)"
-          mac_locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/screenshots-mac)"
-          if [ -n "$LOCALES" ]; then
-            if [ -n "$ios_locales" ]; then ios_locales="$(node scripts/store-screenshots/local-set.mjs locales --staged "$ios_locales" --only "$LOCALES")"; fi
-            if [ -n "$mac_locales" ]; then mac_locales="$(node scripts/store-screenshots/local-set.mjs locales --staged "$mac_locales" --only "$LOCALES")"; fi
-            echo "Only **$LOCALES** of the set go up: the other locales' shelves are left as they are." >> "$GITHUB_STEP_SUMMARY"
-          fi
-          {
-            echo "ios_locales=$ios_locales"
-            echo "mac_locales=$mac_locales"
-          } >> "$GITHUB_OUTPUT"
+        run: scripts/ci/app-store-screenshots-list-the-sets-locales.sh
 
       # Under a release's own names, for the jobs both run. Not compressed: a PNG already is.
       - name: Hand the iPhone and iPad screenshots to the upload jobs
@@ -424,24 +306,7 @@ jobs:
           MAC_SHELVES: ${{ needs.check.outputs.mac_shelves }}
           LOCALES: ${{ inputs.locales }}
           TIDY_ONLY: ${{ inputs.tidy_only }}
-        run: |
-          jobs="$RUNNER_TEMP/jobs.json"
-          gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?filter=latest&per_page=100" \
-            --jq '.jobs[] | {name, conclusion}' | jq -s . > "$jobs"
-          options=(--jobs "$jobs")
-          if [ "$TIDY_ONLY" = true ]; then
-            # No locale was sent: the report is the tidy-up's alone.
-            options+=(--tidy-only)
-            IOS_LOCALES='[]'
-            MAC_LOCALES='[]'
-          else
-            options+=(--set "$SET")
-          fi
-          if [ -n "$LOCALES" ]; then options+=(--only "$LOCALES"); fi
-          if [ -n "$APP_VERSION" ]; then options+=(--version "$APP_VERSION"); fi
-          if [ "$IOS" = true ]; then options+=(--ios-job "iPhone and iPad" --ios-locales "$IOS_LOCALES" --ios-shelves "$IOS_SHELVES"); fi
-          if [ "$MACOS" = true ]; then options+=(--mac-job "Mac" --mac-locales "$MAC_LOCALES" --mac-shelves "$MAC_SHELVES"); fi
-          node scripts/store-screenshots/local-set.mjs report "${options[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
+        run: scripts/ci/app-store-screenshots-say-which-locales-landed.sh
 
       # Only a draft, as when it was fetched. Gone already when a run of this job removed it and was run again. A set
       # that holds both versions' screenshots and went up one version per run loses, each time, the archive that
@@ -454,39 +319,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           IOS: ${{ inputs.ios }}
           MACOS: ${{ inputs.macos }}
-        run: |
-          errors="$RUNNER_TEMP/release-view-errors.txt"
-          if ! release="$(gh release view "$SET_TAG" --json isDraft,assets 2> "$errors")"; then
-            if ! grep -qi "release not found" "$errors"; then
-              cat "$errors"
-              echo "::error::Could not read the draft release $SET_TAG, so nothing says whether it is still there. Run this job again."
-              exit 1
-            fi
-            echo "The draft release \`$SET_TAG\` is already gone." >> "$GITHUB_STEP_SUMMARY"
-          elif [ "$(jq -r .isDraft <<< "$release")" != true ]; then
-            echo "::error::$SET_TAG is a published release, not a set: left alone."
-            exit 1
-          else
-            sent=()
-            if [ "$IOS" = true ]; then sent+=(ios.tar); fi
-            if [ "$MACOS" = true ]; then sent+=(mac.tar); fi
-            unsent="$(jq -r '[.assets[].name | select(endswith(".tar"))] - $ARGS.positional | join(" and ")' --args "${sent[@]}" <<< "$release")"
-            if [ -z "$unsent" ]; then
-              gh release delete "$SET_TAG" --yes
-              echo "Every locale landed, so the set was removed: the draft release \`$SET_TAG\` is deleted." >> "$GITHUB_STEP_SUMMARY"
-            else
-              for archive in "${sent[@]}"; do
-                if jq -e --arg name "$archive" 'any(.assets[]; .name == $name)' <<< "$release" > /dev/null; then
-                  gh release delete-asset "$SET_TAG" "$archive" --yes
-                fi
-              done
-              echo "Every locale landed, and what went up was removed from the set. **The draft release \`$SET_TAG\` was kept**: it still holds $unsent, the version this run left out. Dispatch again for that one alone, or drop it with \`gh release delete $SET_TAG --yes\`." >> "$GITHUB_STEP_SUMMARY"
-            fi
-          fi
-          {
-            echo
-            echo "**Next:** look at the shelves in App Store Connect, then dispatch the stable release with \`screenshots\` off: it submits these versions with the screenshots they now have (docs/release-process.md#screenshots-made-on-a-mac)."
-          } >> "$GITHUB_STEP_SUMMARY"
+        run: scripts/ci/app-store-screenshots-remove-the-set.sh
 
       # Whenever it wasn't removed: a locale didn't land, a shelf isn't as staged, or the run sent chosen locales
       # alone, which say nothing of the others. The last is what was asked, so it is no warning.
@@ -500,24 +333,4 @@ jobs:
           IOS: ${{ inputs.ios }}
           MACOS: ${{ inputs.macos }}
           APP_VERSION: ${{ inputs.app_version }}
-        run: |
-          drop="\`gh release delete $SET_TAG --repo $GITHUB_REPOSITORY --yes\`"
-          # The repair's commands, for the versions this run wrote on: a set sent one version per run has lost the
-          # other's archive, and a version this run named is the one to write on again.
-          versions=""
-          if [ "$IOS" != true ]; then versions+=" -f ios=false"; fi
-          if [ "$MACOS" != true ]; then versions+=" -f macos=false"; fi
-          again="gh workflow run app-store-screenshots.yml --repo $GITHUB_REPOSITORY -f set=$SET$versions"
-          if [ -n "$APP_VERSION" ]; then again+=" -f app_version=$APP_VERSION"; fi
-          tidy="gh workflow run app-store-screenshots.yml --repo $GITHUB_REPOSITORY -f tidy_only=true$versions"
-          if [ "$LANDED" != true ]; then
-            removal="and removes the set once every locale is up and the shelves are as staged"
-            if [ -n "$LOCALES" ]; then removal="and keeps the set, as a run of chosen locales does"; fi
-            echo "**The set was kept**, as the draft release \`$SET_TAG\`: a locale didn't land. Run its job again with the job's own re-run button; this job then runs again too, $removal. To drop it instead: $drop." >> "$GITHUB_STEP_SUMMARY"
-            echo "::warning title=The set was kept::A locale didn't land, so the draft release $SET_TAG is still there. The run's summary names the locale."
-          elif [ "$TIDIED" != true ]; then
-            echo "**The set was kept**, as the draft release \`$SET_TAG\`: every locale's job passed, and a shelf isn't as staged. The tidy-up job's summary names it. Send that shelf's locale again from this set, \`$again -f locales=\"<locale> <locale>\"\`, or, for a shelf that is only out of order, tidy up again with \`$tidy\` (docs/store-listing-screenshots.md#repairing-shelves). Don't delete one of a file's two entries by hand: both go. Once the shelves are right, drop the set: $drop." >> "$GITHUB_STEP_SUMMARY"
-            echo "::warning title=The set was kept::A shelf isn't as staged, so the draft release $SET_TAG is still there to send its locale again from. The tidy-up job's summary names the shelf."
-          else
-            echo "**The set was kept**, as the draft release \`$SET_TAG\`: this run sent chosen locales alone, and doesn't know whether the others are up. Once the shelves are right, drop it: $drop." >> "$GITHUB_STEP_SUMMARY"
-          fi
+        run: scripts/ci/app-store-screenshots-keep-the-set.sh

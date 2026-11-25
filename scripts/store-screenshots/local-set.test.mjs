@@ -38,6 +38,7 @@ import {
   WATCH_SCREENS,
   WATCH_SHELF_TYPE,
 } from "./local-set.mjs";
+import { readWithScripts } from "../release/workflow-source.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, "../..");
@@ -375,7 +376,7 @@ describe("the set's folders and options", () => {
     const screens = [...open[1].matchAll(/"(\w+)"/g)].map(([, screen]) => screen);
     const fromOpenCapture = Object.keys(JSON.parse(read("scripts/store-screenshots/listing-art/capture-duo-open.py").match(/^SCREENS = (\{.*\})$/m)[1]));
     assert.deepEqual(fromOpenCapture, screens);
-    assert.ok(read(".github/workflows/release-production.yml").includes(`STORE_SCREENSHOTS_SCREENS=${screens.join(",")} `));
+    assert.ok(readWithScripts(REPO_ROOT, ".github/workflows/release-production.yml").includes(`STORE_SCREENSHOTS_SCREENS=${screens.join(",")} `));
     const closed = read("scripts/store-screenshots/listing-art/capture.sh").match(/if \[ "\$slot" = iphoneduo \]; then screens=([\w,]+)/);
     assert.ok(closed, "no closed Duo list in capture.sh");
     const all = read("scripts/store-screenshots/listing-art/capture.sh").match(/screens=(group,[\w,]+)\n/)[1].split(",");
@@ -653,10 +654,10 @@ describe("the workflow's report", () => {
     }
     assert.deepEqual(lane, Object.fromEntries(Object.entries(others).map(([shelf, devices]) => [shelf, devices.sort()])));
     // A set sent with --devices names them in its checksums, which the workflow reads back.
-    assert.ok(readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots.yml"), "utf8").includes(`sed -n 's/^${DEVICES_LINE}//p'`));
-    const upload = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots-upload.yml"), "utf8");
+    assert.ok(readWithScripts(REPO_ROOT, ".github/workflows/app-store-screenshots.yml").includes(`sed -n 's/^${DEVICES_LINE}//p'`));
+    const upload = readWithScripts(REPO_ROOT, ".github/workflows/app-store-screenshots-upload.yml");
     assert.ok(upload.includes("format('devices:{0}', inputs.devices)"));
-    const dispatch = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots.yml"), "utf8");
+    const dispatch = readWithScripts(REPO_ROOT, ".github/workflows/app-store-screenshots.yml");
     assert.ok(dispatch.includes('options+=(--devices "$DEVICES" --no-left-out)'));
     assert.equal(dispatch.split("      devices: ${{ inputs.devices }}\n").length, 3);
   });
@@ -664,8 +665,8 @@ describe("the workflow's report", () => {
   // The report reads the jobs by the names the two workflows give them, and the workflow builds the release's tag
   // and checks the set's name by itself, in shell: held here to what the script does.
   test("matches what the workflows name and check", () => {
-    const dispatch = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots.yml"), "utf8");
-    const upload = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots-upload.yml"), "utf8");
+    const dispatch = readWithScripts(REPO_ROOT, ".github/workflows/app-store-screenshots.yml");
+    const upload = readWithScripts(REPO_ROOT, ".github/workflows/app-store-screenshots-upload.yml");
     assert.ok(upload.includes("    name: send ${{ matrix.locale }}\n"));
     assert.ok(upload.includes("    name: tidy up\n"));
     for (const caller of ["iPhone and iPad", "Mac"]) assert.ok(dispatch.includes(`    name: ${caller}\n`), caller);
@@ -678,8 +679,8 @@ describe("the workflow's report", () => {
   // A tidy-up alone runs no locale's job, and a run of chosen locales takes its matrix from the script and keeps
   // the set: held here to the options the script takes and to the inputs the report tells people to pass.
   test("matches how the workflows repair shelves", () => {
-    const dispatch = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots.yml"), "utf8");
-    const upload = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots-upload.yml"), "utf8");
+    const dispatch = readWithScripts(REPO_ROOT, ".github/workflows/app-store-screenshots.yml");
+    const upload = readWithScripts(REPO_ROOT, ".github/workflows/app-store-screenshots-upload.yml");
     assert.match(upload, /\n {4}name: send \$\{\{ matrix\.locale \}\}\n(?: {4}#.*\n)* {4}if: \$\{\{ !inputs\.tidy_only \}\}\n/);
     for (const input of ["locales", "tidy_only"]) assert.ok(dispatch.includes(`\n      ${input}:\n        description: `), input);
     for (const locales of ["ios_locales", "mac_locales"]) {

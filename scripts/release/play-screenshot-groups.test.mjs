@@ -13,6 +13,7 @@ import { afterEach, beforeEach, describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { PLAY_LOCALES as LISTING_PLAY_LOCALES } from "./store-listing.mjs";
 import { DEFAULT_GROUP_SIZE, GroupsError, QUOTA_DOC, changedLocales, groupLocales, groupSummary, quotaReached, quotaWarning } from "./play-screenshot-groups.mjs";
+import { readWithScripts } from "./workflow-source.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, "../..");
@@ -223,7 +224,7 @@ describe("Google Play's daily save quota", () => {
 // The script decides, and three files act on it: the called workflow, the action that runs a Play lane and the lane.
 // A name changed in one of them alone would only show in a run that reaches Google Play, on a day its quota ran out.
 describe("the jobs that send Google Play's screenshots", () => {
-  const read = (path) => readFileSync(join(REPO_ROOT, path), "utf8");
+  const read = (path) => readWithScripts(REPO_ROOT, path);
   const upload = read(".github/workflows/play-store-screenshots-upload.yml");
   const release = read(".github/workflows/release-production.yml");
   const alone = read(".github/workflows/play-store-screenshots.yml");

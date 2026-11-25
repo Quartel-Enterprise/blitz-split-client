@@ -51,22 +51,7 @@ runs:
       env:
         LOCALES: ${{ inputs.locales }}
         DEVICES: ${{ inputs.devices }}
-      run: |
-        devices="${DEVICES:-play_phone,play_tablet_7,play_tablet_10,wear}"
-        devices="${devices// /}"
-        # Refused here, before the drawing, as stage-play.mjs would refuse it after
-        if [[ ! "$devices" =~ ^(play_phone|play_tablet_7|play_tablet_10|wear)(,(play_phone|play_tablet_7|play_tablet_10|wear))*$ ]]; then
-          echo "::error::devices names image types of play_phone, play_tablet_7, play_tablet_10 and wear, with commas: $DEVICES"
-          exit 1
-        fi
-        art="$(tr ',' '\n' <<< "$devices" | grep '^play_' | paste -sd, - || true)"
-        {
-          echo "ART_DEVICES=$art"
-          echo "PLAY_DEVICES=$devices"
-          echo "ART_LOCALES=$(tr -s ' ,' ',,' <<< "$LOCALES" | sed 's/^,//; s/,$//')"
-        } >> "$GITHUB_ENV"
-        echo "art=$art" >> "$GITHUB_OUTPUT"
-        if [[ ",$devices," == *",wear,"* ]]; then echo "wear=true" >> "$GITHUB_OUTPUT"; fi
+      run: '"$GITHUB_ACTION_PATH/name-the-play-devices.sh"'
 
     # The bare screens, then what the tickets write on them, then the art laid out in Chrome and staged for supply.
     - name: Draw the screens
@@ -86,9 +71,7 @@ runs:
       shell: bash
       env:
         ART: ${{ steps.devices.outputs.art }}
-      run: |
-        if [ -n "$ART" ]; then node scripts/store-screenshots/listing-art/compose.mjs; fi
-        node scripts/store-screenshots/listing-art/stage-play.mjs
+      run: '"$GITHUB_ACTION_PATH/make-the-screenshots.sh"'
 
     # The upload jobs' matrix, read off what was staged: the list of languages lives in the generators alone. Read
     # into a variable first, so a script that fails stops the step: inside the echo it would read as nothing staged.

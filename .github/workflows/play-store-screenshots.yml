@@ -86,22 +86,12 @@ jobs:
       - name: Check where the run comes from
         env:
           REF: ${{ github.ref }}
-        run: |
-          if [ "$REF" != refs/heads/main ]; then
-            echo "::error::Screenshots are sent from main, and this run was dispatched on $REF. See docs/store-listing-screenshots.md."
-            exit 1
-          fi
+        run: scripts/ci/check-where-the-run-comes-from.sh
 
       - name: Check the group size
         env:
           GROUP_SIZE: ${{ inputs.group_size }}
-        run: |
-          # Before the hour of drawing: the upload refuses any other size only after it, and a blank one fails
-          # the fromJSON that hands it to the upload.
-          if ! [[ "$GROUP_SIZE" =~ ^[1-9][0-9]*$ ]]; then
-            echo "::error::group_size is '$GROUP_SIZE': it is a whole number from 1 up, the locales each Play edit sends."
-            exit 1
-          fi
+        run: scripts/ci/play-store-screenshots-check-the-group-size.sh
 
       - name: Check who sends
         uses: ./.github/actions/release-admin
@@ -130,22 +120,7 @@ jobs:
         env:
           LOCALES: ${{ steps.draw.outputs.locales }}
           VALIDATE_ONLY: ${{ inputs.validate_only }}
-        run: |
-          if [ -z "$LOCALES" ]; then
-            echo "::error::No screenshot was staged, so there is nothing to send."
-            exit 1
-          fi
-          going="Going to Google Play, a few locales per job, where they show to everyone as each job lands"
-          if [ "$VALIDATE_ONLY" = true ]; then
-            going="Only checked against Google Play (\`validate_only\`): the listing doesn't change"
-          fi
-          {
-            echo "## Google Play's screenshots"
-            echo
-            echo "$going: $(jq -r 'join(", ")' <<< "$LOCALES")."
-            echo
-            echo "The images are this run's artifact \`play-store-screenshots\`, to download and look at."
-          } >> "$GITHUB_STEP_SUMMARY"
+        run: scripts/ci/play-store-screenshots-say-what-the-run-sends.sh
 
   send:
     name: Google Play

@@ -11,6 +11,8 @@ on:
     paths:
       - '.github/workflows/static-analysis.yml'
       - 'scripts/ktlint.sh'
+      - 'scripts/ci/**'
+      - '.github/actions/**/*.sh'
       - '**/*.kt'
       - '**/*.kts'
       - '.editorconfig'
@@ -21,6 +23,8 @@ on:
     paths:
       - '.github/workflows/static-analysis.yml'
       - 'scripts/ktlint.sh'
+      - 'scripts/ci/**'
+      - '.github/actions/**/*.sh'
       - '**/*.kt'
       - '**/*.kts'
       - '.editorconfig'
@@ -66,3 +70,20 @@ jobs:
         env:
           KTLINT_REQUIRE_SIGNATURE: 'true'
         run: ./scripts/ktlint.sh
+
+  # The scripts of the workflows' steps are files, so actionlint no longer runs shellcheck on them.
+  shellcheck:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      # Warnings and errors only: the info about a variable that "may not be assigned" is wrong for the
+      # ones a step's env: sets.
+      - name: Run shellcheck
+        run: shellcheck --severity=warning scripts/ci/*.sh .github/actions/*/*.sh
