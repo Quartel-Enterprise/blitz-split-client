@@ -9,8 +9,9 @@ name: translations
 # filters leave that workflow out. A language added by one pull request and a string
 # added by another, each green alone, are what turned main red on 2026-11-25 (#604 and #605); this job names every
 # platform's missing string at once, before the builds get there. It doesn't stop two green pull requests from
-# combining into a red main: each one is checked against the main it was last merged with. It makes main's red
-# show in seconds, with every platform's gaps listed.
+# combining into a red main: each one is checked against the main it was last merged with (merge-when-green updates
+# a branch behind main when either side adds a language for that). It makes any red that gets through show in
+# seconds, with every platform's gaps listed.
 on:
   pull_request:
     # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
