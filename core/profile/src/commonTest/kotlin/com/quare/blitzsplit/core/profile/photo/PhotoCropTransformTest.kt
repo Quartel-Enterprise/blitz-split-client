@@ -566,6 +566,36 @@ class PhotoCropTransformTest {
         photoHeight = 1000,
     )
 
+    @Test
+    fun `GIVEN a tall receipt zoomed out to fit WHEN framing it THEN the whole photo is centered in the square`() {
+        // Given
+        val crop = PhotoCrop
+            .of(
+                photoWidth = 600,
+                photoHeight = 1200,
+                canFit = true,
+            ).toZoomed(0.5f)
+
+        // When
+        val transform = crop.toTransform(SIDE)
+
+        // Then
+        assertMaps(
+            transform,
+            x = 0.0,
+            y = 0.0,
+            toX = SIDE / 4.0,
+            toY = 0.0,
+        )
+        assertMaps(
+            transform,
+            x = 600.0,
+            y = 1200.0,
+            toX = SIDE * 3 / 4.0,
+            toY = SIDE.toDouble(),
+        )
+    }
+
     private fun assertMaps(
         transform: CropTransform,
         x: Double,

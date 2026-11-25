@@ -74,11 +74,7 @@ jobs:
       - name: Check where the listing comes from
         env:
           REF: ${{ github.ref }}
-        run: |
-          if [ "$REF" != refs/heads/main ]; then
-            echo "::error::A listing is sent from main, and this run was dispatched on $REF. See docs/store-listing.md."
-            exit 1
-          fi
+        run: scripts/ci/store-listing-check-where-the-listing-comes-from.sh
 
       - name: Check who sends
         uses: ./.github/actions/release-admin
@@ -94,24 +90,7 @@ jobs:
           VALIDATE_ONLY: ${{ inputs.validate_only }}
           VERSION_CODE: ${{ inputs.version_code }}
           APP_VERSION: ${{ inputs.app_version }}
-        run: |
-          if [ "$ANDROID" != true ] && [ "$IOS" != true ] && [ "$MACOS" != true ]; then
-            echo "::error::No store is selected."
-            exit 1
-          fi
-          if [ "$VALIDATE_ONLY" = true ] && [ "$ANDROID" != true ]; then
-            echo "::error::validate_only checks Google Play alone, and android is off: the App Store has no such check."
-            exit 1
-          fi
-          # Both reach a lane as a word of its command line, so nothing but a number goes through.
-          if [[ -n "$VERSION_CODE" && ! "$VERSION_CODE" =~ ^[1-9][0-9]*$ ]]; then
-            echo "::error::version_code is a versionCode, a whole number, or blank."
-            exit 1
-          fi
-          if [[ -n "$APP_VERSION" && ! "$APP_VERSION" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
-            echo "::error::app_version is a version as the App Store writes it, X.Y.Z, or blank."
-            exit 1
-          fi
+        run: scripts/ci/store-listing-check-the-inputs.sh
 
       # A release writes through the same Play account and on the same App Store version: a second Play edit drops
       # the one still open. The releases share a concurrency group this workflow can't join, since a listing run

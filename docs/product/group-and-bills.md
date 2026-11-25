@@ -229,16 +229,20 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     photo added on another device shows only online. History says who added or removed them; the feed doesn't.
     A photo taken or picked through "Add photo" opens "Adjust photo" first ([Profile](profile.md)), framed in the
     tile's rounded square (Pierre's call, beta feedback of 2026-11-16: "square like the preview"), and only "Done"
-    attaches it. Its switch "Show the whole photo when opened", under Rotate and on for each photo picked (Pierre's
-    call, beta feedback of 2026-11-25: a tall receipt came out cut in the viewer), attaches the whole photo,
-    mirrored and turned as framed, at the editor's photo's pixels (already upright and at most 1600 px, as any bill
-    photo), with the square framed kept beside it as fractions of the image (`PhotoFrame`, the server's
-    `frame_left`, `frame_top`, `frame_width`, `frame_height`): the tile draws that square (`BillAttachmentTile.thumbnailPlacement`)
-    and the viewer the whole photo. Off, it attaches only the square the frame holds, at as many pixels as the
-    photo has there (its shorter side divided by the zoom, never blown up), which the viewer shows too. Either goes
-    under the same 1.5 MB (`PrepareBillPhoto`, `BillCropEncoder`); ✕, Cancel or back attach nothing. A photo
-    attached before the switch, or by an older version, is its own square, filling the tile from its center. The tile
-    spins while the photo is read and while the square is kept. The receipt Scan receipt attaches is not framed: it
+    attaches it. Unlike a profile's or a group's photo, which always covers its frame, a bill photo opens covering
+    the square but zooms out (slider or pinch) until the whole photo fits, its longer side across the frame,
+    centered, the rest of the square white in the editor (Pierre's call, feedback of 2026-11-25). Its switch "Show the
+    whole photo when opened", under Rotate and on for each photo picked (Pierre's call, beta feedback of 2026-11-25:
+    a tall receipt came out cut in the viewer), attaches the whole photo, mirrored and turned as framed, at the
+    editor's photo's pixels (already upright and at most 1600 px, as any bill photo), with the square framed kept
+    beside it as fractions of the image (`PhotoFrame`, the server's `frame_left`, `frame_top`, `frame_width`,
+    `frame_height`, past the image's edges for a photo zoomed out to fit): the tile draws that square
+    (`BillAttachmentTile.thumbnailPlacement`) and the viewer the whole photo. Off, it attaches only the square the
+    frame holds, at as many pixels as the photo has there (its shorter side divided by the zoom, never blown up, at
+    most 1600 px), the rest of the square white, which the viewer shows too. Either goes under the same 1.5 MB
+    (`PrepareBillPhoto`, `BillCropEncoder`); ✕, Cancel or back attach nothing. A photo attached before the switch,
+    or by an older version, is its own square, filling the tile from its center. The tile spins while the photo is
+    read and while the square is kept. The receipt Scan receipt attaches is not framed: it
     keeps the whole image it was read from.
   - Bill's "Share bill" (7.3h, `Route.ShareBill`, `ShareBillViewModel`): the bill's link,
     `https://blitzsplit.com/c/<code>`, one per bill, whose code the server makes (`set_bill_link`). Opening it makes

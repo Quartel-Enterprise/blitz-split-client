@@ -59,13 +59,7 @@ runs:
     - name: Fit Gradle to the runner
       if: inputs.kotlin-native == 'true' && runner.os == 'macOS'
       shell: bash
-      run: |
-        mkdir -p ~/.gradle
-        {
-          echo 'org.gradle.jvmargs=-Xmx4608M -Dfile.encoding=UTF-8'
-          echo 'kotlin.daemon.jvmargs=-Xmx1024M'
-          echo 'org.gradle.workers.max=2'
-        } >> ~/.gradle/gradle.properties
+      run: '"$GITHUB_ACTION_PATH/fit-gradle-to-the-runner.sh"'
 
     # The image's default Xcode can lag behind the newest it has installed (27.1 against 27.2 on
     # xcode-27), and the Apple app uses the newest SDK's APIs under @available, as the Mac it is
@@ -92,15 +86,7 @@ runs:
       id: kotlin
       if: inputs.kotlin-native == 'true'
       shell: bash
-      run: |
-        version=$(sed -nE 's/^kotlin = "(.*)"$/\1/p' gradle/libs.versions.toml)
-        if [ -z "$version" ]; then
-          echo "::error::No kotlin = \"...\" line in gradle/libs.versions.toml, so the Kotlin/Native cache has no key."
-          exit 1
-        fi
-        echo "version=$version" >> "$GITHUB_OUTPUT"
-        # The fixed word after the version keeps 2.5.0 from matching an entry of 2.5.0-RC.
-        echo "konan-key=konan-$RUNNER_OS-$RUNNER_ARCH-$version-libraries-" >> "$GITHUB_OUTPUT"
+      run: '"$GITHUB_ACTION_PATH/read-the-kotlin-version.sh"'
 
     # No entry has the bare prefix as its key, so the match is always by prefix, and the newest entry
     # it matches is restored. The restore key repeats the prefix on purpose: restore keys are what

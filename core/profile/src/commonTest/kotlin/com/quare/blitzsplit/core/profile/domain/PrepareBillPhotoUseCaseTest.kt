@@ -103,6 +103,34 @@ class PrepareBillPhotoUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a receipt zoomed out to fit and cropped WHEN preparing THEN keeps the whole photo at its longer side`() =
+        runTest {
+            // Given
+            prepareScenario()
+
+            // When
+            useCase(
+                photo,
+                PhotoCrop
+                    .of(
+                        photoWidth = 1200,
+                        photoHeight = 600,
+                        canFit = true,
+                    ).toZoomed(0.5f),
+                keepsWholePhoto = false,
+            )
+
+            // Then
+            val encoding = encoded.single()
+            assertEquals(1200, encoding.width)
+            assertEquals(1200, encoding.height)
+            // The whole photo at its own pixels, centered with 300 white px above and below
+            assertEquals(1.0, encoding.transform.scaleX, TOLERANCE)
+            assertEquals(0.0, encoding.transform.translateX, TOLERANCE)
+            assertEquals(300.0, encoding.transform.translateY, TOLERANCE)
+        }
+
+    @Test
     fun `GIVEN a framed square larger than the limit WHEN preparing THEN encodes it at the limit`() = runTest {
         // Given
         prepareScenario()

@@ -141,16 +141,7 @@ jobs:
         id: quota
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          script=scripts/release/play-screenshot-groups.mjs
-          reached="$(node "$script" quota-reached)"
-          echo "reached=$reached" >> "$GITHUB_OUTPUT"
-          if [ "$reached" = true ]; then
-            # Read into a variable first, so a script that fails stops the step instead of leaving a warning with
-            # no words.
-            warning="$(node "$script" warning --groups="$GROUP_MATRIX" --group="$GROUP")"
-            echo "::warning title=Google Play's daily save quota is used up::$warning"
-          fi
+        run: scripts/ci/play-store-screenshots-upload-check-that-no-group-before-this-one-used-google.sh
 
       # The caller's first job refuses its run while something else writes on Google Play, and this is the same
       # check for a group's job run again later, which starts without that first job (its own run is left out of
@@ -197,16 +188,7 @@ jobs:
           NOT_SENT: ${{ steps.send.outputs.not-sent }}
           SAVE_QUOTA: ${{ steps.send.outputs.save-quota }}
           VALIDATE_ONLY: ${{ inputs.validate_only }}
-        run: |
-          script=scripts/release/play-screenshot-groups.mjs
-          node "$script" summary --groups="$GROUP_MATRIX" --group="$GROUP" --sent="$SENT" --unchanged="$UNCHANGED" \
-            --not-sent="$NOT_SENT" --quota="$SAVE_QUOTA" --validate-only="$VALIDATE_ONLY" >> "$GITHUB_STEP_SUMMARY"
-          if [ "$SAVE_QUOTA" = reached ]; then
-            warning="$(node "$script" warning --groups="$GROUP_MATRIX" --group="$GROUP" --not-sent="$NOT_SENT")"
-            echo "::warning title=Google Play's daily save quota is used up::$warning"
-            mkdir -p "$RUNNER_TEMP/play-save-quota"
-            echo "$GROUP" > "$RUNNER_TEMP/play-save-quota/group"
-          fi
+        run: scripts/ci/play-store-screenshots-upload-say-what-went-to-google-play.sh
 
       # overwrite: a group that couldn't see the marker asks Google Play itself, and leaves it again when it is
       # refused too. Without it the second upload fails on the name, and the refusal would read as a failure.

@@ -94,6 +94,4 @@ runs:
         ANDROID_KEY_ALIAS: ${{ inputs.key-alias }}
         ANDROID_KEY_PASSWORD: ${{ inputs.key-password }}
       # Split on spaces, so one Gradle run builds every app the caller names.
-      run: |
-        read -ra tasks <<< "$TASK"
-        ./gradlew "${tasks[@]}"
+      run: '"$GITHUB_ACTION_PATH/build-the-signed-app.sh"'

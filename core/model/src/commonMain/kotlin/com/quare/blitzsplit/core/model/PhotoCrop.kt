@@ -7,7 +7,8 @@ import kotlin.math.min
  * Why: where the photo editor puts the photo in its frame (the circle of a profile, the rounded square of a group), the
  * same on the three UIs. Lengths are fractions of the frame's side, so each UI draws it at its own size and a window
  * resized keeps the framing. The photo is drawn mirrored first (horizontally), then turned clockwise, then zoomed, its
- * center moved by the offset from the frame's center, and always covers the whole frame.
+ * center moved by the offset from the frame's center. It covers the whole frame, unless `canFit` lets it zoom out until
+ * it fits whole (a bill's receipt), the rest of the frame white as the encoders fill it.
  */
 data class PhotoCrop(
     val photoWidth: Int,
@@ -17,6 +18,7 @@ data class PhotoCrop(
     val zoom: Float,
     val offsetX: Float,
     val offsetY: Float,
+    val canFit: Boolean,
 ) {
     // Why: at zoom 1 the photo's shorter side fills the frame, whichever way it is turned.
     private val coverScale: Float
@@ -32,8 +34,9 @@ data class PhotoCrop(
     val rotationDegrees: Int
         get() = quarterTurns * QUARTER_TURN_DEGREES
 
+    // Why: a receipt longer than the frame zooms out until its longer side fits (feedback of 2026-11-25).
     val minZoom: Float
-        get() = MIN_ZOOM
+        get() = if (canFit) min(photoWidth, photoHeight).toFloat() / max(photoWidth, photoHeight) else COVER_ZOOM
 
     val maxZoom: Float
         get() = MAX_ZOOM
@@ -55,7 +58,7 @@ data class PhotoCrop(
         focusX: Float = 0f,
         focusY: Float = 0f,
     ): PhotoCrop {
-        val newZoom = (zoom * factor).coerceIn(MIN_ZOOM, MAX_ZOOM)
+        val newZoom = (zoom * factor).coerceIn(minZoom, MAX_ZOOM)
         val scale = newZoom / zoom
         return copy(
             zoom = newZoom,
@@ -64,7 +67,7 @@ data class PhotoCrop(
         ).clamp()
     }
 
-    fun toZoomed(zoom: Float): PhotoCrop = copy(zoom = zoom.coerceIn(MIN_ZOOM, MAX_ZOOM)).clamp()
+    fun toZoomed(zoom: Float): PhotoCrop = copy(zoom = zoom.coerceIn(minZoom, MAX_ZOOM)).clamp()
 
     // Why: the frame's center stays on the same point of the photo, which turns around it.
     fun toTurned(): PhotoCrop = copy(
@@ -109,7 +112,7 @@ data class PhotoCrop(
         )
     }
 
-    // Why: the photo never moves so far that the frame shows past its edge.
+    // Why: the photo never moves so far that the frame shows past its edge; a side shorter than the frame stays centered.
     private fun clamp(): PhotoCrop {
         val width = (if (isSideways) photoHeight else photoWidth) * coverScale * zoom
         val height = (if (isSideways) photoWidth else photoHeight) * coverScale * zoom
@@ -122,25 +125,27 @@ data class PhotoCrop(
     }
 
     companion object {
-        private const val MIN_ZOOM = 1f
+        private const val COVER_ZOOM = 1f
         private const val MAX_ZOOM = 3f
         private const val QUARTER_TURNS = 4
         private const val QUARTER_TURN_DEGREES = 90
         private const val HALF = 2f
         private const val HALF_FRACTION = 0.5f
 
-        // Why: the photo as picked, its center in the frame's.
+        // Why: the photo as picked, its center in the frame's, covering it.
         fun of(
             photoWidth: Int,
             photoHeight: Int,
+            canFit: Boolean = false,
         ): PhotoCrop = PhotoCrop(
             photoWidth = photoWidth,
             photoHeight = photoHeight,
             quarterTurns = 0,
             isMirrored = false,
-            zoom = MIN_ZOOM,
+            zoom = COVER_ZOOM,
             offsetX = 0f,
             offsetY = 0f,
+            canFit = canFit,
         )
     }
 }

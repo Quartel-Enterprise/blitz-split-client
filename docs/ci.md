@@ -55,7 +55,7 @@ reaches every job; a `commonTest` only `unit-tests` and `js-tests`; a `jvmMain` 
 `android/` those and `unit-tests`, which compiles the store screenshots' sample screens; `webApp/` only `web`; an Apple source
 set none, but for `unit-tests`: `AnalyticsCatalogTest` reads every main source set's Kotlin and
 `docs/analytics/README.md`, so those reach it wherever they are. `shared/` reaches no `js-tests`, since it has no tests and no tested module depends on it. The build itself
-(`build-logic`, `gradle/`, the root's Gradle scripts, `gradle.properties`, the Gradle action, the workflow) reaches
+(`build-logic`, `gradle/`, the root's Gradle scripts, `gradle.properties`, the Gradle action, the workflow, its `scripts/ci/build-and-test-*.sh`) reaches
 every job, and so does any path the job doesn't know; the release notes, the store listings and scripts, the other
 workflows and `fastlane/` reach none. A skipped job counts as passed for `merge-when-green`, and no check is required
 by the ruleset, so nothing waits on it. On `main` every job runs, since only `main` saves the Gradle caches the pull
@@ -120,7 +120,7 @@ includes:
   plugin or the simulators (`IosSimulatorTests.kt`, `SimulatorFamily.kt`). Not the rest of `build-logic/`: the store
   screenshots' file there changes with every language, and the watchOS convention plugin only adds targets no suite runs
   on, which the schemes and "Compile the device targets" build;
-- what runs the job: `apple.yml`, the Gradle action, `scripts/modules-with-tests.sh`.
+- what runs the job: `apple.yml`, its `scripts/ci/apple-*.sh`, the Gradle action and its scripts, `scripts/modules-with-tests.sh`.
 
 A module's own `build.gradle.kts` is not on the list, though it can give an Apple source set a dependency: the schemes
 resolve and compile it on the pull request, and its tests run on `main`.
@@ -151,7 +151,7 @@ modules that have a `commonTest` are dealt in turn from their sorted list, the o
 (`scripts/modules-with-tests.sh`, which leaves out a folder `settings.gradle.kts` doesn't include), so a new module
 joins a shard by itself. Each shard compiles for macOS the modules its own depend on, which leaves `:shared` to
 `apple-app`'s macOS build: no test depends on it, and it depends on every module. `main` keeps one job, since no pull
-request waits for its run. A change to `apple.yml` itself or to that script also runs both shards, so a change to the
+request waits for its run. A change to `apple.yml` itself, to its `scripts/ci/apple-*.sh` or to that script also runs both shards, so a change to the
 split is seen working before it merges.
 
 `apple-app` always runs, and its Gradle time has a floor the cache can't lower: Kotlin/Native caches the link of a test
@@ -606,3 +606,31 @@ repository's settings alone.
 - Set up Gradle through `./.github/actions/gradle` and pass `secrets.GRADLE_ENCRYPTION_KEY`, as the other jobs do,
   though the secret is not set today (see [Speed and timeouts](#speed-and-timeouts)).
 - If it runs on pull requests, add it to the `workflow_run` list of `merge-when-green.yml` (see [Merge when green](#merge-when-green)).
+- Keep a step's script out of the YAML once it is more than a command or two (several commands, an `if`, a loop, a
+  `gh api`): see [Scripts of the steps](#scripts-of-the-steps).
+
+## Scripts of the steps
+
+A `run:` of a workflow or a composite action holds a call, not a script, once the script is more than a few lines:
+
+- A workflow's script is `scripts/ci/<workflow>-<step>.sh`, and `run: scripts/ci/<workflow>-<step>.sh` calls it.
+  A composite action's script sits next to its `action.yml` (`.github/actions/<action>/<step>.sh`) and is called with
+  `run: '"$GITHUB_ACTION_PATH/<step>.sh"'`. Scripts are executable, start with `#!/usr/bin/env bash` and `set -e`
+  (`set -eo pipefail` where the step ran with `shell: bash`, as the YAML's did), and a comment names the workflow that
+  runs them.
+- A script never holds a `${{ }}` expression. The step's `env:` hands it each value (`PR_NUMBER: ${{ inputs.pull-request }}`)
+  and the script reads `$PR_NUMBER`, so a value is never pasted into the shell's code.
+- The job needs the script on disk. A job that has no `actions/checkout` starts with one that checks out `scripts/ci`
+  alone (`sparse-checkout: scripts/ci`, `persist-credentials: false`), and a job that checks out only some files lists
+  the script among them. `claude-review-on-request` and `run-checks` are the exceptions, with their steps left in the YAML (the first checks out the pull request's head,
+  the second's steps are a line or two): it checks out
+  the pull request's head after the first, and a script of the head would run next to the review's token.
+- A workflow that is path filtered also lists its scripts in `paths`, and so does the regex of its `changes` job that
+  says which files are its own, so a change to a script runs what it changes (`apple`'s `scripts/ci/apple-*.sh`).
+- The tests that hold a workflow to a lane or to another workflow read it through `readWithScripts`
+  (`scripts/release/workflow-source.mjs`), which writes each script back into its `run:`, so their assertions see the
+  script's lines.
+- A script that two workflows share is one file named for what it does (`scripts/ci/read-the-releases.sh`), not for
+  a workflow.
+- `static-analysis`'s `shellcheck` job lints every script (warnings and errors), since actionlint only reads the YAML.
+- A step of a line or two (`./gradlew ...`, a `gh` call) stays in the YAML.

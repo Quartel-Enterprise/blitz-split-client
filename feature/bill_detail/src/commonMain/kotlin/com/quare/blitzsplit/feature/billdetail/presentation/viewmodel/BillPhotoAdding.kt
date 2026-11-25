@@ -55,7 +55,8 @@ internal class BillPhotoAdding(
                 .onSuccess { photo ->
                     val editor = PhotoCropEditor(
                         photo = photo,
-                        crop = PhotoCrop.of(photo.width, photo.height),
+                        // Why: a long receipt zooms out until it fits whole in the square (feedback of 2026-11-25).
+                        crop = PhotoCrop.of(photo.width, photo.height, canFit = true),
                     )
                     // Why: a bill whose deletion started while the photo was read takes no photo; no editor opens.
                     uiState.update { state ->

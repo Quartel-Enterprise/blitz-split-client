@@ -8,7 +8,8 @@ private const val HALF = 0.5
 
 /*
  * Why: the matrix from the photo's pixels to a square of `side` pixels framed as the editor draws it: mirrored, turned
- * clockwise, zoomed to cover the frame, then moved by the offset from the frame's center.
+ * clockwise, zoomed (covering the frame, or fitting in it when `canFit`), then moved by the offset from the frame's
+ * center.
  */
 internal fun PhotoCrop.toTransform(side: Int): CropTransform = toTransform(
     scale = zoom * side.toDouble() / min(photoWidth, photoHeight),

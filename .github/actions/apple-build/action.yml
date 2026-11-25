@@ -66,17 +66,7 @@ runs:
         APP_STORE_CONNECT_API_KEY_P8: ${{ inputs.key-p8 }}
         MATCH_PASSWORD: ${{ inputs.match-password }}
         MATCH_SSH_PRIVATE_KEY: ${{ inputs.match-ssh-private-key }}
-      run: |
-        ./scripts/release/require-env.sh GOOGLE_SERVICE_INFO_PLIST APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8 MATCH_PASSWORD MATCH_SSH_PRIVATE_KEY
-        # The Crashlytics dSYM phase of the archive reads GOOGLE_APP_ID from the plist and fails the build ten
-        # minutes in when it is missing (a google-services.json, or a value that is not the base64 of the plist):
-        # fail here, before the caches and the project generation.
-        plist="$RUNNER_TEMP/GoogleService-Info.plist"
-        if ! echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > "$plist" 2> /dev/null \
-          || ! plutil -extract GOOGLE_APP_ID raw "$plist" > /dev/null 2>&1; then
-          echo "::error::The GOOGLE_SERVICE_INFO_PLIST secret has no GOOGLE_APP_ID: set it to the base64 of the iOS GoogleService-Info.plist (base64 -i GoogleService-Info.plist)."
-          exit 1
-        fi
+      run: '"$GITHUB_ACTION_PATH/check-the-secrets.sh"'
 
     # Apple refuses a suffixed version string, so the Apple apps carry the plain X.Y.Z and tell the betas apart by
     # the build number; generate-project.sh strips the suffix, which Profile still shows (BlitzSplitVersionName).
@@ -103,11 +93,7 @@ runs:
       shell: bash
       env:
         MATCH_SSH_PRIVATE_KEY: ${{ inputs.match-ssh-private-key }}
-      run: |
-        mkdir -p ~/.ssh
-        printf '%s\n' "$MATCH_SSH_PRIVATE_KEY" > "$RUNNER_TEMP/match_ssh"
-        chmod 600 "$RUNNER_TEMP/match_ssh"
-        ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+      run: '"$GITHUB_ACTION_PATH/prepare-ssh-access-to-the-certificates-repositor.sh"'
 
     # Before the project: XcodeGen lists the files Resources holds when it runs, so a plist decoded after it stays
     # out of the app bundle, Firebase never starts and the Crashlytics dSYM phase finds no GOOGLE_APP_ID.
@@ -122,12 +108,7 @@ runs:
 
     - name: Generate the Xcode project
       shell: bash
-      run: |
-        ./iosApp/generate-project.sh
-        if ! grep -q 'GoogleService-Info.plist in Resources' iosApp/BoraRachar.xcodeproj/project.pbxproj; then
-          echo "::error::The generated project does not bundle GoogleService-Info.plist."
-          exit 1
-        fi
+      run: '"$GITHUB_ACTION_PATH/generate-the-xcode-project.sh"'
 
     # After the project, which the lane switches to manual signing for Release (docs/release-process.md#apple-signing)
     - name: Sign with the team's distribution certificate
@@ -138,12 +119,8 @@ runs:
         MATCH_PASSWORD: ${{ inputs.match-password }}
         GIT_SSH_COMMAND: ssh -i ${{ runner.temp }}/match_ssh -o IdentitiesOnly=yes
         ADHOC_EXPORT_PATH: ${{ inputs.adhoc-export-path }}
-      run: |
-        adhoc=()
-        if [ -n "$ADHOC_EXPORT_PATH" ]; then
-          adhoc=(adhoc_export_options:"$RUNNER_TEMP/ExportOptions-adhoc.plist")
-        fi
-        fastlane apple_signing scheme:${{ inputs.scheme }} export_options:"$RUNNER_TEMP/ExportOptions.plist" "${adhoc[@]}"
+        INPUTS_SCHEME: ${{ inputs.scheme }}
+      run: '"$GITHUB_ACTION_PATH/sign-with-the-teams-distribution-certificate.sh"'
 
     # No -clonedSourcePackagesDirPath: a Release build with the Firebase plist runs the Crashlytics dSYM script of
     # project.yml, which looks for the Firebase checkout in ${BUILD_DIR%/Build/*}/SourcePackages, that is, under the
@@ -169,24 +146,14 @@ runs:
     - name: Export the ad hoc app
       if: inputs.adhoc-export-path != ''
       shell: bash
-      run: |
-        if [ ! -f "$RUNNER_TEMP/ExportOptions-adhoc.plist" ]; then
-          echo "::warning::No ad hoc profile, so no Firebase App Distribution build."
-          exit 0
-        fi
-        if ! xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/${{ inputs.scheme }}.xcarchive" \
-          -exportPath "${{ inputs.adhoc-export-path }}" -exportOptionsPlist "$RUNNER_TEMP/ExportOptions-adhoc.plist"; then
-          echo "::warning::The ad hoc export failed, so no Firebase App Distribution build."
-        fi
+      env:
+        INPUTS_SCHEME: ${{ inputs.scheme }}
+        INPUTS_ADHOC_EXPORT_PATH: ${{ inputs.adhoc-export-path }}
+      run: '"$GITHUB_ACTION_PATH/export-the-ad-hoc-app.sh"'
 
     # The keys and the certificate must not stay on the runner for the steps after this action, or for the next job on
     # a reused one.
     - name: Remove the keys and the signing keychain
       if: always()
       shell: bash
-      run: |
-        rm -f "${KEY_PATH:-}" "$RUNNER_TEMP/match_ssh"
-        # setup_ci made the temporary keychain the default and the only one searched: give both back to the login one
-        security default-keychain -s login.keychain-db 2> /dev/null || true
-        security list-keychains -d user -s login.keychain-db 2> /dev/null || true
-        security delete-keychain fastlane_tmp_keychain-db 2> /dev/null || true
+      run: '"$GITHUB_ACTION_PATH/remove-the-keys-and-the-signing-keychain.sh"'

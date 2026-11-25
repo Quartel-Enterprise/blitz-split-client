@@ -1036,11 +1036,31 @@ class BillDetailAttachmentsTest {
             val state = viewModel.uiState.value
             val editor = state.photoCrop
             assertTrue(picked.contentEquals(editor?.photo?.jpeg))
-            assertEquals(PhotoCrop.of(1600, 1200), editor?.crop)
+            assertEquals(PhotoCrop.of(1600, 1200, canFit = true), editor?.crop)
             assertFalse(state.isAddingPhoto)
             assertEquals(0, additions)
             assertTrue(preparations.isEmpty())
             assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Adjust photo on a long photo WHEN zooming all the way out THEN the whole photo fits in the square`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(9, 8, 7)))
+            val minZoom = viewModel.uiState.value.photoCrop
+                ?.crop
+                ?.minZoom ?: error("no editor")
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnZoomChanged(minZoom)))
+
+            // Then
+            val crop = viewModel.uiState.value.photoCrop
+                ?.crop
+            assertEquals(1f, (crop?.photoWidthInFrame ?: 0f) * (crop?.zoom ?: 0f), 0.001f)
+            assertEquals(0.75f, (crop?.photoHeightInFrame ?: 0f) * (crop?.zoom ?: 0f), 0.001f)
         }
 
     @Test
@@ -1108,7 +1128,7 @@ class BillDetailAttachmentsTest {
             val crop = viewModel.uiState.value.photoCrop
                 ?.crop
             assertEquals(1, crop?.quarterTurns)
-            assertEquals(PhotoCrop.of(1600, 1200).toTurned(), crop)
+            assertEquals(PhotoCrop.of(1600, 1200, canFit = true).toTurned(), crop)
         }
 
     @Test
@@ -1129,7 +1149,7 @@ class BillDetailAttachmentsTest {
 
         // Then
         assertEquals(
-            PhotoCrop.of(1600, 1200).toDragged(0.1f, 0f),
+            PhotoCrop.of(1600, 1200, canFit = true).toDragged(0.1f, 0f),
             viewModel.uiState.value.photoCrop
                 ?.crop,
         )

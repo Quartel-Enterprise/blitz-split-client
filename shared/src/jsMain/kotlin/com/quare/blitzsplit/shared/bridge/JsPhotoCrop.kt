@@ -21,6 +21,8 @@ class JsPhotoCropState(
     val isMirrored: Boolean,
     val offsetX: Float,
     val offsetY: Float,
+    // Why: a receipt may zoom out to fit, the frame white around it.
+    val canFit: Boolean,
 )
 
 internal fun PhotoCropEditor.toJs(): JsPhotoCropState = JsPhotoCropState(
@@ -34,6 +36,7 @@ internal fun PhotoCropEditor.toJs(): JsPhotoCropState = JsPhotoCropState(
     isMirrored = crop.isMirrored,
     offsetX = crop.offsetX,
     offsetY = crop.offsetY,
+    canFit = crop.canFit,
 )
 
 // Why: what "Ajustar foto" sends, the same from the profile setup, Editar perfil, Novo grupo, Editar grupo and a bill's Anexos.
