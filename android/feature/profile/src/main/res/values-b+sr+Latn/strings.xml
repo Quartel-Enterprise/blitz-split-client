@@ -110,6 +110,7 @@
     <string name="profile_language_lithuanian">Litvanski</string>
     <string name="profile_language_punjabi">Pandžapski</string>
     <string name="profile_language_malayalam">Malajalamski</string>
+    <string name="profile_language_kannada">Kanada</string>
     <string name="profile_language_system_detail">Jezik uređaja</string>
     <string name="profile_notifications">Obaveštenja</string>
     <plurals name="profile_notifications_active">

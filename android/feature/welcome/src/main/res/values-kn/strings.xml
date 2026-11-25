@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">ಖರ್ಚನ್ನು ಹಂಚಿ, ಯಾವುದೇ ತೊಂದರೆಯಿಲ್ಲದೆ</string>
+    <string name="welcome_offline_title">ಆಫ್‌ಲೈನ್‌ನಲ್ಲೂ ಕೆಲಸ ಮಾಡುತ್ತದೆ</string>
+    <string name="welcome_offline_body">ಎಲ್ಲವೂ ನಿಮ್ಮ ಸಾಧನದಲ್ಲೇ ಇರುತ್ತದೆ ಮತ್ತು ನಂತರ ಸಿಂಕ್ ಆಗುತ್ತದೆ.</string>
+    <string name="welcome_optional_title">ಖಾತೆ ಕಡ್ಡಾಯವಲ್ಲ</string>
+    <string name="welcome_optional_body">ಸಾಧನವನ್ನು ಬದಲಾಯಿಸಿದಾಗ ನೀವು ಏನನ್ನೂ ಕಳೆದುಕೊಳ್ಳದಂತೆ ಮಾತ್ರ Google ಅಥವಾ Apple ನೋಡಿಕೊಳ್ಳುತ್ತವೆ.</string>
+    <string name="welcome_invite_title">ಲಿಂಕ್ ಅಥವಾ QR ಕೋಡ್ ಮೂಲಕ ಆಹ್ವಾನಿಸಿ</string>
+    <string name="welcome_invite_body">ಸ್ನೇಹಿತರು ಖಾತೆ ರಚಿಸದೆಯೇ ಗುಂಪಿಗೆ ಸೇರಬಹುದು.</string>
+    <string name="welcome_no_connection_title">ಸಂಪರ್ಕವಿಲ್ಲ.</string>
+    <string name="welcome_no_connection_body">ಖಾತೆಯೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಇಂಟರ್ನೆಟ್ ಬೇಕು. ಈಗ ಖಾತೆ ಇಲ್ಲದೆ ಬಳಸಿ, ನಂತರ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಸಂಪರ್ಕಿಸಿ.</string>
+    <string name="welcome_or">ಅಥವಾ</string>
+    <string name="welcome_use_without_account">ಖಾತೆ ಇಲ್ಲದೆ ಬಳಸಿ</string>
+    <string name="welcome_used_on_another_device">ನಾನು ಇದನ್ನು ಬೇರೊಂದು ಸಾಧನದಲ್ಲಿ ಬಳಸಿದ್ದೇನೆ</string>
+    <string name="welcome_sign_in_failed">ಈಗ ಸೈನ್ ಇನ್ ಮಾಡಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="welcome_legal_notice">ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು ಇದನ್ನು ಒಪ್ಪುತ್ತೀರಿ: %1$s. ಇದನ್ನೂ ಗಮನಿಸಿದ್ದೀರಿ: %2$s.</string>
+    <string name="welcome_legal_terms">ಸೇವಾ ನಿಯಮಗಳು</string>
+    <string name="welcome_legal_privacy">ಗೌಪ್ಯತಾ ನೀತಿ</string>
+    <string name="welcome_no_account_note">ಖಾತೆ ಇಲ್ಲದೆ, 30 ದಿನಗಳ ಕಾಲ ಬಳಸದಿದ್ದರೆ ನಿಮ್ಮ ಡೇಟಾ ಅಳಿಸಲಾಗುತ್ತದೆ. ಅದನ್ನು ಉಳಿಸಿಕೊಳ್ಳಲು Google ಅಥವಾ Apple ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
+    <string name="welcome_no_account_note_offline">ಖಾತೆ ಇಲ್ಲದೆ, 30 ದಿನಗಳ ಕಾಲ ಬಳಸದಿದ್ದರೆ ನಿಮ್ಮ ಡೇಟಾ ಅಳಿಸಲಾಗುತ್ತದೆ. ಅದನ್ನು ಉಳಿಸಿಕೊಳ್ಳಲು, ನಂತರ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ Google ಅಥವಾ Apple ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
+    <string name="welcome_expired_title">ನಿಮ್ಮ ಡೇಟಾ ಅಳಿಸಲಾಗಿದೆ</string>
+    <string name="welcome_expired_body">ನೀವು ಖಾತೆ ಇಲ್ಲದೆ ಆ್ಯಪ್ ಬಳಸುತ್ತಿದ್ದಿರಿ ಮತ್ತು 30 ದಿನಗಳ ಕಾಲ ಅದನ್ನು ತೆರೆಯಲಿಲ್ಲ, ಆದ್ದರಿಂದ ನಿಮ್ಮ ಡೇಟಾ ಅಳಿಸಲಾಗಿದೆ. ಮುಂದಿನ ಬಾರಿ ಅದನ್ನು ಉಳಿಸಿಕೊಳ್ಳಲು Google ಅಥವಾ Apple ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
+    <string name="welcome_expired_ok">ಸರಿ</string>
+</resources>

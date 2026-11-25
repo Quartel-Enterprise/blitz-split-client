@@ -85,10 +85,10 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     after Contacts, under the thumb as on iOS, and
     the last of the rail too, so a phone turning or a foldable opening never moves it (selected while the search is
     in front: its search bar takes the top bar's place on Groups, where Groups leaves it for the groups and back
-    closes it); the web phone's last item of the bottom navigation, and from the tablet up the first of the
-    sidebar, atop the tabs, the tablet rail's item and the desktop's "Search… ⌘K" field, where a keyboard-first
-    window looks for it, both opening a command dialog, as ⌘K or Ctrl+K does; the web's pages outside the tabs (a
-    group's, Statistics, Profile, Activity, a contact's profile) keep the same item, so the bars never change, which
+    closes it); the web phone's last item of the bottom navigation, and on the tablet's rail the last item of the
+    tabs' navigation, spaced as they are, as on Android's rail. The desktop's sidebar has the "Search… ⌘K" field
+    atop the tabs instead, where a keyboard-first window looks for it. Both open a command dialog, as ⌘K or Ctrl+K
+    does; the web's pages outside the tabs (a group's, Statistics, Profile, Activity, a contact's profile) keep the same item, so the bars never change, which
     goes back to the tab the page sits in and opens the search over it, as iOS's search tab leaves a pushed screen
     (`HomeSidebarUiEvent.OnSearchClicked`, no ⌘K there, which could close a dialog over the page), and Android's rail
     beside a group's screens drawn alone ends with it too (`Navigator.openSearchFromPage`); over Groups that is

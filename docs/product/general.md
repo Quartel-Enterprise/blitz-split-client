@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi and Malayalam: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam and Kannada: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -327,7 +327,19 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     with it; its deleted-item notice starts with who deleted it (`youSubjectLanguages`). Its plurals have one (1,
     101…), two (2, 102…), few (3, 4, 103…) and other, in every plural of the three platforms (the web writes an
     `…Other` message as "one|two|few|other"). The picker names it "Slovenščina", and its chip reads "SL". It brings
-    no currency, the euro covering Slovenia, and writes Latin digits and the Gregorian calendar. Lithuanian
+    no currency, the euro covering Slovenia, and writes Latin digits and the Gregorian calendar. Kannada (Pierre's calls,
+    issue #581) is one variant for every `kn` tag, in the Kannada script, and talks to the user with the respectful
+    "ನೀವು" and its plural verb forms (as Tamil's "நீங்கள்" and Telugu's "మీరు"), in the plain everyday Kannada Indian
+    apps write, English loanwords included where natural (ಬ್ಯಾಲೆನ್ಸ್, ಲಿಂಕ್, ಕೋಡ್) and "ಗುಂಪು" for a group; it calls the
+    app Blitz Split, ends a sentence with ".", and its plurals have one and other, "one" covering 0 too. Its default
+    digits are already 0-9, and the code keeps them even on a device set to Kannada digits ("nu-latn":
+    `latinDigitLanguages`, `AppNumbers`, the web's `formattingKeys`), never the Kannada digits, with the Gregorian
+    calendar. As Tamil's, its case endings follow the sound of the word before them, so none is ever glued to a value
+    the app fills in: a name, a group, a bill or an amount stands alone, as the subject, after a colon or before a
+    noun that carries the ending ("‘%1$s’ ಗುಂಪಿನಲ್ಲಿ"). A person's gender is never assumed: a person is always in the
+    respectful plural ("-ರು"). Its verb says the person, the respectful past "-ದರು" of a name differing from the
+    "-ದಿರಿ" of "ನೀವು", so its activity sentences follow Tamil's rule ([activity-and-push.md](activity-and-push.md)).
+    The picker names it "ಕನ್ನಡ", and its chip reads "KN". It uses INR. Lithuanian
     (Pierre's calls, issue #581) is one variant for every `lt` tag, talks to the user in the informal "tu" and calls
     the app Blitz Split. A name the app fills in is never declined: it stands as the subject or after a noun that
     carries the case ("narys Ana"). Its simple past says no gender, and every activity verb phrase starts with it,

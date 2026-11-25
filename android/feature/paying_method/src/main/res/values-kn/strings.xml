@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">ಹೊಸ ಪಾವತಿ ವಿಧಾನ</string>
+    <string name="paying_method_edit_title">ಪಾವತಿ ವಿಧಾನವನ್ನು ಎಡಿಟ್ ಮಾಡಿ</string>
+    <string name="paying_method_type">ಪ್ರಕಾರ</string>
+    <string name="paying_method_name">ಹೆಸರು</string>
+    <string name="paying_method_name_optional">ಹೆಸರು (ಐಚ್ಛಿಕ)</string>
+    <string name="paying_method_color">ಬಣ್ಣ</string>
+    <string name="paying_method_default">ಡೀಫಾಲ್ಟ್ ವಿಧಾನ</string>
+    <string name="paying_method_default_hint">ನೀವು ಪಾವತಿಸುವ ಹೊಸ ಖರ್ಚುಗಳು ಇದರೊಂದಿಗೆ ಆರಂಭವಾಗುತ್ತವೆ.</string>
+    <string name="paying_method_delete">ಪಾವತಿ ವಿಧಾನವನ್ನು ಅಳಿಸಿ</string>
+    <string name="paying_method_delete_title">ಈ ಪಾವತಿ ವಿಧಾನವನ್ನು ಅಳಿಸಬೇಕೇ?</string>
+    <string name="paying_method_delete_body">ನೀವು ಇದರಿಂದ ಗುರುತಿಸಿದ ಖರ್ಚುಗಳಲ್ಲಿ ಇದು ಇನ್ನು ಮುಂದೆ ಕಾಣಿಸುವುದಿಲ್ಲ.</string>
+    <string name="paying_method_delete_confirm">ಅಳಿಸಿ</string>
+    <string name="paying_method_save">ಸೇವ್ ಮಾಡಿ</string>
+</resources>

@@ -112,6 +112,7 @@
     <string name="profile_language_lithuanian">Lithuanian</string>
     <string name="profile_language_punjabi">Punjabi</string>
     <string name="profile_language_malayalam">Malayalam</string>
+    <string name="profile_language_kannada">Kannada</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_language_native_english" translatable="false">English (US)</string>
@@ -169,6 +170,7 @@
     <string name="profile_language_native_lithuanian" translatable="false">Lietuvių</string>
     <string name="profile_language_native_punjabi" translatable="false">ਪੰਜਾਬੀ</string>
     <string name="profile_language_native_malayalam" translatable="false">മലയാളം</string>
+    <string name="profile_language_native_kannada" translatable="false">ಕನ್ನಡ</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">
         <item quantity="one">%d active</item>

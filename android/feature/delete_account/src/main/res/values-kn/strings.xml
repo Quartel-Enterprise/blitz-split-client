@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">ಖಾತೆಯನ್ನು ಅಳಿಸಿ</string>
+    <string name="delete_account_offline_title">ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ.</string>
+    <string name="delete_account_offline_body">ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಅಳಿಸಲು ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ ಬೇಕು. ಸಂಪರ್ಕಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="delete_account_heading">ನಿಮ್ಮ ಖಾತೆ ಮತ್ತು ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಅಳಿಸಬೇಕೇ?</string>
+    <string name="delete_account_deleted_title">ಏನೆಲ್ಲಾ ಅಳಿಸಲಾಗುತ್ತದೆ</string>
+    <string name="delete_account_deleted_profile">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ (ಹೆಸರು, ಫೋಟೋ ಮತ್ತು ಬಣ್ಣ)</string>
+    <string name="delete_account_deleted_keys">ನಿಮ್ಮ Pix ಮತ್ತು Bitcoin ಕೀಗಳು</string>
+    <string name="delete_account_deleted_provider">ನಿಮ್ಮ ಖಾತೆಯೊಂದಿಗಿನ ಲಿಂಕ್: %1$s</string>
+    <string name="delete_account_deleted_recovery_code">ನಿಮ್ಮ ರಿಕವರಿ ಕೋಡ್</string>
+    <string name="delete_account_deleted_device">ಈ ಸಾಧನದಲ್ಲಿರುವ ನಿಮ್ಮ ಡೇಟಾದ ಪ್ರತಿ</string>
+    <string name="delete_account_kept_title">ನಿಮ್ಮ ಗುಂಪುಗಳಲ್ಲಿ ಏನು ಉಳಿಯುತ್ತದೆ</string>
+    <string name="delete_account_kept_groups">ಗುಂಪುಗಳು, ಅವುಗಳ ಖರ್ಚುಗಳು ಮತ್ತು ಪಾವತಿಗಳ ಜೊತೆಗೆ, ಇತರ ಸದಸ್ಯರಿಗಾಗಿ</string>
+    <string name="delete_account_kept_member">ಪ್ರತಿ ಗುಂಪಿನಲ್ಲಿ ನಿಮ್ಮ ಹೆಸರು, ಖಾತೆ ಇಲ್ಲದ ಸದಸ್ಯರಾಗಿ</string>
+    <string name="delete_account_kept_comments">ನಿಮ್ಮ ಕಾಮೆಂಟ್‌ಗಳು ಮತ್ತು ನೀವು ಸೇರಿಸಿದ ಫೋಟೋಗಳು, ನಿಮ್ಮ ಹೆಸರಿನಲ್ಲಿ</string>
+    <string name="delete_account_export">ಮೊದಲು ನನ್ನ ಡೇಟಾವನ್ನು ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ</string>
+    <string name="delete_account_confirm">ಇದನ್ನು ರದ್ದುಗೊಳಿಸಲು ಆಗುವುದಿಲ್ಲ ಎಂದು ನನಗೆ ಅರ್ಥವಾಗಿದೆ</string>
+    <string name="delete_account_delete">ಖಾತೆಯನ್ನು ಅಳಿಸಿ</string>
+    <string name="delete_account_cancel">ರದ್ದುಮಾಡಿ</string>
+    <string name="delete_account_failed">ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಅಳಿಸಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+</resources>

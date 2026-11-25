@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">ಆಹ್ವಾನ ಲಿಂಕ್</string>
+    <string name="members_link_pending">ಇನ್ನೂ ರಚಿಸಿಲ್ಲ</string>
+    <string name="members_share">ಶೇರ್ ಮಾಡಿ</string>
+    <string name="members_me">%s (ನೀವು)</string>
+    <string name="members_status_this_device">ಈ ಸಾಧನ</string>
+    <string name="members_status_joined">ಸೇರಿದ್ದಾರೆ</string>
+    <string name="members_status_not_joined">ಇನ್ನೂ ಸೇರಿಲ್ಲ</string>
+    <string name="members_options">ಆಯ್ಕೆಗಳು: %s</string>
+    <string name="members_rename">ಮರುಹೆಸರಿಸಿ</string>
+    <string name="members_personal_invite">ವೈಯಕ್ತಿಕ ಆಹ್ವಾನ: %s</string>
+    <string name="members_personal_message">ಈ ಲಿಂಕ್ ತೆರೆಯುವವರು ಪಟ್ಟಿಯಿಂದ ಆಯ್ಕೆಮಾಡದೆ ನೇರವಾಗಿ ಈ ಹೆಸರಿನಲ್ಲಿ ಸೇರುತ್ತಾರೆ: %s. ಇದು ಒಮ್ಮೆ ಮಾತ್ರ ಕೆಲಸ ಮಾಡುತ್ತದೆ.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">ಈ ಲಿಂಕ್ ತೆರೆಯುವವರು ಪಟ್ಟಿಯಿಂದ ಆಯ್ಕೆಮಾಡದೆ ನೇರವಾಗಿ ಈ ಹೆಸರಿನಲ್ಲಿ ಸೇರುತ್ತಾರೆ: %1$s. ಇಲ್ಲಿಯವರೆಗೆ ಸೇರಿಸಿದ %3$d ಖರ್ಚಿನಲ್ಲಿ ತಮ್ಮ ಪಾಲನ್ನು ತಕ್ಷಣ ನೋಡುತ್ತಾರೆ: %2$s. ಇದು ಒಮ್ಮೆ ಮಾತ್ರ ಕೆಲಸ ಮಾಡುತ್ತದೆ.</item>
+        <item quantity="other">ಈ ಲಿಂಕ್ ತೆರೆಯುವವರು ಪಟ್ಟಿಯಿಂದ ಆಯ್ಕೆಮಾಡದೆ ನೇರವಾಗಿ ಈ ಹೆಸರಿನಲ್ಲಿ ಸೇರುತ್ತಾರೆ: %1$s. ಇಲ್ಲಿಯವರೆಗೆ ಸೇರಿಸಿದ %3$d ಖರ್ಚುಗಳಲ್ಲಿ ತಮ್ಮ ಪಾಲನ್ನು ತಕ್ಷಣ ನೋಡುತ್ತಾರೆ: %2$s. ಇದು ಒಮ್ಮೆ ಮಾತ್ರ ಕೆಲಸ ಮಾಡುತ್ತದೆ.</item>
+    </plurals>
+    <string name="members_personal_copy">ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಿ</string>
+    <string name="members_personal_copied">ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</string>
+    <string name="members_personal_share">ಇವರೊಂದಿಗೆ ಶೇರ್ ಮಾಡಿ: %s</string>
+    <string name="members_personal_share_message">Blitz Split ನಲ್ಲಿ ಗುಂಪಿಗೆ ಸೇರಿ: %1$s. ನಿಮ್ಮ ಹೆಸರು: %2$s. ಲಿಂಕ್: %3$s</string>
+    <string name="members_remove">ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಿ</string>
+    <string name="members_remove_joined">%s ಈಗಾಗಲೇ ಗುಂಪಿಗೆ ಸೇರಿದ್ದಾರೆ</string>
+    <string name="members_remove_title">ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಬೇಕೇ: %s?</string>
+    <string name="members_remove_message">%s ಇನ್ನೂ ಸೇರಿಲ್ಲ. ನೀವು ಅವರನ್ನು ನಂತರ ಮತ್ತೆ ಸೇರಿಸಬಹುದು.</string>
+    <string name="members_remove_confirm">ತೆಗೆದುಹಾಕಿ</string>
+    <string name="members_release">ಹೆಸರನ್ನು ಬಿಡುಗಡೆ ಮಾಡಿ</string>
+    <string name="members_release_title">ಈ ಹೆಸರನ್ನು ಬಿಡುಗಡೆ ಮಾಡಬೇಕೇ: %s?</string>
+    <string name="members_release_message">ಈ ಹೆಸರಿನಲ್ಲಿ ಸೇರಿದವರು ಗುಂಪನ್ನು ತೊರೆಯುತ್ತಾರೆ: %1$s. ಆ ಹೆಸರು, ಅದರ ಬಣ್ಣ ಮತ್ತು ಖರ್ಚುಗಳು ಹಾಗೆಯೇ ಉಳಿಯುತ್ತವೆ, ಮತ್ತು ಗುಂಪಿನ ಲಿಂಕ್ ಮೂಲಕ %1$s ಎಂಬ ಹೆಸರನ್ನು ಮತ್ತೆ ಆಯ್ಕೆಮಾಡಬಹುದು.</string>
+    <string name="members_release_confirm">ಬಿಡುಗಡೆ ಮಾಡಿ</string>
+    <string name="members_release_error">ಹೆಸರನ್ನು ಬಿಡುಗಡೆ ಮಾಡಲು ಆಗಲಿಲ್ಲ. ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="members_add">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ</string>
+    <string name="members_invite_instead">ಆ್ಯಪ್ ಇದೆಯೇ? ಲಿಂಕ್ ಮೂಲಕ ಆಹ್ವಾನಿಸಿ</string>
+    <string name="members_name_label">ಹೆಸರು</string>
+    <string name="members_save">ಸೇವ್ ಮಾಡಿ</string>
+    <string name="members_cancel">ರದ್ದುಮಾಡಿ</string>
+    <string name="members_change_error">ಬದಲಾವಣೆಯನ್ನು ಸೇವ್ ಮಾಡಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="members_remove_open_balance">ಬಾಕಿ ಬ್ಯಾಲೆನ್ಸ್ ಇದೆ: %s</string>
+    <string name="members_balance_to_get_back">%s ಬರಬೇಕು</string>
+    <string name="members_balance_owes">%s ಕೊಡಬೇಕು</string>
+    <string name="members_balance_settled">ಲೆಕ್ಕ ಚುಕ್ತಾ ಆಗಿದೆ</string>
+</resources>

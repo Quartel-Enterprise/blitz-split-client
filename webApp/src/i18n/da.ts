@@ -880,6 +880,7 @@ export const da: Record<MessageKey, string> = {
   profile_languageLithuanian: 'Litauisk',
   profile_languagePunjabi: 'Punjabi',
   profile_languageMalayalam: 'Malayalam',
+  profile_languageKannada: 'Kannada',
   profile_bitcoinInSats: 'Bitcoin i satoshis',
   profile_bitcoinInSatsDetail: 'Viser og indtaster bitcoinbeløb i sats (1 ₿ = 100.000.000 sats).',
   profile_shareUsageData: 'Del brugsdata',
