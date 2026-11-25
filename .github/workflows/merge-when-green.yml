@@ -8,6 +8,10 @@ name: merge-when-green
 # request workflows completes (the last one to finish is the one that finds everything green). A
 # failed check leaves the pull request open with the label on.
 #
+# A branch behind its base is brought up to date and checked again before it merges when either side
+# adds a language, which turned main red with #604 and #605 (see the "Bring the branch up to date with
+# its base" step).
+#
 # A green pull request with an unresolved review conversation is not merged: the ruleset refuses it,
 # so the label goes and a comment says why. Resolving a conversation starts no workflow, so adding
 # the label again is what merges it then. The checks review-gate held for claude-review's threads
@@ -111,8 +115,11 @@ jobs:
       (needs.sweep.result == 'success' && needs.sweep.outputs.branches != '' &&
       needs.sweep.outputs.branches != '[]'))
     # One branch on an event, every labeled one on a sweep. toJSON quotes the event's branch name.
+    # One branch at a time on a sweep: two jobs checking at once could each find their branch up to date
+    # with the same main and both merge, which is the pair the up to date step below is there to stop.
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         branch: ${{ fromJSON(needs.sweep.outputs.branches || format('[{0}]', toJSON(github.event.pull_request.head.ref || github.event.workflow_run.head_branch))) }}
     runs-on: ubuntu-latest
@@ -160,7 +167,7 @@ jobs:
           # The label is filtered here rather than with --label, which goes through the search index:
           # it lags behind a label just added or removed, and behind a merge.
           if ! prs=$(gh pr list --state open --head "$HEAD_BRANCH" \
-            --json number,headRefOid,isDraft,isCrossRepository,labels); then
+            --json number,headRefOid,baseRefName,isDraft,isCrossRepository,labels); then
             echo "::error::Reading the pull requests with the MERGE_WHEN_GREEN_TOKEN secret failed. If the token expired, create a new one and update the secret."
             exit 1
           fi
@@ -180,6 +187,7 @@ jobs:
           fi
           pr=$(jq -r .number <<< "$match")
           head=$(jq -r .headRefOid <<< "$match")
+          base=$(jq -r .baseRefName <<< "$match")
 
           # Some checks turn green with nothing to start this workflow then. The check code scanning
           # adds (CodeQL) is no workflow run: it turns green a little after the codeql workflow's run
@@ -376,6 +384,7 @@ jobs:
           {
             echo "pr=$pr"
             echo "head=$head"
+            echo "base=$base"
             echo "held=$held"
           } >> "$GITHUB_OUTPUT"
 
@@ -445,6 +454,86 @@ jobs:
           gh pr comment "$PR_NUMBER" --body "$body"
           gh api --method DELETE "repos/$GH_REPO/issues/$PR_NUMBER/labels/merge-when-green" > /dev/null
 
+      # Two pull requests can each be green alone and red together. A language added on one side makes
+      # the other side's new strings, release notes and code over every language incomplete, and neither
+      # branch ever ran the checks on both (#604 and #605 broke main that way). No check is required by the
+      # ruleset, so GitHub doesn't hold back a branch behind main either. So a branch behind its base is
+      # brought up to date first when either side adds a language: it changes AppLanguage.kt or the
+      # languages iosApp/check-translations.py requires, or adds a web dictionary or a store listing. The
+      # update merges the base into the branch with MERGE_WHEN_GREEN_TOKEN, so the push runs the checks
+      # again; their completion starts this workflow again, and the pull request merges once they pass on
+      # the updated branch. Any other branch behind main merges as before: updating each one on every merge
+      # would run every check again, the Mac's Apple builds included, with nothing new to catch. A base
+      # that gained 300 files or more (all GitHub's comparison lists) counts as adding a language.
+      - name: Bring the branch up to date with its base
+        id: current
+        if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0' && steps.green.outputs.held == '0'
+        env:
+          GH_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.green.outputs.pr }}
+          HEAD_SHA: ${{ steps.green.outputs.head }}
+          BASE: ${{ steps.green.outputs.base }}
+        shell: bash
+        run: |
+          # What the base gained since the branch left it: its commits (ahead_by of head...base) and the
+          # files they changed, as "<status> <path>". GitHub leaves the files out of a comparison it can't
+          # diff, which counts as too many to list.
+          gained=$(gh api "repos/$GH_REPO/compare/$HEAD_SHA...$BASE" \
+            --jq '"\(.ahead_by) \(if .files == null then 300 else (.files | length) end)",
+              ((.files // [])[] | "\(.status) \(.filename)")')
+          read -r behind gained_count <<< "$(head -n 1 <<< "$gained")"
+          base_files=$(tail -n +2 <<< "$gained")
+          if [ "$behind" -eq 0 ]; then
+            echo "#$PR_NUMBER is up to date with $BASE."
+            echo "current=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          pr_files=$(gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/files?per_page=100" \
+            --jq '.[] | "\(.status) \(.filename)"')
+
+          # A new Android module adds a values-xx/strings.xml per language too, so those say nothing.
+          language='^([a-z]+ ((.*/)?AppLanguage\.kt|iosApp/check-translations\.py)|added (webApp/src/i18n/[^/]+\.ts|store-listing/[^/]+))$'
+          if [ "$gained_count" -lt 300 ] && ! grep -Eq "$language" <<< "$base_files" &&
+            ! grep -Eq "$language" <<< "$pr_files"; then
+            echo "#$PR_NUMBER is $behind commit(s) behind $BASE, and neither side adds a language: merged as it is."
+            echo "current=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "#$PR_NUMBER is $behind commit(s) behind $BASE, and one side adds a language: updating the branch."
+          echo "current=false" >> "$GITHUB_OUTPUT"
+          if answer="$(gh api --method PUT "repos/$GH_REPO/pulls/$PR_NUMBER/update-branch" \
+            -f expected_head_sha="$HEAD_SHA" 2>&1 > /dev/null)"; then
+            echo "Updated: the checks of the new head decide, and their completion starts this workflow again."
+            exit 0
+          fi
+          echo "$answer"
+          reason="$(printf '%s\n' "$answer" | sed -n 's/^gh: //p' | head -n 1)"
+          case "$reason" in
+            # A push meanwhile: its checks decide.
+            *'expected head sha'*)
+              echo "#$PR_NUMBER got a push meanwhile: its checks decide."
+              exit 0
+              ;;
+            # Not a refusal: no answer at all, GitHub's own error, or a rate limit (the sweep's jobs share
+            # the token). The label stays, and the next run tries again.
+            '' | *'(HTTP 5'[0-9][0-9]')' | *'rate limit'*)
+              echo "::warning::The update didn't go through (${reason:-no answer from GitHub}); the label stays for the next run."
+              exit 1
+              ;;
+          esac
+          # A conflict with the base, or a token GitHub won't let push to the branch, fails the same way on
+          # every later run, so the label goes, with a comment saying why.
+          body="Every check passed, but this branch is behind \`$BASE\` and one side adds a language, so it"
+          body+=" has to be brought up to date and checked again before it merges. GitHub refused to update it:"
+          body+=$'\n\n> '"$reason"$'\n\n'
+          body+="Merge \`$BASE\` into the branch (https://github.com/$GH_REPO/blob/main/docs/ci.md#merge-when-green),"
+          body+=" then add the \`merge-when-green\` label again."
+          gh pr comment "$PR_NUMBER" --body "$body"
+          gh api --method DELETE "repos/$GH_REPO/issues/$PR_NUMBER/labels/merge-when-green" > /dev/null
+          exit 1
+
       # A merge made with GITHUB_TOKEN triggers no other workflow, so the push to main would run none
       # of the checks of main. The merge is made with a token of its own instead: a fine-grained
       # personal access token restricted to this repository, with Actions, Contents, Pull requests and
@@ -455,7 +544,7 @@ jobs:
       # decide. The merge goes through the REST endpoint, whose answer names the reason: gh pr merge
       # only says "the base branch policy prohibits the merge".
       - name: Merge the pull request
-        if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0' && steps.green.outputs.held == '0'
+        if: steps.current.outcome == 'success' && steps.current.outputs.current == 'true'
         env:
           GH_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
           GH_REPO: ${{ github.repository }}
@@ -468,10 +557,10 @@ jobs:
             -f merge_method=squash -f sha="$HEAD_SHA" 2>&1 > /dev/null)"; then
             echo "$answer"
             reason="$(printf '%s\n' "$answer" | sed -n 's/^gh: //p' | head -n 1)"
-            # Not a refusal: no answer at all, GitHub's own error, or main moved under the merge (another
-            # pull request merged first). The label stays, and the next run tries again.
+            # Not a refusal: no answer at all, GitHub's own error, a rate limit, or main moved under the
+            # merge (another pull request merged first). The label stays, and the next run tries again.
             case "$reason" in
-              '' | 'Base branch was modified'* | *'(HTTP 5'[0-9][0-9]')')
+              '' | 'Base branch was modified'* | *'(HTTP 5'[0-9][0-9]')' | *'rate limit'*)
                 echo "::warning::The merge didn't go through (${reason:-no answer from GitHub}); the label stays for the next run."
                 exit 1
                 ;;

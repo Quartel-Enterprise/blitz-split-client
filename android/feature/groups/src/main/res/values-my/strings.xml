@@ -180,7 +180,7 @@
     <string name="groups_all_expenses_payer">ပေးချေသူ</string>
     <string name="groups_all_expenses_payer_all">မည်သူမဆို</string>
     <string name="groups_all_expenses_payer_you">သင် ပေးခဲ့သည်</string>
-    <string name="groups_all_expenses_payer_others">အခြားသူများ ပေးခဲ့သည်</string>
+    <string name="groups_all_expenses_payer_by">%1$s ပေးခဲ့သည်</string>
     <string name="groups_all_expenses_sort_newest">အသစ်ဆုံး အရင်</string>
     <string name="groups_all_expenses_sort_oldest">အဟောင်းဆုံး အရင်</string>
     <string name="groups_all_expenses_sort_largest">အများဆုံး အရင်</string>
