@@ -97,7 +97,7 @@ struct PhotoCropView: View {
             let crop = editor.crop
             ZStack {
                 // Why: a receipt zoomed out to fit leaves the frame white around it, as the square kept is.
-                if crop.canFit {
+                if crop.canFit, image != nil {
                     frameShape(side: side)
                         .fill(Color.white)
                         .frame(width: side, height: side)

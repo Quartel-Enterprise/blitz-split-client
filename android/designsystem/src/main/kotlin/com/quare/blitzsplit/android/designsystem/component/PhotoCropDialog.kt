@@ -299,7 +299,7 @@ private fun PhotoCropPane(
             contentAlignment = Alignment.Center,
         ) {
             // Why: a receipt zoomed out to fit leaves the frame white around it, as the square kept is.
-            if (crop.canFit) {
+            if (crop.canFit && bitmap != null) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     drawFrame(frame, sidePx, Color.White, Fill, BlendMode.SrcOver)
                 }

@@ -14,6 +14,13 @@ const FRAME_RATIO = 0.9
 const MAX_FRAME_SIDE = 360
 // Why: a trackpad's pinch (a wheel with Ctrl) of 100 px zooms by about a fifth, as a touch pinch of the same feel.
 const WHEEL_ZOOM_SPEED = 0.002
+const ZOOM_STEP = 0.01
+
+// Why: a step of about 0.01 that lands on both ends of a bill's range (from a fit zoom like 0.4375 to 3); `any` would
+// make Firefox's arrow keys jump by its default step of 1.
+function zoomStep(min: number, max: number): number {
+  return (max - min) / Math.max(1, Math.round((max - min) / ZOOM_STEP))
+}
 
 /**
  * "Ajustar foto" (Bible Planner's editor): a picked photo framed before it becomes the profile's or the group's. Dark,
@@ -99,6 +106,8 @@ function PhotoCropArea({ crop, presenter, frame }: { crop: JsPhotoCropState; pre
   const width = crop.photoWidthInFrame * side
   const height = crop.photoHeightInFrame * side
   const mirror = crop.isMirrored ? -1 : 1
+  const frameShape = frame === 'circle' ? 'rounded-full' : GROUP_SHAPE
+  const frameStyle = { width: side, height: side, marginLeft: -side / 2, marginTop: -side / 2 }
   return (
     <div
       ref={area}
@@ -112,11 +121,7 @@ function PhotoCropArea({ crop, presenter, frame }: { crop: JsPhotoCropState; pre
         <>
           {/* Why: a receipt zoomed out to fit leaves the frame white around it, as the square kept is. */}
           {crop.canFit && (
-            <div
-              aria-hidden
-              className={cn('pointer-events-none absolute top-1/2 left-1/2 bg-white', frame === 'circle' ? 'rounded-full' : GROUP_SHAPE)}
-              style={{ width: side, height: side, marginLeft: -side / 2, marginTop: -side / 2 }}
-            />
+            <div aria-hidden className={cn('pointer-events-none absolute top-1/2 left-1/2 bg-white', frameShape)} style={frameStyle} />
           )}
           <img
             src={crop.photoUrl}
@@ -136,9 +141,9 @@ function PhotoCropArea({ crop, presenter, frame }: { crop: JsPhotoCropState; pre
             aria-hidden
             className={cn(
               'pointer-events-none absolute top-1/2 left-1/2 border-2 border-white/90 shadow-[0_0_0_9999px_rgba(11,11,15,0.72)]',
-              frame === 'circle' ? 'rounded-full' : GROUP_SHAPE,
+              frameShape,
             )}
-            style={{ width: side, height: side, marginLeft: -side / 2, marginTop: -side / 2 }}
+            style={frameStyle}
           />
         </>
       )}
@@ -179,7 +184,7 @@ function PhotoCropControls({ crop, presenter }: { crop: JsPhotoCropState; presen
           aria-label={t('photoCrop_zoom')}
           min={crop.minZoom}
           max={crop.maxZoom}
-          step="any"
+          step={zoomStep(crop.minZoom, crop.maxZoom)}
           value={crop.zoom}
           onChange={(event) => presenter.changeZoom(Number(event.target.value))}
           className="h-1 flex-1 accent-white"
