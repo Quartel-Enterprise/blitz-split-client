@@ -25,6 +25,13 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+      - name: Checkout the scripts
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: scripts/ci
+
       - id: threads
         uses: Quartel-Enterprise/claude-review/threads@1.5.0
         with:
@@ -39,11 +46,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           OPEN: ${{ steps.threads.outputs.count }}
-        run: |
-          body="$OPEN thread(s) of the Claude review are still unresolved, so the held checks weren't"
-          body+=" re-run. Fix each one, or reply with why it stays as it is, resolve them, then add the"
-          body+=" \`run-checks\` label again."
-          gh pr comment "$PR_NUMBER" --body "$body"
+        run: scripts/ci/run-checks-say-why-nothing-was-re-run.sh
 
       - id: rerun
         if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0'
@@ -57,12 +60,7 @@ jobs:
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           RERUN: ${{ steps.rerun.outputs.count }}
-        run: |
-          if [ "$RERUN" -eq 0 ]; then
-            echo "::notice::No check of $HEAD_SHA was held, so nothing was re-run."
-          else
-            echo "Re-ran $RERUN held run(s) of $HEAD_SHA."
-          fi
+        run: scripts/ci/run-checks-report-the-re-run.sh
 
       # The label goes either way, so it can be added again.
       - name: Remove the run-checks label

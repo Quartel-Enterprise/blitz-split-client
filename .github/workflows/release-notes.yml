@@ -32,6 +32,7 @@ on:
       - 'scripts/store-screenshots/listing-art/stage-app-store.py'
       - 'scripts/store-screenshots/watch/generate.sh'
       - '.github/workflows/app-store-screenshots.yml'
+      - 'scripts/ci/app-store-screenshots-*.sh'
       - '.github/workflows/app-store-screenshots-upload.yml'
       # What the tidy-up of the App Store's shelves removes and sorts, its tests, and the lane a test holds it to
       - 'scripts/store-screenshots/shelves.mjs'
@@ -42,7 +43,9 @@ on:
       - 'fastlane/Fastfile'
       # The workflows that send Google Play's screenshots, from a release and alone, which a test holds together
       - '.github/workflows/release-production.yml'
+      - 'scripts/ci/release-production-*.sh'
       - '.github/workflows/play-store-screenshots.yml'
+      - 'scripts/ci/play-store-screenshots-*.sh'
       - '.github/workflows/play-store-screenshots-upload.yml'
       - '.github/actions/play-screenshots-draw/**'
       # The action that runs their lane, which a test holds to the upload jobs with the lane itself
@@ -64,6 +67,7 @@ on:
       - 'scripts/store-screenshots/local-set.mjs'
       - 'scripts/store-screenshots/local-set.test.mjs'
       - '.github/workflows/app-store-screenshots.yml'
+      - 'scripts/ci/app-store-screenshots-*.sh'
       - '.github/workflows/app-store-screenshots-upload.yml'
       # What the tidy-up of the App Store's shelves removes and sorts, its tests, and the lane a test holds it to
       - 'scripts/store-screenshots/shelves.mjs'
@@ -74,7 +78,9 @@ on:
       - 'fastlane/Fastfile'
       # The workflows that send Google Play's screenshots, from a release and alone, which a test holds together
       - '.github/workflows/release-production.yml'
+      - 'scripts/ci/release-production-*.sh'
       - '.github/workflows/play-store-screenshots.yml'
+      - 'scripts/ci/play-store-screenshots-*.sh'
       - '.github/workflows/play-store-screenshots-upload.yml'
       - '.github/actions/play-screenshots-draw/**'
       # The action that runs their lane, which a test holds to the upload jobs with the lane itself

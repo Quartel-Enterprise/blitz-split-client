@@ -13,6 +13,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { afterEach, beforeEach, describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
+import { readWithScripts } from "./workflow-source.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SCRIPTS = ["suggest-version.sh", "merge-back.sh", "bump-version.sh", "release-notes.mjs"];
@@ -508,8 +509,7 @@ describe("dispatching a release", () => {
 // action and send them with one called workflow, and each refuses to start while the other is going: a piece copied
 // into one of them, or a guard that names a file since renamed, would only show in a run that reaches the store.
 describe("the two ways Google Play's screenshots go up", () => {
-  const WORKFLOWS = join(HERE, "../../.github");
-  const read = (path) => readFileSync(join(WORKFLOWS, path), "utf8");
+  const read = (path) => readWithScripts(join(HERE, "../.."), join(".github", path));
   const release = read("workflows/release-production.yml");
   const alone = read("workflows/play-store-screenshots.yml");
   const upload = read("workflows/play-store-screenshots-upload.yml");

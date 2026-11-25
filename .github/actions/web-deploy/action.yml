@@ -85,45 +85,7 @@ runs:
         CLOUDFLARE_ACCOUNT_ID: ${{ inputs.cloudflare-account-id }}
         PAGES_PROJECT: ${{ inputs.pages-project }}
         URL: ${{ inputs.url }}
-      run: |
-        ./scripts/release/require-env.sh CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
-        project="$RUNNER_TEMP/pages-project.json"
-        # A curl that fails (no answer after its retries) leaves 000, which the last case below explains.
-        status="$(curl --silent --show-error --retry 3 --max-time 30 --output "$project" --write-out '%{http_code}' \
-          --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-          "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PAGES_PROJECT")" || true
-        case "$status" in
-          200) ;;
-          404)
-            echo "::error::The Cloudflare Pages project '$PAGES_PROJECT' doesn't exist in the account of CLOUDFLARE_ACCOUNT_ID. Create it once, then re-run this job: see docs/release-process.md#the-production-web-app."
-            exit 1
-            ;;
-          400 | 401 | 403)
-            jq -r '.errors[]?.message' "$project" 2> /dev/null || true
-            echo "::error::Cloudflare refused the request for the Pages project '$PAGES_PROJECT' (HTTP $status): check the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets. See docs/release-process.md#secrets."
-            exit 1
-            ;;
-          *)
-            jq -r '.errors[]?.message' "$project" 2> /dev/null || true
-            echo "::error::Cloudflare didn't say whether the Pages project '$PAGES_PROJECT' exists (HTTP ${status:-000}, 000 being no answer at all), which says nothing about the secrets: re-run this job."
-            exit 1
-            ;;
-        esac
-        # The deploy below goes to main: on a project with another production branch it would only be a preview,
-        # which no domain serves, and the job would still pass.
-        branch="$(jq -r '.result.production_branch // empty' "$project")"
-        if [ "$branch" != main ]; then
-          echo "::error::The Pages project '$PAGES_PROJECT' has '$branch' as its production branch, and a release deploys to main: it would only be a preview. Set the project's production branch to main: see docs/release-process.md#the-production-web-app."
-          exit 1
-        fi
-        # Only a warning: the deployment is still made, on the project's own pages.dev address, which is counted
-        # with its domains in case Cloudflare lists only the custom ones.
-        host="${URL#https://}"
-        host="${host%%/*}"
-        domains='((.result.domains // []) + [.result.subdomain // empty]) | unique'
-        if ! jq -e --arg host "$host" "$domains | index(\$host)" "$project" > /dev/null; then
-          echo "::warning title=Web::$host is not one of the domains of the Pages project '$PAGES_PROJECT' ($(jq -r "$domains | join(\", \")" "$project")): the deployment isn't served there until it is added. See docs/release-process.md#the-production-web-app."
-        fi
+      run: '"$GITHUB_ACTION_PATH/check-the-secrets-and-the-pages-project.sh"'
 
     # The web app shows the versionName of version.properties. Through env, not spliced into the command: the script
     # validates the values, but only after the shell has parsed the line.
@@ -190,14 +152,7 @@ runs:
         VERSION: ${{ inputs.version }}
         # Pinned: the version the releases were written with.
         SENTRY_CLI_VERSION: 3.8.2
-      run: |
-        if [ -z "$SENTRY_ORG" ] || [ -z "$SENTRY_PROJECT" ]; then
-          echo "::warning title=Web::SENTRY_AUTH_TOKEN is set without the SENTRY_ORG and SENTRY_PROJECT variables: no source map was uploaded. See docs/crash-reporting.md#the-web."
-        elif ! { npx --yes "@sentry/cli@${SENTRY_CLI_VERSION}" sourcemaps inject webApp/dist/assets \
-          && npx --yes "@sentry/cli@${SENTRY_CLI_VERSION}" sourcemaps upload --release "$VERSION" webApp/dist/assets; }; then
-          echo "::warning title=Web::The source maps didn't reach Sentry: this version's reports show the minified stack. See docs/crash-reporting.md#the-web."
-        fi
-        find webApp/dist -name '*.map' -delete
+      run: '"$GITHUB_ACTION_PATH/upload-the-source-maps-to-sentry.sh"'
 
     # To the project's production branch, main, so the deployment is the one its domains serve. The tree is dirty
     # with the version bump above; --commit-dirty keeps wrangler from warning about it.
@@ -212,15 +167,4 @@ runs:
         URL: ${{ inputs.url }}
         # Pinned: the version the releases were written with.
         WRANGLER_VERSION: 4.152.0
-      run: |
-        npx --yes "wrangler@${WRANGLER_VERSION}" pages deploy webApp/dist \
-          --project-name "$PAGES_PROJECT" \
-          --branch main \
-          --commit-dirty=true \
-          --commit-hash "$SHA" \
-          --commit-message "$VERSION"
-        {
-          echo "### Web"
-          echo ""
-          echo "$URL"
-        } >> "$GITHUB_STEP_SUMMARY"
+      run: '"$GITHUB_ACTION_PATH/deploy-to-cloudflare-pages.sh"'

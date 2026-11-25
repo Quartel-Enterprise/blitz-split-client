@@ -101,76 +101,16 @@ jobs:
         with:
           fetch-depth: 2
           filter: blob:none
-          sparse-checkout: .github/workflows/build-and-test.yml
+          sparse-checkout: |
+            .github/workflows/build-and-test.yml
+            scripts/ci/build-and-test-look-at-what-the-change-reaches.sh
           sparse-checkout-cone-mode: false
 
       # --no-renames lists both paths of a moved file, and without core.quotePath a name with an accent would come
       # quoted and match nothing. A diff that fails or lists no file counts as a change to all of it.
       - name: Look at what the change reaches
         id: diff
-        run: |
-          set -euo pipefail
-          unit=false js=false android=false web=false
-          everything() { unit=true js=true android=true web=true; }
-          build='^(build-logic/|gradle/|[^/]+\.gradle\.kts$|gradle\.properties$|version\.properties$|gradlew(\.bat)?$)'
-          build="$build|^\.github/actions/gradle/|^\.github/workflows/(build-and-test|review-gate)\.yml$"
-          # AnalyticsCatalogTest, a jvmTest, reads the analytics catalog and every main source set's Kotlin.
-          catalog='^docs/analytics/README\.md$|^(core|feature)/.*/src/[A-Za-z0-9]*Main/.*\.kt$'
-          none='\.md$|^docs/|^\.claude/|^iosApp/|^release-notes/|^store-listing/|^fastlane/|^\.github/'
-          none="$none|^scripts/(release|store-screenshots|store-video|readme-hero)/|^scripts/(cpd|ktlint)\.sh$"
-          none="$none|^scripts/heavy-check\.|^scripts/check-android-strings\.py$|^\.jscpd|^\.editorconfig$"
-          if ! files=$(git -c core.quotePath=false diff --name-only --no-renames HEAD^1 HEAD) || [ -z "$files" ]; then
-            everything
-          else
-            while IFS= read -r file; do
-              if [[ $file =~ $catalog ]]; then
-                unit=true
-              fi
-              if [[ $file =~ $build ]]; then
-                everything
-              elif [[ $file =~ $none ]]; then
-                :
-              elif [[ $file =~ ^(core|feature|shared)/ ]]; then
-                # A flag only turns on: a later file never turns off what an earlier one reached.
-                tested=true
-                [[ $file == shared/* ]] && tested=false
-                if [[ $file =~ /src/(apple|ios|macos|watchos|native)[A-Za-z0-9]*/ ]]; then
-                  :
-                elif [[ $file =~ /src/androidMain/ ]]; then
-                  android=true
-                elif [[ $file =~ /src/jvm(Main|Test)/ ]]; then
-                  unit=true
-                elif [[ $file =~ /src/jsMain/ ]]; then
-                  web=true
-                  [[ $tested == true ]] && js=true
-                elif [[ $file =~ /src/jsTest/ ]]; then
-                  js=true
-                elif [[ $file =~ /src/commonTest/ ]]; then
-                  unit=true js=true
-                else
-                  unit=true android=true web=true
-                  [[ $tested == true ]] && js=true
-                fi
-              elif [[ $file =~ ^android/ ]]; then
-                unit=true android=true
-              elif [[ $file =~ ^(androidApp|wearApp)/ ]]; then
-                android=true
-              elif [[ $file =~ ^webApp/ ]]; then
-                web=true
-              elif [[ $file == scripts/modules-with-tests.sh ]]; then
-                js=true
-              else
-                echo "$file reaches every job."
-                everything
-              fi
-            done <<< "$files"
-          fi
-          {
-            echo "unit=$unit"
-            echo "js=$js"
-            echo "android=$android"
-            echo "web=$web"
-          } | tee -a "$GITHUB_OUTPUT"
+        run: scripts/ci/build-and-test-look-at-what-the-change-reaches.sh
 
   unit-tests:
     needs: [review-gate, changes]
@@ -249,16 +189,7 @@ jobs:
         env:
           SHARD_INDEX: ${{ strategy.job-index }}
           SHARD_TOTAL: ${{ strategy.job-total }}
-        run: |
-          modules=$(./scripts/modules-with-tests.sh commonTest jsTest)
-          tasks=$(awk -v shard="$SHARD_INDEX" -v total="$SHARD_TOTAL" \
-            '(NR - 1) % total == shard { gsub("/", ":"); printf ":%s:jsTest ", $0 }' <<< "$modules")
-          if [ -z "$tasks" ]; then
-            echo "::error::No module with tests falls on shard $((SHARD_INDEX + 1)) of $SHARD_TOTAL."
-            exit 1
-          fi
-          echo "$tasks" | tr ' ' '\n'
-          echo "tasks=$tasks" >> "$GITHUB_OUTPUT"
+        run: scripts/ci/build-and-test-pick-this-shards-modules.sh
 
       - name: Setup Gradle
         uses: ./.github/actions/gradle
@@ -268,9 +199,7 @@ jobs:
       - name: Run the tests on the JS target
         env:
           TASKS: ${{ steps.modules.outputs.tasks }}
-        run: |
-          read -ra tasks <<< "$TASKS"
-          ./gradlew "${tasks[@]}" --continue
+        run: scripts/ci/build-and-test-run-the-tests-on-the-js-target.sh
 
       - name: Upload test reports
         if: failure()
