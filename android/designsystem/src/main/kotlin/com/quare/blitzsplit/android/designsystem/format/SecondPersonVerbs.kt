@@ -105,6 +105,7 @@ private const val GUJARATI = "gu"
 private const val GUJARATI_AGENT = "એ"
 private const val PUNJABI = "pa"
 private const val PUNJABI_ERGATIVE = "ਨੇ"
+private const val MALAYALAM = "ml"
 private const val TAMIL_THIRD_PERSON_PAST = "ார்"
 private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
 private const val SWAHILI = "sw"
@@ -152,6 +153,7 @@ private val youSubjectLanguages = setOf(
     SWAHILI,
     GUJARATI,
     PUNJABI,
+    MALAYALAM,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -218,7 +220,9 @@ private val irregularSecondPerson = mapOf(
  * verb phrase starts with, ends in "-o" or "-ė" ("-osi", "-ėsi" when reflexive) for someone else and "-ai" or "-ei"
  * ("-aisi", "-eisi") for the user: "Ana padalijo", "Tu padalijai"; "ištrynė" → "ištrynei", "dalijosi" → "dalijaisi".
  * Punjabi does as Gujarati with its ergative "ਨੇ", which the user's "ਤੁਸੀਂ"
- * doesn't take ("Ana ਨੇ ਖਰਚਾ ਵੰਡਿਆ", "ਤੁਸੀਂ ਖਰਚਾ ਵੰਡਿਆ"). Same rules as the web's and the Apple app's `verbForYou`.
+ * doesn't take ("Ana ਨੇ ਖਰਚਾ ਵੰਡਿਆ", "ਤੁਸੀਂ ਖਰਚਾ ਵੰਡਿਆ").
+ * Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb stays as it is ("Ana ചെലവ് വിഭജിച്ചു",
+ * "നിങ്ങൾ ചെലവ് വിഭജിച്ചു"). Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -368,8 +372,8 @@ private fun toSpanishSecondPerson(verb: String): String {
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
  * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule, and
  * Telugu "మీరు తొలగించారు: …", its verb not changing with the person, Marathi "तुम्ही … हटवला", with its rule,
- * Swahili "Wewe ulifuta…", with its own, Gujarati "તમે … ડિલીટ કર્યો", with its rule, and Punjabi "ਤੁਸੀਂ … ਮਿਟਾਇਆ",
- * with its own.
+ * Swahili "Wewe ulifuta…", with its own, Gujarati "તમે … ડિલીટ કર્યો", with its rule, Punjabi "ਤੁਸੀਂ … ਮਿਟਾਇਆ",
+ * with its own, and Malayalam "നിങ്ങൾ ഡിലീറ്റ് ചെയ്തു: …", its verb not changing with the person.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

@@ -108,6 +108,7 @@
     <string name="profile_language_slovenian">Σλοβενικά</string>
     <string name="profile_language_lithuanian">Λιθουανικά</string>
     <string name="profile_language_punjabi">Παντζάμπι</string>
+    <string name="profile_language_malayalam">Μαλαγιαλάμ</string>
     <string name="profile_language_system_detail">Γλώσσα συσκευής</string>
     <string name="profile_notifications">Ειδοποιήσεις</string>
     <plurals name="profile_notifications_active">

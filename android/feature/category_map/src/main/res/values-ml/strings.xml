@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">വാക്കുകളില്ല</string>
+    <string name="category_map_title">വിഭാഗ മാപ്പ്</string>
+    <string name="category_map_search">വാക്കുകൾ തിരയുക</string>
+    <string name="category_map_add">വാക്ക് ചേർക്കുക</string>
+    <string name="category_map_more">കൂടുതൽ ഓപ്ഷനുകൾ</string>
+    <string name="category_map_restore">ഡിഫോൾട്ട് പുനഃസ്ഥാപിക്കുക</string>
+    <string name="category_map_back">തിരികെ</string>
+    <string name="category_map_intro">ഒരു ചെലവിന്റെ തലക്കെട്ടിൽ ഈ വാക്കുകളിൽ ഒന്ന് ഉണ്ടെങ്കിൽ, അതിന്റെ വിഭാഗം സ്വയം വരും. “Uber വീട്ടിലേക്ക്” ഗതാഗതം ആയി മാറും.</string>
+    <string name="category_map_intro_offline">മാപ്പ് ഓഫ്‌ലൈനായി പ്രവർത്തിക്കും: മാറ്റങ്ങൾ ഈ ഉപകരണത്തിൽ ഉടൻ ബാധകമാകും, ഓൺലൈനിൽ തിരികെ വരുമ്പോൾ നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിലും എത്തും.</string>
+    <string name="category_map_device_only">നിങ്ങളുടെ മാപ്പ് ഈ ഉപകരണത്തിൽ മാത്രമാണ്. ഇത് നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിലേക്ക് കൊണ്ടുപോകാൻ, പ്രൊഫൈലിൽ Google അല്ലെങ്കിൽ Apple ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക.</string>
+    <string name="category_map_open_profile">പ്രൊഫൈൽ തുറക്കുക</string>
+    <string name="category_map_longest_wins">രണ്ട് വാക്കുകൾ ഒരു തലക്കെട്ടുമായി പൊരുത്തപ്പെടുമ്പോൾ, ഏറ്റവും നീളമുള്ളതിനാണ് മുൻഗണന.</string>
+    <string name="category_map_no_result">ഈ വാക്ക് ഇല്ല: “%1$s”</string>
+    <string name="category_map_no_result_body">ഇത് ചേർക്കുക, തലക്കെട്ടിൽ ഈ വാക്കുള്ള ചെലവുകൾ ശരിയായ വിഭാഗത്തോടെ വരും.</string>
+    <string name="category_map_add_query">ചേർക്കുക: “%1$s”</string>
+    <string name="category_map_empty_title">നിങ്ങളുടെ മാപ്പ് ശൂന്യമാണ്</string>
+    <string name="category_map_empty_body">വാക്കുകളില്ലെങ്കിൽ, വിഭാഗം തലക്കെട്ടിൽ നിന്ന് വരില്ല: ഓരോ ചെലവിലും നിങ്ങൾ അത് തിരഞ്ഞെടുക്കണം.</string>
+    <string name="category_map_group_category"> · ‘%1$s’ ഗ്രൂപ്പിന്റെ വിഭാഗം</string>
+    <string name="category_map_only_main">%1$s മാത്രം</string>
+    <string name="category_map_only_in_group">‘%1$s’ ഗ്രൂപ്പിൽ മാത്രം</string>
+    <string name="category_map_no_terms_yet">ഇതുവരെ വാക്കുകളില്ല.</string>
+    <string name="category_map_add_in">വാക്ക് ചേർക്കുക: %1$s</string>
+    <string name="category_map_tip">ഒരു വാക്കിന്റെ വിഭാഗം മാറ്റാനോ അത് നീക്കം ചെയ്യാനോ അതിൽ ടാപ്പ് ചെയ്യുക. ചിഹ്നങ്ങളും വലിയക്ഷരം/ചെറിയക്ഷരം വ്യത്യാസവും അവഗണിച്ച്, മുഴുവൻ വാക്കുമായി പൊരുത്തപ്പെടുന്നു.</string>
+    <string name="category_map_queued">ക്യൂവിൽ</string>
+    <string name="category_map_term_action">%1$s, %2$s. എഡിറ്റ് ചെയ്യുക</string>
+    <string name="category_map_new_term">പുതിയ വാക്ക്</string>
+    <string name="category_map_edit_term">വാക്ക് എഡിറ്റ് ചെയ്യുക</string>
+    <string name="category_map_term_label">വാക്ക് അല്ലെങ്കിൽ വാചകം</string>
+    <string name="category_map_term_help">ചിഹ്നങ്ങളും വലിയക്ഷരം/ചെറിയക്ഷരം വ്യത്യാസവും അവഗണിച്ച്, മുഴുവൻ വാക്കുമായി പൊരുത്തപ്പെടുന്നു.</string>
+    <string name="category_map_term_help_app">ആപ്പിന്റെ ഒരു വാക്ക്. ഡിഫോൾട്ട് പുനഃസ്ഥാപിച്ചാൽ ഇത് ആദ്യം ഉണ്ടായിരുന്നതുപോലെ തിരികെ വരും.</string>
+    <string name="category_map_term_duplicate">“%1$s” ഇതിനകം ഈ വിഭാഗം തിരഞ്ഞെടുക്കുന്നു: %2$s. ഓരോ വാക്കിനും ഒരു വിഭാഗം മാത്രം.</string>
+    <string name="category_map_term_too_short">കുറഞ്ഞത് 2 അക്ഷരങ്ങൾ ഉപയോഗിക്കുക.</string>
+    <string name="category_map_term_too_long">പരമാവധി 30 അക്ഷരങ്ങൾ ഉപയോഗിക്കുക.</string>
+    <string name="category_map_term_invalid">അക്ഷരങ്ങളും അക്കങ്ങളും സ്പേസുകളും മാത്രം ഉപയോഗിക്കുക.</string>
+    <string name="category_map_category">വിഭാഗം</string>
+    <string name="category_map_category_help">ഇത് വിഭാഗമോ ഉപവിഭാഗമോ ആകാം.</string>
+    <string name="category_map_category_help_edit">ഇവിടെ ഇത് മാറ്റിയാൽ വാക്ക് മറ്റൊരു വിഭാഗത്തിലേക്ക് മാറും.</string>
+    <string name="category_map_category_help_move">മാറ്റിയാൽ, വാക്ക് ഈ വിഭാഗത്തിൽ നിന്ന് നീക്കം ചെയ്യപ്പെടും: %1$s.</string>
+    <string name="category_map_example">ഉദാഹരണം</string>
+    <string name="category_map_example_move">മാറ്റിയാൽ</string>
+    <string name="category_map_remove">നീക്കം ചെയ്യുക</string>
+    <string name="category_map_cancel">റദ്ദാക്കുക</string>
+    <string name="category_map_save">സേവ് ചെയ്യുക</string>
+    <string name="category_map_move_to">ഇതിലേക്ക് മാറ്റുക: %1$s</string>
+    <string name="category_map_removed">“%1$s” മാപ്പിൽ നിന്ന് നീക്കം ചെയ്തു</string>
+    <string name="category_map_undo">പഴയപടിയാക്കുക</string>
+    <string name="category_map_restore_title">ഡിഫോൾട്ട് മാപ്പ് പുനഃസ്ഥാപിക്കണോ?</string>
+    <string name="category_map_restore_body">നിങ്ങൾ നീക്കം ചെയ്തതോ മാറ്റിയതോ ഉൾപ്പെടെ, ആപ്പിന്റെ 60 വാക്കുകൾ ആദ്യം ഉണ്ടായിരുന്നതുപോലെ തിരികെ വരും.</string>
+    <string name="category_map_restore_own_one">നിങ്ങൾ സൃഷ്ടിച്ച വാക്ക്, “%1$s”, നിലനിൽക്കും.</string>
+    <string name="category_map_restore_confirm">പുനഃസ്ഥാപിക്കുക</string>
+    <string name="category_map_save_error">മാപ്പ് സേവ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d വാക്ക്</item>
+        <item quantity="other">%d വാക്കുകൾ</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d ഉപവിഭാഗം</item>
+        <item quantity="other">%d ഉപവിഭാഗങ്ങൾ</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d വാക്ക്: “%2$s”</item>
+        <item quantity="other">%1$d വാക്കുകൾ: “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">ഓഫ്‌ലൈൻ · %d മാറ്റം ക്യൂവിൽ</item>
+        <item quantity="other">ഓഫ്‌ലൈൻ · %d മാറ്റങ്ങൾ ക്യൂവിൽ</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">നിങ്ങൾ സൃഷ്ടിച്ച %d വാക്ക് നിലനിൽക്കും.</item>
+        <item quantity="other">നിങ്ങൾ സൃഷ്ടിച്ച %d വാക്കുകൾ നിലനിൽക്കും.</item>
+    </plurals>
+    <string name="category_map_new_category">പുതിയ വിഭാഗം</string>
+    <string name="category_map_new_subcategory_in">പുതിയ ഉപവിഭാഗം: %s</string>
+    <string name="category_map_edit_category">എഡിറ്റ് ചെയ്യുക: %s</string>
+    <string name="category_map_category_group">ഗ്രൂപ്പ്</string>
+    <string name="category_map_change_color">നിറം മാറ്റുക: %1$s</string>
+    <string name="category_map_restore_color">നിറം പുനഃസ്ഥാപിക്കുക</string>
+    <string name="category_map_color_done">പൂർത്തിയായി</string>
+</resources>

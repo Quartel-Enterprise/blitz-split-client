@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">അക്കൗണ്ട് ഡിലീറ്റ് ചെയ്യുക</string>
+    <string name="delete_account_offline_title">ഇന്റർനെറ്റ് ഇല്ല.</string>
+    <string name="delete_account_offline_body">നിങ്ങളുടെ അക്കൗണ്ട് ഡിലീറ്റ് ചെയ്യാൻ ഇന്റർനെറ്റ് കണക്ഷൻ ആവശ്യമാണ്. കണക്റ്റ് ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="delete_account_heading">നിങ്ങളുടെ അക്കൗണ്ടും ഡാറ്റയും ഡിലീറ്റ് ചെയ്യണോ?</string>
+    <string name="delete_account_deleted_title">ഡിലീറ്റ് ചെയ്യപ്പെടുന്നവ</string>
+    <string name="delete_account_deleted_profile">നിങ്ങളുടെ പ്രൊഫൈൽ (പേര്, ഫോട്ടോ, നിറം)</string>
+    <string name="delete_account_deleted_keys">നിങ്ങളുടെ Pix, Bitcoin കീകൾ</string>
+    <string name="delete_account_deleted_provider">നിങ്ങളുടെ അക്കൗണ്ടുമായുള്ള ലിങ്ക്: %1$s</string>
+    <string name="delete_account_deleted_recovery_code">നിങ്ങളുടെ റിക്കവറി കോഡ്</string>
+    <string name="delete_account_deleted_device">ഈ ഉപകരണത്തിലെ നിങ്ങളുടെ ഡാറ്റയുടെ പകർപ്പ്</string>
+    <string name="delete_account_kept_title">നിങ്ങളുടെ ഗ്രൂപ്പുകളിൽ നിലനിൽക്കുന്നവ</string>
+    <string name="delete_account_kept_groups">മറ്റ് അംഗങ്ങൾക്കായി, ചെലവുകളും പേയ്‌മെന്റുകളും സഹിതം ഗ്രൂപ്പുകൾ</string>
+    <string name="delete_account_kept_member">അക്കൗണ്ട് ഇല്ലാത്ത ഒരു അംഗമായി, ഓരോ ഗ്രൂപ്പിലും നിങ്ങളുടെ പേര്</string>
+    <string name="delete_account_kept_comments">നിങ്ങളുടെ പേരിൽ, നിങ്ങളുടെ കമന്റുകളും നിങ്ങൾ ചേർത്ത ഫോട്ടോകളും</string>
+    <string name="delete_account_export">ആദ്യം എന്റെ ഡാറ്റ എക്സ്പോർട്ട് ചെയ്യുക</string>
+    <string name="delete_account_confirm">ഇത് പഴയപടിയാക്കാനാകില്ലെന്ന് ഞാൻ മനസ്സിലാക്കുന്നു</string>
+    <string name="delete_account_delete">അക്കൗണ്ട് ഡിലീറ്റ് ചെയ്യുക</string>
+    <string name="delete_account_cancel">റദ്ദാക്കുക</string>
+    <string name="delete_account_failed">നിങ്ങളുടെ അക്കൗണ്ട് ഡിലീറ്റ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
+</resources>

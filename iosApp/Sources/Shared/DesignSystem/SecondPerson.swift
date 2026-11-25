@@ -33,6 +33,8 @@ import SwiftUI
 /// Gujarati does the same with its agent "એ", which the user's "તમે" doesn't take ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ
 /// વહેંચ્યો"), and Punjabi with its ergative "ਨੇ", which the user's "ਤੁਸੀਂ" doesn't take ("Ana ਨੇ ਖਰਚਾ ਵੰਡਿਆ",
 /// "ਤੁਸੀਂ ਖਰਚਾ ਵੰਡਿਆ").
+/// Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb stays as it is ("Ana ചെലവ് വിഭജിച്ചു",
+/// "നിങ്ങൾ ചെലവ് വിഭജിച്ചു").
 ///
 /// Latvian starts each verb phrase with a simple past, which says the person but not the gender: its third person in
 /// "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji"; "Ana

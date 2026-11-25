@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">പുതിയ പേയ്‌മെന്റ് രീതി</string>
+    <string name="paying_method_edit_title">പേയ്‌മെന്റ് രീതി എഡിറ്റ് ചെയ്യുക</string>
+    <string name="paying_method_type">തരം</string>
+    <string name="paying_method_name">പേര്</string>
+    <string name="paying_method_name_optional">പേര് (ഓപ്ഷണൽ)</string>
+    <string name="paying_method_color">നിറം</string>
+    <string name="paying_method_default">ഡിഫോൾട്ട് രീതി</string>
+    <string name="paying_method_default_hint">നിങ്ങൾ പണം നൽകുന്ന പുതിയ ചെലവുകൾ ഇതിൽ തുടങ്ങും.</string>
+    <string name="paying_method_delete">പേയ്‌മെന്റ് രീതി ഡിലീറ്റ് ചെയ്യുക</string>
+    <string name="paying_method_delete_title">ഈ പേയ്‌മെന്റ് രീതി ഡിലീറ്റ് ചെയ്യണോ?</string>
+    <string name="paying_method_delete_body">ഇത് അടയാളപ്പെടുത്തിയ ചെലവുകളിൽ ഇനി ഇത് കാണിക്കില്ല.</string>
+    <string name="paying_method_delete_confirm">ഡിലീറ്റ് ചെയ്യുക</string>
+    <string name="paying_method_save">സേവ് ചെയ്യുക</string>
+</resources>

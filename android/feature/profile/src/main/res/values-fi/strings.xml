@@ -108,6 +108,7 @@
     <string name="profile_language_slovenian">Sloveeni</string>
     <string name="profile_language_lithuanian">Liettua</string>
     <string name="profile_language_punjabi">Pandžabi</string>
+    <string name="profile_language_malayalam">Malajalam</string>
     <string name="profile_language_system_detail">Laitteen kieli</string>
     <string name="profile_notifications">Ilmoitukset</string>
     <plurals name="profile_notifications_active">

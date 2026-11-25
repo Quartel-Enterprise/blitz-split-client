@@ -110,6 +110,7 @@
     <string name="profile_language_slovenian">Slovinčina</string>
     <string name="profile_language_lithuanian">Litovčina</string>
     <string name="profile_language_punjabi">Pandžábčina</string>
+    <string name="profile_language_malayalam">Malajálamčina</string>
     <string name="profile_language_system_detail">Jazyk zariadenia</string>
     <string name="profile_notifications">Upozornenia</string>
     <plurals name="profile_notifications_active">

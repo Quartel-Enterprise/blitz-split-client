@@ -38,7 +38,7 @@ enum RightToLeft {
 }
 
 /// The locale amounts, numbers and dates are written in: the device's, with Latin digits (0-9) in Arabic, Bengali, Urdu,
-/// Persian, Tamil, Telugu, Marathi, Gujarati and Punjabi, so an amount reads as the amount fields type and parse it, and the calendar dates are written in.
+/// Persian, Tamil, Telugu, Marathi, Gujarati, Punjabi and Malayalam, so an amount reads as the amount fields type and parse it, and the calendar dates are written in.
 enum AppNumbers {
     private static let gregorianCodes: Set = ["fa", "th"]
 
@@ -59,12 +59,12 @@ enum AppNumbers {
         return gregorian
     }
 
-    /// The device's locale, on Latin digits when it would write Arabic, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati or Punjabi ones.
+    /// The device's locale, on Latin digits when it would write Arabic, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Punjabi or Malayalam ones.
     static var locale: Locale { latin(.autoupdatingCurrent) }
 
-    private static let latinDigitCodes: Set = ["ar", "bn", "ur", "fa", "ta", "te", "mr", "gu", "pa"]
+    private static let latinDigitCodes: Set = ["ar", "bn", "ur", "fa", "ta", "te", "mr", "gu", "pa", "ml"]
 
-    /// `base` on Latin digits in Arabic, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati and Punjabi; `base` itself in every other language.
+    /// `base` on Latin digits in Arabic, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Punjabi and Malayalam; `base` itself in every other language.
     static func latin(_ base: Locale) -> Locale {
         guard let code = base.language.languageCode?.identifier, latinDigitCodes.contains(code),
               base.numberingSystem.identifier != "latn" else { return base }

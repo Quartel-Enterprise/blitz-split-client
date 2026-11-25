@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">നിങ്ങൾ ഈ ഗ്രൂപ്പിൽ ഇല്ല</string>
+    <string name="bill_link_not_in_group_message">ഈ കമന്റ് നിങ്ങൾ ഇല്ലാത്ത ഒരു ഗ്രൂപ്പിലാണ്. നിങ്ങൾക്ക് ലിങ്ക് അയച്ചയാളോട് ക്ഷണം ചോദിക്കുക.</string>
+    <string name="bill_link_offline_title">ഇന്റർനെറ്റ് ഇല്ല</string>
+    <string name="bill_link_offline_message">ഓൺലൈനിൽ തിരികെ വന്നാൽ ലിങ്ക് വീണ്ടും തുറക്കുക.</string>
+    <string name="bill_link_go_home">ഹോമിലേക്ക് പോകുക</string>
+    <string name="discard_changes_title">മാറ്റങ്ങൾ ഉപേക്ഷിക്കണോ?</string>
+    <string name="discard_changes_message">സേവ് ചെയ്യാത്ത മാറ്റങ്ങൾ നഷ്ടപ്പെടും.</string>
+    <string name="discard_changes_discard">ഉപേക്ഷിക്കുക</string>
+    <string name="discard_changes_keep_editing">എഡിറ്റ് ചെയ്യുന്നത് തുടരുക</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">വാച്ച്</string>
+    <string name="watch_connected_title">നിങ്ങളുടെ അക്കൗണ്ടിലേക്ക് കണക്റ്റ് ചെയ്തു: %1$s</string>
+    <string name="watch_connected_title_unnamed">വാച്ച് നിങ്ങളുടെ അക്കൗണ്ടിലേക്ക് കണക്റ്റ് ചെയ്തു</string>
+    <string name="watch_connected_text">ഇതിന് നിങ്ങളുടെ ഗ്രൂപ്പുകൾ കാണാം, സ്വയം സിങ്ക് ചെയ്യും. ഇത് ഡിസ്‌കണക്റ്റ് ചെയ്യാൻ, വാച്ചിൽ സൈൻ ഔട്ട് ചെയ്യുക.</string>
+</resources>

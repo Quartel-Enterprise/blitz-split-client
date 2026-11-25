@@ -108,6 +108,7 @@
     <string name="profile_language_slovenian">Slovenian</string>
     <string name="profile_language_lithuanian">Lithuanian</string>
     <string name="profile_language_punjabi">Punjabi</string>
+    <string name="profile_language_malayalam">Malayalam</string>
     <string name="profile_language_system_detail">Wika ng device</string>
     <string name="profile_notifications">Mga notipikasyon</string>
     <plurals name="profile_notifications_active">

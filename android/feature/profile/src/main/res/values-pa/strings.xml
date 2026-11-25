@@ -108,6 +108,7 @@
     <string name="profile_language_slovenian">ਸਲੋਵੇਨੀਆਈ</string>
     <string name="profile_language_lithuanian">ਲਿਥੁਆਨੀਆਈ</string>
     <string name="profile_language_punjabi">ਪੰਜਾਬੀ</string>
+    <string name="profile_language_malayalam">ਮਲਿਆਲਮ</string>
     <string name="profile_language_system_detail">ਡਿਵਾਈਸ ਦੀ ਭਾਸ਼ਾ</string>
     <string name="profile_notifications">ਸੂਚਨਾਵਾਂ</string>
     <plurals name="profile_notifications_active">

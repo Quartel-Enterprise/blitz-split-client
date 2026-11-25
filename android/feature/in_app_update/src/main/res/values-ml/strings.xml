@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">അപ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യുന്നു…</string>
+    <string name="in_app_update_download_failed">അപ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</string>
+</resources>

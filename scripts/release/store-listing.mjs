@@ -113,6 +113,7 @@ export const PLAY_LOCALES = {
   sl: ["sl"],
   lt: ["lt"],
   pa: ["pa"],
+  ml: ["ml-IN"],
 };
 export const APP_STORE_LOCALES = {
   en: ["en-US"],
@@ -177,6 +178,7 @@ export const APP_STORE_LOCALES = {
   // Apple has no Lithuanian listing locale either: the language has a Play listing and no App Store one.
   lt: [],
   pa: ["pa-IN"],
+  ml: ["ml-IN"],
 };
 
 /** The app's name in a listing: Bora Rachar in Brazil's Portuguese, Blitz Split in every other language. */

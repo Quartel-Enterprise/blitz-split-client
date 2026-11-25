@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">ക്ഷണ ലിങ്ക്</string>
+    <string name="members_link_pending">ഇതുവരെ സൃഷ്ടിച്ചിട്ടില്ല</string>
+    <string name="members_share">ഷെയർ ചെയ്യുക</string>
+    <string name="members_me">%s (നിങ്ങൾ)</string>
+    <string name="members_status_this_device">ഈ ഉപകരണം</string>
+    <string name="members_status_joined">ജോയിൻ ചെയ്തു</string>
+    <string name="members_status_not_joined">ഇതുവരെ ജോയിൻ ചെയ്തിട്ടില്ല</string>
+    <string name="members_options">ഓപ്ഷനുകൾ: %s</string>
+    <string name="members_rename">പേര് മാറ്റുക</string>
+    <string name="members_personal_invite">വ്യക്തിഗത ക്ഷണം: %s</string>
+    <string name="members_personal_message">ഈ ലിങ്ക് തുറക്കുന്നയാൾ, ലിസ്റ്റിൽ നിന്ന് തിരഞ്ഞെടുക്കാതെ, നേരിട്ട് ഈ പേരിൽ ജോയിൻ ചെയ്യും: %s. ഇത് ഒരു തവണ മാത്രം പ്രവർത്തിക്കും.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">ഈ ലിങ്ക് തുറക്കുന്നയാൾ, ലിസ്റ്റിൽ നിന്ന് തിരഞ്ഞെടുക്കാതെ, നേരിട്ട് ഈ പേരിൽ ജോയിൻ ചെയ്യും: %1$s. ഇതുവരെ ചേർത്ത ചെലവിലെ തങ്ങളുടെ വിഹിതവും ഉടൻ കാണും: %2$s. ഇത് ഒരു തവണ മാത്രം പ്രവർത്തിക്കും.</item>
+        <item quantity="other">ഈ ലിങ്ക് തുറക്കുന്നയാൾ, ലിസ്റ്റിൽ നിന്ന് തിരഞ്ഞെടുക്കാതെ, നേരിട്ട് ഈ പേരിൽ ജോയിൻ ചെയ്യും: %1$s. ഇതുവരെ ചേർത്ത %3$d ചെലവുകളിലെ തങ്ങളുടെ വിഹിതവും ഉടൻ കാണും: %2$s. ഇത് ഒരു തവണ മാത്രം പ്രവർത്തിക്കും.</item>
+    </plurals>
+    <string name="members_personal_copy">ലിങ്ക് കോപ്പി ചെയ്യുക</string>
+    <string name="members_personal_copied">കോപ്പി ചെയ്തു</string>
+    <string name="members_personal_share">ഇവരുമായി ഷെയർ ചെയ്യുക: %s</string>
+    <string name="members_personal_share_message">Blitz Split-ൽ ഗ്രൂപ്പിൽ ജോയിൻ ചെയ്യുക: %1$s. നിങ്ങളുടെ പേര്: %2$s. ലിങ്ക്: %3$s</string>
+    <string name="members_remove">ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക</string>
+    <string name="members_remove_joined">%s ഇതിനകം ഗ്രൂപ്പിൽ ജോയിൻ ചെയ്തു</string>
+    <string name="members_remove_title">ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യണോ: %s?</string>
+    <string name="members_remove_message">%s ഇതുവരെ ജോയിൻ ചെയ്തിട്ടില്ല. പിന്നീട് നിങ്ങൾക്ക് അവരെ വീണ്ടും ചേർക്കാം.</string>
+    <string name="members_remove_confirm">നീക്കം ചെയ്യുക</string>
+    <string name="members_release">പേര് റിലീസ് ചെയ്യുക</string>
+    <string name="members_release_title">ഈ പേര് റിലീസ് ചെയ്യണോ: %s?</string>
+    <string name="members_release_message">ഈ പേരിൽ ജോയിൻ ചെയ്തയാൾ ഗ്രൂപ്പ് വിടും: %1$s. ‘%1$s’ എന്ന പേരും നിറവും ചെലവുകളും നിലനിൽക്കും, ഗ്രൂപ്പിന്റെ ലിങ്ക് വഴി ‘%1$s’ എന്ന പേര് വീണ്ടും തിരഞ്ഞെടുക്കാം.</string>
+    <string name="members_release_confirm">റിലീസ് ചെയ്യുക</string>
+    <string name="members_release_error">പേര് റിലീസ് ചെയ്യാനായില്ല. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="members_add">ആളെ ചേർക്കുക</string>
+    <string name="members_invite_instead">ആപ്പ് ഉണ്ടോ? ലിങ്ക് വഴി ക്ഷണിക്കുക</string>
+    <string name="members_name_label">പേര്</string>
+    <string name="members_save">സേവ് ചെയ്യുക</string>
+    <string name="members_cancel">റദ്ദാക്കുക</string>
+    <string name="members_change_error">മാറ്റം സേവ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="members_remove_open_balance">ബാക്കിയുള്ള ബാലൻസ് ഉണ്ട്: %s</string>
+    <string name="members_balance_to_get_back">%s ലഭിക്കാനുണ്ട്</string>
+    <string name="members_balance_owes">%s നൽകാനുണ്ട്</string>
+    <string name="members_balance_settled">സെറ്റിൽ ആയി</string>
+</resources>

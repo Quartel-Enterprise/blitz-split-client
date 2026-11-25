@@ -107,6 +107,7 @@
     <string name="profile_language_slovenian">斯洛文尼亚语</string>
     <string name="profile_language_lithuanian">立陶宛语</string>
     <string name="profile_language_punjabi">旁遮普语</string>
+    <string name="profile_language_malayalam">马拉雅拉姆语</string>
     <string name="profile_language_system_detail">设备语言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

@@ -109,6 +109,7 @@
     <string name="profile_language_slovenian">Slovenă</string>
     <string name="profile_language_lithuanian">Lituaniană</string>
     <string name="profile_language_punjabi">Punjabi</string>
+    <string name="profile_language_malayalam">Malayalam</string>
     <string name="profile_language_system_detail">Limba dispozitivului</string>
     <string name="profile_notifications">Notificări</string>
     <plurals name="profile_notifications_active">

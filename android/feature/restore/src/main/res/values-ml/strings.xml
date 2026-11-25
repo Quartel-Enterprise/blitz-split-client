@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">നിങ്ങളുടെ ഗ്രൂപ്പുകൾ തിരികെ കൊണ്ടുവരിക</string>
+    <string name="restore_subtitle">മുമ്പ് ഒരു അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്തിരുന്നോ? വീണ്ടും സൈൻ ഇൻ ചെയ്താൽ മതി. ഇല്ലെങ്കിൽ, റിക്കവറി കോഡോ പഴയ ഉപകരണത്തിലെ QR കോഡോ ഉപയോഗിക്കുക.</string>
+    <string name="restore_no_connection_title">കണക്ഷൻ ഇല്ല</string>
+    <string name="restore_no_connection_body">അക്കൗണ്ടോ കോഡോ ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യാൻ, നിങ്ങളുടെ ഗ്രൂപ്പുകൾ ഡൗൺലോഡ് ചെയ്യാൻ ഇന്റർനെറ്റ് ആവശ്യമാണ്. നിങ്ങൾ ടൈപ്പ് ചെയ്തത് സൂക്ഷിച്ചിട്ടുണ്ട്.</string>
+    <string name="restore_code_label">അല്ലെങ്കിൽ റിക്കവറി കോഡ് ഉപയോഗിക്കുക</string>
+    <string name="restore_code_hint">ക്രമത്തിലുള്ള 12 വാക്കുകൾ. എല്ലാ ഫീൽഡുകളും പൂരിപ്പിക്കാൻ അവയെല്ലാം ഒരു ഫീൽഡിൽ പേസ്റ്റ് ചെയ്യുക.</string>
+    <string name="restore_scan_qr_title">പഴയ ഉപകരണത്തിലെ QR കോഡ് സ്കാൻ ചെയ്യുക</string>
+    <string name="restore_scan_qr_body">അവിടെ: പ്രൊഫൈൽ › റിക്കവറി › QR കോഡ് കാണിക്കുക</string>
+    <string name="restore_recover">വീണ്ടെടുക്കുക</string>
+    <string name="restore_try_again">വീണ്ടും ശ്രമിക്കുക</string>
+    <string name="restore_start_fresh">ഈ ഉപകരണത്തിൽ പുതുതായി ആരംഭിക്കുക</string>
+    <string name="restore_error_invalid_code">കോഡ് കണ്ടെത്തിയില്ല. വാക്കുകളും അവയുടെ ക്രമവും പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="restore_error_too_many_attempts">വളരെയധികം ശ്രമങ്ങൾ. കുറച്ച് മിനിറ്റ് കാത്തിരുന്ന് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="restore_error_sign_in_failed">ഇപ്പോൾ സൈൻ ഇൻ ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="restore_error_unknown">എന്തോ പിശക് സംഭവിച്ചു. വീണ്ടും ശ്രമിക്കുക.</string>
+</resources>

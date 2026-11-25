@@ -70,6 +70,7 @@ class ProfileUiStateTest {
             AppLanguage.SLOVENIAN -> listOf("Slovenščina", "Slovenian")
             AppLanguage.LITHUANIAN -> listOf("Lietuvių", "Lithuanian")
             AppLanguage.PUNJABI -> listOf("ਪੰਜਾਬੀ", "Punjabi")
+            AppLanguage.MALAYALAM -> listOf("മലയാളം", "Malayalam")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -139,6 +140,7 @@ class ProfileUiStateTest {
         AppLanguage.SLOVENIAN,
         AppLanguage.LITHUANIAN,
         AppLanguage.PUNJABI,
+        AppLanguage.MALAYALAM,
     )
 
     @Test
@@ -751,6 +753,7 @@ class ProfileUiStateTest {
                 AppLanguage.SLOVENIAN,
                 AppLanguage.LITHUANIAN,
                 AppLanguage.PUNJABI,
+                AppLanguage.MALAYALAM,
             ),
             options,
         )
@@ -822,6 +825,7 @@ class ProfileUiStateTest {
                 AppLanguage.SLOVENIAN,
                 AppLanguage.LITHUANIAN,
                 AppLanguage.PUNJABI,
+                AppLanguage.MALAYALAM,
             ),
             options,
         )

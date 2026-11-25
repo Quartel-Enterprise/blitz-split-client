@@ -880,6 +880,7 @@ export const ko: Record<MessageKey, string> = {
   profile_languageSlovenian: '슬로베니아어',
   profile_languageLithuanian: '리투아니아어',
   profile_languagePunjabi: '펀자브어',
+  profile_languageMalayalam: '말라얄람어',
   profile_bitcoinInSats: '비트코인을 사토시로 표시',
   profile_bitcoinInSatsDetail: '비트코인 금액을 sats 단위로 표시하고 입력해요(1 ₿ = 100,000,000 sats).',
   profile_shareUsageData: '사용 데이터 공유',

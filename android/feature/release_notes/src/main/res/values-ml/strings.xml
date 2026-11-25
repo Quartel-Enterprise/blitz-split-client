@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">റിലീസ് നോട്ടുകൾ</string>
+    <string name="release_notes_show_beta">ബീറ്റ പതിപ്പുകൾ കാണിക്കുക</string>
+    <string name="release_notes_beta_badge">ബീറ്റ %1$d</string>
+    <string name="release_notes_installed_badge">ഈ പതിപ്പ്</string>
+    <string name="release_notes_empty">ഇതുവരെ റിലീസ് നോട്ടുകളില്ല.</string>
+    <string name="release_notes_empty_only_betas">ഇതുവരെ സ്റ്റേബിൾ പതിപ്പില്ല. എന്താണ് പരീക്ഷിക്കുന്നതെന്ന് കാണാൻ ബീറ്റ പതിപ്പുകൾ ഓൺ ചെയ്യുക.</string>
+    <string name="release_notes_load_failed_title">റിലീസ് നോട്ടുകൾ ലോഡ് ചെയ്യാനായില്ല</string>
+    <string name="release_notes_load_failed_body">നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="release_notes_retry">വീണ്ടും ശ്രമിക്കുക</string>
+    <string name="release_notes_open_on_github">GitHub-ൽ തുറക്കുക</string>
+</resources>

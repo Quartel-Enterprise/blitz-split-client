@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian and Punjabi: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi and Malayalam: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -354,7 +354,18 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     postposition. A person's gender is never assumed: a past says it with the ergative "ਨੇ", whose verb agrees with the
     object, or in the respectful plural. Its past puts that "ਨੇ" after the actor but none after the user's "ਤੁਸੀਂ", so
     its activity sentences follow Hindi's rule with "ਨੇ" ([activity-and-push.md](activity-and-push.md)). The picker
-    names it "ਪੰਜਾਬੀ", and its chip reads "PA". It uses INR. The
+    names it "ਪੰਜਾਬੀ", and its chip reads "PA". It uses INR. Malayalam (Pierre's
+    calls, issue #581) is one variant for every `ml` tag, in the Malayalam script, and talks to the user with the
+    respectful "നിങ്ങൾ" (as Hindi's "आप", Tamil's "நீங்கள்" and Gujarati's "તમે"), in the plain everyday Malayalam
+    Indian apps write, English loanwords included where natural (ഗ്രൂപ്പ്, ബാലൻസ്, അക്കൗണ്ട്, ലിങ്ക്); it calls the
+    app Blitz Split, ends a sentence with ".", and its plurals have one and other. Its default digits are already 0-9,
+    and the code keeps them even on a device set to Malayalam digits ("nu-latn": `latinDigitLanguages`, `AppNumbers`,
+    the web's `formattingKeys`), never the Malayalam digits, with the Gregorian calendar. As Tamil's, its case endings
+    follow the sound of the word before them, so none is ever glued to a value the app fills in: a name, a group, a
+    bill or an amount stands alone, as the subject, after a colon or before a noun that carries the ending ("‘%1$s’
+    ഗ്രൂപ്പിൽ"). Its past is the same for a name and for "നിങ്ങൾ", so, as Telugu's, its activity sentences need no
+    rule for the user ([activity-and-push.md](activity-and-push.md)). The picker names it "മലയാളം", and its chip reads
+    "ML". It uses INR. The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
