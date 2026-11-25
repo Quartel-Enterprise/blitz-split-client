@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">សមតុល្យ</string>
+    <string name="global_balances_profile">ប្រវត្តិរូប</string>
+    <string name="global_balances_offline">គ្មានអ៊ីនធឺណិត · សមតុល្យនៅលើឧបករណ៍នេះ</string>
+    <string name="global_balances_filter">បង្ហាញ</string>
+    <string name="global_balances_filter_all">ទាំងអស់</string>
+    <string name="global_balances_filter_you_owe">អ្នកជំពាក់</string>
+    <string name="global_balances_filter_owes_you">ជំពាក់អ្នក</string>
+    <string name="global_balances_hint">បានកាត់កងរួចហើយរវាងក្រុម៖ មនុស្សម្នាក់ៗបង្ហាញតែម្តង។</string>
+    <string name="global_balances_hint_empty">កំពុងបូកសរុបគ្រប់ក្រុមនៅលើឧបករណ៍នេះ។</string>
+    <string name="global_balances_section_you_owe">អ្នកជំពាក់ · %d</string>
+    <string name="global_balances_section_owes_you">ជំពាក់អ្នក · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="other">ក្រុម %d</item>
+    </plurals>
+    <string name="global_balances_guest">%s · ភ្ញៀវ</string>
+    <string name="global_balances_you_owe">អ្នកជំពាក់</string>
+    <string name="global_balances_owes_you">ជំពាក់អ្នក</string>
+    <string name="global_balances_by_group_show">បង្ហាញ %s តាមក្រុម</string>
+    <string name="global_balances_by_group_hide">លាក់ %s តាមក្រុម</string>
+    <string name="global_balances_received">បានទទួល</string>
+    <string name="global_balances_received_from">បានទទួលពី %s</string>
+    <string name="global_balances_settle">ទូទាត់បំណុល</string>
+    <string name="global_balances_settle_with">ទូទាត់បំណុលជាមួយ %s</string>
+    <string name="global_balances_charge">ស្នើសុំ</string>
+    <string name="global_balances_charge_person">ស្នើសុំពី %s</string>
+    <string name="global_balances_detail_pane">សមតុល្យជាមួយ %s</string>
+    <string name="global_balances_detail_owes_you">%s ជំពាក់អ្នក</string>
+    <string name="global_balances_detail_you_owe">អ្នកជំពាក់ %s</string>
+    <string name="global_balances_detail_guest">%s · ភ្ញៀវដែលគ្មានកម្មវិធី</string>
+    <string name="global_balances_detail_note_owed">ចំនួនសុទ្ធបានកាត់កងក្រុមរួចហើយ៖ ស្នើសុំ និងបានទទួល ប្រើ %s។ កម្មវិធីកត់ត្រាការទូទាត់មួយនៅក្នុងក្រុមនីមួយៗ។</string>
+    <string name="global_balances_detail_note_settle">ចំនួនសុទ្ធបានកាត់កងក្រុមរួចហើយ៖ ទូទាត់បំណុល ប្រើ %s។ កម្មវិធីកត់ត្រាការទូទាត់មួយនៅក្នុងក្រុមនីមួយៗ។</string>
+    <string name="global_balances_detail_note_single">មានក្រុមតែមួយដែលនៅបើកជាមួយ %s។</string>
+    <string name="global_balances_settled_title">បានទូទាត់រួចទាំងអស់</string>
+    <string name="global_balances_settled_body">គ្មាននរណាជំពាក់អ្នក ហើយអ្នកក៏មិនជំពាក់នរណាដែរ។ នៅពេលនរណាម្នាក់បន្ថែមចំណាយ សមតុល្យនឹងបង្ហាញនៅទីនេះ។</string>
+    <string name="global_balances_settled_action">មើលក្រុម</string>
+    <string name="global_balances_nothing_to_pay_title">អ្នកមិនជំពាក់អ្វីទេ</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="other">អ្នកបានទូទាត់បំណុលជាមួយអ្នករាល់គ្នារួចហើយ។ អ្នកនៅត្រូវទទួលវិញ %2$s ពីមនុស្ស %1$d នាក់។</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">មើលអ្នកដែលជំពាក់អ្នក</string>
+    <string name="global_balances_nothing_to_receive_title">គ្មាននរណាជំពាក់អ្នកទេ</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="other">អ្នកនៅជំពាក់ %2$s ចំពោះមនុស្ស %1$d នាក់។</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">មើលអ្នកដែលអ្នកជំពាក់</string>
+    <string name="global_balances_coming_soon">ឆាប់ៗនេះ</string>
+    <string name="global_balances_change_error">មិនអាចរក្សាទុកការផ្លាស់ប្ដូរបានទេ។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="global_balances_copied">បានចម្លង</string>
+    <string name="global_balances_charge_title">ស្នើសុំពី %s</string>
+    <string name="global_balances_charge_owes">ជំពាក់អ្នក %1$s · %2$s</string>
+    <string name="global_balances_charge_close">បិទ</string>
+    <string name="global_balances_charge_guest">%s ជាភ្ញៀវដែលគ្មានកម្មវិធី។ ពួកគេដឹងតែពីសារនេះប៉ុណ្ណោះ ដូច្នេះសារនេះបានប្រាប់រួចហើយថាមានអ្វីខ្លះនៅក្នុងចំណាយ។</string>
+    <string name="global_balances_charge_message">សារ</string>
+    <string name="global_balances_charge_pix">បញ្ចូលលេខសោ Pix របស់ខ្ញុំ</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">ចម្លងសារ</string>
+    <string name="global_balances_charge_send">ផ្ញើ</string>
+    <string name="global_balances_message">សួស្ដី %1$s! តាមការគណនារបស់ Blitz Split អ្នកជំពាក់ខ្ញុំ %2$s ពី %3$s។</string>
+    <string name="global_balances_message_guest">សួស្ដី %1$s! អ្នកជំពាក់ខ្ញុំ %2$s ពី %3$s៖ ចំណែករបស់អ្នកក្នុង %4$s។</string>
+    <string name="global_balances_message_guest_paid">សួស្ដី %1$s! អ្នកជំពាក់ខ្ញុំ %2$s ពី %3$s៖ ចំណែករបស់អ្នកក្នុង %4$s ដកចេញ %5$s ដែលអ្នកបានបង់រួច។</string>
+    <string name="global_balances_message_group">ក្រុម %s</string>
+    <string name="global_balances_message_groups">ក្រុម %s</string>
+    <string name="global_balances_message_pix">%1$s Pix៖ %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">ទូរសព្ទ</string>
+    <string name="global_balances_key_email">អ៊ីមែល</string>
+    <string name="global_balances_key_random">លេខសោចៃដន្យ</string>
+    <string name="global_balances_message_reroute">%1$s បានសម្រួលបំណុលរបស់ខ្លួន ដូច្នេះជំនួសឱ្យការបង់ឱ្យ %2$s អ្នកបង់ឱ្យខ្ញុំផ្ទាល់ ចំនួនសរុបរបស់អ្នកមិនបានផ្លាស់ប្ដូរទេ។</string>
+</resources>

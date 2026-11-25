@@ -111,6 +111,8 @@
     <string name="profile_language_punjabi">פנג׳אבית</string>
     <string name="profile_language_malayalam">מלאיאלאם</string>
     <string name="profile_language_kannada">קנאדה</string>
+    <string name="profile_language_burmese">בורמזית</string>
+    <string name="profile_language_khmer">חמרית</string>
     <string name="profile_language_system_detail">שפת המכשיר</string>
     <string name="profile_notifications">התראות</string>
     <plurals name="profile_notifications_active">

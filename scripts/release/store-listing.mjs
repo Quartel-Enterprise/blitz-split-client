@@ -115,6 +115,8 @@ export const PLAY_LOCALES = {
   pa: ["pa"],
   ml: ["ml-IN"],
   kn: ["kn-IN"],
+  my: ["my-MM"],
+  km: ["km-KH"],
 };
 export const APP_STORE_LOCALES = {
   en: ["en-US"],
@@ -181,6 +183,10 @@ export const APP_STORE_LOCALES = {
   pa: ["pa-IN"],
   ml: ["ml-IN"],
   kn: ["kn-IN"],
+  // Apple has no Burmese listing locale either: the language has a Play listing and no App Store one.
+  my: [],
+  // Apple has no Khmer listing locale either: the language has a Play listing and no App Store one.
+  km: [],
 };
 
 /** The app's name in a listing: Bora Rachar in Brazil's Portuguese, Blitz Split in every other language. */

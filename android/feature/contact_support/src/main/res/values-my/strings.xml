@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">အကူအညီဌာန ဆက်သွယ်ရန်</string>
+    <string name="contact_support_description">မက်ဆေ့ချ် အသင့်ပါသော သင့်အီးမေးလ်အက်ပ်ကို ဖွင့်ပေးပါမည်။ ဖြစ်ခဲ့သည်ကို ဖော်ပြပြီး ပို့ပါ: မက်ဆေ့ချ်တိုင်းကို လူကိုယ်တိုင် ဖတ်ပါသည်။</string>
+    <string name="contact_support_to">သို့</string>
+    <string name="contact_support_diagnostics">အီးမေးလ်တွင် ပါဝင်မည့်အရာများ</string>
+    <string name="contact_support_app_version">အက်ပ် ဗားရှင်း</string>
+    <string name="contact_support_platform">ပလက်ဖောင်း</string>
+    <string name="contact_support_language">ဘာသာစကား</string>
+    <string name="contact_support_account">အကောင့်</string>
+    <string name="contact_support_profile">ပရိုဖိုင်</string>
+    <string name="contact_support_language_system">စနစ်</string>
+    <string name="contact_support_account_local">ဤစက်တွင်သာ</string>
+    <string name="contact_support_account_anonymous">မချိတ်ဆက်ထားပါ</string>
+    <string name="contact_support_open_email">အီးမေးလ် ဖွင့်ရန်</string>
+    <string name="contact_support_copy_email">အီးမေးလ်လိပ်စာ ကူးရန်</string>
+    <string name="contact_support_notice_copied">အီးမေးလ်လိပ်စာ ကူးပြီးပါပြီ။</string>
+    <string name="contact_support_notice_no_app">အီးမေးလ်အက်ပ် မတွေ့ပါ။ ၎င်းအစား လိပ်စာကို ကူးထားပါသည်။</string>
+    <string name="contact_support_close">ပိတ်ရန်</string>
+</resources>

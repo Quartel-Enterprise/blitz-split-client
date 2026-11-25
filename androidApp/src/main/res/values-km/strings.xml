@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">អ្នកមិននៅក្នុងក្រុមនេះទេ</string>
+    <string name="bill_link_not_in_group_message">មតិនេះនៅក្នុងក្រុមដែលអ្នកមិនមែនជាសមាជិក។ សូមស្នើអ្នកដែលបានផ្ញើតំណមកអ្នកឱ្យផ្ញើការអញ្ជើញ។</string>
+    <string name="bill_link_offline_title">គ្មានអ៊ីនធឺណិត</string>
+    <string name="bill_link_offline_message">សូមបើកតំណម្តងទៀតនៅពេលអ្នកមានអ៊ីនធឺណិតវិញ។</string>
+    <string name="bill_link_go_home">ទៅទំព័រដើម</string>
+    <string name="discard_changes_title">បោះបង់ការផ្លាស់ប្ដូរឬ?</string>
+    <string name="discard_changes_message">ការផ្លាស់ប្ដូរដែលមិនទាន់រក្សាទុកនឹងបាត់បង់។</string>
+    <string name="discard_changes_discard">បោះបង់</string>
+    <string name="discard_changes_keep_editing">បន្តកែ</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">នាឡិកា</string>
+    <string name="watch_connected_title">%1$s បានភ្ជាប់ទៅគណនីរបស់អ្នក</string>
+    <string name="watch_connected_title_unnamed">នាឡិកាបានភ្ជាប់ទៅគណនីរបស់អ្នក</string>
+    <string name="watch_connected_text">វាឃើញក្រុមរបស់អ្នក ហើយធ្វើសមកាលកម្មដោយខ្លួនឯង។ ដើម្បីផ្ដាច់វា សូមចាកចេញនៅលើនាឡិកា។</string>
+</resources>

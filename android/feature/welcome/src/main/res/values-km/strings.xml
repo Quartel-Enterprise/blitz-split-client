@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">ចែកចំណាយ ដោយមិនពិបាក</string>
+    <string name="welcome_offline_title">ដំណើរការដោយគ្មានអ៊ីនធឺណិត</string>
+    <string name="welcome_offline_body">អ្វីៗទាំងអស់ស្ថិតនៅលើឧបករណ៍របស់អ្នក ហើយធ្វើសមកាលកម្មពេលក្រោយ។</string>
+    <string name="welcome_optional_title">គណនីគឺជាជម្រើស</string>
+    <string name="welcome_optional_body">Google ឬ Apple គ្រាន់តែជួយកុំឱ្យអ្នកបាត់បង់អ្វីទាំងអស់ នៅពេលអ្នកប្ដូរឧបករណ៍។</string>
+    <string name="welcome_invite_title">អញ្ជើញតាមតំណ ឬកូដ QR</string>
+    <string name="welcome_invite_body">មិត្តភក្តិចូលរួមក្រុមដោយមិនចាំបាច់បង្កើតគណនី។</string>
+    <string name="welcome_no_connection_title">គ្មានការតភ្ជាប់។</string>
+    <string name="welcome_no_connection_body">ការចូលដោយប្រើគណនីត្រូវការអ៊ីនធឺណិត។ សូមប្រើដោយគ្មានគណនីឥឡូវនេះ ហើយភ្ជាប់ពេលក្រោយនៅក្នុងប្រវត្តិរូប។</string>
+    <string name="welcome_or">ឬ</string>
+    <string name="welcome_use_without_account">ប្រើដោយគ្មានគណនី</string>
+    <string name="welcome_used_on_another_device">ខ្ញុំធ្លាប់ប្រើវានៅលើឧបករណ៍ផ្សេង</string>
+    <string name="welcome_sign_in_failed">មិនអាចចូលបានទេឥឡូវនេះ។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="welcome_legal_notice">ដោយបន្ត អ្នកយល់ព្រមលើ %1$s និងទទួលស្គាល់ %2$s។</string>
+    <string name="welcome_legal_terms">លក្ខខណ្ឌប្រើប្រាស់</string>
+    <string name="welcome_legal_privacy">គោលការណ៍ឯកជនភាព</string>
+    <string name="welcome_no_account_note">បើគ្មានគណនី ទិន្នន័យរបស់អ្នកនឹងត្រូវលុបបន្ទាប់ពី 30 ថ្ងៃដែលមិនបានប្រើ។ សូមភ្ជាប់ Google ឬ Apple ដើម្បីរក្សាទុកវា។</string>
+    <string name="welcome_no_account_note_offline">បើគ្មានគណនី ទិន្នន័យរបស់អ្នកនឹងត្រូវលុបបន្ទាប់ពី 30 ថ្ងៃដែលមិនបានប្រើ។ សូមភ្ជាប់ Google ឬ Apple ពេលក្រោយ នៅក្នុងប្រវត្តិរូប ដើម្បីរក្សាទុកវា។</string>
+    <string name="welcome_expired_title">ទិន្នន័យរបស់អ្នកត្រូវបានលុប</string>
+    <string name="welcome_expired_body">អ្នកបានប្រើកម្មវិធីដោយគ្មានគណនី ហើយមិនបានបើកវាអស់រយៈពេល 30 ថ្ងៃ ដូច្នេះទិន្នន័យរបស់អ្នកត្រូវបានលុប។ សូមភ្ជាប់ Google ឬ Apple ដើម្បីរក្សាទុកវានៅពេលក្រោយ។</string>
+    <string name="welcome_expired_ok">យល់ព្រម</string>
+</resources>

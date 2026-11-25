@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">ဖိတ်ကြားချက် လင့်ခ်</string>
+    <string name="members_link_pending">မဖန်တီးရသေးပါ</string>
+    <string name="members_share">မျှဝေရန်</string>
+    <string name="members_me">%s (သင်)</string>
+    <string name="members_status_this_device">ဤစက်</string>
+    <string name="members_status_joined">ဝင်ပြီး</string>
+    <string name="members_status_not_joined">မဝင်ရသေးပါ</string>
+    <string name="members_options">%s အတွက် ရွေးချယ်စရာများ</string>
+    <string name="members_rename">အမည်ပြောင်းရန်</string>
+    <string name="members_personal_invite">%s အတွက် ကိုယ်ပိုင် ဖိတ်ကြားချက်</string>
+    <string name="members_personal_message">ဤလင့်ခ်ကို ဖွင့်သူသည် စာရင်းမှ ရွေးစရာမလိုဘဲ %s အဖြစ် တိုက်ရိုက် ဝင်ပါသည်။ တစ်ကြိမ်သာ အလုပ်လုပ်ပါသည်။</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="other">ဤလင့်ခ်ကို ဖွင့်သူသည် စာရင်းမှ ရွေးစရာမလိုဘဲ %1$s အဖြစ် တိုက်ရိုက် ဝင်ပြီး ယခုထိ ထည့်ထားသော စရိတ် %3$d ခုတွင် မိမိ၏ ဝေစု %2$s ကို ချက်ချင်း မြင်ရပါသည်။ တစ်ကြိမ်သာ အလုပ်လုပ်ပါသည်။</item>
+    </plurals>
+    <string name="members_personal_copy">လင့်ခ် ကူးရန်</string>
+    <string name="members_personal_copied">ကူးပြီးပါပြီ</string>
+    <string name="members_personal_share">%s နှင့် မျှဝေရန်</string>
+    <string name="members_personal_share_message">Blitz Split တွင် %1$s သို့ %2$s အဖြစ် ဝင်ပါ: %3$s</string>
+    <string name="members_remove">အဖွဲ့မှ ဖယ်ရှားရန်</string>
+    <string name="members_remove_joined">%s သည် အဖွဲ့သို့ ဝင်ပြီးပါပြီ</string>
+    <string name="members_remove_title">%s ကို အဖွဲ့မှ ဖယ်ရှားမလား?</string>
+    <string name="members_remove_message">%s သည် မဝင်ရသေးပါ။ နောက်မှ ထပ်ထည့်နိုင်ပါသည်။</string>
+    <string name="members_remove_confirm">ဖယ်ရှားရန်</string>
+    <string name="members_release">အမည်ကို လွှတ်ပေးရန်</string>
+    <string name="members_release_title">%s ၏ အမည်ကို လွှတ်ပေးမလား?</string>
+    <string name="members_release_message">%1$s အဖြစ် ဝင်ခဲ့သူသည် အဖွဲ့မှ ထွက်သွားပါမည်။ %1$s ၏ အမည်၊ အရောင်နှင့် စရိတ်များ ကျန်ရှိနေပြီး အဖွဲ့၏ လင့်ခ်မှတစ်ဆင့် %1$s ကို ထပ်ရွေးနိုင်ပါသည်။</string>
+    <string name="members_release_confirm">လွှတ်ပေးရန်</string>
+    <string name="members_release_error">အမည်ကို လွှတ်ပေး၍ မရပါ။ သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်ကြိုးစားပါ။</string>
+    <string name="members_add">လူ ထည့်ရန်</string>
+    <string name="members_invite_instead">အက်ပ် ရှိပါသလား? လင့်ခ်ဖြင့် ဖိတ်ခေါ်ပါ</string>
+    <string name="members_name_label">အမည်</string>
+    <string name="members_save">သိမ်းရန်</string>
+    <string name="members_cancel">မလုပ်တော့ပါ</string>
+    <string name="members_change_error">ပြောင်းလဲမှုကို သိမ်း၍ မရပါ။ ထပ်ကြိုးစားပါ။</string>
+    <string name="members_remove_open_balance">%s တွင် မရှင်းရသေးသော လက်ကျန် ရှိသည်</string>
+    <string name="members_balance_to_get_back">%s ပြန်ရရန်</string>
+    <string name="members_balance_owes">%s ပေးရန်</string>
+    <string name="members_balance_settled">ကြွေးရှင်းပြီး</string>
+</resources>

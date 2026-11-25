@@ -159,6 +159,8 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.PUNJABI,
                 AppLanguage.MALAYALAM,
                 AppLanguage.KANNADA,
+                AppLanguage.BURMESE,
+                AppLanguage.KHMER,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
 
@@ -220,6 +222,8 @@ class ObserveSpokenLanguageUseCaseTest {
                     "pa",
                     "ml",
                     "kn",
+                    "my",
+                    "km",
                     "zh-Hant",
                 ),
                 spoken,
@@ -296,6 +300,8 @@ class ObserveSpokenLanguageUseCaseTest {
             "pa",
             "ml",
             "kn",
+            "my",
+            "km",
             "zh-Hant",
         )
 
@@ -366,6 +372,8 @@ class ObserveSpokenLanguageUseCaseTest {
                 "pa-IN",
                 "ml-IN",
                 "kn-IN",
+                "my-MM",
+                "km-KH",
                 "zh-TW",
             )
 
@@ -429,6 +437,8 @@ class ObserveSpokenLanguageUseCaseTest {
                     "pa",
                     "ml",
                     "kn",
+                    "my",
+                    "km",
                     "zh-Hant",
                 ),
                 spoken,

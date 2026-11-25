@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">သင့်အဖွဲ့များကို ပြန်ယူပါ</string>
+    <string name="restore_subtitle">ယခင်က အကောင့်ဖြင့် ဝင်ခဲ့ဖူးပါသလား? ထပ်မံ အကောင့်ဝင်လိုက်ရုံပါပဲ။ မဟုတ်ပါက ပြန်လည်ရယူရေး ကုဒ် သို့မဟုတ် စက်အဟောင်းမှ QR ကုဒ်ကို အသုံးပြုပါ။</string>
+    <string name="restore_no_connection_title">ချိတ်ဆက်မှု မရှိပါ</string>
+    <string name="restore_no_connection_body">အကောင့် သို့မဟုတ် ကုဒ်ဖြင့် ဝင်ရန် သင့်အဖွဲ့များကို ဒေါင်းလုဒ်လုပ်ရန် အင်တာနက် လိုအပ်ပါသည်။ သင်ရိုက်ထားသည်များကို သိမ်းထားပါသည်။</string>
+    <string name="restore_code_label">သို့မဟုတ် ပြန်လည်ရယူရေး ကုဒ်ကို အသုံးပြုပါ</string>
+    <string name="restore_code_hint">စကားလုံး 12 လုံးကို အစီအစဉ်အတိုင်း ထည့်ပါ။ အကွက်အားလုံး ပြည့်စေရန် အားလုံးကို အကွက်တစ်ခုတည်းတွင် ကူးထည့်ပါ။</string>
+    <string name="restore_scan_qr_title">စက်အဟောင်းမှ QR ကုဒ်ကို စကင်ဖတ်ပါ</string>
+    <string name="restore_scan_qr_body">ထိုနေရာ: ပရိုဖိုင် › ပြန်လည်ရယူရေး › QR ကုဒ် ပြရန်</string>
+    <string name="restore_recover">ပြန်ယူရန်</string>
+    <string name="restore_try_again">ထပ်ကြိုးစားရန်</string>
+    <string name="restore_start_fresh">ဤစက်တွင် အသစ်မှ စတင်ရန်</string>
+    <string name="restore_error_invalid_code">ကုဒ်ကို ရှာမတွေ့ပါ။ စကားလုံးများနှင့် ၎င်းတို့၏ အစီအစဉ်ကို စစ်ဆေးပြီး ထပ်ကြိုးစားပါ။</string>
+    <string name="restore_error_too_many_attempts">ကြိုးစားမှု များလွန်းပါသည်။ မိနစ်အနည်းငယ် စောင့်ပြီး ထပ်ကြိုးစားပါ။</string>
+    <string name="restore_error_sign_in_failed">ယခု အကောင့်ဝင်၍ မရပါ။ ထပ်ကြိုးစားပါ။</string>
+    <string name="restore_error_unknown">တစ်ခုခု မှားယွင်းသွားပါသည်။ ထပ်ကြိုးစားပါ။</string>
+</resources>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">လက်ကျန်များ</string>
+    <string name="global_balances_profile">ပရိုဖိုင်</string>
+    <string name="global_balances_offline">အော့ဖ်လိုင်း · ဤစက်ပေါ်ရှိ လက်ကျန်များ</string>
+    <string name="global_balances_filter">ပြရန်</string>
+    <string name="global_balances_filter_all">အားလုံး</string>
+    <string name="global_balances_filter_you_owe">သင် ပေးရန် ရှိသည်</string>
+    <string name="global_balances_filter_owes_you">သင့်ကို ပေးရန် ရှိသည်</string>
+    <string name="global_balances_hint">အဖွဲ့များအကြား ချေပပြီး ဖြစ်သည်: လူတစ်ဦးချင်းကို တစ်ကြိမ်သာ ပြပါသည်။</string>
+    <string name="global_balances_hint_empty">ဤစက်ပေါ်ရှိ အဖွဲ့တိုင်းကို ပေါင်းနေသည်။</string>
+    <string name="global_balances_section_you_owe">သင် ပေးရန် ရှိသည် · %d</string>
+    <string name="global_balances_section_owes_you">သင့်ကို ပေးရန် ရှိသည် · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="other">အဖွဲ့ %d ခု</item>
+    </plurals>
+    <string name="global_balances_guest">%s · ဧည့်သည်</string>
+    <string name="global_balances_you_owe">သင် ပေးရန် ရှိသည်</string>
+    <string name="global_balances_owes_you">သင့်ကို ပေးရန် ရှိသည်</string>
+    <string name="global_balances_by_group_show">%s ကို အဖွဲ့အလိုက် ပြရန်</string>
+    <string name="global_balances_by_group_hide">%s ကို အဖွဲ့အလိုက် ဖုံးရန်</string>
+    <string name="global_balances_received">လက်ခံရရှိပြီး</string>
+    <string name="global_balances_received_from">%s ထံမှ လက်ခံရရှိပြီး</string>
+    <string name="global_balances_settle">ကြွေးရှင်းရန်</string>
+    <string name="global_balances_settle_with">%s နှင့် ကြွေးရှင်းရန်</string>
+    <string name="global_balances_charge">တောင်းခံရန်</string>
+    <string name="global_balances_charge_person">%s ထံ တောင်းခံရန်</string>
+    <string name="global_balances_detail_pane">%s နှင့် လက်ကျန်</string>
+    <string name="global_balances_detail_owes_you">%s က သင့်ကို ပေးရန် ရှိသည်</string>
+    <string name="global_balances_detail_you_owe">သင် %s ကို ပေးရန် ရှိသည်</string>
+    <string name="global_balances_detail_guest">%s · အက်ပ်မရှိသော ဧည့်သည်</string>
+    <string name="global_balances_detail_note_owed">အသားတင်ပမာဏသည် အဖွဲ့များကို ချေပပြီး ဖြစ်သည်: တောင်းခံရန်နှင့် လက်ခံရရှိပြီးတို့သည် %s ကို သုံးပါသည်။ အက်ပ်သည် အဖွဲ့တိုင်းတွင် ငွေပေးချေမှု မှတ်တမ်းတင်ပါသည်။</string>
+    <string name="global_balances_detail_note_settle">အသားတင်ပမာဏသည် အဖွဲ့များကို ချေပပြီး ဖြစ်သည်: ကြွေးရှင်းရန်သည် %s ကို သုံးပါသည်။ အက်ပ်သည် အဖွဲ့တိုင်းတွင် ငွေပေးချေမှု မှတ်တမ်းတင်ပါသည်။</string>
+    <string name="global_balances_detail_note_single">%s နှင့် ဖွင့်ထားသော အဖွဲ့ တစ်ခုသာ ရှိသည်။</string>
+    <string name="global_balances_settled_title">အားလုံး ကြွေးရှင်းပြီး</string>
+    <string name="global_balances_settled_body">သင့်ကို မည်သူမျှ ပေးရန် မရှိသလို သင်လည်း မည်သူ့ကိုမျှ ပေးရန် မရှိပါ။ တစ်စုံတစ်ဦးက စရိတ် ထည့်လျှင် လက်ကျန်သည် ဤနေရာတွင် ပေါ်လာပါမည်။</string>
+    <string name="global_balances_settled_action">အဖွဲ့များ ကြည့်ရန်</string>
+    <string name="global_balances_nothing_to_pay_title">သင် ပေးရန် မရှိပါ</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="other">လူတိုင်းနှင့် ကြွေးရှင်းပြီး ဖြစ်ပါသည်။ လူ %1$d ဦးထံမှ %2$s ပြန်ရရန် ရှိသေးသည်။</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">သင့်ကို ပေးရန် ရှိသူများ ကြည့်ရန်</string>
+    <string name="global_balances_nothing_to_receive_title">သင့်ကို မည်သူမျှ ပေးရန် မရှိပါ</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="other">လူ %1$d ဦးကို %2$s ပေးရန် ရှိသေးသည်။</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">သင် ပေးရန် ရှိသူများ ကြည့်ရန်</string>
+    <string name="global_balances_coming_soon">မကြာမီ လာမည်</string>
+    <string name="global_balances_change_error">ပြောင်းလဲမှု သိမ်း၍ မရပါ။ ထပ်ကြိုးစားပါ။</string>
+    <string name="global_balances_copied">ကူးပြီးပါပြီ</string>
+    <string name="global_balances_charge_title">%s ထံ တောင်းခံရန်</string>
+    <string name="global_balances_charge_owes">သင့်ကို %1$s ပေးရန် ရှိသည် · %2$s</string>
+    <string name="global_balances_charge_close">ပိတ်ရန်</string>
+    <string name="global_balances_charge_guest">%s သည် အက်ပ်မရှိသော ဧည့်သည် ဖြစ်ပါသည်။ ဤမက်ဆေ့ချ်မှသာ သိရမည်ဖြစ်၍ စရိတ်တွင် ဘာများ ပါခဲ့သည်ကို ဖော်ပြထားပြီး ဖြစ်ပါသည်။</string>
+    <string name="global_balances_charge_message">မက်ဆေ့ချ်</string>
+    <string name="global_balances_charge_pix">ကျွန်ုပ်၏ Pix ကီး ထည့်ရန်</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">မက်ဆေ့ချ် ကူးရန်</string>
+    <string name="global_balances_charge_send">ပို့ရန်</string>
+    <string name="global_balances_message">မင်္ဂလာပါ %1$s! Blitz Split ၏ တွက်ချက်မှုအရ %3$s မှ ကျွန်ုပ်ကို %2$s ပေးရန် ရှိပါသည်။</string>
+    <string name="global_balances_message_guest">မင်္ဂလာပါ %1$s! %3$s မှ ကျွန်ုပ်ကို %2$s ပေးရန် ရှိပါသည်: %4$s ၏ သင့်အစိတ်အပိုင်း ဖြစ်ပါသည်။</string>
+    <string name="global_balances_message_guest_paid">မင်္ဂလာပါ %1$s! %3$s မှ ကျွန်ုပ်ကို %2$s ပေးရန် ရှိပါသည်: %4$s ၏ သင့်အစိတ်အပိုင်းမှ သင် ပေးပြီးသား %5$s ကို နုတ်ထားပါသည်။</string>
+    <string name="global_balances_message_group">%s အဖွဲ့</string>
+    <string name="global_balances_message_groups">%s အဖွဲ့များ</string>
+    <string name="global_balances_message_pix">%1$s Pix- %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">ဖုန်း</string>
+    <string name="global_balances_key_email">အီးမေးလ်</string>
+    <string name="global_balances_key_random">ကျပန်း ကီး</string>
+    <string name="global_balances_message_reroute">%1$s သည် ၎င်း၏ အကြွေးများကို ရိုးရှင်းအောင် ပြုလုပ်ထားသဖြင့် %2$s ကို ပေးမည့်အစား ကျွန်ုပ်ကို တိုက်ရိုက် ပေးရပါမည်၊ သင့်စုစုပေါင်း မပြောင်းလဲပါ။</string>
+</resources>

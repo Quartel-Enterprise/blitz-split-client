@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">គ្មានពាក្យ</string>
+    <string name="category_map_title">ផែនទីប្រភេទ</string>
+    <string name="category_map_search">ស្វែងរកពាក្យ</string>
+    <string name="category_map_add">បន្ថែមពាក្យ</string>
+    <string name="category_map_more">ជម្រើសច្រើនទៀត</string>
+    <string name="category_map_restore">ស្ដារលំនាំដើម</string>
+    <string name="category_map_back">ថយក្រោយ</string>
+    <string name="category_map_intro">នៅពេលចំណងជើងរបស់ចំណាយមានពាក្យណាមួយក្នុងចំណោមពាក្យទាំងនេះ ប្រភេទរបស់វានឹងមកដោយស្វ័យប្រវត្តិ។ “Uber ទៅផ្ទះ” ក្លាយជា ការធ្វើដំណើរ។</string>
+    <string name="category_map_intro_offline">ផែនទីដំណើរការដោយគ្មានអ៊ីនធឺណិត៖ ការផ្លាស់ប្ដូរមានប្រសិទ្ធភាពភ្លាមៗនៅលើឧបករណ៍នេះ ហើយទៅដល់ឧបករណ៍ផ្សេងទៀតរបស់អ្នកនៅពេលមានអ៊ីនធឺណិតវិញ។</string>
+    <string name="category_map_device_only">ផែនទីរបស់អ្នកស្ថិតនៅលើឧបករណ៍នេះតែប៉ុណ្ណោះ។ ដើម្បីយកវាទៅឧបករណ៍ផ្សេងទៀតរបស់អ្នក សូមចូលដោយប្រើ Google ឬ Apple នៅក្នុងប្រវត្តិរូបរបស់អ្នក។</string>
+    <string name="category_map_open_profile">បើកប្រវត្តិរូប</string>
+    <string name="category_map_longest_wins">នៅពេលពាក្យពីរត្រូវគ្នានឹងចំណងជើង ពាក្យដែលវែងជាងគេនឹងឈ្នះ។</string>
+    <string name="category_map_no_result">គ្មានពាក្យដែលមាន “%1$s”</string>
+    <string name="category_map_no_result_body">បន្ថែមវា ហើយចំណាយដែលមានពាក្យនេះក្នុងចំណងជើងនឹងមកដល់ជាមួយប្រភេទត្រឹមត្រូវ។</string>
+    <string name="category_map_add_query">បន្ថែម “%1$s”</string>
+    <string name="category_map_empty_title">ផែនទីរបស់អ្នកទទេ</string>
+    <string name="category_map_empty_body">បើគ្មានពាក្យ ប្រភេទនឹងមិនមកពីចំណងជើងទេ៖ អ្នកជ្រើសរើសវាលើចំណាយនីមួយៗ។</string>
+    <string name="category_map_group_category"> · ប្រភេទរបស់ %1$s</string>
+    <string name="category_map_only_main">តែ %1$s</string>
+    <string name="category_map_only_in_group">តែក្នុង %1$s</string>
+    <string name="category_map_no_terms_yet">មិនទាន់មានពាក្យនៅឡើយ។</string>
+    <string name="category_map_add_in">បន្ថែមពាក្យក្នុង %1$s</string>
+    <string name="category_map_tip">ចុចលើពាក្យមួយដើម្បីប្ដូរប្រភេទរបស់វា ឬដកវាចេញ។ វាត្រូវគ្នានឹងពាក្យទាំងមូល ដោយមិនគិតពីសញ្ញាសំឡេង និងអក្សរធំតូច។</string>
+    <string name="category_map_queued">កំពុងរង់ចាំ</string>
+    <string name="category_map_term_action">%1$s, %2$s។ កែ</string>
+    <string name="category_map_new_term">ពាក្យថ្មី</string>
+    <string name="category_map_edit_term">កែពាក្យ</string>
+    <string name="category_map_term_label">ពាក្យ ឬឃ្លា</string>
+    <string name="category_map_term_help">ត្រូវគ្នានឹងពាក្យទាំងមូល ដោយមិនគិតពីសញ្ញាសំឡេង និងអក្សរធំតូច។</string>
+    <string name="category_map_term_help_app">ពាក្យរបស់កម្មវិធី។ ស្ដារលំនាំដើម នឹងនាំវាមកវិញដូចដើម។</string>
+    <string name="category_map_term_duplicate">“%1$s” ជ្រើសរើស %2$s រួចហើយ។ ពាក្យនីមួយៗមានប្រភេទតែមួយ។</string>
+    <string name="category_map_term_too_short">សូមប្រើយ៉ាងហោចណាស់ 2 អក្សរ។</string>
+    <string name="category_map_term_too_long">សូមប្រើច្រើនបំផុត 30 អក្សរ។</string>
+    <string name="category_map_term_invalid">សូមប្រើតែអក្សរ លេខ និងដកឃ្លាប៉ុណ្ណោះ។</string>
+    <string name="category_map_category">ប្រភេទ</string>
+    <string name="category_map_category_help">វាអាចជាប្រភេទ ឬប្រភេទរង។</string>
+    <string name="category_map_category_help_edit">ការប្ដូរវានៅទីនេះនឹងផ្លាស់ពាក្យទៅប្រភេទផ្សេង។</string>
+    <string name="category_map_category_help_move">ការផ្លាស់ទីនឹងដកពាក្យចេញពី %1$s។</string>
+    <string name="category_map_example">ឧទាហរណ៍</string>
+    <string name="category_map_example_move">បើផ្លាស់ទី</string>
+    <string name="category_map_remove">ដកចេញ</string>
+    <string name="category_map_cancel">បោះបង់</string>
+    <string name="category_map_save">រក្សាទុក</string>
+    <string name="category_map_move_to">ផ្លាស់ទីទៅ %1$s</string>
+    <string name="category_map_removed">“%1$s” ត្រូវបានដកចេញពីផែនទី</string>
+    <string name="category_map_undo">មិនធ្វើវិញ</string>
+    <string name="category_map_restore_title">ស្ដារផែនទីលំនាំដើមឬ?</string>
+    <string name="category_map_restore_body">ពាក្យ 60 របស់កម្មវិធីនឹងត្រឡប់មកវិញដូចដើម រួមទាំងពាក្យដែលអ្នកបានដកចេញ ឬផ្លាស់ទី។</string>
+    <string name="category_map_restore_own_one">ពាក្យដែលអ្នកបានបង្កើត “%1$s” នៅតែមាន។</string>
+    <string name="category_map_restore_confirm">ស្ដារ</string>
+    <string name="category_map_save_error">មិនអាចរក្សាទុកផែនទីបានទេ។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="other">ពាក្យ %d</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="other">ប្រភេទរង %d</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="other">ពាក្យ %1$d ដែលមាន “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="other">គ្មានអ៊ីនធឺណិត · ការផ្លាស់ប្ដូរ %d កំពុងរង់ចាំ</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="other">ពាក្យ %d ដែលអ្នកបានបង្កើតនៅតែមាន។</item>
+    </plurals>
+    <string name="category_map_new_category">ប្រភេទថ្មី</string>
+    <string name="category_map_new_subcategory_in">ប្រភេទរងថ្មីក្នុង %s</string>
+    <string name="category_map_edit_category">កែ %s</string>
+    <string name="category_map_category_group">ក្រុម</string>
+    <string name="category_map_change_color">ប្ដូរពណ៌របស់ %1$s</string>
+    <string name="category_map_restore_color">ស្ដារពណ៌</string>
+    <string name="category_map_color_done">រួចរាល់</string>
+</resources>

@@ -128,6 +128,10 @@ The feed, unread state, real time and push notifications.
     ಹಂಚಿದರು: ಡಿನ್ನರ್", "ನೀವು ಒಂದು ಖರ್ಚನ್ನು ಹಂಚಿದಿರಿ: ಡಿನ್ನರ್"), the bill's history rows too; the object after the
     colon keeps every name free of case endings. Its deleted-item notice starts with who deleted it ("ನೀವು ಅಳಿಸಿದಿರಿ:
     …", `youSubjectLanguages`), and "You" is "ನೀವು" everywhere.
+    Burmese and Khmer verbs don't change with the person, as Thai's, so their rows need no rule: the actor comes first
+    and the same verb phrase follows a name or the user's "သင်" / "អ្នក" ("Ana က “Dinner” စရိတ်ကို ခွဲဝေခဲ့သည်",
+    "Ana បានចែកចំណាយ “Dinner”"), no particle after the actor changing with who it is. Their deleted-item notice keeps
+    the "by" form of the other languages, and "You" is "သင်" and "អ្នក" everywhere.
     Norwegian verbs don't change with the person, as Swedish's ("Ana delte…", "Du delte…"), its notice starting with
     who deleted it too ("Du slettet…", `youSubjectLanguages`). Danish follows the same rule ("Ana delte…", "Du
     delte…", "Du slettede…"). Finnish swaps its perfect's auxiliary as Romanian does: every Finnish verb phrase

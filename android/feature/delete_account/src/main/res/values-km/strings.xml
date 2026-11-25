@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">លុបគណនី</string>
+    <string name="delete_account_offline_title">គ្មានអ៊ីនធឺណិត។</string>
+    <string name="delete_account_offline_body">ការលុបគណនីរបស់អ្នកត្រូវការការតភ្ជាប់អ៊ីនធឺណិត។ សូមភ្ជាប់ ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="delete_account_heading">លុបគណនី និងទិន្នន័យរបស់អ្នកឬ?</string>
+    <string name="delete_account_deleted_title">អ្វីដែលនឹងត្រូវលុប</string>
+    <string name="delete_account_deleted_profile">ប្រវត្តិរូបរបស់អ្នក (ឈ្មោះ រូបថត និងពណ៌)</string>
+    <string name="delete_account_deleted_keys">សោ Pix និង Bitcoin របស់អ្នក</string>
+    <string name="delete_account_deleted_provider">ការភ្ជាប់ទៅគណនី %1$s របស់អ្នក</string>
+    <string name="delete_account_deleted_recovery_code">លេខកូដស្ដាររបស់អ្នក</string>
+    <string name="delete_account_deleted_device">ច្បាប់ចម្លងទិន្នន័យរបស់អ្នកនៅលើឧបករណ៍នេះ</string>
+    <string name="delete_account_kept_title">អ្វីដែលនៅតែមានក្នុងក្រុមរបស់អ្នក</string>
+    <string name="delete_account_kept_groups">ក្រុម ជាមួយចំណាយ និងការទូទាត់របស់វា សម្រាប់សមាជិកផ្សេងទៀត</string>
+    <string name="delete_account_kept_member">ឈ្មោះរបស់អ្នកក្នុងក្រុមនីមួយៗ ជាសមាជិកដែលគ្មានគណនី</string>
+    <string name="delete_account_kept_comments">មតិរបស់អ្នក និងរូបថតដែលអ្នកបានបន្ថែម ក្រោមឈ្មោះរបស់អ្នក</string>
+    <string name="delete_account_export">នាំចេញទិន្នន័យរបស់ខ្ញុំជាមុនសិន</string>
+    <string name="delete_account_confirm">ខ្ញុំយល់ថាសកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ</string>
+    <string name="delete_account_delete">លុបគណនី</string>
+    <string name="delete_account_cancel">បោះបង់</string>
+    <string name="delete_account_failed">មិនអាចលុបគណនីរបស់អ្នកបានទេ។ សូមព្យាយាមម្តងទៀត។</string>
+</resources>

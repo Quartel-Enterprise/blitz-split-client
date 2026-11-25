@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">រក្សាទុកលេខកូដស្ដាររបស់អ្នក</string>
+    <string name="recovery_code_body">អ្នកកំពុងប្រើដោយគ្មានគណនី។ ពាក្យ 12 នេះនាំទិន្នន័យរបស់អ្នកមកវិញ បើអ្នកប្ដូរ ឬបាត់ឧបករណ៍។ សូមសរសេរពួកវាទុកតាមលំដាប់។ បន្ទាប់ពី 30 ថ្ងៃដែលមិនបានប្រើ ទិន្នន័យរបស់អ្នកនឹងត្រូវលុប ហើយពាក្យទាំងនេះនឹងឈប់ដំណើរការ។</string>
+    <string name="recovery_code_copy">ចម្លងពាក្យ</string>
+    <string name="recovery_code_save_to_password_manager">រក្សាទុកក្នុងកម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់</string>
+    <string name="recovery_code_connect_instead">ភ្ជាប់ Google ឬ Apple ជំនួសវិញ</string>
+    <string name="recovery_code_connect_instead_body">មិនត្រូវការលេខកូដទេ</string>
+    <string name="recovery_code_sign_in_failed">មិនអាចភ្ជាប់បានទេឥឡូវនេះ។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="recovery_code_also_in_profile">វាក៏មាននៅក្នុង ប្រវត្តិរូប › ការស្ដារ ដែរ។</string>
+    <string name="recovery_code_remind_later">រំលឹកខ្ញុំពេលក្រោយ</string>
+    <string name="recovery_code_saved">ខ្ញុំបានរក្សាទុកវាហើយ</string>
+    <string name="recovery_code_download">ទាញយក</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · លេខកូដស្ដារ\n\n%1$s\n\nប្រើវានៅក្នុង \"ខ្ញុំធ្លាប់ប្រើវានៅលើឧបករណ៍ផ្សេង\" ដើម្បីនាំទិន្នន័យរបស់អ្នកមកវិញ។\n</string>
+</resources>

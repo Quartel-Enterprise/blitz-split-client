@@ -857,6 +857,8 @@ export const ml: Record<MessageKey, string> = {
   profile_languagePunjabi: 'പഞ്ചാബി',
   profile_languageMalayalam: 'മലയാളം',
   profile_languageKannada: 'കന്നഡ',
+  profile_languageBurmese: 'ബർമീസ്',
+  profile_languageKhmer: 'ഖമെർ',
   profile_bitcoinInSats: 'Bitcoin സതോഷിയിൽ',
   profile_bitcoinInSatsDetail: 'Bitcoin തുകകൾ sats-ൽ കാണിക്കുകയും ടൈപ്പ് ചെയ്യുകയും ചെയ്യുന്നു (1 ₿ = 100,000,000 sats).',
   profile_shareUsageData: 'ഉപയോഗ ഡാറ്റ ഷെയർ ചെയ്യുക',

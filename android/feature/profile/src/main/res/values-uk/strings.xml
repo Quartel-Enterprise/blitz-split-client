@@ -112,6 +112,8 @@
     <string name="profile_language_punjabi">Панджабі</string>
     <string name="profile_language_malayalam">Малаялам</string>
     <string name="profile_language_kannada">Каннада</string>
+    <string name="profile_language_burmese">Бірманська</string>
+    <string name="profile_language_khmer">Кхмерська</string>
     <string name="profile_language_system_detail">Мова пристрою</string>
     <string name="profile_notifications">Сповіщення</string>
     <plurals name="profile_notifications_active">

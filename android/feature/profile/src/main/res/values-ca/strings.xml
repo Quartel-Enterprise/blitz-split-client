@@ -111,6 +111,8 @@
     <string name="profile_language_punjabi">Panjabi</string>
     <string name="profile_language_malayalam">Malaiàlam</string>
     <string name="profile_language_kannada">Kannada</string>
+    <string name="profile_language_burmese">Birmà</string>
+    <string name="profile_language_khmer">Khmer</string>
     <string name="profile_language_system_detail">Idioma del dispositiu</string>
     <string name="profile_notifications">Notificacions</string>
     <plurals name="profile_notifications_active">

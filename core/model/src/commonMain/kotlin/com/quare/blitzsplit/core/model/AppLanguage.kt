@@ -64,6 +64,8 @@ enum class AppLanguage(
     PUNJABI("pa"),
     MALAYALAM("ml"),
     KANNADA("kn"),
+    BURMESE("my"),
+    KHMER("km"),
     ;
 
     /*
@@ -159,9 +161,9 @@ enum class AppLanguage(
         /*
          * Why: any Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
          * Ukrainian, Korean, Hindi, Arabic, Chinese, Hebrew, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay,
-         * Greek, Croatian, Hungarian, Urdu, Filipino (or its legacy Tagalog "tl"), Serbian in the Latin script (sr-Latn, sr-Latn-RS), Slovak, Persian, Tamil, Norwegian (nb, or the macrolanguage's "no" and Nynorsk's "nn", all read as Bokmål), Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too, ca-ES-valencia), Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Kannada, Lithuanian, Punjabi in the Gurmukhi script (pa, pa-Guru, pa-IN, never pa-Arab or pa-PK), Malayalam or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE,
+         * Greek, Croatian, Hungarian, Urdu, Filipino (or its legacy Tagalog "tl"), Serbian in the Latin script (sr-Latn, sr-Latn-RS), Slovak, Persian, Tamil, Norwegian (nb, or the macrolanguage's "no" and Nynorsk's "nn", all read as Bokmål), Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too, ca-ES-valencia), Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Kannada, Burmese, Khmer, Lithuanian, Punjabi in the Gurmukhi script (pa, pa-Guru, pa-IN, never pa-Arab or pa-PK), Malayalam or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE,
          * ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, zh-CN, he-IL or the legacy iw-IL, th-TH, vi-VN, sv-FI,
-         * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-HU, ur-PK, fil-PH, sr-Latn-RS, sk-SK, fa-IR or fa-AF, ta-LK, nb-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, da-DK, fi-FI, lv-LV, et-EE, gu-IN, sl-SI, kn-IN, lt-LT, pa-IN, ml-IN, en-NZ), SYSTEM for none or any other. English is four
+         * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-HU, ur-PK, fil-PH, sr-Latn-RS, sk-SK, fa-IR or fa-AF, ta-LK, nb-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, da-DK, fi-FI, lv-LV, et-EE, gu-IN, sl-SI, kn-IN, my-MM, km-KH, lt-LT, pa-IN, ml-IN, en-NZ), SYSTEM for none or any other. English is four
          * entries: en-GB, en-AU and en-CA are their regions', a region that writes as Britain (en-NZ, en-IE, en-IN, en-DE…)
          * Britain's, en, en-US and every other region the American one. Portuguese is two
          * entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too: es-ES is Spain's, every

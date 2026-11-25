@@ -94,6 +94,8 @@ object SampleTrips {
         "lt" to GroupCurrency.EUR,
         "pa" to GroupCurrency.INR,
         "kn" to GroupCurrency.INR,
+        "my" to GroupCurrency.MMK,
+        "km" to GroupCurrency.KHR,
         "sw" to GroupCurrency.KES,
         "ml" to GroupCurrency.INR,
     )
@@ -299,6 +301,8 @@ object SampleTrips {
             GroupCurrency.NOK -> 11.0 to 100L
             GroupCurrency.KES -> 129.0 to 1_000L
             GroupCurrency.DKK -> 7.0 to 100L
+            GroupCurrency.MMK -> 2_100.0 to 1_000L
+            GroupCurrency.KHR -> 4_000.0 to 1_000L
             else -> 1.0 to 50L
         }
         val minor = usdCents / CENTS_PER_DOLLAR * rate * currency.minorPerMajor

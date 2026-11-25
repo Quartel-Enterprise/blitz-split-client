@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">ភ្ជាប់នាឡិកា</string>
+    <string name="connect_watch_close">បិទ</string>
+    <string name="connect_watch_body">វាយលេខកូដដែលនាឡិការបស់អ្នកបង្ហាញ។ វានឹងចូលគណនីរបស់អ្នក ហើយបន្ទាប់មកធ្វើសមកាលកម្មដោយខ្លួនឯង។</string>
+    <string name="connect_watch_code_label">លេខកូដនាឡិកា</string>
+    <string name="connect_watch_error_invalid">លេខកូដខុស ឬផុតកំណត់។ សូមយកលេខកូដថ្មីនៅលើនាឡិកា។</string>
+    <string name="connect_watch_error_too_many">លេខកូដខុសច្រើនដងពេក។ សូមរង់ចាំពីរបីនាទី ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="connect_watch_error_needs_account">សូមភ្ជាប់គណនីជាមុនសិន៖ ទិន្នន័យរបស់អ្នកមានតែនៅលើឧបករណ៍នេះប៉ុណ្ណោះ។</string>
+    <string name="connect_watch_error_failed">មិនអាចភ្ជាប់នាឡិកាបានទេ។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="connect_watch_offline">ការភ្ជាប់នាឡិកាត្រូវការអ៊ីនធឺណិត។</string>
+    <string name="connect_watch_own_watch_only">សូមវាយតែលេខកូដដែលបង្ហាញលើនាឡិកាផ្ទាល់ខ្លួនរបស់អ្នកប៉ុណ្ណោះ៖ អ្នកណាដែលមាននាឡិកានោះនឹងចូលគណនីរបស់អ្នកបាន។</string>
+    <string name="connect_watch_validity">លេខកូដមានសុពលភាព 5 នាទី ហើយប្រើបានតែម្តង។</string>
+    <string name="connect_watch_button">ភ្ជាប់</string>
+    <string name="connect_watch_connected_title">បានភ្ជាប់នាឡិកា</string>
+    <string name="connect_watch_connected_body">វាមើលឃើញក្រុមរបស់អ្នក ហើយធ្វើសមកាលកម្មដោយខ្លួនឯង។ ដើម្បីផ្តាច់វា សូមចាកចេញនៅលើនាឡិកា។</string>
+</resources>
