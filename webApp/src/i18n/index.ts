@@ -192,6 +192,9 @@ export const wordGap = isUnspaced ? '' : ' '
 const ownFullStops: Partial<Record<Locale, string>> = { hi: '।', bn: '।', pa: '।', ur: '۔', my: '။', km: '។', th: '' }
 export const fullStop = isUnspaced ? '。' : (ownFullStops[locale] ?? '.')
 
+/** Every language's sentence stop, so a piece that already ends with one doesn't get a second. */
+export const sentenceStops: readonly string[] = ['.', '。', ...Object.values(ownFullStops).filter((stop) => !!stop)]
+
 /**
  * Between two clauses of one sentence the code joins ("…pays you $64, and Ana no longer owes you"): Japanese ends the
  * first sentence instead ("…払います。…なくなりました"), Chinese takes its own comma ("…，Ana不再欠你"), Urdu and Persian their "،",

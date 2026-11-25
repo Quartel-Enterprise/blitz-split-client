@@ -10,6 +10,9 @@ enum WordGap {
 
     static var gap: String { isUnspaced ? "" : " " }
 
+    /// Every language's sentence stop, so a piece that already ends with one doesn't get a second.
+    static let stops = [".", "。", "।", "۔", "။", "។"]
+
     static var fullStop: String {
         if isUnspaced { return "。" }
         switch Bundle.appLanguageCode {

@@ -29,7 +29,7 @@ dependencies, and [release-process.md](release-process.md) says how a release ru
         "pt-PT": "Agora podes exportar os dados de um grupo a partir do menu dele.",
         "es": "…", "fr": "…", "de": "…", "it": "…", "pl": "…", "nl": "…", "ja": "…", "tr": "…", "id": "…",
         "ru": "…", "uk": "…", "ko": "…", "hi": "…", "ar": "…", "zh": "…", "he": "…", "th": "…", "vi": "…", "zh-Hant": "…",
-        "sv": "…", "cs": "…", "ro": "…", "bn": "…", "ms": "…", "el": "…", "hr": "…", "hu": "…", "ur": "…", "fil": "…", "sr": "…", "sk": "…", "fa": "…", "ta": "…", "nb": "…", "te": "…", "bg": "…", "mr": "…", "sw": "…", "ca": "…", "da": "…", "fi": "…", "lv": "…", "et": "…", "gu": "…", "sl", "lt": "…", "kn": "…", "my": "…", "km": "…", "pa", "ml": "…", "ml": "…"
+        "sv": "…", "cs": "…", "ro": "…", "bn": "…", "ms": "…", "el": "…", "hr": "…", "hu": "…", "ur": "…", "fil": "…", "sr": "…", "sk": "…", "fa": "…", "ta": "…", "nb": "…", "te": "…", "bg": "…", "mr": "…", "sw": "…", "ca": "…", "da": "…", "fi": "…", "lv": "…", "et": "…", "gu": "…", "sl": "…", "lt": "…", "pa": "…", "ml": "…", "kn": "…", "my": "…", "km": "…"
       }
     }
   ]

@@ -193,8 +193,8 @@ export const APP_STORE_LOCALES = {
 export const brandOf = (lang) => (lang === "pt" ? "Bora Rachar" : "Blitz Split");
 
 const HEADING = /^## (.+)$/;
-/** A word of a script written without spaces: kanji, hiragana, katakana, Thai, Burmese or Khmer. */
-const UNSPACED = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}\p{Script=Myanmar}\p{Script=Khmer}]/u;
+/** A word of a script written without spaces: kanji, hiragana, katakana or Thai. */
+const UNSPACED = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}]/u;
 /** What each file fastlane reads is called, by field. */
 const PLAY_FILES = {
   playTitle: "title.txt",
