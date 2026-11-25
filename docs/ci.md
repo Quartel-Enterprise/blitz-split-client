@@ -5,8 +5,9 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
-| `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi` (with `compileCommonMainKotlinMetadata` and the store screenshots' `compileDebugUnitTestKotlin` in the same job), `jsTest` split across shards, `:androidApp:assembleRelease` and `:wearApp:assembleRelease`, `lintDebug` (which fails on a missing or an extra Android translation), `npm --prefix webApp run check:messages` (every web language against English's keys and `{placeholders}`) and `npm --prefix webApp run build`, each in a job of its own |
+| `build-and-test` | Pull requests and `main`, except docs, `.claude`, `iosApp`, `release-notes` and `store-listing` only changes; on a pull request, each job only when the change reaches it ([Speed and timeouts](#speed-and-timeouts)) | `jvmTest` and `:koverVerifyCi` (with `compileCommonMainKotlinMetadata` and the store screenshots' `compileDebugUnitTestKotlin` in the same job), `jsTest` split across shards, `:androidApp:assembleRelease` and `:wearApp:assembleRelease`, `lintDebug` (which fails on a missing or an extra Android translation), `npm --prefix webApp run check:messages` (every web language against English's keys and `{placeholders}`) and `npm --prefix webApp run build`, each in a job of its own |
 | `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | Both schemes of the Apple app, each in a job of its own, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms); `compileKotlinIosArm64`, `compileKotlinWatchosArm64` and `compileAppleMainKotlinMetadata`, in the macOS scheme's job on a pull request (skipped on one that changes the Swift app alone) and in `apple-tests` on `main`, which also links `Shared` for the iOS simulator and the watchOS XCFramework there; `macosArm64Test` on `main` and on a pull request that changes Apple code (an Apple source set of a module, the version catalog, the build logic of the Apple targets), in two jobs when the change reaches nearly every module, and `iosSimulatorArm64Test` too on one that changes an `iosMain` or the version catalog |
+| `translations` | Android `strings.xml`, the Apple string catalogs, `webApp/src/i18n`, `release-notes/`, `store-listing/` and their checks | Every language against English with no build, on one Linux runner in about half a minute: `scripts/check-android-strings.py` (a missing or an extra Android string or plural, a language a module lacks, a format argument a translation drops or adds), `iosApp/check-translations.py`, `webApp/scripts/check-messages.mjs`, `release-notes.mjs check` and `store-listing.mjs check`. Each also runs in a slower job (`lintDebug`, the Xcode builds, `web`, `release-notes`); this one names every platform's missing string first, as when a language and a new string merged from two green pull requests (#604 and #605) |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
@@ -46,6 +47,18 @@ short:
   side with the others. Adding a shard is adding a number to the matrix.
 - `android` builds the release APKs of the phone and the watch (R8 runs only there) and `android-lint` runs `lintDebug`. They compile different
   variants and share no work, so in one job they ran one after the other.
+
+On a pull request, `build-and-test`'s `changes` job reads the changed paths (GitHub's merge commit against `main`)
+and skips each job the change doesn't reach, as `apple`'s does for its own. Each `commonMain` and module build script
+reaches every job; a `commonTest` only `unit-tests` and `js-tests`; a `jvmMain` or `jvmTest` only `unit-tests`; a
+`jsMain` `js-tests` and `web`; an `androidMain`, `android/`, `androidApp/` and `wearApp/` only `android` and
+`android-lint` (`android/store_screenshots` `unit-tests` too, which compiles it); `webApp/` only `web`; an Apple source
+set none. `shared/` reaches no `js-tests`, since it has no tests and no tested module depends on it. The build itself
+(`build-logic`, `gradle/`, the root's Gradle scripts, `gradle.properties`, the Gradle action, the workflow) reaches
+every job, and so does any path the job doesn't know; the release notes, the store listings and scripts, the other
+workflows and `fastlane/` reach none. A skipped job counts as passed for `merge-when-green`, and no check is required
+by the ruleset, so nothing waits on it. On `main` every job runs, since only `main` saves the Gradle caches the pull
+requests read.
 
 Every job has a `timeout-minutes`; the ones that build get about three times what they take on a pull request that
 recompiles everything. A runner that hangs then fails its check instead of holding it, and `merge-when-green` with it, for GitHub's

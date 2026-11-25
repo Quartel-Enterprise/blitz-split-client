@@ -1,0 +1,104 @@
+name: translations
+
+# Every check of the app's words that needs no build, on one Linux runner, in about half a minute: each language
+# against English on Android, Apple and the web, and the release notes' fragments in every language.
+#
+# Each of these also runs in a slower job (lintDebug in build-and-test, check-translations.py in both Xcode builds of
+# apple, check:messages in build-and-test's web, release-notes.mjs in release-notes), minutes into a Gradle or Xcode
+# build, or not at all when the path filters leave that workflow out. A language added by one pull request and a string
+# added by another, each green alone, are what turned main red on 2026-11-25 (#604 and #605); this job names every
+# platform's missing string at once, on the pull request and on main, before the builds get there.
+on:
+  pull_request:
+    # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    paths:
+      - '.github/workflows/translations.yml'
+      - '**/src/main/res/values*/strings.xml'
+      - 'scripts/check-android-strings.py'
+      - 'iosApp/Resources/*.xcstrings'
+      - 'iosApp/check-translations.py'
+      - 'webApp/src/i18n/**'
+      - 'webApp/scripts/check-messages.mjs'
+      - 'release-notes/**'
+      - 'store-listing/**'
+      - 'scripts/release/release-notes.mjs'
+      - 'scripts/release/store-listing.mjs'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/translations.yml'
+      - '**/src/main/res/values*/strings.xml'
+      - 'scripts/check-android-strings.py'
+      - 'iosApp/Resources/*.xcstrings'
+      - 'iosApp/check-translations.py'
+      - 'webApp/src/i18n/**'
+      - 'webApp/scripts/check-messages.mjs'
+      - 'release-notes/**'
+      - 'store-listing/**'
+      - 'scripts/release/release-notes.mjs'
+      - 'scripts/release/store-listing.mjs'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  # Waits for the opening review on the commit a pull request opened with, or was marked ready for
+  # review on, since that review may push a commit of its fixes, and on that fix commit; on all of
+  # them, it holds the job below while a thread the review opened is unresolved. Every other event
+  # skips it, and the job below runs on a skipped gate too. See .github/workflows/review-gate.yml.
+  review-gate:
+    if: >-
+      github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
+      (github.event.action == 'synchronize' && github.event.sender.login == 'claude[bot]')
+    uses: ./.github/workflows/review-gate.yml
+    permissions:
+      actions: read
+      pull-requests: read
+
+  # Every step runs even when one before it failed, so one run names what every platform lacks.
+  translations:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      # check-messages.mjs reads the TypeScript dictionaries through Node's own type stripping: no npm install.
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Android
+        if: ${{ !cancelled() }}
+        run: python3 -I scripts/check-android-strings.py
+
+      - name: Apple
+        if: ${{ !cancelled() }}
+        run: python3 -I iosApp/check-translations.py iosApp/Resources
+
+      - name: Web
+        if: ${{ !cancelled() }}
+        run: node webApp/scripts/check-messages.mjs
+
+      - name: Release notes
+        if: ${{ !cancelled() }}
+        run: node scripts/release/release-notes.mjs check
+
+      - name: Store listings
+        if: ${{ !cancelled() }}
+        run: node scripts/release/store-listing.mjs check
