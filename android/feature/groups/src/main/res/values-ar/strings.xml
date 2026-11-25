@@ -225,7 +225,7 @@
     <string name="groups_all_expenses_payer">الدافع</string>
     <string name="groups_all_expenses_payer_all">أي شخص</string>
     <string name="groups_all_expenses_payer_you">الدافع: أنت</string>
-    <string name="groups_all_expenses_payer_others">الدافع: آخرون</string>
+    <string name="groups_all_expenses_payer_by">دفعها %1$s</string>
     <string name="groups_all_expenses_sort_newest">الأحدث أولًا</string>
     <string name="groups_all_expenses_sort_oldest">الأقدم أولًا</string>
     <string name="groups_all_expenses_sort_largest">الأكبر أولًا</string>

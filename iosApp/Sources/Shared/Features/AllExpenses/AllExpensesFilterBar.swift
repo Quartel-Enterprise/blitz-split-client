@@ -146,19 +146,49 @@ struct AllExpensesFilterBar: View {
         }
     }
 
+    /// "Anyone", then the people (Pierre's call, 2026-11-24): the user first, as "You", then everyone of the groups;
+    /// several may be picked at once. One picked names the menu ("You paid", "Paid by Ana").
     private var payerMenu: some View {
-        Menu {
-            ForEach(Self.payers, id: \.self) { payer in
-                checked(Self.title(payer), isOn: filters.payer == payer) {
-                    send(AllExpensesUiEventOnPayerFilterPicked(payer: payer))
+        let picked = state.payerOptions.filter { filters.payerKeys.contains($0.key) }
+        return Menu {
+            checked("Anyone", isOn: filters.payerKeys.isEmpty) {
+                send(AllExpensesUiEventOnAnyPayerPicked.shared)
+            }
+            #if os(iOS)
+            // "Anyone" lets go of everyone at once, so it closes the menu, as on Android and the web
+            .menuActionDismissBehavior(.enabled)
+            #endif
+            Divider()
+            ForEach(state.payerOptions, id: \.key) { person in
+                if person.isMe {
+                    checked("You", isOn: filters.payerKeys.contains(person.key)) {
+                        send(AllExpensesUiEventOnPayerToggled(key: person.key))
+                    }
+                } else {
+                    checked(verbatim: person.name, isOn: filters.payerKeys.contains(person.key)) {
+                        send(AllExpensesUiEventOnPayerToggled(key: person.key))
+                    }
                 }
             }
         } label: {
-            chip(
-                filters.payer == .all ? String(localized: "Who paid", bundle: .appLanguage) : Self.text(filters.payer),
-                isActive: filters.payer != .all,
-            )
+            chip(payerText(picked), isActive: !filters.payerKeys.isEmpty)
         }
+        #if os(iOS)
+        // Several may be picked at once, so the menu stays open while they are; the Mac's menus close on each pick
+        .menuActionDismissBehavior(.disabled)
+        #endif
+    }
+
+    /// "Who paid" with nobody picked, "You paid" or "Paid by Ana" with one, "Who paid · 2" with several.
+    private func payerText(_ picked: [FilterPayerOption]) -> String {
+        let count = filters.payerKeys.count
+        if count == 1, let person = picked.first {
+            return person.isMe
+                ? String(localized: "You paid", bundle: .appLanguage)
+                : String(localized: "Paid by \(person.name)", bundle: .appLanguage)
+        }
+        let label = String(localized: "Who paid", bundle: .appLanguage)
+        return count > 1 ? "\(label) · \(count)" : label
     }
 
     private func checked(_ title: LocalizedStringKey, isOn: Bool, action: @escaping () -> Void) -> some View {
@@ -206,7 +236,6 @@ struct AllExpensesFilterBar: View {
     private static let periods: [ExpensePeriod] = [.all, .thisYear, .thisMonth, .lastMonth, .custom]
     private static let sorts: [ExpenseSort] = [.newest, .oldest, .largest, .smallest]
     private static let shares: [ShareFilter] = [.all, .toReceive, .toPay]
-    private static let payers: [PayerFilter] = [.all, .you, .others]
 
     private static func title(_ sort: ExpenseSort) -> LocalizedStringKey {
         switch sort {
@@ -244,27 +273,11 @@ struct AllExpensesFilterBar: View {
         }
     }
 
-    private static func text(_ payer: PayerFilter) -> String {
-        switch payer {
-        case .you: String(localized: "You paid", bundle: .appLanguage)
-        case .others: String(localized: "Others paid", bundle: .appLanguage)
-        default: String(localized: "Anyone", bundle: .appLanguage)
-        }
-    }
-
     private static func title(_ share: ShareFilter) -> LocalizedStringKey {
         switch share {
         case .toReceive: "You get back"
         case .toPay: "You owe"
         default: "Any share"
-        }
-    }
-
-    private static func title(_ payer: PayerFilter) -> LocalizedStringKey {
-        switch payer {
-        case .you: "You paid"
-        case .others: "Others paid"
-        default: "Anyone"
         }
     }
 }

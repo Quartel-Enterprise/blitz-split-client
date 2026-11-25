@@ -180,7 +180,7 @@
     <string name="groups_all_expenses_payer">付款人</string>
     <string name="groups_all_expenses_payer_all">任何人</string>
     <string name="groups_all_expenses_payer_you">你支付的</string>
-    <string name="groups_all_expenses_payer_others">他人支付的</string>
+    <string name="groups_all_expenses_payer_by">%1$s付的</string>
     <string name="groups_all_expenses_sort_newest">最新優先</string>
     <string name="groups_all_expenses_sort_oldest">最早優先</string>
     <string name="groups_all_expenses_sort_largest">金額從大到小</string>

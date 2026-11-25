@@ -189,7 +189,7 @@
     <string name="groups_all_expenses_payer">Wie betaalde</string>
     <string name="groups_all_expenses_payer_all">Iedereen</string>
     <string name="groups_all_expenses_payer_you">Jij betaalde</string>
-    <string name="groups_all_expenses_payer_others">Anderen betaalden</string>
+    <string name="groups_all_expenses_payer_by">Betaald door %1$s</string>
     <string name="groups_all_expenses_sort_newest">Nieuwste eerst</string>
     <string name="groups_all_expenses_sort_oldest">Oudste eerst</string>
     <string name="groups_all_expenses_sort_largest">Hoogste bedrag</string>

@@ -180,7 +180,7 @@
     <string name="groups_all_expenses_payer">Ai đã trả</string>
     <string name="groups_all_expenses_payer_all">Bất kỳ ai</string>
     <string name="groups_all_expenses_payer_you">Bạn đã trả</string>
-    <string name="groups_all_expenses_payer_others">Người khác đã trả</string>
+    <string name="groups_all_expenses_payer_by">%1$s đã trả</string>
     <string name="groups_all_expenses_sort_newest">Mới nhất trước</string>
     <string name="groups_all_expenses_sort_oldest">Cũ nhất trước</string>
     <string name="groups_all_expenses_sort_largest">Lớn nhất trước</string>

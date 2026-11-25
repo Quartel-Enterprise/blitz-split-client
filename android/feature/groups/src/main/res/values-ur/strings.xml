@@ -189,7 +189,7 @@
     <string name="groups_all_expenses_payer">کس نے ادا کیا</string>
     <string name="groups_all_expenses_payer_all">کوئی بھی</string>
     <string name="groups_all_expenses_payer_you">آپ نے ادا کیا</string>
-    <string name="groups_all_expenses_payer_others">دوسروں نے ادا کیا</string>
+    <string name="groups_all_expenses_payer_by">%1$s نے ادا کیا</string>
     <string name="groups_all_expenses_sort_newest">نئے پہلے</string>
     <string name="groups_all_expenses_sort_oldest">پرانے پہلے</string>
     <string name="groups_all_expenses_sort_largest">بڑے پہلے</string>

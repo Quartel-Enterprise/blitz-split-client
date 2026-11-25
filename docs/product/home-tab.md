@@ -72,8 +72,13 @@ The home tab, its shortcuts and pinned groups.
     dates…", which opens the same picker as Statistics, from one day to another, never after today; a period picked
     names the menu, picked dates as their days, "Oct 24 – 26, 2026"; this year and this month count up to today, every
     bill falling in by the day it was spent in the device's time zone), "Your share"
-    ("You get back", "You owe") and "Who paid" ("You paid", alone or with others, "Others paid"), a menu filled while
-    it narrows the list, and "Clear filters" (which keeps the order) once one does; nothing matching shows "No
+    ("You get back", "You owe") and "Who paid" (Pierre's call, 2026-11-24: "Anyone", then the people, several at once, a bill showing
+    when any of them paid part of it: "You" first, then everyone of the groups picked, or of every group with none
+    picked, by name, each once as the global Balances counts people, an account in every group or a name nobody joined
+    as wherever it is written the same, named as the first group in the device's order has them; someone picked stays
+    in the menu when the groups change; someone picked who leaves every group is let go of; one picked names the menu, "You paid" or "Paid by Ana",
+    several "Who paid · 2"; it replaced "You paid" / "Others paid", so bills you paid none of are no longer a pick of
+    their own), a menu filled while it narrows the list, and "Clear filters" (which keeps the order) once one does; nothing matching shows "No
     expenses match" / "Try other words or clear the filters." with "Clear filters". Android draws them as a search
     field and a row of filter chips that scrolls sideways (out into the column's side margins, the first chip at rest
     lined up with the search field, as Dividir's modes do in [split-bill.md](split-bill.md)), iOS and the Mac the bar's own search field (`.searchable`)

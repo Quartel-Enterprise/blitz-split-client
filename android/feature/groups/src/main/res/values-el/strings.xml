@@ -188,7 +188,7 @@
     <string name="groups_all_expenses_payer">Ποιος πλήρωσε</string>
     <string name="groups_all_expenses_payer_all">Οποιοσδήποτε</string>
     <string name="groups_all_expenses_payer_you">Πλήρωσες</string>
-    <string name="groups_all_expenses_payer_others">Πλήρωσαν άλλοι</string>
+    <string name="groups_all_expenses_payer_by">Πλήρωσε: %1$s</string>
     <string name="groups_all_expenses_sort_newest">Νεότερα πρώτα</string>
     <string name="groups_all_expenses_sort_oldest">Παλαιότερα πρώτα</string>
     <string name="groups_all_expenses_sort_largest">Μεγαλύτερα πρώτα</string>

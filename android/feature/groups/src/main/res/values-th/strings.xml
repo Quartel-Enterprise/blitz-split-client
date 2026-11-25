@@ -180,7 +180,7 @@
     <string name="groups_all_expenses_payer">ใครจ่าย</string>
     <string name="groups_all_expenses_payer_all">ทุกคน</string>
     <string name="groups_all_expenses_payer_you">คุณจ่าย</string>
-    <string name="groups_all_expenses_payer_others">คนอื่นจ่าย</string>
+    <string name="groups_all_expenses_payer_by">%1$s จ่าย</string>
     <string name="groups_all_expenses_sort_newest">ใหม่สุดก่อน</string>
     <string name="groups_all_expenses_sort_oldest">เก่าสุดก่อน</string>
     <string name="groups_all_expenses_sort_largest">มากสุดก่อน</string>

@@ -188,7 +188,7 @@
     <string name="groups_all_expenses_payer">কে পরিশোধ করেছেন</string>
     <string name="groups_all_expenses_payer_all">যে কেউ</string>
     <string name="groups_all_expenses_payer_you">আপনি পরিশোধ করেছেন</string>
-    <string name="groups_all_expenses_payer_others">অন্যরা পরিশোধ করেছেন</string>
+    <string name="groups_all_expenses_payer_by">%1$s পরিশোধ করেছেন</string>
     <string name="groups_all_expenses_sort_newest">নতুনগুলো আগে</string>
     <string name="groups_all_expenses_sort_oldest">পুরোনোগুলো আগে</string>
     <string name="groups_all_expenses_sort_largest">বড়গুলো আগে</string>

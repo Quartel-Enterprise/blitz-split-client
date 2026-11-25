@@ -207,7 +207,7 @@
     <string name="groups_all_expenses_payer">Кто платил</string>
     <string name="groups_all_expenses_payer_all">Кто угодно</string>
     <string name="groups_all_expenses_payer_you">Платил(а) ты</string>
-    <string name="groups_all_expenses_payer_others">Платили другие</string>
+    <string name="groups_all_expenses_payer_by">Платил(а) %1$s</string>
     <string name="groups_all_expenses_sort_newest">Сначала новые</string>
     <string name="groups_all_expenses_sort_oldest">Сначала старые</string>
     <string name="groups_all_expenses_sort_largest">Сначала крупные</string>

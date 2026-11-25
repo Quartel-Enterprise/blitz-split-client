@@ -179,7 +179,7 @@
     <string name="groups_all_expenses_payer">낸 사람</string>
     <string name="groups_all_expenses_payer_all">누구나</string>
     <string name="groups_all_expenses_payer_you">내가 냄</string>
-    <string name="groups_all_expenses_payer_others">다른 사람이 냄</string>
+    <string name="groups_all_expenses_payer_by">%1$s 님이 냄</string>
     <string name="groups_all_expenses_sort_newest">최신순</string>
     <string name="groups_all_expenses_sort_oldest">오래된순</string>
     <string name="groups_all_expenses_sort_largest">금액 큰 순</string>

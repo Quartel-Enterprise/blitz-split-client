@@ -3,16 +3,20 @@ package com.quare.blitzsplit.feature.groups.presentation.mapper
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.findSpanOrNull
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.toImageUrl
+import com.quare.blitzsplit.core.utils.TextFolding
 import com.quare.blitzsplit.core.utils.TypoTolerantQuery
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilters
 import com.quare.blitzsplit.feature.groups.presentation.model.ExpenseSort
 import com.quare.blitzsplit.feature.groups.presentation.model.FilterGroupOption
-import com.quare.blitzsplit.feature.groups.presentation.model.PayerFilter
+import com.quare.blitzsplit.feature.groups.presentation.model.FilterPayerOption
+import com.quare.blitzsplit.feature.groups.presentation.model.PAYER_KEY_ME
 import com.quare.blitzsplit.feature.groups.presentation.model.ShareFilter
 import kotlinx.datetime.TimeZone
 
@@ -101,23 +105,59 @@ internal fun AllExpensesFilters.periodSpanOrNull(
 private fun LatestExpense.isPassing(
     filters: AllExpensesFilters,
     categories: CategoryTree,
-): Boolean {
-    val meId = group.members.firstOrNull { it.isMe }?.id
-    return (filters.groupIds.isEmpty() || group.id in filters.groupIds) &&
-        (
-            filters.categoryIds.isEmpty() ||
-                categories.mainOf(categories.resolve(expense.categoryId)).id in filters.categoryIds
-        ) &&
-        when (filters.share) {
-            ShareFilter.ALL -> true
-            ShareFilter.TO_RECEIVE -> myBalanceMinor > 0
-            ShareFilter.TO_PAY -> myBalanceMinor < 0
-        } &&
-        when (filters.payer) {
-            PayerFilter.ALL -> true
-            PayerFilter.YOU -> meId != null && expense.paidAmountOf(meId) > 0
-            PayerFilter.OTHERS -> meId == null || expense.paidAmountOf(meId) == 0L
+): Boolean = (filters.groupIds.isEmpty() || group.id in filters.groupIds) &&
+    (
+        filters.categoryIds.isEmpty() ||
+            categories.mainOf(categories.resolve(expense.categoryId)).id in filters.categoryIds
+    ) &&
+    when (filters.share) {
+        ShareFilter.ALL -> true
+        ShareFilter.TO_RECEIVE -> myBalanceMinor > 0
+        ShareFilter.TO_PAY -> myBalanceMinor < 0
+    } &&
+    (filters.payerKeys.isEmpty() || isPaidByAny(filters.payerKeys))
+
+// Why: any of the people picked paid part of the bill; someone no longer in the group is no one's pick.
+private fun LatestExpense.isPaidByAny(keys: Set<String>): Boolean = expense.payers.any { payer ->
+    payer.amountMinor > 0 &&
+        group.members.firstOrNull { it.id == payer.memberId }?.let(::payerKeyOf) in keys
+}
+
+// Why: the user is PAYER_KEY_ME in every group; anyone else the same person in every group, as the global Balances.
+private fun payerKeyOf(member: GroupMember): String = if (member.isMe) PAYER_KEY_ME else PeopleBalances.keyOf(member)
+
+/*
+ * Why: Who paid's people: the user first, then everyone of the groups picked (none picked: of every group) by name, once
+ * each, named and drawn as the first group in the device's order has them; anyone picked stays offered, so a group let
+ * go of never hides a pick that still narrows the list.
+ */
+internal fun payerOptionsOf(
+    groups: List<Group>,
+    filters: AllExpensesFilters,
+): List<FilterPayerOption> {
+    val byKey = LinkedHashMap<String, FilterPayerOption>()
+    groups
+        .sortedByDescending { filters.groupIds.isEmpty() || it.id in filters.groupIds }
+        .forEach { group ->
+            val isOffered = filters.groupIds.isEmpty() || group.id in filters.groupIds
+            group.members.forEach { member ->
+                val key = payerKeyOf(member)
+                if ((isOffered || key in filters.payerKeys) && key !in byKey) {
+                    byKey[key] = FilterPayerOption(
+                        key = key,
+                        name = member.name,
+                        isMe = member.isMe,
+                        initials = Initials.firstOf(member.name),
+                        color = member.avatarColor,
+                        photoUrl = member.photoUrl,
+                    )
+                }
+            }
         }
+    // Why: "Álvaro" with the A's, as Contatos sorts names.
+    return byKey.values.sortedWith(
+        compareByDescending<FilterPayerOption> { it.isMe }.thenBy { TextFolding.toFolded(it.name) },
+    )
 }
 
 // Why: by date as each group's Expenses orders them; by amount, the most recent first among equal totals.

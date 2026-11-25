@@ -606827,307 +606827,307 @@
         }
       }
     },
-    "Others paid" : {
-      "comment" : "All expenses: payerOthers",
+    "Paid by %@" : {
+      "comment" : "All expenses: Who paid with one person picked, named",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "دفعها آخرون"
+            "value" : "دفعها %@"
           }
         },
         "bg" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Платиха други"
+            "value" : "Плати %@"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "অন্যরা পরিশোধ করেছেন"
+            "value" : "%@ পরিশোধ করেছেন"
           }
         },
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Han pagat altres"
+            "value" : "Pagat per %@"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Platili ostatní"
+            "value" : "Platil(a) %@"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Andre betalte"
+            "value" : "Betalt af %@"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Andere haben bezahlt"
+            "value" : "Bezahlt von %@"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Πλήρωσαν άλλοι"
+            "value" : "Πλήρωσε: %@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pagaron otros"
+            "value" : "Pagó %@"
           }
         },
         "et" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Teised maksid"
+            "value" : "Maksis %@"
           }
         },
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "دیگران پرداخت کردند"
+            "value" : "پرداخت‌کننده: %@"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muut maksoivat"
+            "value" : "Maksaja: %@"
           }
         },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Iba ang nagbayad"
+            "value" : "Binayaran ni %@"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "D’autres ont payé"
+            "value" : "Payé par %@"
           }
         },
         "gu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "બીજાઓએ ચૂકવ્યું"
+            "value" : "%@ એ ચૂકવ્યું"
           }
         },
         "he" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "שולם על ידי אחרים"
+            "value" : "שולם על ידי %@"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "दूसरों ने भुगतान किया"
+            "value" : "%@ ने भुगतान किया"
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Platili drugi"
+            "value" : "Platio/la %@"
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mások fizettek"
+            "value" : "Fizető: %@"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Orang lain yang bayar"
+            "value" : "Dibayar %@"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hanno pagato altri"
+            "value" : "Pagato da %@"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ほかの人が支払った"
+            "value" : "%@が支払い"
           }
         },
         "kn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ಇತರರು ಪಾವತಿಸಿದ್ದು"
+            "value" : "%@ ಪಾವತಿಸಿದರು"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "다른 사람이 냄"
+            "value" : "%@ 님이 냄"
           }
         },
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mokėjo kiti"
+            "value" : "Mokėjo %@"
           }
         },
         "lv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maksāja citi"
+            "value" : "Maksāja %@"
           }
         },
         "ml" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "മറ്റുള്ളവർ പണം നൽകി"
+            "value" : "%@ പണം നൽകി"
           }
         },
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "इतरांनी पैसे दिले"
+            "value" : "%@ यांनी पैसे दिले"
           }
         },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Orang lain membayar"
+            "value" : "Dibayar oleh %@"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Andre betalte"
+            "value" : "Betalt av %@"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anderen betaalden"
+            "value" : "Betaald door %@"
           }
         },
         "pa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ਹੋਰਾਂ ਨੇ ਭੁਗਤਾਨ ਕੀਤਾ"
+            "value" : "%@ ਨੇ ਭੁਗਤਾਨ ਕੀਤਾ"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zapłacili inni"
+            "value" : "Zapłacił(a) %@"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Outros pagaram"
+            "value" : "Pago por %@"
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Au plătit alții"
+            "value" : "Plătit de %@"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Платили другие"
+            "value" : "Платил(а) %@"
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Platili iní"
+            "value" : "Zaplatil(a) %@"
           }
         },
         "sl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Plačali drugi"
+            "value" : "Plačal(a) %@"
           }
         },
         "sr-Latn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Platili su drugi"
+            "value" : "Platio/la %@"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Andra betalade"
+            "value" : "Betalt av %@"
           }
         },
         "sw" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wengine walilipa"
+            "value" : "Alilipa %@"
           }
         },
         "ta" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "மற்றவர்கள் செலுத்தியது"
+            "value" : "%@ செலுத்தியது"
           }
         },
         "te" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ఇతరులు చెల్లించారు"
+            "value" : "%@ చెల్లించారు"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "คนอื่นจ่าย"
+            "value" : "%@ จ่าย"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Başkaları ödedi"
+            "value" : "Ödeyen: %@"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Сплатили інші"
+            "value" : "Платив(-ла) %@"
           }
         },
         "ur" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "دوسروں نے ادا کیا"
+            "value" : "%@ نے ادا کیا"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Người khác đã trả"
+            "value" : "%@ đã trả"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "他人支付的"
+            "value" : "%@付的"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "他人支付的"
+            "value" : "%@付的"
           }
         }
       }

@@ -189,7 +189,7 @@
     <string name="groups_all_expenses_payer">Kes maksis</string>
     <string name="groups_all_expenses_payer_all">Ükskõik kes</string>
     <string name="groups_all_expenses_payer_you">Sina maksid</string>
-    <string name="groups_all_expenses_payer_others">Teised maksid</string>
+    <string name="groups_all_expenses_payer_by">Maksis %1$s</string>
     <string name="groups_all_expenses_sort_newest">Uuemad eespool</string>
     <string name="groups_all_expenses_sort_oldest">Vanemad eespool</string>
     <string name="groups_all_expenses_sort_largest">Suuremad eespool</string>

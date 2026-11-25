@@ -19,6 +19,8 @@ data class AllExpensesUiState(
     // Why: what the Group and Category filters offer: the device's groups, the main categories.
     val groupOptions: List<FilterGroupOption>,
     val categoryOptions: List<Category>,
+    // Why: what Who paid offers: the user first, then everyone of the groups picked (none picked: of every group).
+    val payerOptions: List<FilterPayerOption>,
     // Why: the first page was read; skeletons until then.
     val isLoaded: Boolean,
     // Why: the device holds more bills than the list shows; reaching its end reads the next page.
@@ -65,6 +67,7 @@ data class AllExpensesUiState(
             filters = AllExpensesFilters.none,
             groupOptions = emptyList(),
             categoryOptions = emptyList(),
+            payerOptions = emptyList(),
             isLoaded = false,
             hasMore = false,
             isLoadingMore = false,

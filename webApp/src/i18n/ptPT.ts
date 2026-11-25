@@ -570,6 +570,7 @@ export const ptPT: Partial<Record<MessageKey, string>> = {
   allExpenses_search: 'Pesquisar despesas',
   allExpenses_share: 'A tua parte',
   allExpenses_sharePay: 'Deves',
+  allExpenses_payerMe: 'Tu',
   allExpenses_payerYou: 'Pagaste',
   allExpenses_noResultsBody: 'Tenta outras palavras ou limpa os filtros.',
   home_columnShare: 'A tua parte',

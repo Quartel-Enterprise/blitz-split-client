@@ -31,6 +31,7 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.groupOptionsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.homeBillsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.myExpensesOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.narrowedOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.payerOptionsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.periodSpanOrNull
 import com.quare.blitzsplit.feature.groups.presentation.model.ALL_EXPENSES_SOURCE
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilter
@@ -213,7 +214,9 @@ class AllExpensesViewModel(
 
             is AllExpensesUiEvent.OnShareFilterPicked -> narrow { it.copy(share = event.share) }
 
-            is AllExpensesUiEvent.OnPayerFilterPicked -> narrow { it.copy(payer = event.payer) }
+            is AllExpensesUiEvent.OnPayerToggled -> narrow { it.copy(payerKeys = it.payerKeys.toToggled(event.key)) }
+
+            AllExpensesUiEvent.OnAnyPayerPicked -> narrow { it.copy(payerKeys = emptySet()) }
 
             is AllExpensesUiEvent.OnSortPicked -> narrow { it.copy(sort = event.sort) }
 
@@ -274,6 +277,15 @@ class AllExpensesViewModel(
             uiState.update { it.copy(filters = picked) }
             return
         }
+        /*
+         * Why: someone picked in Who paid who is in no group any more (removed, or their group deleted) has no row to
+         * let go of them; the pick goes with them, and the list shows again under the picks left.
+         */
+        val goneKeys = picked.payerKeys - payerOptionsOf(bills.groups, AllExpensesFilters.none).map { it.key }.toSet()
+        if (goneKeys.isNotEmpty() && bills.groups.isNotEmpty()) {
+            filters.value = picked.copy(payerKeys = picked.payerKeys - goneKeys)
+            return
+        }
         val mine = myExpensesOf(bills.device.expenses, bills.groups, wholeGroupIdOf(picked))
         val narrowed = if (window != null) {
             mine.take(window)
@@ -292,6 +304,7 @@ class AllExpensesViewModel(
                 filters = picked,
                 groupOptions = groupOptionsOf(bills.groups),
                 categoryOptions = bills.categories.branches.map { branch -> branch.category },
+                payerOptions = payerOptionsOf(bills.groups, picked),
                 isLoaded = true,
                 hasMore = if (window != null) bills.device.expenses.size > window else narrowed.size > requested,
                 isLoadingMore = window != null && requested > window,

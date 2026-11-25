@@ -188,7 +188,7 @@
     <string name="groups_all_expenses_payer">Ki fizetett</string>
     <string name="groups_all_expenses_payer_all">Bárki</string>
     <string name="groups_all_expenses_payer_you">Te fizettél</string>
-    <string name="groups_all_expenses_payer_others">Mások fizettek</string>
+    <string name="groups_all_expenses_payer_by">Fizető: %1$s</string>
     <string name="groups_all_expenses_sort_newest">Legújabb elöl</string>
     <string name="groups_all_expenses_sort_oldest">Legrégebbi elöl</string>
     <string name="groups_all_expenses_sort_largest">Legnagyobb elöl</string>

@@ -2,8 +2,9 @@ import { ArrowDownUp, Check, ChevronDown, Search, X } from 'lucide-react'
 import type { AllExpensesPresenter, JsAllExpensesState } from 'blitzsplit-shared'
 import { Fragment, useState, type ReactNode } from 'react'
 import { PickDatesDialog } from '@/components/PickDatesDialog'
+import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { formatRange } from '@/features/group-stats/statsFormat'
@@ -35,12 +36,6 @@ const periodLabels: Record<string, MessageKey> = {
   CUSTOM: 'stats_periodCustom',
 }
 
-const payerLabels: Record<string, MessageKey> = {
-  ALL: 'allExpenses_payerAll',
-  YOU: 'allExpenses_payerYou',
-  OTHERS: 'allExpenses_payerOthers',
-}
-
 /** "Group" with nothing picked, the name of the one picked, "Group · 2" with several. */
 function pickedLabel(label: string, names: string[]): string {
   if (names.length === 1) return names[0]
@@ -58,6 +53,8 @@ export function AllExpensesFilterBar({ presenter, state }: { presenter: AllExpen
   const categoryIds = Array.from(state.categoryIds)
   const groups = Array.from(state.groupOptions)
   const categories = Array.from(state.categoryOptions)
+  const payerKeys = Array.from(state.payerKeys)
+  const payers = Array.from(state.payerOptions)
   const [query, setQuery] = useDraft(state.query, (next) => presenter.search(next))
   const [isPickingDates, setPickingDates] = useState(false)
   const isDesktop = useMediaQuery('(min-width: 768px)')
@@ -123,9 +120,18 @@ export function AllExpensesFilterBar({ presenter, state }: { presenter: AllExpen
         )
       case 'PAYER':
         return (
-          <FilterMenu label={state.payer === 'ALL' ? t('allExpenses_payer') : t(payerLabels[state.payer])} isActive={state.payer !== 'ALL'}>
-            {Object.keys(payerLabels).map((payer) => (
-              <CheckedItem key={payer} label={t(payerLabels[payer])} isChecked={state.payer === payer} onSelect={() => presenter.pickPayer(payer)} />
+          <FilterMenu label={payerText(payers.filter((payer) => payerKeys.includes(payer.key)), payerKeys.length)} isActive={payerKeys.length > 0}>
+            <CheckedItem label={t('allExpenses_payerAll')} isChecked={payerKeys.length === 0} onSelect={() => presenter.pickAnyPayer()} />
+            <DropdownMenuSeparator />
+            {payers.map((payer) => (
+              <CheckedItem
+                key={payer.key}
+                label={payer.isMe ? t('allExpenses_payerMe') : payer.name}
+                leading={<Avatar initial={payer.initials} color={payer.color} photoUrl={payer.photoUrl} className="size-5 text-[9px]" />}
+                isChecked={payerKeys.includes(payer.key)}
+                keepsOpen
+                onSelect={() => presenter.togglePayer(payer.key)}
+              />
             ))}
           </FilterMenu>
         )
@@ -186,6 +192,14 @@ export function AllExpensesFilterBar({ presenter, state }: { presenter: AllExpen
   )
 }
 
+/** "Who paid" with nobody picked, "You paid" or "Paid by Ana" with one, "Who paid · 2" with several. */
+function payerText(picked: { name: string; isMe: boolean }[], count: number): string {
+  if (count === 1 && picked.length === 1) {
+    return picked[0].isMe ? t('allExpenses_payerYou') : t('allExpenses_payerBy', { name: picked[0].name })
+  }
+  return count > 1 ? `${t('allExpenses_payer')} · ${count}` : t('allExpenses_payer')
+}
+
 /** "Period" while it is the whole history, a custom period's days ("Oct 24 – 26"), any other by its name. */
 function periodText(state: JsAllExpensesState): string {
   if (state.period === 'ALL') return t('stats_period')
@@ -212,7 +226,7 @@ function FilterMenu({ label, icon, isActive, ariaLabel, children }: { label: str
   )
 }
 
-/** One option; a group or a category keeps the menu open, since several may be picked. */
+/** One option; a group, a category or a person keeps the menu open, since several may be picked. */
 function CheckedItem({ label, leading, isChecked, keepsOpen, onSelect }: { label: string; leading?: ReactNode; isChecked: boolean; keepsOpen?: boolean; onSelect: () => void }) {
   return (
     <DropdownMenuItem

@@ -189,7 +189,7 @@
     <string name="groups_all_expenses_payer">چه کسی پرداخت کرد</string>
     <string name="groups_all_expenses_payer_all">هر کسی</string>
     <string name="groups_all_expenses_payer_you">شما پرداخت کردید</string>
-    <string name="groups_all_expenses_payer_others">دیگران پرداخت کردند</string>
+    <string name="groups_all_expenses_payer_by">پرداخت‌کننده: %1$s</string>
     <string name="groups_all_expenses_sort_newest">جدیدترین اول</string>
     <string name="groups_all_expenses_sort_oldest">قدیمی‌ترین اول</string>
     <string name="groups_all_expenses_sort_largest">بیشترین اول</string>

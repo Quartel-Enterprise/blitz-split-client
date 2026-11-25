@@ -188,7 +188,7 @@
     <string name="groups_all_expenses_payer">कोणी पैसे दिले</string>
     <string name="groups_all_expenses_payer_all">कोणीही</string>
     <string name="groups_all_expenses_payer_you">तुम्ही पैसे दिले</string>
-    <string name="groups_all_expenses_payer_others">इतरांनी पैसे दिले</string>
+    <string name="groups_all_expenses_payer_by">%1$s यांनी पैसे दिले</string>
     <string name="groups_all_expenses_sort_newest">नवीन आधी</string>
     <string name="groups_all_expenses_sort_oldest">जुने आधी</string>
     <string name="groups_all_expenses_sort_largest">मोठे आधी</string>

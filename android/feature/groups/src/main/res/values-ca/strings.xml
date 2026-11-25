@@ -198,7 +198,7 @@
     <string name="groups_all_expenses_payer">Qui ha pagat</string>
     <string name="groups_all_expenses_payer_all">Qualsevol</string>
     <string name="groups_all_expenses_payer_you">Has pagat tu</string>
-    <string name="groups_all_expenses_payer_others">Han pagat altres</string>
+    <string name="groups_all_expenses_payer_by">Pagat per %1$s</string>
     <string name="groups_all_expenses_sort_newest">Més recents primer</string>
     <string name="groups_all_expenses_sort_oldest">Més antigues primer</string>
     <string name="groups_all_expenses_sort_largest">Més grans primer</string>

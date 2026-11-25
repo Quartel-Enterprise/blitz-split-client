@@ -207,7 +207,7 @@
     <string name="groups_all_expenses_payer">Kas mokėjo</string>
     <string name="groups_all_expenses_payer_all">Bet kas</string>
     <string name="groups_all_expenses_payer_you">Tu sumokėjai</string>
-    <string name="groups_all_expenses_payer_others">Sumokėjo kiti</string>
+    <string name="groups_all_expenses_payer_by">Mokėjo %1$s</string>
     <string name="groups_all_expenses_sort_newest">Naujausios pirma</string>
     <string name="groups_all_expenses_sort_oldest">Seniausios pirma</string>
     <string name="groups_all_expenses_sort_largest">Didžiausios pirma</string>

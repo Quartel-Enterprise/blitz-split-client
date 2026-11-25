@@ -179,7 +179,7 @@
     <string name="groups_all_expenses_payer">Siapa yang membayar</string>
     <string name="groups_all_expenses_payer_all">Sesiapa sahaja</string>
     <string name="groups_all_expenses_payer_you">Anda membayar</string>
-    <string name="groups_all_expenses_payer_others">Orang lain membayar</string>
+    <string name="groups_all_expenses_payer_by">Dibayar oleh %1$s</string>
     <string name="groups_all_expenses_sort_newest">Terbaharu dahulu</string>
     <string name="groups_all_expenses_sort_oldest">Terlama dahulu</string>
     <string name="groups_all_expenses_sort_largest">Terbesar dahulu</string>

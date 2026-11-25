@@ -207,7 +207,7 @@
     <string name="groups_all_expenses_payer">Kto zapłacił</string>
     <string name="groups_all_expenses_payer_all">Ktokolwiek</string>
     <string name="groups_all_expenses_payer_you">Ty zapłaciłeś</string>
-    <string name="groups_all_expenses_payer_others">Zapłacili inni</string>
+    <string name="groups_all_expenses_payer_by">Zapłacił(a) %1$s</string>
     <string name="groups_all_expenses_sort_newest">Najnowsze</string>
     <string name="groups_all_expenses_sort_oldest">Najstarsze</string>
     <string name="groups_all_expenses_sort_largest">Najwyższa kwota</string>

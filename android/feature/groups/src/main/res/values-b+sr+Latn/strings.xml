@@ -198,7 +198,7 @@
     <string name="groups_all_expenses_payer">Ko je platio</string>
     <string name="groups_all_expenses_payer_all">Bilo ko</string>
     <string name="groups_all_expenses_payer_you">Ti si platio/la</string>
-    <string name="groups_all_expenses_payer_others">Platili su drugi</string>
+    <string name="groups_all_expenses_payer_by">Platio/la %1$s</string>
     <string name="groups_all_expenses_sort_newest">Najnovije prvo</string>
     <string name="groups_all_expenses_sort_oldest">Najstarije prvo</string>
     <string name="groups_all_expenses_sort_largest">Najveće prvo</string>
