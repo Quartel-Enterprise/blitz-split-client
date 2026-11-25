@@ -39,7 +39,6 @@ import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -162,6 +161,7 @@ class BillDetailViewModel(
                 viewedAttachmentId = null,
                 isAddingPhoto = false,
                 photoCrop = null,
+                keepsWholePhoto = true,
                 paidWith = null,
             ),
         )
@@ -314,16 +314,8 @@ class BillDetailViewModel(
         navigator.backStack.onEach { leaving.leaveIfGone() }.launchIn(viewModelScope)
     }
 
-    /*
-     * Why: "Ajustar foto" only counts what is done while it is open, never a late tap after it closed, and its
-     * "Pronto" only while the bill takes a photo: a bill being deleted keeps the editor open until Conta leaves.
-     */
-    override fun isAccepted(event: BillDetailUiEvent): Boolean {
-        if (event !is BillDetailUiEvent.OnPhotoCrop) return true
-        val state = uiState.value
-        val isConfirm = event.event == PhotoCropEvent.OnConfirmClicked
-        return state.photoCrop != null && (!isConfirm || state.areActionsEnabled)
-    }
+    // Why: "Ajustar foto" and its switch only count while it is open (BillPhotoAdding).
+    override fun isAccepted(event: BillDetailUiEvent): Boolean = photoAdding.isAccepted(event)
 
     override fun handleEvent(event: BillDetailUiEvent) {
         when (event) {
@@ -356,6 +348,8 @@ class BillDetailViewModel(
             }
 
             is BillDetailUiEvent.OnPhotoCrop -> photoAdding.onCropEvent(event.event)
+
+            is BillDetailUiEvent.OnKeepWholePhotoChanged -> photoAdding.onKeepWholePhotoChanged(event.isOn)
 
             BillDetailUiEvent.OnPhotoUnreadable -> viewModelScope.launch {
                 uiAction.emit(BillDetailUiAction.ShowPhotoError(BillPhotoError.UNREADABLE))

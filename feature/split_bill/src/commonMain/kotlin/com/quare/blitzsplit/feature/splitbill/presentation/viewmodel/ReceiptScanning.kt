@@ -176,6 +176,8 @@ internal class ReceiptScanning(
             kind = BillAttachmentKind.RECEIPT,
             image = image,
             addedByMemberId = state.people.firstOrNull { it.isMe }?.id,
+            // Why: a receipt keeps the whole image it was read from and fills its tile with its center.
+            frame = null,
         )
     }
 

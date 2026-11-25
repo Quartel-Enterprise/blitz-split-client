@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.safeDrawing
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -42,6 +44,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SliderState
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -69,6 +73,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -112,6 +117,8 @@ fun PhotoCropDialog(
     editor: PhotoCropEditor,
     frame: PhotoCropFrame,
     onEvent: (PhotoCropEvent) -> Unit,
+    // Why: a control only one screen has, over Cancel and Done (a bill photo's "Show the whole photo when opened").
+    extraControl: (@Composable () -> Unit)? = null,
 ) {
     Dialog(
         onDismissRequest = { onEvent(PhotoCropEvent.OnDismissed) },
@@ -144,9 +151,8 @@ fun PhotoCropDialog(
                         PhotoCropControlsColumn(
                             crop = editor.crop,
                             onEvent = onEvent,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState()),
+                            extraControl = extraControl,
+                            modifier = Modifier.fillMaxSize(),
                         )
                     },
                     modifier = Modifier.fillMaxSize(),
@@ -166,9 +172,8 @@ fun PhotoCropDialog(
                         PhotoCropControlsColumn(
                             crop = editor.crop,
                             onEvent = onEvent,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState()),
+                            extraControl = extraControl,
+                            modifier = Modifier.fillMaxSize(),
                         )
                     },
                     modifier = Modifier.fillMaxSize(),
@@ -186,6 +191,7 @@ fun PhotoCropDialog(
                     PhotoCropControlsColumn(
                         crop = editor.crop,
                         onEvent = onEvent,
+                        extraControl = extraControl,
                         modifier = Modifier
                             .width(sidePanelWidth)
                             .fillMaxHeight(),
@@ -205,6 +211,7 @@ fun PhotoCropDialog(
                     PhotoCropPanel(
                         crop = editor.crop,
                         onEvent = onEvent,
+                        extraControl = extraControl,
                     )
                 }
             }
@@ -212,22 +219,32 @@ fun PhotoCropDialog(
     }
 }
 
-// Why: the header and the panel together, beside the photo lying down or in the half after the hinge.
+/*
+ * Why: the header and the panel together, beside the photo lying down or in the half after the hinge. A short window
+ * (large text, a bill's extra switch) scrolls rather than hiding Done; a taller one keeps them centered.
+ */
 @Composable
 private fun PhotoCropControlsColumn(
     crop: PhotoCrop,
     onEvent: (PhotoCropEvent) -> Unit,
+    extraControl: (@Composable () -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        PhotoCropHeader(onEvent = onEvent)
-        PhotoCropPanel(
-            crop = crop,
-            onEvent = onEvent,
-        )
+    BoxWithConstraints(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .heightIn(min = maxHeight),
+            verticalArrangement = Arrangement.Center,
+        ) {
+            PhotoCropHeader(onEvent = onEvent)
+            PhotoCropPanel(
+                crop = crop,
+                onEvent = onEvent,
+                extraControl = extraControl,
+            )
+        }
     }
 }
 
@@ -379,6 +396,7 @@ private fun rememberCropBitmap(photo: CropPhoto): ImageBitmap? {
 private fun ColumnScope.PhotoCropPanel(
     crop: PhotoCrop,
     onEvent: (PhotoCropEvent) -> Unit,
+    extraControl: (@Composable () -> Unit)?,
 ) {
     val zoomDescription = stringResource(R.string.designsystem_photo_crop_zoom)
     // Why: the zoom lives in the ViewModel, so the slider's state only mirrors it.
@@ -460,6 +478,7 @@ private fun ColumnScope.PhotoCropPanel(
             onClick = { onEvent(PhotoCropEvent.OnTurnClicked) },
         )
     }
+    extraControl?.invoke()
     Row(
         modifier = Modifier.padding(
             start = 20.dp,
@@ -517,4 +536,46 @@ private fun OrientationChip(
         ),
         border = null,
     )
+}
+
+/*
+ * Why: a switch row for the editor's extraControl (a bill photo's "Show the whole photo when opened"), white on the
+ * editor's dark in either theme, as its other controls.
+ */
+@Composable
+fun PhotoCropSwitch(
+    label: String,
+    isOn: Boolean,
+    onChange: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .toggleable(
+                value = isOn,
+                role = Role.Switch,
+                onValueChange = onChange,
+            ).padding(horizontal = 24.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.weight(1f),
+            color = Color.White,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Switch(
+            checked = isOn,
+            onCheckedChange = null,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = editorBackground,
+                checkedTrackColor = Color.White,
+                uncheckedThumbColor = secondaryContent,
+                uncheckedTrackColor = chipBackground,
+                uncheckedBorderColor = secondaryContent,
+            ),
+        )
+    }
 }

@@ -455,6 +455,7 @@ export const tr: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Fiş',
   billDetail_attachmentQueued: 'Sırada',
   billDetail_addPhoto: 'Fotoğraf ekle',
+  billDetail_keepWholePhoto: 'Açıldığında fotoğrafın tamamını göster',
   billDetail_takePhoto: 'Fotoğraf çek',
   billDetail_choosePhoto: 'Fotoğraf seç',
   billDetail_viewerPhotoTitle: 'Fotoğraf {number}/{count}',

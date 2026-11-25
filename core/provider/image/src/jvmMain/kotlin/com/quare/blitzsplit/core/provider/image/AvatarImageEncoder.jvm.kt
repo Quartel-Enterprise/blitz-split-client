@@ -23,20 +23,21 @@ internal class JvmAvatarImageEncoder : AvatarImageEncoder {
     override suspend fun invoke(
         source: ByteArray,
         transform: CropTransform,
-    ): ByteArray = createCrop(source, transform, AVATAR_SIZE_PX).toJpeg(AVATAR_JPEG_QUALITY)
+    ): ByteArray = createCrop(source, transform, AVATAR_SIZE_PX, AVATAR_SIZE_PX).toJpeg(AVATAR_JPEG_QUALITY)
 }
 
 internal class JvmBillCropEncoder : BillCropEncoder {
     override suspend fun invoke(
         source: ByteArray,
         transform: CropTransform,
-        side: Int,
+        width: Int,
+        height: Int,
     ): BillImage {
-        val output = createCrop(source, transform, side)
+        val output = createCrop(source, transform, width, height)
         return BillImage(
             jpeg = encodeUnderLimit(output::toJpeg),
-            width = side,
-            height = side,
+            width = width,
+            height = height,
         )
     }
 }
@@ -44,13 +45,14 @@ internal class JvmBillCropEncoder : BillCropEncoder {
 private fun createCrop(
     source: ByteArray,
     transform: CropTransform,
-    side: Int,
+    width: Int,
+    height: Int,
 ): BufferedImage {
     val decoded = decode(source)
-    val output = BufferedImage(side, side, BufferedImage.TYPE_INT_RGB)
+    val output = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
     output.createGraphics().run {
         color = Color.WHITE
-        fillRect(0, 0, side, side)
+        fillRect(0, 0, width, height)
         setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
         drawImage(decoded, transform.toAffineTransform(), null)
         dispose()

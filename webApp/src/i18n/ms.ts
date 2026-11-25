@@ -454,6 +454,7 @@ export const ms: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Resit',
   billDetail_attachmentQueued: 'Dalam baris gilir',
   billDetail_addPhoto: 'Tambah foto',
+  billDetail_keepWholePhoto: 'Tunjukkan seluruh foto apabila dibuka',
   billDetail_takePhoto: 'Ambil foto',
   billDetail_choosePhoto: 'Pilih foto',
   billDetail_viewerPhotoTitle: 'Foto {number} daripada {count}',

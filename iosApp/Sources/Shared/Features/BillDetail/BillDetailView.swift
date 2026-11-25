@@ -464,7 +464,9 @@ private struct PhoneBillDetail: View {
             BillAttachmentViewer(viewer: model.viewer)
         }
         // A photo picked is framed in the attachment tile's rounded square before it is attached
-        .photoCrop(state.photoCrop, frame: .roundedSquare) { model.send(BillDetailUiEventOnPhotoCrop(event: $0)) }
+        .photoCrop(state.photoCrop, frame: .roundedSquare, extraControl: AnyView(KeepWholePhotoToggle(model: model))) {
+            model.send(BillDetailUiEventOnPhotoCrop(event: $0))
+        }
         .sheet(isPresented: model.isLikesOpen) {
             BillLikesSheet(likers: state.likesComment?.likers ?? []) {
                 model.send(BillDetailUiEventOnCommentLikesDismissed.shared)
@@ -638,7 +640,9 @@ private struct MacBillDetail: View {
             BillAttachmentViewer(viewer: model.viewer)
         }
         // A photo picked is framed in the attachment tile's rounded square before it is attached
-        .photoCrop(state.photoCrop, frame: .roundedSquare) { model.send(BillDetailUiEventOnPhotoCrop(event: $0)) }
+        .photoCrop(state.photoCrop, frame: .roundedSquare, extraControl: AnyView(KeepWholePhotoToggle(model: model))) {
+            model.send(BillDetailUiEventOnPhotoCrop(event: $0))
+        }
         // Esc closes it while the focus is in it, which it takes as it opens, so a field elsewhere keeps its own Esc
         .focusable()
         .focusEffectDisabled()

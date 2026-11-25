@@ -455,6 +455,7 @@ export const nb: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Kvittering',
   billDetail_attachmentQueued: 'I kø',
   billDetail_addPhoto: 'Legg til bilde',
+  billDetail_keepWholePhoto: 'Vis hele bildet når det åpnes',
   billDetail_takePhoto: 'Ta bilde',
   billDetail_choosePhoto: 'Velg bilde',
   billDetail_viewerPhotoTitle: 'Bilde {number} av {count}',

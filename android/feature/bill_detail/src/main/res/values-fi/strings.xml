@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">eilen</string>
     <string name="bill_detail_attachment_open">Avaa</string>
     <string name="bill_detail_add_photo">Lisää kuva</string>
+    <string name="bill_detail_keep_whole_photo">Näytä koko kuva avattaessa</string>
     <string name="bill_detail_add_photo_menu">Kamera tai galleria</string>
     <string name="bill_detail_take_photo">Ota kuva</string>
     <string name="bill_detail_choose_photo">Valitse galleriasta</string>

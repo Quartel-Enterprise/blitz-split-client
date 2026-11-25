@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">tegnap</string>
     <string name="bill_detail_attachment_open">Megnyitás</string>
     <string name="bill_detail_add_photo">Fotó hozzáadása</string>
+    <string name="bill_detail_keep_whole_photo">A teljes fotó megjelenítése megnyitáskor</string>
     <string name="bill_detail_add_photo_menu">Kamera vagy galéria</string>
     <string name="bill_detail_take_photo">Fotó készítése</string>
     <string name="bill_detail_choose_photo">Választás a galériából</string>

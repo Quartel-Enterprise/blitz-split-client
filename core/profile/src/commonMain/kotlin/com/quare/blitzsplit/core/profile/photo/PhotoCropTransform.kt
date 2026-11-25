@@ -11,8 +11,24 @@ private const val HALF = 0.5
  * clockwise, zoomed (covering the frame, or fitting in it when `canFit`), then moved by the offset from the frame's
  * center.
  */
-internal fun PhotoCrop.toTransform(side: Int): CropTransform {
-    val scale = zoom * side.toDouble() / min(photoWidth, photoHeight)
+internal fun PhotoCrop.toTransform(side: Int): CropTransform = toTransform(
+    scale = zoom * side.toDouble() / min(photoWidth, photoHeight),
+    centerX = side * (HALF + offsetX),
+    centerY = side * (HALF + offsetY),
+)
+
+// Why: a bill's whole photo, mirrored and turned as the editor shows it, at its own pixels: `turnedWidth` by `turnedHeight`.
+internal fun PhotoCrop.toWholeTransform(): CropTransform = toTransform(
+    scale = 1.0,
+    centerX = turnedWidth * HALF,
+    centerY = turnedHeight * HALF,
+)
+
+private fun PhotoCrop.toTransform(
+    scale: Double,
+    centerX: Double,
+    centerY: Double,
+): CropTransform {
     val mirror = if (isMirrored) -1.0 else 1.0
     val (cos, sin) = when (quarterTurns) {
         1 -> 0.0 to 1.0
@@ -24,8 +40,6 @@ internal fun PhotoCrop.toTransform(side: Int): CropTransform {
     val skewY = sin * mirror * scale
     val skewX = -sin * scale
     val scaleY = cos * scale
-    val centerX = side * (HALF + offsetX)
-    val centerY = side * (HALF + offsetY)
     return CropTransform(
         scaleX = scaleX,
         skewX = skewX,

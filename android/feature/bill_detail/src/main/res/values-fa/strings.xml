@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">دیروز</string>
     <string name="bill_detail_attachment_open">باز کردن</string>
     <string name="bill_detail_add_photo">افزودن عکس</string>
+    <string name="bill_detail_keep_whole_photo">نمایش کامل عکس هنگام باز کردن</string>
     <string name="bill_detail_add_photo_menu">دوربین یا گالری</string>
     <string name="bill_detail_take_photo">گرفتن عکس</string>
     <string name="bill_detail_choose_photo">انتخاب از گالری</string>

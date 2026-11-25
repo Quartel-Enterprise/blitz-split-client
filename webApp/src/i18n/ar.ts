@@ -457,6 +457,7 @@ export const ar: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'إيصال',
   billDetail_attachmentQueued: 'في الانتظار',
   billDetail_addPhoto: 'إضافة صورة',
+  billDetail_keepWholePhoto: 'عرض الصورة كاملة عند فتحها',
   billDetail_takePhoto: 'التقاط صورة',
   billDetail_choosePhoto: 'اختيار صورة',
   billDetail_viewerPhotoTitle: 'الصورة {number} من {count}',

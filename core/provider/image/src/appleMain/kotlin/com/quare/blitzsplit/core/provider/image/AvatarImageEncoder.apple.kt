@@ -100,7 +100,7 @@ internal class AppleAvatarImageEncoder : AvatarImageEncoder {
         source: ByteArray,
         transform: CropTransform,
     ): ByteArray = withContext(Dispatchers.IO) {
-        val square = createCrop(source, transform, AVATAR_SIZE_PX)
+        val square = createCrop(source, transform, AVATAR_SIZE_PX, AVATAR_SIZE_PX)
         square.toJpeg(AVATAR_JPEG_QUALITY).also { CGImageRelease(square) }
     }
 }
@@ -110,15 +110,16 @@ internal class AppleBillCropEncoder : BillCropEncoder {
     override suspend fun invoke(
         source: ByteArray,
         transform: CropTransform,
-        side: Int,
+        width: Int,
+        height: Int,
     ): BillImage = withContext(Dispatchers.IO) {
-        val square = createCrop(source, transform, side)
+        val square = createCrop(source, transform, width, height)
         // Why: released also when no quality fits the limit, which throws.
         try {
             BillImage(
                 jpeg = encodeUnderLimit(square::toJpeg),
-                width = side,
-                height = side,
+                width = width,
+                height = height,
             )
         } finally {
             CGImageRelease(square)
@@ -130,31 +131,35 @@ internal class AppleBillCropEncoder : BillCropEncoder {
 private fun createCrop(
     source: ByteArray,
     transform: CropTransform,
-    side: Int,
+    outputWidth: Int,
+    outputHeight: Int,
 ): CGImageRef = withImageSource(source) { imageSource, width, height ->
     // Why: decoded whole and upright, since the transform is in the photo's own pixels.
     val upright = imageSource.createUprightThumbnail(maxOf(width, height)) ?: throw UnsupportedImageException()
-    val square = upright.createSquare(transform, side)
+    val framed = upright.createFramed(transform, outputWidth, outputHeight)
     CGImageRelease(upright)
-    square ?: throw UnsupportedImageException()
+    framed ?: throw UnsupportedImageException()
 }
 
 /*
- * Why: the square of `side` pixels the editor framed, on white. Core Graphics draws y up, so the context flips the
- * square's y and the photo's around the editor's transform, which has y down on both.
+ * Why: the `widthPx` by `heightPx` pixels the editor framed (a square, or a bill's whole photo turned), on white. Core
+ * Graphics draws y up, so the context flips the output's y and the photo's around the editor's transform, which has y
+ * down on both.
  */
 @OptIn(ExperimentalForeignApi::class)
-private fun CGImageRef.createSquare(
+private fun CGImageRef.createFramed(
     transform: CropTransform,
-    sidePx: Int,
+    widthPx: Int,
+    heightPx: Int,
 ): CGImageRef? {
-    val side = sidePx.toDouble()
+    val outputWidth = widthPx.toDouble()
+    val outputHeight = heightPx.toDouble()
     val photoHeight = CGImageGetHeight(this).toDouble()
     val colorSpace = CGColorSpaceCreateDeviceRGB()
     val context = CGBitmapContextCreate(
         data = null,
-        width = sidePx.convert(),
-        height = sidePx.convert(),
+        width = widthPx.convert(),
+        height = heightPx.convert(),
         bitsPerComponent = BITS_PER_COMPONENT.convert(),
         bytesPerRow = 0u,
         space = colorSpace,
@@ -163,9 +168,9 @@ private fun CGImageRef.createSquare(
     CGColorSpaceRelease(colorSpace)
     context ?: return null
     CGContextSetInterpolationQuality(context, kCGInterpolationHigh)
-    context.fillWhite(side, side)
+    context.fillWhite(outputWidth, outputHeight)
     // Why: each call applies before the ones above it, so a point of the image goes up the list.
-    CGContextTranslateCTM(context, 0.0.toCGFloat(), side.toCGFloat())
+    CGContextTranslateCTM(context, 0.0.toCGFloat(), outputHeight.toCGFloat())
     CGContextScaleCTM(context, 1.0.toCGFloat(), (-1.0).toCGFloat())
     CGContextConcatCTM(
         context,

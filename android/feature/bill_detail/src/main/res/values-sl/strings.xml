@@ -115,6 +115,7 @@
     <string name="bill_detail_attachment_yesterday">včeraj</string>
     <string name="bill_detail_attachment_open">Odpri</string>
     <string name="bill_detail_add_photo">Dodaj fotografijo</string>
+    <string name="bill_detail_keep_whole_photo">Ob odprtju prikaži celotno fotografijo</string>
     <string name="bill_detail_add_photo_menu">Kamera ali galerija</string>
     <string name="bill_detail_take_photo">Fotografiraj</string>
     <string name="bill_detail_choose_photo">Izberi iz galerije</string>

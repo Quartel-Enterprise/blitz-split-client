@@ -317,6 +317,256 @@ class PhotoCropTransformTest {
     }
 
     @Test
+    fun `GIVEN a photo as picked WHEN keeping it whole THEN each pixel stays where it is`() {
+        // Given
+        val crop = landscape()
+
+        // When
+        val transform = crop.toWholeTransform()
+
+        // Then
+        assertMaps(
+            transform,
+            x = 0.0,
+            y = 0.0,
+            toX = 0.0,
+            toY = 0.0,
+        )
+        assertMaps(
+            transform,
+            x = 1200.0,
+            y = 600.0,
+            toX = 1200.0,
+            toY = 600.0,
+        )
+        assertMaps(
+            transform,
+            x = 600.0,
+            y = 300.0,
+            toX = 600.0,
+            toY = 300.0,
+        )
+    }
+
+    @Test
+    fun `GIVEN a photo zoomed in and moved WHEN keeping it whole THEN the zoom and the offset are left out`() {
+        // Given
+        val crop = landscape().copy(
+            zoom = 2f,
+            offsetX = 0.25f,
+            offsetY = -0.25f,
+        )
+
+        // When
+        val transform = crop.toWholeTransform()
+
+        // Then
+        assertMaps(
+            transform,
+            x = 0.0,
+            y = 0.0,
+            toX = 0.0,
+            toY = 0.0,
+        )
+        assertMaps(
+            transform,
+            x = 1200.0,
+            y = 600.0,
+            toX = 1200.0,
+            toY = 600.0,
+        )
+    }
+
+    @Test
+    fun `GIVEN a quarter turn WHEN keeping the photo whole THEN it fills the turned image with its left edge on top`() {
+        // Given
+        val crop = landscape().copy(quarterTurns = 1)
+
+        // When
+        val transform = crop.toWholeTransform()
+
+        // Then
+        // Turned, the 1200 by 600 photo is 600 by 1200
+        assertMaps(
+            transform,
+            x = 0.0,
+            y = 0.0,
+            toX = 600.0,
+            toY = 0.0,
+        )
+        assertMaps(
+            transform,
+            x = 0.0,
+            y = 600.0,
+            toX = 0.0,
+            toY = 0.0,
+        )
+        assertMaps(
+            transform,
+            x = 1200.0,
+            y = 600.0,
+            toX = 0.0,
+            toY = 1200.0,
+        )
+        assertMaps(
+            transform,
+            x = 600.0,
+            y = 300.0,
+            toX = 300.0,
+            toY = 600.0,
+        )
+    }
+
+    @Test
+    fun `GIVEN a half turn WHEN keeping the photo whole THEN it is upside down in an image of its size`() {
+        // Given
+        val crop = landscape().copy(quarterTurns = 2)
+
+        // When
+        val transform = crop.toWholeTransform()
+
+        // Then
+        assertMaps(
+            transform,
+            x = 0.0,
+            y = 0.0,
+            toX = 1200.0,
+            toY = 600.0,
+        )
+        assertMaps(
+            transform,
+            x = 1200.0,
+            y = 600.0,
+            toX = 0.0,
+            toY = 0.0,
+        )
+        assertMaps(
+            transform,
+            x = 600.0,
+            y = 300.0,
+            toX = 600.0,
+            toY = 300.0,
+        )
+    }
+
+    @Test
+    fun `GIVEN three quarter turns WHEN keeping the photo whole THEN its top left corner is at the bottom left`() {
+        // Given
+        val crop = landscape().copy(quarterTurns = 3)
+
+        // When
+        val transform = crop.toWholeTransform()
+
+        // Then
+        assertMaps(
+            transform,
+            x = 0.0,
+            y = 0.0,
+            toX = 0.0,
+            toY = 1200.0,
+        )
+        assertMaps(
+            transform,
+            x = 1200.0,
+            y = 0.0,
+            toX = 0.0,
+            toY = 0.0,
+        )
+        assertMaps(
+            transform,
+            x = 1200.0,
+            y = 600.0,
+            toX = 600.0,
+            toY = 0.0,
+        )
+        assertMaps(
+            transform,
+            x = 600.0,
+            y = 300.0,
+            toX = 300.0,
+            toY = 600.0,
+        )
+    }
+
+    @Test
+    fun `GIVEN a mirrored photo WHEN keeping it whole THEN its left is on the right of an image of its size`() {
+        // Given
+        val crop = landscape().copy(isMirrored = true)
+
+        // When
+        val transform = crop.toWholeTransform()
+
+        // Then
+        assertMaps(
+            transform,
+            x = 0.0,
+            y = 0.0,
+            toX = 1200.0,
+            toY = 0.0,
+        )
+        assertMaps(
+            transform,
+            x = 1200.0,
+            y = 600.0,
+            toX = 0.0,
+            toY = 600.0,
+        )
+        assertMaps(
+            transform,
+            x = 600.0,
+            y = 300.0,
+            toX = 600.0,
+            toY = 300.0,
+        )
+    }
+
+    @Test
+    fun `GIVEN a mirrored photo turned a quarter WHEN keeping it whole THEN it is mirrored before it turns`() {
+        // Given
+        val crop = landscape().copy(
+            isMirrored = true,
+            quarterTurns = 1,
+        )
+
+        // When
+        val transform = crop.toWholeTransform()
+
+        // Then
+        // Mirrored, the top left corner is at the top right, which the clockwise turn takes to the bottom right
+        assertMaps(
+            transform,
+            x = 0.0,
+            y = 0.0,
+            toX = 600.0,
+            toY = 1200.0,
+        )
+        assertMaps(
+            transform,
+            x = 1200.0,
+            y = 0.0,
+            toX = 600.0,
+            toY = 0.0,
+        )
+        assertMaps(
+            transform,
+            x = 600.0,
+            y = 300.0,
+            toX = 300.0,
+            toY = 600.0,
+        )
+    }
+
+    private fun landscape(): PhotoCrop = PhotoCrop.of(
+        photoWidth = 1200,
+        photoHeight = 600,
+    )
+
+    private fun square(): PhotoCrop = PhotoCrop.of(
+        photoWidth = 1000,
+        photoHeight = 1000,
+    )
+
+    @Test
     fun `GIVEN a tall receipt zoomed out to fit WHEN framing it THEN the whole photo is centered in the square`() {
         // Given
         val crop = PhotoCrop
@@ -345,11 +595,6 @@ class PhotoCropTransformTest {
             toY = SIDE.toDouble(),
         )
     }
-
-    private fun square(): PhotoCrop = PhotoCrop.of(
-        photoWidth = 1000,
-        photoHeight = 1000,
-    )
 
     private fun assertMaps(
         transform: CropTransform,

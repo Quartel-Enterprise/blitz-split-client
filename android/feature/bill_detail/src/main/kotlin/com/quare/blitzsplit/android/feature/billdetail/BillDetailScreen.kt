@@ -9,10 +9,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
 import com.quare.blitzsplit.android.designsystem.component.PhotoCropDialog
 import com.quare.blitzsplit.android.designsystem.component.PhotoCropFrame
+import com.quare.blitzsplit.android.designsystem.component.PhotoCropSwitch
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.platform.rememberPhotoPickers
 import com.quare.blitzsplit.android.platform.shareText
@@ -115,6 +117,13 @@ fun BillDetailScreen(
             editor = editor,
             frame = PhotoCropFrame.ROUNDED_SQUARE,
             onEvent = { event -> viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(event)) },
+            extraControl = {
+                PhotoCropSwitch(
+                    label = stringResource(R.string.bill_detail_keep_whole_photo),
+                    isOn = state.keepsWholePhoto,
+                    onChange = { isOn -> viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn)) },
+                )
+            },
         )
     }
     state.deletion?.let { deletion ->

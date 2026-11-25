@@ -2829,6 +2829,7 @@ class SharedBillViewModelTest {
         addedByName = "Ana",
         addedAt = yesterdayEvening,
         imageUrl = "https://signed/$id.jpg",
+        frame = null,
     )
 
     private fun comment(

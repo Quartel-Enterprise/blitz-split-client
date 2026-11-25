@@ -457,6 +457,7 @@ export const ko: Record<MessageKey, string> = {
   billDetail_receiptBadge: '영수증',
   billDetail_attachmentQueued: '전송 대기',
   billDetail_addPhoto: '사진 추가',
+  billDetail_keepWholePhoto: '열 때 사진 전체 보기',
   billDetail_takePhoto: '사진 찍기',
   billDetail_choosePhoto: '사진 선택',
   billDetail_viewerPhotoTitle: '사진 {number}/{count}',

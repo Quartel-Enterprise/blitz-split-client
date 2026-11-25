@@ -100,6 +100,7 @@ private fun SampleTrip.billDetailState(bill: SampleBill): BillDetailUiState {
         viewedAttachmentId = null,
         isAddingPhoto = false,
         photoCrop = null,
+        keepsWholePhoto = true,
         paidWith = null,
     )
 }

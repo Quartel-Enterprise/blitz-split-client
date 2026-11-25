@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">ਕੱਲ੍ਹ</string>
     <string name="bill_detail_attachment_open">ਖੋਲ੍ਹੋ</string>
     <string name="bill_detail_add_photo">ਫ਼ੋਟੋ ਜੋੜੋ</string>
+    <string name="bill_detail_keep_whole_photo">ਖੋਲ੍ਹਣ \'ਤੇ ਪੂਰੀ ਫ਼ੋਟੋ ਦਿਖਾਓ</string>
     <string name="bill_detail_add_photo_menu">ਕੈਮਰਾ ਜਾਂ ਗੈਲਰੀ</string>
     <string name="bill_detail_take_photo">ਫ਼ੋਟੋ ਖਿੱਚੋ</string>
     <string name="bill_detail_choose_photo">ਗੈਲਰੀ ਵਿੱਚੋਂ ਚੁਣੋ</string>

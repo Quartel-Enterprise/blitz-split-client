@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">कल</string>
     <string name="bill_detail_attachment_open">खोलें</string>
     <string name="bill_detail_add_photo">फ़ोटो जोड़ें</string>
+    <string name="bill_detail_keep_whole_photo">खोलने पर पूरी फ़ोटो दिखाएँ</string>
     <string name="bill_detail_add_photo_menu">कैमरा या गैलरी</string>
     <string name="bill_detail_take_photo">फ़ोटो लें</string>
     <string name="bill_detail_choose_photo">गैलरी से चुनें</string>

@@ -20,6 +20,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SharedBillComment
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillPart
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.PhotoFrame
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -262,6 +263,7 @@ class SharedBillMapperImplTest {
                         addedByName = "Ana",
                         addedAt = 2_000L,
                         imageUrl = SIGNED_RECEIPT,
+                        frame = null,
                     ),
                     SharedBillAttachment(
                         id = "photo-1",
@@ -271,6 +273,7 @@ class SharedBillMapperImplTest {
                         addedByName = null,
                         addedAt = 2_000L,
                         imageUrl = SIGNED_PHOTO,
+                        frame = null,
                     ),
                 ),
                 comments = listOf(
@@ -343,6 +346,81 @@ class SharedBillMapperImplTest {
 
         // Then
         assertEquals(listOf("photo-1"), assertIs<SharedBill.Open>(bill).attachments.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a shared photo keeping its whole image WHEN mapping the shared bill THEN reads its frame`() {
+        // Given
+        val dto = sharedBillDto(
+            attachments = listOf(
+                attachmentDto(
+                    id = "photo-1",
+                    frameLeft = -0.125f,
+                    frameTop = 0.25f,
+                    frameWidth = 1.25f,
+                    frameHeight = 0.5f,
+                ),
+            ),
+        )
+
+        // When
+        val bill = mapper.toDomain(dto, imageUrls = emptyMap())
+
+        // Then
+        assertEquals(
+            PhotoFrame(
+                left = -0.125f,
+                top = 0.25f,
+                width = 1.25f,
+                height = 0.5f,
+            ),
+            assertIs<SharedBill.Open>(bill)
+                .attachments
+                .single()
+                .frame,
+        )
+    }
+
+    @Test
+    fun `GIVEN shared photos missing one side of their frame WHEN mapping the shared bill THEN read no frame`() {
+        // Given
+        val dto = sharedBillDto(
+            attachments = listOf(
+                attachmentDto(
+                    id = "photo-1",
+                    frameTop = 0.25f,
+                    frameWidth = 1.25f,
+                    frameHeight = 0.5f,
+                ),
+                attachmentDto(
+                    id = "photo-2",
+                    frameLeft = -0.125f,
+                    frameWidth = 1.25f,
+                    frameHeight = 0.5f,
+                ),
+                attachmentDto(
+                    id = "photo-3",
+                    frameLeft = -0.125f,
+                    frameTop = 0.25f,
+                    frameHeight = 0.5f,
+                ),
+                attachmentDto(
+                    id = "photo-4",
+                    frameLeft = -0.125f,
+                    frameTop = 0.25f,
+                    frameWidth = 1.25f,
+                ),
+            ),
+        )
+
+        // When
+        val bill = mapper.toDomain(dto, imageUrls = emptyMap())
+
+        // Then
+        assertEquals(
+            listOf(null, null, null, null),
+            assertIs<SharedBill.Open>(bill).attachments.map { it.frame },
+        )
     }
 
     @Test
@@ -749,6 +827,10 @@ class SharedBillMapperImplTest {
         kind: String = "photo",
         path: String = "$GROUP_ID/$BILL_ID/$id.jpg",
         addedByName: String? = "Ana",
+        frameLeft: Float? = null,
+        frameTop: Float? = null,
+        frameWidth: Float? = null,
+        frameHeight: Float? = null,
     ): SharedBillAttachmentDto = SharedBillAttachmentDto(
         id = id,
         kind = kind,
@@ -757,6 +839,10 @@ class SharedBillMapperImplTest {
         height = 1600,
         addedByName = addedByName,
         addedAt = 2_000L,
+        frameLeft = frameLeft,
+        frameTop = frameTop,
+        frameWidth = frameWidth,
+        frameHeight = frameHeight,
     )
 
     private fun commentDto(

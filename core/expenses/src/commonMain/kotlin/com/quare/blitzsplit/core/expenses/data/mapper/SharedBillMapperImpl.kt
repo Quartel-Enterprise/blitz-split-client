@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SharedBillComment
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillPart
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.PhotoFrame
 
 class SharedBillMapperImpl : SharedBillMapper {
     override fun toDomain(dto: BillShareLinkDto): BillShareLink = linkOf(dto.code, dto.visibility)
@@ -64,6 +65,12 @@ class SharedBillMapperImpl : SharedBillMapper {
                         addedByName = attachment.addedByName,
                         addedAt = attachment.addedAt,
                         imageUrl = imageUrls[attachment.path],
+                        frame = PhotoFrame.ofOrNull(
+                            left = attachment.frameLeft,
+                            top = attachment.frameTop,
+                            width = attachment.frameWidth,
+                            height = attachment.frameHeight,
+                        ),
                     )
                 },
                 comments = dto.comments.orEmpty().map { comment -> commentOf(comment, bill.id, groupId) },

@@ -117,6 +117,7 @@
     <string name="bill_detail_attachment_yesterday">أمس</string>
     <string name="bill_detail_attachment_open">فتح</string>
     <string name="bill_detail_add_photo">إضافة صورة</string>
+    <string name="bill_detail_keep_whole_photo">عرض الصورة كاملة عند فتحها</string>
     <string name="bill_detail_add_photo_menu">الكاميرا أو المعرض</string>
     <string name="bill_detail_take_photo">التقاط صورة</string>
     <string name="bill_detail_choose_photo">الاختيار من المعرض</string>

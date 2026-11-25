@@ -456,6 +456,7 @@ export const zhHant: Record<MessageKey, string> = {
   billDetail_receiptBadge: '收據',
   billDetail_attachmentQueued: '排隊中',
   billDetail_addPhoto: '新增照片',
+  billDetail_keepWholePhoto: '開啟時顯示完整照片',
   billDetail_takePhoto: '拍照',
   billDetail_choosePhoto: '選擇照片',
   billDetail_viewerPhotoTitle: '第{number}張照片，共{count}張',

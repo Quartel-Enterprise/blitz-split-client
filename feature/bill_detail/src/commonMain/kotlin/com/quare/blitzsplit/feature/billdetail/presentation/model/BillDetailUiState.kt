@@ -87,6 +87,12 @@ data class BillDetailUiState(
     val isAddingPhoto: Boolean,
     // Why: "Ajustar foto" while the photo picked is being framed, in the rounded square of an attachment's tile.
     val photoCrop: PhotoCropEditor?,
+    /*
+     * Why: "Show the whole photo when opened", the switch of "Ajustar foto" for a bill's photo, on for each photo picked
+     * (beta feedback of 2026-11-25): on attaches the whole photo and its tile shows the square framed, off only that
+     * square, so the viewer shows the square too.
+     */
+    val keepsWholePhoto: Boolean,
     // Why: "Paid with", the method this device's user marked the bill with; only they see it, null for none.
     val paidWith: PayingMethod?,
 ) {

@@ -455,6 +455,7 @@ export const zh: Record<MessageKey, string> = {
   billDetail_receiptBadge: '小票',
   billDetail_attachmentQueued: '排队中',
   billDetail_addPhoto: '添加照片',
+  billDetail_keepWholePhoto: '打开时显示完整照片',
   billDetail_takePhoto: '拍照',
   billDetail_choosePhoto: '选择照片',
   billDetail_viewerPhotoTitle: '第{number}张照片，共{count}张',

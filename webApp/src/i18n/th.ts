@@ -456,6 +456,7 @@ export const th: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'ใบเสร็จ',
   billDetail_attachmentQueued: 'อยู่ในคิว',
   billDetail_addPhoto: 'เพิ่มรูปภาพ',
+  billDetail_keepWholePhoto: 'แสดงรูปภาพทั้งหมดเมื่อเปิด',
   billDetail_takePhoto: 'ถ่ายรูป',
   billDetail_choosePhoto: 'เลือกรูปภาพ',
   billDetail_viewerPhotoTitle: 'รูปภาพ {number} จาก {count}',

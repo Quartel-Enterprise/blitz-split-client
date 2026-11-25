@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">ನಿನ್ನೆ</string>
     <string name="bill_detail_attachment_open">ತೆರೆಯಿರಿ</string>
     <string name="bill_detail_add_photo">ಫೋಟೋ ಸೇರಿಸಿ</string>
+    <string name="bill_detail_keep_whole_photo">ತೆರೆದಾಗ ಪೂರ್ಣ ಫೋಟೋ ತೋರಿಸಿ</string>
     <string name="bill_detail_add_photo_menu">ಕ್ಯಾಮೆರಾ ಅಥವಾ ಗ್ಯಾಲರಿ</string>
     <string name="bill_detail_take_photo">ಫೋಟೋ ತೆಗೆಯಿರಿ</string>
     <string name="bill_detail_choose_photo">ಗ್ಯಾಲರಿಯಿಂದ ಆಯ್ಕೆಮಾಡಿ</string>

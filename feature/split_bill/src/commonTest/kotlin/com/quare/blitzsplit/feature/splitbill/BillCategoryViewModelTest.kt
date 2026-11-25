@@ -1198,7 +1198,7 @@ class BillCategoryViewModelTest {
             readReceipt = { _, _, _ ->
                 ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },
-            attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
+            attachBillImage = { _, _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )

@@ -112,6 +112,7 @@
     <string name="bill_detail_attachment_yesterday">kemarin</string>
     <string name="bill_detail_attachment_open">Buka</string>
     <string name="bill_detail_add_photo">Tambah foto</string>
+    <string name="bill_detail_keep_whole_photo">Tampilkan seluruh foto saat dibuka</string>
     <string name="bill_detail_add_photo_menu">Kamera atau galeri</string>
     <string name="bill_detail_take_photo">Ambil foto</string>
     <string name="bill_detail_choose_photo">Pilih dari galeri</string>

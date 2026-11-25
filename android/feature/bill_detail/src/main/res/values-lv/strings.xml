@@ -114,6 +114,7 @@
     <string name="bill_detail_attachment_yesterday">vakar</string>
     <string name="bill_detail_attachment_open">Atvērt</string>
     <string name="bill_detail_add_photo">Pievienot fotoattēlu</string>
+    <string name="bill_detail_keep_whole_photo">Atverot rādīt visu fotoattēlu</string>
     <string name="bill_detail_add_photo_menu">Kamera vai galerija</string>
     <string name="bill_detail_take_photo">Uzņemt fotoattēlu</string>
     <string name="bill_detail_choose_photo">Izvēlēties no galerijas</string>

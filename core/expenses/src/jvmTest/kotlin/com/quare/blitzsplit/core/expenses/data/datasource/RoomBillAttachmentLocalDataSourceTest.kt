@@ -778,6 +778,10 @@ class RoomBillAttachmentLocalDataSourceTest {
         isDeleted = isDeleted,
         pendingJpeg = pendingJpeg,
         pendingSync = pendingSync,
+        frameLeft = null,
+        frameTop = null,
+        frameWidth = null,
+        frameHeight = null,
     )
 
     private suspend fun getPending(): List<BillAttachmentEntity> =

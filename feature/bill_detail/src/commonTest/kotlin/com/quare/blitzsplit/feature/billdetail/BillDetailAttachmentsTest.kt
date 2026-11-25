@@ -52,9 +52,11 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.PhotoCrop
 import com.quare.blitzsplit.core.model.PhotoCropEvent
+import com.quare.blitzsplit.core.model.PhotoFrame
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.model.PhotoTooLargeException
+import com.quare.blitzsplit.core.profile.domain.model.PreparedBillPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareBillPhoto
 import com.quare.blitzsplit.core.provider.image.BillImage
@@ -2200,6 +2202,268 @@ class BillDetailAttachmentsTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
+    @Test
+    fun `GIVEN the bill opens WHEN reading Adjust photo THEN shows the whole photo when opened`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.keepsWholePhoto)
+        }
+
+    @Test
+    fun `GIVEN the bill is open WHEN picking a photo THEN Adjust photo opens showing the whole photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNotNull(state.photoCrop)
+            assertTrue(state.keepsWholePhoto)
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN turning off the whole photo THEN it is off and the editor stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            val editor = viewModel.uiState.value.photoCrop
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = false))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.keepsWholePhoto)
+            assertEquals(editor, state.photoCrop)
+            assertTrue(preparations.isEmpty())
+            assertEquals(0, additions)
+        }
+
+    @Test
+    fun `GIVEN the whole photo turned off in Adjust photo WHEN turning it on again THEN it is on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = false))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = true))
+
+            // Then
+            assertTrue(viewModel.uiState.value.keepsWholePhoto)
+        }
+
+    @Test
+    fun `GIVEN the whole photo turned off for a photo cancelled WHEN picking another THEN it is on again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = false))
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(2)))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNotNull(state.photoCrop)
+            assertTrue(state.keepsWholePhoto)
+        }
+
+    @Test
+    fun `GIVEN the whole photo turned off for a photo added WHEN picking another THEN it is on again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = false))
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(2)))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNotNull(state.photoCrop)
+            assertTrue(state.keepsWholePhoto)
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is not open WHEN the whole photo is turned off THEN it stays on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = false))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.keepsWholePhoto)
+            assertNull(state.photoCrop)
+        }
+
+    @Test
+    fun `GIVEN the picked photo is being read WHEN the whole photo is turned off THEN it stays on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(loadGate = CompletableDeferred())
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = false))
+
+            // Then
+            assertTrue(viewModel.uiState.value.keepsWholePhoto)
+        }
+
+    @Test
+    fun `GIVEN Adjust photo as it opened WHEN tapping Done THEN makes the whole photo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+        // Then
+        assertEquals(listOf(true), keepsWholePhotoPrepared)
+    }
+
+    @Test
+    fun `GIVEN the whole photo turned off WHEN tapping Done THEN makes only the square framed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = false))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertEquals(listOf(false), keepsWholePhotoPrepared)
+        }
+
+    @Test
+    fun `GIVEN the whole photo turned off and on again WHEN tapping Done THEN makes the whole photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = false))
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = true))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertEquals(listOf(true), keepsWholePhotoPrepared)
+        }
+
+    @Test
+    fun `GIVEN the whole photo on WHEN tapping Done THEN the photo added keeps the square its tile shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            val added = attachments.attachments.value
+                .single()
+            assertEquals(preparedFrame, added.frame)
+            val tile = viewModel.uiState.value.attachments
+                .loadedItems()
+                .single()
+            assertEquals(preparedFrame.toPlacement(1200, 1200), tile.thumbnailPlacement)
+        }
+
+    @Test
+    fun `GIVEN the whole photo turned off WHEN tapping Done THEN the photo added has no frame and fills its tile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = false))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            val added = attachments.attachments.value
+                .single()
+            assertNull(added.frame)
+            val tile = viewModel.uiState.value.attachments
+                .loadedItems()
+                .single()
+            assertNull(tile.thumbnailPlacement)
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN turning off the whole photo THEN sends the switch turned off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = false))
+
+            // Then
+            assertEquals(
+                listOf("bill_photo_keep_whole_toggled" to mapOf<String, Any>("is_on" to false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the whole photo turned off WHEN turning it on again THEN sends the switch turned on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = false))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = true))
+
+            // Then
+            assertEquals(
+                listOf("bill_photo_keep_whole_toggled" to mapOf<String, Any>("is_on" to true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is not open WHEN the whole photo is turned off THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn = false))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
     private val route = Route.BillDetail(
         groupId = GROUP_ID,
         expenseId = EXPENSE_ID,
@@ -2224,6 +2488,13 @@ class BillDetailAttachmentsTest {
     // Why: the photo and the framing "Pronto" handed to be made a square, and the squares made.
     private val preparations = mutableListOf<Pair<CropPhoto, PhotoCrop>>()
     private val preparedImages = mutableListOf<BillImage>()
+    private val keepsWholePhotoPrepared = mutableListOf<Boolean>()
+    private val preparedFrame = PhotoFrame(
+        left = 0f,
+        top = 0.25f,
+        width = 1f,
+        height = 0.5f,
+    )
     private val attachedImages = mutableListOf<BillImage>()
 
     private val ana = member(ANA, "Ana")
@@ -2318,6 +2589,7 @@ class BillDetailAttachmentsTest {
         updatedAt = addedAt,
         isPending = isPending,
         hasPendingImage = hasPendingImage,
+        frame = null,
     )
 
     private val receipt = attachment(
@@ -2413,8 +2685,9 @@ class BillDetailAttachmentsTest {
                     ),
                 )
             },
-            prepareBillPhoto = PrepareBillPhoto { photo, crop ->
+            prepareBillPhoto = PrepareBillPhoto { photo, crop, keepsWholePhoto ->
                 preparations += photo to crop
+                keepsWholePhotoPrepared += keepsWholePhoto
                 prepareError?.let { return@PrepareBillPhoto Result.failure(it) }
                 val image = BillImage(
                     jpeg = photo.jpeg,
@@ -2422,9 +2695,9 @@ class BillDetailAttachmentsTest {
                     height = 1200,
                 )
                 preparedImages += image
-                Result.success(image)
+                Result.success(PreparedBillPhoto(image, preparedFrame.takeIf { keepsWholePhoto }))
             },
-            attachBillImage = AttachBillImage { expenseId, groupId, kind, image, memberId ->
+            attachBillImage = AttachBillImage { expenseId, groupId, kind, image, memberId, frame ->
                 additions++
                 attachedImages += image
                 addGate?.await()
@@ -2443,6 +2716,7 @@ class BillDetailAttachmentsTest {
                             updatedAt = nowMillis,
                             isPending = true,
                             hasPendingImage = true,
+                            frame = frame,
                         ),
                         jpeg = image.jpeg,
                     ).map { added -> if (added) BillAttachmentAddition.ADDED else BillAttachmentAddition.NO_ROOM }

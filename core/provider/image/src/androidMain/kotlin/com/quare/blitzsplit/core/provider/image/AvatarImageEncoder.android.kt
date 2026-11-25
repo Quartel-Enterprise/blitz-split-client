@@ -29,7 +29,7 @@ internal class AndroidAvatarImageEncoder : AvatarImageEncoder {
         source: ByteArray,
         transform: CropTransform,
     ): ByteArray = withContext(Dispatchers.Default) {
-        val output = createCrop(source, transform, AVATAR_SIZE_PX)
+        val output = createCrop(source, transform, AVATAR_SIZE_PX, AVATAR_SIZE_PX)
         output.toJpeg(AVATAR_JPEG_QUALITY).also { output.recycle() }
     }
 }
@@ -38,15 +38,16 @@ internal class AndroidBillCropEncoder : BillCropEncoder {
     override suspend fun invoke(
         source: ByteArray,
         transform: CropTransform,
-        side: Int,
+        width: Int,
+        height: Int,
     ): BillImage = withContext(Dispatchers.Default) {
-        val output = createCrop(source, transform, side)
+        val output = createCrop(source, transform, width, height)
         // Why: recycled also when no quality fits the limit, which throws.
         try {
             BillImage(
                 jpeg = encodeUnderLimit(output::toJpeg),
-                width = side,
-                height = side,
+                width = width,
+                height = height,
             )
         } finally {
             output.recycle()
@@ -54,11 +55,12 @@ internal class AndroidBillCropEncoder : BillCropEncoder {
     }
 }
 
-// Why: the square of `side` pixels the editor framed, on white.
+// Why: the `width` by `height` pixels the editor framed (a square, or a bill's whole photo turned), on white.
 private fun createCrop(
     source: ByteArray,
     transform: CropTransform,
-    side: Int,
+    width: Int,
+    height: Int,
 ): Bitmap {
     // Why: decoded whole, since the transform is in the photo's own pixels and the editor's is at most 1600 px.
     var photo = decode(source) { _, _ -> 1 }
@@ -73,7 +75,7 @@ private fun createCrop(
         photo.recycle()
         photo = halved
     }
-    val output = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888)
+    val output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(output)
     canvas.drawColor(Color.WHITE)
     canvas.drawBitmap(photo, matrix, Paint(Paint.FILTER_BITMAP_FLAG))

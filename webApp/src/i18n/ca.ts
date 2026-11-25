@@ -457,6 +457,7 @@ export const ca: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Tiquet',
   billDetail_attachmentQueued: 'A la cua',
   billDetail_addPhoto: 'Afegir una foto',
+  billDetail_keepWholePhoto: 'Mostra la foto sencera en obrir-la',
   billDetail_takePhoto: 'Fer una foto',
   billDetail_choosePhoto: 'Triar una foto',
   billDetail_viewerPhotoTitle: 'Foto {number} de {count}',

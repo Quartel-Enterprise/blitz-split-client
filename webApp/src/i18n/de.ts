@@ -456,6 +456,7 @@ export const de: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Beleg',
   billDetail_attachmentQueued: 'In der Warteschlange',
   billDetail_addPhoto: 'Foto hinzufügen',
+  billDetail_keepWholePhoto: 'Ganzes Foto beim Öffnen zeigen',
   billDetail_takePhoto: 'Foto aufnehmen',
   billDetail_choosePhoto: 'Foto auswählen',
   billDetail_viewerPhotoTitle: 'Foto {number} von {count}',

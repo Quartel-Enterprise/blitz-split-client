@@ -30,7 +30,12 @@ class JvmBillCropEncoderTest {
             )
 
             // When
-            val image = encoder(source, transform, side = 600)
+            val image = encoder(
+                source,
+                transform,
+                width = 600,
+                height = 600,
+            )
 
             // Then
             assertEquals(600, image.width)

@@ -112,6 +112,7 @@
     <string name="bill_detail_attachment_yesterday">hôm qua</string>
     <string name="bill_detail_attachment_open">Mở</string>
     <string name="bill_detail_add_photo">Thêm ảnh</string>
+    <string name="bill_detail_keep_whole_photo">Hiện toàn bộ ảnh khi mở</string>
     <string name="bill_detail_add_photo_menu">Camera hoặc thư viện</string>
     <string name="bill_detail_take_photo">Chụp ảnh</string>
     <string name="bill_detail_choose_photo">Chọn từ thư viện</string>

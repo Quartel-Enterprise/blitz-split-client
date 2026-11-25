@@ -454,6 +454,7 @@ export const id: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Struk',
   billDetail_attachmentQueued: 'Dalam antrean',
   billDetail_addPhoto: 'Tambah foto',
+  billDetail_keepWholePhoto: 'Tampilkan seluruh foto saat dibuka',
   billDetail_takePhoto: 'Ambil foto',
   billDetail_choosePhoto: 'Pilih foto',
   billDetail_viewerPhotoTitle: 'Foto {number} dari {count}',

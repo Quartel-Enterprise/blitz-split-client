@@ -112,6 +112,7 @@
     <string name="bill_detail_attachment_yesterday">昨日</string>
     <string name="bill_detail_attachment_open">開く</string>
     <string name="bill_detail_add_photo">写真を追加</string>
+    <string name="bill_detail_keep_whole_photo">開いたときに写真全体を表示</string>
     <string name="bill_detail_add_photo_menu">カメラまたはギャラリー</string>
     <string name="bill_detail_take_photo">写真を撮る</string>
     <string name="bill_detail_choose_photo">ギャラリーから選ぶ</string>

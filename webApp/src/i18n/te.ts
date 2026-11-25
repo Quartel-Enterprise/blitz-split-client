@@ -456,6 +456,7 @@ export const te: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'రసీదు',
   billDetail_attachmentQueued: 'క్యూలో ఉంది',
   billDetail_addPhoto: 'ఫోటో జోడించండి',
+  billDetail_keepWholePhoto: 'తెరిచినప్పుడు పూర్తి ఫోటోను చూపించు',
   billDetail_takePhoto: 'ఫోటో తీయండి',
   billDetail_choosePhoto: 'ఫోటో ఎంచుకోండి',
   billDetail_viewerPhotoTitle: 'ఫోటో {number} / {count}',

@@ -112,6 +112,7 @@
     <string name="bill_detail_attachment_yesterday">ម្សិលមិញ</string>
     <string name="bill_detail_attachment_open">បើក</string>
     <string name="bill_detail_add_photo">បន្ថែមរូបថត</string>
+    <string name="bill_detail_keep_whole_photo">បង្ហាញរូបថតទាំងមូលពេលបើក</string>
     <string name="bill_detail_add_photo_menu">កាមេរ៉ា ឬវិចិត្រសាល</string>
     <string name="bill_detail_take_photo">ថតរូប</string>
     <string name="bill_detail_choose_photo">ជ្រើសរើសពីវិចិត្រសាល</string>

@@ -114,6 +114,7 @@
     <string name="bill_detail_attachment_yesterday">אתמול</string>
     <string name="bill_detail_attachment_open">פתיחה</string>
     <string name="bill_detail_add_photo">הוספת תמונה</string>
+    <string name="bill_detail_keep_whole_photo">הצגת התמונה המלאה בפתיחה</string>
     <string name="bill_detail_add_photo_menu">מצלמה או גלריה</string>
     <string name="bill_detail_take_photo">צילום תמונה</string>
     <string name="bill_detail_choose_photo">בחירה מהגלריה</string>

@@ -456,6 +456,7 @@ export const bg: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Бележка',
   billDetail_attachmentQueued: 'Чака',
   billDetail_addPhoto: 'Добави снимка',
+  billDetail_keepWholePhoto: 'Показване на цялата снимка при отваряне',
   billDetail_takePhoto: 'Направи снимка',
   billDetail_choosePhoto: 'Избери снимка',
   billDetail_viewerPhotoTitle: 'Снимка {number} от {count}',

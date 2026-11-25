@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">ഇന്നലെ</string>
     <string name="bill_detail_attachment_open">തുറക്കുക</string>
     <string name="bill_detail_add_photo">ഫോട്ടോ ചേർക്കുക</string>
+    <string name="bill_detail_keep_whole_photo">തുറക്കുമ്പോൾ മുഴുവൻ ഫോട്ടോയും കാണിക്കുക</string>
     <string name="bill_detail_add_photo_menu">ക്യാമറ അല്ലെങ്കിൽ ഗാലറി</string>
     <string name="bill_detail_take_photo">ഫോട്ടോ എടുക്കുക</string>
     <string name="bill_detail_choose_photo">ഗാലറിയിൽ നിന്ന് തിരഞ്ഞെടുക്കുക</string>

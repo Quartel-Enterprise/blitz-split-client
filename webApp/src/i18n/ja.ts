@@ -455,6 +455,7 @@ export const ja: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'レシート',
   billDetail_attachmentQueued: '待機中',
   billDetail_addPhoto: '写真を追加',
+  billDetail_keepWholePhoto: '開いたときに写真全体を表示',
   billDetail_takePhoto: '写真を撮影',
   billDetail_choosePhoto: '写真を選択',
   billDetail_viewerPhotoTitle: '写真{number}/{count}',

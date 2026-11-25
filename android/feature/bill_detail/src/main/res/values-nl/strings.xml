@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">gisteren</string>
     <string name="bill_detail_attachment_open">Openen</string>
     <string name="bill_detail_add_photo">Foto toevoegen</string>
+    <string name="bill_detail_keep_whole_photo">Hele foto tonen bij openen</string>
     <string name="bill_detail_add_photo_menu">Camera of galerij</string>
     <string name="bill_detail_take_photo">Foto maken</string>
     <string name="bill_detail_choose_photo">Kiezen uit galerij</string>

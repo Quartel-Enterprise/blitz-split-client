@@ -455,6 +455,7 @@ export const sv: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Kvitto',
   billDetail_attachmentQueued: 'I kö',
   billDetail_addPhoto: 'Lägg till foto',
+  billDetail_keepWholePhoto: 'Visa hela fotot när det öppnas',
   billDetail_takePhoto: 'Ta foto',
   billDetail_choosePhoto: 'Välj foto',
   billDetail_viewerPhotoTitle: 'Foto {number} av {count}',

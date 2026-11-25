@@ -127,6 +127,7 @@ internal fun createPreviewBillDetailState(
         viewedAttachmentId = null,
         isAddingPhoto = false,
         photoCrop = null,
+        keepsWholePhoto = true,
         paidWith = null,
     )
 }
@@ -175,6 +176,7 @@ private fun createPreviewAttachment(
     isImageLoading = false,
     width = null,
     height = null,
+    thumbnailPlacement = null,
     photoNumber = photoNumber,
     adderName = adderName,
     isAddedByMe = isAddedByMe,

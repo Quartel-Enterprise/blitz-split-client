@@ -456,6 +456,7 @@ export const fil: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Resibo',
   billDetail_attachmentQueued: 'Naka-queue',
   billDetail_addPhoto: 'Magdagdag ng larawan',
+  billDetail_keepWholePhoto: 'Ipakita ang buong larawan kapag binuksan',
   billDetail_takePhoto: 'Kumuha ng larawan',
   billDetail_choosePhoto: 'Pumili ng larawan',
   billDetail_viewerPhotoTitle: 'Larawan {number} sa {count}',

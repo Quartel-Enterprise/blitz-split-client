@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, Download, ImageOff, Loader2, Plus, Trash2, X } from 'lucide-react'
-import type { BillDetailPresenter, JsBillAttachment, JsBillDetailState } from 'blitzsplit-shared'
-import { useEffect, useReducer, useRef, useState, type ComponentProps, type KeyboardEvent } from 'react'
+import type { BillDetailPresenter, JsBillAttachment, JsBillDetailState, JsPhotoFramePlacement } from 'blitzsplit-shared'
+import { useEffect, useReducer, useRef, useState, type ComponentProps, type CSSProperties, type KeyboardEvent } from 'react'
 import { toast } from 'sonner'
 import { PhotoPickerInputs, PhotoSourceMenu, usePhotoPicker } from '@/components/PhotoPicker'
 import { Button } from '@/components/ui/button'
@@ -133,6 +133,7 @@ export function BillAttachments({ presenter, state, localUrls }: { presenter: At
   )
 }
 
+// Why: wider than tall, which framedStyle counts on.
 const tileClass =
   'relative flex h-[66px] w-[88px] items-center justify-center overflow-hidden rounded-lg border outline-none focus-visible:ring-[3px] focus-visible:ring-ring'
 
@@ -177,7 +178,7 @@ function AttachmentTile({ attachment, src, onClick }: { attachment: JsBillAttach
   const title = `${labelOf(attachment)} · ${adderText(attachment)} · ${postedText(attachment.addedAt, attachment.addedDay)}`
   const badge = attachment.isPending ? t('billDetail_attachmentQueued') : attachment.isReceipt ? t('billDetail_receiptBadge') : null
   return (
-    <button type="button" aria-label={badge ? `${title} · ${badge}` : title} title={title} onClick={onClick} className={cn(tileClass, 'bg-muted hover:opacity-90')}>
+    <button type="button" aria-label={badge ? `${title} · ${badge}` : title} title={title} onClick={onClick} className={cn(tileClass, attachment.thumbnailPlacement ? 'bg-white' : 'bg-muted', 'hover:opacity-90')}>
       {/* Why: online its signed URL is on its way; offline, or once it failed, it can't come, which the neutral icon says. */}
       {isDownloading || (!src && attachment.isImageLoading) ? (
         <Skeleton className="absolute inset-0 rounded-none" />
@@ -192,7 +193,8 @@ function AttachmentTile({ attachment, src, onClick }: { attachment: JsBillAttach
           decoding="async"
           onLoad={() => setLoadedSrc(src)}
           onError={() => setFailedSrc(src)}
-          className={cn('relative size-full object-cover', isDownloading && 'opacity-0')}
+          style={framedStyle(attachment.thumbnailPlacement)}
+          className={cn(attachment.thumbnailPlacement ? 'absolute h-auto max-w-none' : 'relative size-full object-cover', isDownloading && 'opacity-0')}
         />
       )}
       {badge && (
@@ -375,4 +377,19 @@ function PageButton({ side, target, onShow }: { side: 'start' | 'end'; target: J
       {side === 'start' ? <ChevronLeft /> : <ChevronRight />}
     </Button>
   )
+}
+
+/*
+ * Why: a photo kept whole shows the square framed in "Adjust photo", covering the tile around its center as a square
+ * image's object-cover does. The tile is wider than tall, so the square's side is its width, which both the percentages
+ * of left and width and those of a margin measure; the height follows the image's own proportions.
+ */
+function framedStyle(placement: JsPhotoFramePlacement | null | undefined): CSSProperties | undefined {
+  if (!placement) return undefined
+  return {
+    width: `${placement.width * 100}%`,
+    left: `${placement.x * 100}%`,
+    top: '50%',
+    marginTop: `${(placement.y - 0.5) * 100}%`,
+  }
 }

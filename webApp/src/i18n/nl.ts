@@ -456,6 +456,7 @@ export const nl: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Bonnetje',
   billDetail_attachmentQueued: 'In de wachtrij',
   billDetail_addPhoto: 'Foto toevoegen',
+  billDetail_keepWholePhoto: 'Hele foto tonen bij openen',
   billDetail_takePhoto: 'Foto maken',
   billDetail_choosePhoto: 'Foto kiezen',
   billDetail_viewerPhotoTitle: 'Foto {number} van {count}',

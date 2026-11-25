@@ -1738,7 +1738,7 @@ class CryptoBillViewModelTest {
             readReceipt = { _, _, _ ->
                 ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },
-            attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
+            attachBillImage = { _, _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             observeBitcoinInSats = { bitcoinInSats },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )

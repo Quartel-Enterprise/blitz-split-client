@@ -458,6 +458,7 @@ export const sl: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Potrdilo',
   billDetail_attachmentQueued: 'V čakalni vrsti',
   billDetail_addPhoto: 'Dodaj fotografijo',
+  billDetail_keepWholePhoto: 'Ob odprtju prikaži celotno fotografijo',
   billDetail_takePhoto: 'Fotografiraj',
   billDetail_choosePhoto: 'Izberi fotografijo',
   billDetail_viewerPhotoTitle: 'Fotografija {number} od {count}',

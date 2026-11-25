@@ -440,6 +440,7 @@ export const kn: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'ರಸೀದಿ',
   billDetail_attachmentQueued: 'ಸರದಿಯಲ್ಲಿದೆ',
   billDetail_addPhoto: 'ಫೋಟೋ ಸೇರಿಸಿ',
+  billDetail_keepWholePhoto: 'ತೆರೆದಾಗ ಪೂರ್ಣ ಫೋಟೋ ತೋರಿಸಿ',
   billDetail_takePhoto: 'ಫೋಟೋ ತೆಗೆಯಿರಿ',
   billDetail_choosePhoto: 'ಫೋಟೋ ಆಯ್ಕೆಮಾಡಿ',
   billDetail_viewerPhotoTitle: 'ಫೋಟೋ {number} / {count}',

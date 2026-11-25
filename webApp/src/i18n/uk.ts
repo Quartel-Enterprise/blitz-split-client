@@ -459,6 +459,7 @@ export const uk: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Чек',
   billDetail_attachmentQueued: 'У черзі',
   billDetail_addPhoto: 'Додати фото',
+  billDetail_keepWholePhoto: 'Показувати фото повністю під час відкриття',
   billDetail_takePhoto: 'Зробити фото',
   billDetail_choosePhoto: 'Обрати фото',
   billDetail_viewerPhotoTitle: 'Фото {number} з {count}',

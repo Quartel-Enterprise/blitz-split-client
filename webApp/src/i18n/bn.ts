@@ -455,6 +455,7 @@ export const bn: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'রসিদ',
   billDetail_attachmentQueued: 'সারিতে আছে',
   billDetail_addPhoto: 'ছবি যোগ করুন',
+  billDetail_keepWholePhoto: 'খুললে পুরো ছবি দেখান',
   billDetail_takePhoto: 'ছবি তুলুন',
   billDetail_choosePhoto: 'ছবি বেছে নিন',
   billDetail_viewerPhotoTitle: '{count} টির মধ্যে {number} নম্বর ছবি',

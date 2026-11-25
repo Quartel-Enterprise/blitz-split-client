@@ -32,6 +32,11 @@ data class BillAttachmentEntity(
     val kind: String,
     val width: Int?,
     val height: Int?,
+    // Why: the square its tile shows, in fractions of the image, for a photo that keeps its whole image; null otherwise.
+    val frameLeft: Float?,
+    val frameTop: Float?,
+    val frameWidth: Float?,
+    val frameHeight: Float?,
     // Why: null until the server stamps the account of one added before it went up.
     val addedByUserId: String?,
     val addedByMemberId: String?,

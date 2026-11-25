@@ -14,6 +14,11 @@ data class BillAttachmentDto(
     @SerialName("added_by_member_id") val addedByMemberId: String?,
     @SerialName("width") val width: Int?,
     @SerialName("height") val height: Int?,
+    // Why: older rows and receipts have none; the server takes all four or none.
+    @SerialName("frame_left") val frameLeft: Float?,
+    @SerialName("frame_top") val frameTop: Float?,
+    @SerialName("frame_width") val frameWidth: Float?,
+    @SerialName("frame_height") val frameHeight: Float?,
     @SerialName("is_deleted") val isDeleted: Boolean,
     @SerialName("added_at") val addedAt: Long,
     @SerialName("updated_at") val updatedAt: Long,

@@ -15,6 +15,8 @@ struct PhotoCropView: View {
     let editor: PhotoCropEditor
     let frame: PhotoCropFrame
     let send: (PhotoCropEvent) -> Void
+    /// A control only one screen has, over Cancel and Done (a bill photo's "Show the whole photo when opened").
+    var extraControl: AnyView?
 
     /// The editor's photo, decoded once per pick: it is upright already and at most 1600 px.
     @State private var image: Image?
@@ -38,10 +40,15 @@ struct PhotoCropView: View {
                     TwoColumnsLayout(secondWidth: Self.panelWidth, spacing: 0, maxWidth: .infinity, alignment: .center) {
                         cropArea
                     } second: {
-                        VStack(spacing: 0) {
-                            header
-                            controls
+                        // Why: a short window lying down (large text, a bill's extra switch) scrolls rather than hiding Done.
+                        ScrollView {
+                            VStack(spacing: 0) {
+                                header
+                                controls
+                            }
+                            .frame(minHeight: proxy.size.height)
                         }
+                        .scrollBounceBehavior(.basedOnSize)
                     }
                 } else {
                     // Open upright, as a notebook, the photo above the fold and the controls below it
@@ -212,6 +219,7 @@ struct PhotoCropView: View {
                     send(PhotoCropEventOnTurnClicked.shared)
                 }
             }
+            if let extraControl { extraControl }
             HStack(spacing: 12) {
                 Button {
                     send(PhotoCropEventOnDismissed.shared)
@@ -259,18 +267,23 @@ struct PhotoCropView: View {
 extension View {
     /// Opens "Adjust photo" while a picked photo is being framed: full screen on iOS, a sheet on the Mac. Closing it any
     /// way (Cancel, ✕, a swipe, Esc) is the ViewModel's `OnDismissed`, which leaves the photo shown as it was.
-    func photoCrop(_ editor: PhotoCropEditor?, frame: PhotoCropFrame, send: @escaping (PhotoCropEvent) -> Void) -> some View {
+    func photoCrop(
+        _ editor: PhotoCropEditor?,
+        frame: PhotoCropFrame,
+        extraControl: AnyView? = nil,
+        send: @escaping (PhotoCropEvent) -> Void,
+    ) -> some View {
         let isPresented = Binding(
             get: { editor != nil },
             set: { if !$0 { send(PhotoCropEventOnDismissed.shared) } },
         )
         #if os(macOS)
         return sheet(isPresented: isPresented) {
-            if let editor { PhotoCropView(editor: editor, frame: frame, send: send) }
+            if let editor { PhotoCropView(editor: editor, frame: frame, send: send, extraControl: extraControl) }
         }
         #else
         return fullScreenCover(isPresented: isPresented) {
-            if let editor { PhotoCropView(editor: editor, frame: frame, send: send) }
+            if let editor { PhotoCropView(editor: editor, frame: frame, send: send, extraControl: extraControl) }
         }
         #endif
     }

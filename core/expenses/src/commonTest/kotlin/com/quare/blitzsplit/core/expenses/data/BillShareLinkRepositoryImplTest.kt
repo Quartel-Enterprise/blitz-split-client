@@ -618,6 +618,10 @@ class BillShareLinkRepositoryImplTest {
         height = 1600,
         addedByName = "Ana",
         addedAt = 2_000L,
+        frameLeft = null,
+        frameTop = null,
+        frameWidth = null,
+        frameHeight = null,
     )
 
     private fun statusOnlyDto(status: String): SharedBillDto = SharedBillDto(
