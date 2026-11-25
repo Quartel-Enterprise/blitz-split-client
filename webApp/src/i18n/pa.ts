@@ -458,6 +458,7 @@ export const pa: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'ਰਸੀਦ',
   billDetail_attachmentQueued: 'ਕਤਾਰ ਵਿੱਚ',
   billDetail_addPhoto: 'ਫ਼ੋਟੋ ਜੋੜੋ',
+  billDetail_keepWholePhoto: 'ਖੋਲ੍ਹਣ \'ਤੇ ਪੂਰੀ ਫ਼ੋਟੋ ਦਿਖਾਓ',
   billDetail_takePhoto: 'ਫ਼ੋਟੋ ਖਿੱਚੋ',
   billDetail_choosePhoto: 'ਫ਼ੋਟੋ ਚੁਣੋ',
   billDetail_viewerPhotoTitle: '{count} ਵਿੱਚੋਂ ਫ਼ੋਟੋ {number}',

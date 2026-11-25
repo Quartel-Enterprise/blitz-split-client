@@ -112,6 +112,7 @@
     <string name="bill_detail_attachment_yesterday">어제</string>
     <string name="bill_detail_attachment_open">열기</string>
     <string name="bill_detail_add_photo">사진 추가</string>
+    <string name="bill_detail_keep_whole_photo">열 때 사진 전체 보기</string>
     <string name="bill_detail_add_photo_menu">카메라 또는 갤러리</string>
     <string name="bill_detail_take_photo">사진 찍기</string>
     <string name="bill_detail_choose_photo">갤러리에서 선택</string>

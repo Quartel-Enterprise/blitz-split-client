@@ -457,6 +457,7 @@ export const ro: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Bon',
   billDetail_attachmentQueued: 'În așteptare',
   billDetail_addPhoto: 'Adaugă fotografie',
+  billDetail_keepWholePhoto: 'Arată fotografia întreagă la deschidere',
   billDetail_takePhoto: 'Fă o fotografie',
   billDetail_choosePhoto: 'Alege fotografia',
   billDetail_viewerPhotoTitle: 'Fotografia {number} din {count}',

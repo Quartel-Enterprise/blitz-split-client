@@ -440,6 +440,7 @@ export const fa: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'رسید',
   billDetail_attachmentQueued: 'در صف',
   billDetail_addPhoto: 'افزودن عکس',
+  billDetail_keepWholePhoto: 'نمایش کامل عکس هنگام باز کردن',
   billDetail_takePhoto: 'گرفتن عکس',
   billDetail_choosePhoto: 'انتخاب عکس',
   billDetail_viewerPhotoTitle: 'عکس {number} از {count}',

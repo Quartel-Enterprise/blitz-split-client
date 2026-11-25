@@ -112,6 +112,7 @@
     <string name="bill_detail_attachment_yesterday">昨天</string>
     <string name="bill_detail_attachment_open">打开</string>
     <string name="bill_detail_add_photo">添加照片</string>
+    <string name="bill_detail_keep_whole_photo">打开时显示完整照片</string>
     <string name="bill_detail_add_photo_menu">相机或相册</string>
     <string name="bill_detail_take_photo">拍照</string>
     <string name="bill_detail_choose_photo">从相册选择</string>

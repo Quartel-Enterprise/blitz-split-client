@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
+import com.quare.blitzsplit.core.model.PhotoFrame
 import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import kotlin.uuid.Uuid
@@ -20,6 +21,7 @@ class AttachBillImageUseCase(
         kind: BillAttachmentKind,
         image: BillImage,
         addedByMemberId: String?,
+        frame: PhotoFrame?,
     ): Result<BillAttachmentAddition> {
         val now = currentTimeMillis()
         val attachment = BillAttachment(
@@ -35,6 +37,7 @@ class AttachBillImageUseCase(
             updatedAt = now,
             isPending = true,
             hasPendingImage = true,
+            frame = frame,
         )
         return repository.addAttachment(attachment, image.jpeg).map { added ->
             if (added) BillAttachmentAddition.ADDED else BillAttachmentAddition.NO_ROOM

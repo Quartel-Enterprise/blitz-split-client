@@ -457,6 +457,7 @@ export const cs: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Účtenka',
   billDetail_attachmentQueued: 'Ve frontě',
   billDetail_addPhoto: 'Přidat fotku',
+  billDetail_keepWholePhoto: 'Při otevření zobrazit celou fotku',
   billDetail_takePhoto: 'Vyfotit',
   billDetail_choosePhoto: 'Vybrat fotku',
   billDetail_viewerPhotoTitle: 'Fotka {number} z {count}',

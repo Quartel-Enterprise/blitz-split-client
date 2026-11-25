@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">నిన్న</string>
     <string name="bill_detail_attachment_open">తెరవండి</string>
     <string name="bill_detail_add_photo">ఫోటోను జోడించండి</string>
+    <string name="bill_detail_keep_whole_photo">తెరిచినప్పుడు పూర్తి ఫోటోను చూపించు</string>
     <string name="bill_detail_add_photo_menu">కెమెరా లేదా గ్యాలరీ</string>
     <string name="bill_detail_take_photo">ఫోటో తీయండి</string>
     <string name="bill_detail_choose_photo">గ్యాలరీ నుండి ఎంచుకోండి</string>

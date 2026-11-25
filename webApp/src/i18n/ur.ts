@@ -456,6 +456,7 @@ export const ur: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'رسید',
   billDetail_attachmentQueued: 'قطار میں',
   billDetail_addPhoto: 'تصویر شامل کریں',
+  billDetail_keepWholePhoto: 'کھولنے پر پوری تصویر دکھائیں',
   billDetail_takePhoto: 'تصویر لیں',
   billDetail_choosePhoto: 'تصویر منتخب کریں',
   billDetail_viewerPhotoTitle: '{count} میں سے تصویر {number}',

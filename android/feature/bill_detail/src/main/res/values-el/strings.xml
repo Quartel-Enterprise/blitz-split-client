@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">χθες</string>
     <string name="bill_detail_attachment_open">Άνοιγμα</string>
     <string name="bill_detail_add_photo">Πρόσθεσε φωτογραφία</string>
+    <string name="bill_detail_keep_whole_photo">Εμφάνιση ολόκληρης της φωτογραφίας στο άνοιγμα</string>
     <string name="bill_detail_add_photo_menu">Κάμερα ή συλλογή</string>
     <string name="bill_detail_take_photo">Λήψη φωτογραφίας</string>
     <string name="bill_detail_choose_photo">Επιλογή από τη συλλογή</string>

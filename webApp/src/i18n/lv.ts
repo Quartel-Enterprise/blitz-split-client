@@ -439,6 +439,7 @@ export const lv: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Čeks',
   billDetail_attachmentQueued: 'Rindā',
   billDetail_addPhoto: 'Pievienot fotoattēlu',
+  billDetail_keepWholePhoto: 'Atverot rādīt visu fotoattēlu',
   billDetail_takePhoto: 'Uzņemt fotoattēlu',
   billDetail_choosePhoto: 'Izvēlēties fotoattēlu',
   billDetail_viewerPhotoTitle: 'Fotoattēls {number} no {count}',

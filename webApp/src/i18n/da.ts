@@ -455,6 +455,7 @@ export const da: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Kvittering',
   billDetail_attachmentQueued: 'I kø',
   billDetail_addPhoto: 'Tilføj foto',
+  billDetail_keepWholePhoto: 'Vis hele fotoet, når det åbnes',
   billDetail_takePhoto: 'Tag foto',
   billDetail_choosePhoto: 'Vælg foto',
   billDetail_viewerPhotoTitle: 'Foto {number} af {count}',

@@ -87,6 +87,47 @@ class SupabaseBillShareLinkRemoteDataSourceTest {
         assertEquals("members", dto.visibility)
     }
 
+    @Test
+    fun `GIVEN the server before the frames came WHEN reading a shared bill THEN reads its photos with no frame`() =
+        runTest {
+            // Given
+            prepareScenario(answer = sharedBillWith(attachment = """$ATTACHMENT_OPEN}"""))
+
+            // When
+            val dto = dataSource.fetchSharedBill(CODE)
+
+            // Then
+            val attachment = dto.attachments.orEmpty().single()
+            assertEquals(
+                listOf(null, null, null, null),
+                listOf(attachment.frameLeft, attachment.frameTop, attachment.frameWidth, attachment.frameHeight),
+            )
+        }
+
+    @Test
+    fun `GIVEN a shared photo that keeps its whole image WHEN reading a shared bill THEN reads its frame`() = runTest {
+        // Given
+        prepareScenario(
+            answer = sharedBillWith(
+                attachment = """$ATTACHMENT_OPEN, "frame_left": -0.125, "frame_top": 0.25, """ +
+                    """"frame_width": 1.25, "frame_height": 0.5}""",
+            ),
+        )
+
+        // When
+        val dto = dataSource.fetchSharedBill(CODE)
+
+        // Then
+        val attachment = dto.attachments.orEmpty().single()
+        assertEquals(
+            listOf(-0.125f, 0.25f, 1.25f, 0.5f),
+            listOf(attachment.frameLeft, attachment.frameTop, attachment.frameWidth, attachment.frameHeight),
+        )
+    }
+
+    private fun sharedBillWith(attachment: String): String =
+        """{"status": "ok", "group_id": "group-1", "currency": "BRL", "attachments": [$attachment]}"""
+
     private fun prepareScenario(answer: String) {
         val engine = MockEngine {
             respond(
@@ -107,5 +148,8 @@ class SupabaseBillShareLinkRemoteDataSourceTest {
     private companion object {
         const val CODE = "7Hk2pQ8x"
         const val EXPENSE_ID = "12191cca-1266-43d0-8c27-a668b9c2e4a8"
+        const val ATTACHMENT_OPEN =
+            """{"id": "photo-1", "kind": "photo", "path": "group-1/bill-1/photo-1.jpg", "width": 1200, """ +
+                """"height": 1600, "added_by_name": "Ana", "added_at": 2000"""
     }
 }

@@ -70,6 +70,7 @@ internal fun sharedTilesOf(
             isImageLoading = false,
             width = attachment.width,
             height = attachment.height,
+            thumbnailPlacement = placementOf(attachment.frame, attachment.width, attachment.height),
             photoNumber = if (isReceipt) null else ++photoNumber,
             adderName = attachment.addedByName,
             isAddedByMe = false,

@@ -23,6 +23,7 @@ class BillAttachmentTest {
             updatedAt = 1L,
             isPending = true,
             hasPendingImage = true,
+            frame = null,
         )
 
         // When

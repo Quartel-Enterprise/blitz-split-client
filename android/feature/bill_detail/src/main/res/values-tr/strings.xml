@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">dün</string>
     <string name="bill_detail_attachment_open">Aç</string>
     <string name="bill_detail_add_photo">Fotoğraf ekle</string>
+    <string name="bill_detail_keep_whole_photo">Açıldığında fotoğrafın tamamını göster</string>
     <string name="bill_detail_add_photo_menu">Kamera ya da galeri</string>
     <string name="bill_detail_take_photo">Fotoğraf çek</string>
     <string name="bill_detail_choose_photo">Galeriden seç</string>

@@ -456,6 +456,7 @@ export const sw: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Risiti',
   billDetail_attachmentQueued: 'Inasubiri',
   billDetail_addPhoto: 'Ongeza picha',
+  billDetail_keepWholePhoto: 'Onyesha picha nzima inapofunguliwa',
   billDetail_takePhoto: 'Piga picha',
   billDetail_choosePhoto: 'Chagua picha',
   billDetail_viewerPhotoTitle: 'Picha {number} kati ya {count}',

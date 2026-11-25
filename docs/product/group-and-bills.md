@@ -229,9 +229,15 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     photo added on another device shows only online. History says who added or removed them; the feed doesn't.
     A photo taken or picked through "Add photo" opens "Adjust photo" first ([Profile](profile.md)), framed in the
     tile's rounded square (Pierre's call, beta feedback of 2026-11-16: "square like the preview"), and only "Done"
-    attaches it: the square the frame holds, cut from the editor's photo (already upright and at most 1600 px, as
-    any bill photo), at as many pixels as that photo has there (its shorter side divided by the zoom, never blown
-    up), under the same 1.5 MB (`PrepareBillPhoto`, `BillCropEncoder`); ✕, Cancel or back attach nothing. The tile
+    attaches it. Its switch "Show the whole photo when opened", under Rotate and on for each photo picked (Pierre's
+    call, beta feedback of 2026-11-25: a tall receipt came out cut in the viewer), attaches the whole photo,
+    mirrored and turned as framed, at the editor's photo's pixels (already upright and at most 1600 px, as any bill
+    photo), with the square framed kept beside it as fractions of the image (`PhotoFrame`, the server's
+    `frame_left`, `frame_top`, `frame_width`, `frame_height`): the tile draws that square (`BillAttachmentTile.thumbnailPlacement`)
+    and the viewer the whole photo. Off, it attaches only the square the frame holds, at as many pixels as the
+    photo has there (its shorter side divided by the zoom, never blown up), which the viewer shows too. Either goes
+    under the same 1.5 MB (`PrepareBillPhoto`, `BillCropEncoder`); ✕, Cancel or back attach nothing. A photo
+    attached before the switch, or by an older version, is its own square, filling the tile from its center. The tile
     spins while the photo is read and while the square is kept. The receipt Scan receipt attaches is not framed: it
     keeps the whole image it was read from.
   - Bill's "Share bill" (7.3h, `Route.ShareBill`, `ShareBillViewModel`): the bill's link,

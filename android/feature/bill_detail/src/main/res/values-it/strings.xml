@@ -114,6 +114,7 @@
     <string name="bill_detail_attachment_yesterday">ieri</string>
     <string name="bill_detail_attachment_open">Apri</string>
     <string name="bill_detail_add_photo">Aggiungi foto</string>
+    <string name="bill_detail_keep_whole_photo">Mostra la foto intera all’apertura</string>
     <string name="bill_detail_add_photo_menu">Fotocamera o galleria</string>
     <string name="bill_detail_take_photo">Scatta foto</string>
     <string name="bill_detail_choose_photo">Scegli dalla galleria</string>

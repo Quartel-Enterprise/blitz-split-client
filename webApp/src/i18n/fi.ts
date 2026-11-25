@@ -457,6 +457,7 @@ export const fi: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Kuitti',
   billDetail_attachmentQueued: 'Jonossa',
   billDetail_addPhoto: 'Lisää kuva',
+  billDetail_keepWholePhoto: 'Näytä koko kuva avattaessa',
   billDetail_takePhoto: 'Ota kuva',
   billDetail_choosePhoto: 'Valitse kuva',
   billDetail_viewerPhotoTitle: 'Kuva {number}/{count}',

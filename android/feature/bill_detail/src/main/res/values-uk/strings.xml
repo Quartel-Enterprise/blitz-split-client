@@ -115,6 +115,7 @@
     <string name="bill_detail_attachment_yesterday">учора</string>
     <string name="bill_detail_attachment_open">Відкрити</string>
     <string name="bill_detail_add_photo">Додати фото</string>
+    <string name="bill_detail_keep_whole_photo">Показувати фото повністю під час відкриття</string>
     <string name="bill_detail_add_photo_menu">Камера або галерея</string>
     <string name="bill_detail_take_photo">Зробити фото</string>
     <string name="bill_detail_choose_photo">Обрати з галереї</string>

@@ -112,6 +112,7 @@
     <string name="bill_detail_attachment_yesterday">မနေ့က</string>
     <string name="bill_detail_attachment_open">ဖွင့်ရန်</string>
     <string name="bill_detail_add_photo">ဓာတ်ပုံ ထည့်ရန်</string>
+    <string name="bill_detail_keep_whole_photo">ဖွင့်သည့်အခါ ဓာတ်ပုံတစ်ခုလုံးကို ပြရန်</string>
     <string name="bill_detail_add_photo_menu">ကင်မရာ သို့မဟုတ် ဓာတ်ပုံပြခန်း</string>
     <string name="bill_detail_take_photo">ဓာတ်ပုံ ရိုက်ရန်</string>
     <string name="bill_detail_choose_photo">ဓာတ်ပုံပြခန်းမှ ရွေးရန်</string>

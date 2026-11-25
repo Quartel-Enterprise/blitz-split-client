@@ -114,6 +114,7 @@
     <string name="bill_detail_attachment_yesterday">ieri</string>
     <string name="bill_detail_attachment_open">Deschide</string>
     <string name="bill_detail_add_photo">Adaugă fotografie</string>
+    <string name="bill_detail_keep_whole_photo">Arată fotografia întreagă la deschidere</string>
     <string name="bill_detail_add_photo_menu">Cameră sau galerie</string>
     <string name="bill_detail_take_photo">Fă o fotografie</string>
     <string name="bill_detail_choose_photo">Alege din galerie</string>

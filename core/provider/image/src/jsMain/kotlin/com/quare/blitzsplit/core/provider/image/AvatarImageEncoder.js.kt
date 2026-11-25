@@ -24,20 +24,21 @@ internal class BrowserAvatarImageEncoder : AvatarImageEncoder {
     override suspend fun invoke(
         source: ByteArray,
         transform: CropTransform,
-    ): ByteArray = toJpeg(createCrop(source, transform, AVATAR_SIZE_PX), AVATAR_JPEG_QUALITY)
+    ): ByteArray = toJpeg(createCrop(source, transform, AVATAR_SIZE_PX, AVATAR_SIZE_PX), AVATAR_JPEG_QUALITY)
 }
 
 internal class BrowserBillCropEncoder : BillCropEncoder {
     override suspend fun invoke(
         source: ByteArray,
         transform: CropTransform,
-        side: Int,
+        width: Int,
+        height: Int,
     ): BillImage {
-        val canvas = createCrop(source, transform, side)
+        val canvas = createCrop(source, transform, width, height)
         return BillImage(
             jpeg = encodeUnderLimit { quality -> toJpeg(canvas, quality) },
-            width = side,
-            height = side,
+            width = width,
+            height = height,
         )
     }
 }
@@ -45,10 +46,11 @@ internal class BrowserBillCropEncoder : BillCropEncoder {
 private suspend fun createCrop(
     source: ByteArray,
     transform: CropTransform,
-    side: Int,
+    width: Int,
+    height: Int,
 ): dynamic {
     val bitmap = decode(source)
-    val canvas = createCanvas(side, side)
+    val canvas = createCanvas(width, height)
     val context: dynamic = canvas.getContext("2d")
     context.setTransform(
         transform.scaleX,

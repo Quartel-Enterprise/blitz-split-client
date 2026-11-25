@@ -456,6 +456,7 @@ export const ta: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'ரசீது',
   billDetail_attachmentQueued: 'வரிசையில்',
   billDetail_addPhoto: 'புகைப்படம் சேர்க்கவும்',
+  billDetail_keepWholePhoto: 'திறக்கும்போது முழுப் புகைப்படத்தையும் காட்டு',
   billDetail_takePhoto: 'புகைப்படம் எடுக்கவும்',
   billDetail_choosePhoto: 'புகைப்படம் தேர்ந்தெடுக்கவும்',
   billDetail_viewerPhotoTitle: 'புகைப்படம் {number} / {count}',

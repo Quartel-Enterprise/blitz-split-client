@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.PrepareBillPhoto
 import com.quare.blitzsplit.core.provider.image.ImageTooLargeException
 import com.quare.blitzsplit.core.provider.image.UnsupportedImageException
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPhotoError
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +25,8 @@ import kotlinx.coroutines.launch
 
 /*
  * Why: "Adicionar foto" (Anexos): the photo picked or taken opens in "Ajustar foto", framed in the tile's rounded
- * square, and only "Pronto" attaches the square framed there, on the device first, offline too, by this device's
+ * square, and only "Pronto" attaches it, the whole photo with the square its tile shows or, with "Show the whole photo
+ * when opened" off, only the square framed there, on the device first, offline too, by this device's
  * member; "Cancelar" attaches nothing (beta feedback of 2026-11-16). The tile spins while the photo is read and while
  * the square is kept, and takes no other pick meanwhile.
  */
@@ -60,6 +62,7 @@ internal class BillPhotoAdding(
                         state.copy(
                             isAddingPhoto = false,
                             photoCrop = editor.takeIf { state.areActionsEnabled },
+                            keepsWholePhoto = true,
                         )
                     }
                 }.onFailure { error -> finish(errorOf(error)) }
@@ -67,7 +70,33 @@ internal class BillPhotoAdding(
         return true
     }
 
-    fun onCropEvent(event: PhotoCropEvent) {
+    /*
+     * Why: "Ajustar foto" and its switch only count what is done while it is open, never a late tap after it closed, and its
+     * "Pronto" only while the bill takes a photo: a bill being deleted keeps the editor open until Conta leaves.
+     */
+    fun isAccepted(event: BillDetailUiEvent): Boolean {
+        val state = uiState.value
+        return when (event) {
+            is BillDetailUiEvent.OnKeepWholePhotoChanged -> state.photoCrop != null
+
+            is BillDetailUiEvent.OnPhotoCrop ->
+                state.photoCrop != null &&
+                    (event.event != PhotoCropEvent.OnConfirmClicked || state.areActionsEnabled)
+
+            else -> true
+        }
+    }
+
+    // Why: what "Ajustar foto" sends, its own events and the bill's switch.
+    fun onEvent(event: BillDetailUiEvent) {
+        when (event) {
+            is BillDetailUiEvent.OnPhotoCrop -> onCropEvent(event.event)
+            is BillDetailUiEvent.OnKeepWholePhotoChanged -> onKeepWholePhotoChanged(event.isOn)
+            else -> Unit
+        }
+    }
+
+    private fun onCropEvent(event: PhotoCropEvent) {
         val editor = uiState.value.photoCrop ?: return
         when (event) {
             PhotoCropEvent.OnConfirmClicked -> attach(editor)
@@ -76,8 +105,13 @@ internal class BillPhotoAdding(
         }
     }
 
-    // Why: the editor closes at once and the tile spins while the square is encoded and kept.
+    private fun onKeepWholePhotoChanged(isOn: Boolean) {
+        uiState.update { it.copy(keepsWholePhoto = isOn) }
+    }
+
+    // Why: the editor closes at once and the tile spins while the photo is encoded and kept.
     private fun attach(editor: PhotoCropEditor) {
+        val keepsWholePhoto = uiState.value.keepsWholePhoto
         uiState.update {
             it.copy(
                 photoCrop = null,
@@ -85,14 +119,15 @@ internal class BillPhotoAdding(
             )
         }
         attachScope.launch {
-            val error = prepareBillPhoto(editor.photo, editor.crop).fold(
-                onSuccess = { image ->
+            val error = prepareBillPhoto(editor.photo, editor.crop, keepsWholePhoto).fold(
+                onSuccess = { prepared ->
                     attachBillImage(
                         expenseId = route.expenseId,
                         groupId = route.groupId,
                         kind = BillAttachmentKind.PHOTO,
-                        image = image,
+                        image = prepared.image,
                         addedByMemberId = myMemberId(),
+                        frame = prepared.frame,
                     ).fold(
                         onSuccess = ::errorOf,
                         onFailure = { BillPhotoError.FAILED },

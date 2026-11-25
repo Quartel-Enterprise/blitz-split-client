@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">eile</string>
     <string name="bill_detail_attachment_open">Ava</string>
     <string name="bill_detail_add_photo">Lisa foto</string>
+    <string name="bill_detail_keep_whole_photo">Avamisel näita kogu fotot</string>
     <string name="bill_detail_add_photo_menu">Kaamera või galerii</string>
     <string name="bill_detail_take_photo">Tee foto</string>
     <string name="bill_detail_choose_photo">Vali galeriist</string>

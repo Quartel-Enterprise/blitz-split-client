@@ -16,7 +16,8 @@ private const val MAX_ATTACHMENT_IDS_PER_QUERY = 500
 interface BillAttachmentDao {
     // Why: the receipt first, then the photos in the order they were added (7.3g).
     @Query(
-        "SELECT id, expenseId, groupId, kind, width, height, addedByUserId, addedByMemberId, addedAt, updatedAt, " +
+        "SELECT id, expenseId, groupId, kind, width, height, frameLeft, frameTop, frameWidth, frameHeight, " +
+            "addedByUserId, addedByMemberId, addedAt, updatedAt, " +
             "pendingSync, pendingJpeg IS NOT NULL AS hasPendingJpeg FROM bill_attachment " +
             "WHERE expenseId = :expenseId AND isDeleted = 0 ORDER BY kind = 'receipt' DESC, addedAt, id",
     )

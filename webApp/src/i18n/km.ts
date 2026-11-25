@@ -455,6 +455,7 @@ export const km: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'បង្កាន់ដៃ',
   billDetail_attachmentQueued: 'កំពុងរង់ចាំ',
   billDetail_addPhoto: 'បន្ថែមរូបថត',
+  billDetail_keepWholePhoto: 'បង្ហាញរូបថតទាំងមូលពេលបើក',
   billDetail_takePhoto: 'ថតរូប',
   billDetail_choosePhoto: 'ជ្រើសរើសរូបថត',
   billDetail_viewerPhotoTitle: 'រូបថត {number} ក្នុងចំណោម {count}',

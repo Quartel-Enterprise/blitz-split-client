@@ -7612,6 +7612,7 @@ class SyncCoordinatorTest {
         updatedAt = updatedAt,
         isPending = true,
         hasPendingImage = false,
+        frame = null,
     )
 
     private fun callsWithoutPreferencesAndGroups(): List<String> = calls.filterNot {

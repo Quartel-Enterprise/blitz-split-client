@@ -458,6 +458,7 @@ export const pl: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Paragon',
   billDetail_attachmentQueued: 'W kolejce',
   billDetail_addPhoto: 'Dodaj zdjęcie',
+  billDetail_keepWholePhoto: 'Pokazuj całe zdjęcie po otwarciu',
   billDetail_takePhoto: 'Zrób zdjęcie',
   billDetail_choosePhoto: 'Wybierz zdjęcie',
   billDetail_viewerPhotoTitle: 'Zdjęcie {number} z {count}',

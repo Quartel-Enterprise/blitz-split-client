@@ -456,6 +456,7 @@ export const hi: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'रसीद',
   billDetail_attachmentQueued: 'कतार में',
   billDetail_addPhoto: 'फ़ोटो जोड़ें',
+  billDetail_keepWholePhoto: 'खोलने पर पूरी फ़ोटो दिखाएँ',
   billDetail_takePhoto: 'फ़ोटो लें',
   billDetail_choosePhoto: 'फ़ोटो चुनें',
   billDetail_viewerPhotoTitle: '{count} में से फ़ोटो {number}',

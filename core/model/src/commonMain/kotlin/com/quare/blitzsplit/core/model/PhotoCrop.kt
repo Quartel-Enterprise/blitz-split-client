@@ -87,6 +87,28 @@ data class PhotoCrop(
         offsetY = -offsetY,
     )
 
+    // Why: the photo mirrored and turned as the editor shows it, before any zoom: a bill's whole photo.
+    val turnedWidth: Int
+        get() = if (isSideways) photoHeight else photoWidth
+
+    val turnedHeight: Int
+        get() = if (isSideways) photoWidth else photoHeight
+
+    /*
+     * Why: where the frame sits on the turned photo, so a bill's whole photo still knows the square its tile shows. A
+     * photo zoomed out to fit leaves the frame past its edges, which the tile shows as the margin the editor showed.
+     */
+    fun toFrameInTurnedPhoto(): PhotoFrame {
+        val width = 1f / (turnedWidth * coverScale * zoom)
+        val height = 1f / (turnedHeight * coverScale * zoom)
+        return PhotoFrame(
+            left = HALF_FRACTION - offsetX * width - width * HALF_FRACTION,
+            top = HALF_FRACTION - offsetY * height - height * HALF_FRACTION,
+            width = width,
+            height = height,
+        )
+    }
+
     // Why: the photo never moves so far that the frame shows past its edge.
     private fun clamp(): PhotoCrop {
         val width = (if (isSideways) photoHeight else photoWidth) * coverScale * zoom
@@ -105,6 +127,7 @@ data class PhotoCrop(
         private const val QUARTER_TURNS = 4
         private const val QUARTER_TURN_DEGREES = 90
         private const val HALF = 2f
+        private const val HALF_FRACTION = 0.5f
 
         // Why: the photo as picked, its center in the frame's.
         fun of(

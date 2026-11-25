@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.model.PhotoFramePlacement
 
 // Why: one of "Anexos" and a page of the viewer: "Foto 2" with "Ana · ontem", or the receipt with its "Cupom" badge.
 @Suppress("ArrayInDataClass")
@@ -21,6 +22,11 @@ data class BillAttachmentTile(
     val isImageLoading: Boolean,
     val width: Int?,
     val height: Int?,
+    /*
+     * Why: where the thumbnail draws a photo kept whole so its tile shows the square framed in "Adjust photo"; null
+     * fills the tile with the image's center, as a receipt or a square photo.
+     */
+    val thumbnailPlacement: PhotoFramePlacement?,
     // Why: "Foto 2"; null for the receipt.
     val photoNumber: Int?,
     // Why: the member as they are now; null for someone no longer in the group.

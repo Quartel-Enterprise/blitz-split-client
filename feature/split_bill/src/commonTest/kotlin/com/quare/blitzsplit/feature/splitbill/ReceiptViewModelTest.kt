@@ -3650,7 +3650,7 @@ class ReceiptViewModelTest {
                     scan
                 }
             },
-            attachBillImage = { expenseId, groupId, kind, image, addedByMemberId ->
+            attachBillImage = { expenseId, groupId, kind, image, addedByMemberId, _ ->
                 attachments += RecordedAttachment(expenseId, groupId, kind, image.jpeg.toList(), addedByMemberId)
                 attachResult
             },

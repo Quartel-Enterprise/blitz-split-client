@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SharedBillPart
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.PhotoFrame
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 import kotlinx.datetime.TimeZone
@@ -284,6 +285,63 @@ class SharedBillRowsTest {
         assertEquals(RelativeDay.YESTERDAY, tile.addedDay)
     }
 
+    @Test
+    fun `GIVEN a photo of a link kept whole with its size WHEN making the tiles THEN places its framed square`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "photo-a",
+                frame = tallFrame,
+            ),
+        )
+
+        // When
+        val tile = sharedTilesOf(attachments, now, TimeZone.UTC).single()
+
+        // Then
+        assertEquals(tallFrame.toPlacement(1600, 1200), tile.thumbnailPlacement)
+    }
+
+    @Test
+    fun `GIVEN a photo of a link without a frame WHEN making the tiles THEN the tile fills from its center`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "photo-a",
+                frame = null,
+            ),
+        )
+
+        // When
+        val tile = sharedTilesOf(attachments, now, TimeZone.UTC).single()
+
+        // Then
+        assertNull(tile.thumbnailPlacement)
+    }
+
+    @Test
+    fun `GIVEN a photo of a link kept whole without its size WHEN making the tiles THEN fills from its center`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "photo-a",
+                width = null,
+                frame = tallFrame,
+            ),
+            attachment(
+                id = "photo-b",
+                height = null,
+                frame = tallFrame,
+            ),
+        )
+
+        // When
+        val tiles = sharedTilesOf(attachments, now, TimeZone.UTC)
+
+        // Then
+        assertEquals(listOf(null, null), tiles.map { it.thumbnailPlacement })
+    }
+
     private val now = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
 
     private fun part(
@@ -297,6 +355,14 @@ class SharedBillRowsTest {
     )
 
     // Why: by default Bruno paid R$ 642 split equally among Ana, Bruno and Carla.
+    // Why: the square framed on a landscape photo, as "Adjust photo" left it.
+    private val tallFrame = PhotoFrame(
+        left = 0.2f,
+        top = 0.1f,
+        width = 0.5f,
+        height = 0.6f,
+    )
+
     private fun bill(
         payers: List<SharedBillPart> = listOf(part(BRUNO, "Bruno", 64_200)),
         shares: List<SharedBillPart> = listOf(
@@ -327,14 +393,18 @@ class SharedBillRowsTest {
         addedByName: String? = "Ana",
         addedAt: Long = now - HOUR,
         imageUrl: String? = "https://signed/$id.jpg",
+        width: Int? = 1600,
+        height: Int? = 1200,
+        frame: PhotoFrame? = null,
     ): SharedBillAttachment = SharedBillAttachment(
         id = id,
         kind = kind,
-        width = 1600,
-        height = 1200,
+        width = width,
+        height = height,
         addedByName = addedByName,
         addedAt = addedAt,
         imageUrl = imageUrl,
+        frame = frame,
     )
 
     private companion object {

@@ -8,6 +8,7 @@ import { AvatarStack, stackOf } from '@/components/AvatarStack'
 import { PayingMethodLabel } from '@/components/PayingMethodTile'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 import { LoadingRegion, Skeleton, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
@@ -113,7 +114,14 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   )
   const commentDialogs = <CommentDialogs state={state} presenter={presenter} />
   // Why: a photo picked is framed in the attachment tile's rounded square before it is attached.
-  const photoCrop = state.photoCrop && <PhotoCropDialog crop={state.photoCrop} presenter={presenter.crop} frame="rounded-square" />
+  const photoCrop = state.photoCrop && (
+    <PhotoCropDialog
+      crop={state.photoCrop}
+      presenter={presenter.crop}
+      frame="rounded-square"
+      extraControl={<KeepWholePhotoSwitch isOn={state.keepsWholePhoto} onChange={(isOn) => presenter.keepWholePhoto(isOn)} />}
+    />
+  )
 
   if (isDesktop) {
     const body = !isLoaded ? (
@@ -435,5 +443,18 @@ function ShareRow({ row, money, onOpen }: { row: JsBillShareRow; money: Money; o
       </span>
       </PersonButton>
     </li>
+  )
+}
+
+/*
+ * Why: "Show the whole photo when opened" in "Adjust photo", only for a bill's photo (beta feedback of 2026-11-25): on,
+ * the viewer shows the whole photo and the tile the square framed; off, both show the square.
+ */
+function KeepWholePhotoSwitch({ isOn, onChange }: { isOn: boolean; onChange: (isOn: boolean) => void }) {
+  return (
+    <label className="flex min-h-11 cursor-pointer items-center justify-between gap-4 text-sm text-white">
+      {t('billDetail_keepWholePhoto')}
+      <Switch checked={isOn} onCheckedChange={onChange} className="data-[state=checked]:bg-white data-[state=unchecked]:bg-white/12 [&>span]:data-[state=checked]:bg-black" />
+    </label>
   )
 }

@@ -115,6 +115,7 @@
     <string name="bill_detail_attachment_yesterday">včera</string>
     <string name="bill_detail_attachment_open">Otvoriť</string>
     <string name="bill_detail_add_photo">Pridať fotku</string>
+    <string name="bill_detail_keep_whole_photo">Pri otvorení zobraziť celú fotku</string>
     <string name="bill_detail_add_photo_menu">Fotoaparát alebo galéria</string>
     <string name="bill_detail_take_photo">Odfotiť</string>
     <string name="bill_detail_choose_photo">Vybrať z galérie</string>

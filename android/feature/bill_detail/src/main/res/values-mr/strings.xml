@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">काल</string>
     <string name="bill_detail_attachment_open">उघडा</string>
     <string name="bill_detail_add_photo">फोटो जोडा</string>
+    <string name="bill_detail_keep_whole_photo">उघडल्यावर संपूर्ण फोटो दाखवा</string>
     <string name="bill_detail_add_photo_menu">कॅमेरा किंवा गॅलरी</string>
     <string name="bill_detail_take_photo">फोटो काढा</string>
     <string name="bill_detail_choose_photo">गॅलरीमधून निवडा</string>

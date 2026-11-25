@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">গতকাল</string>
     <string name="bill_detail_attachment_open">খুলুন</string>
     <string name="bill_detail_add_photo">ছবি যোগ করুন</string>
+    <string name="bill_detail_keep_whole_photo">খুললে পুরো ছবি দেখান</string>
     <string name="bill_detail_add_photo_menu">ক্যামেরা বা গ্যালারি</string>
     <string name="bill_detail_take_photo">ছবি তুলুন</string>
     <string name="bill_detail_choose_photo">গ্যালারি থেকে বেছে নিন</string>

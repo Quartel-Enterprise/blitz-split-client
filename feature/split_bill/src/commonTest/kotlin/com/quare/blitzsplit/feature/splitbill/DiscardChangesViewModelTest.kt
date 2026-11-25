@@ -1135,7 +1135,7 @@ class DiscardChangesViewModelTest {
             offerCategoryTeach = {},
             takePickedReceipt = { null },
             readReceipt = { _, _, _ -> CompletableDeferred<ReceiptScan>().also { pendingReads += it }.await() },
-            attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
+            attachBillImage = { _, _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             // Why: the form opens once bitcoin's unit is read, so one never read keeps it from loading.
             observeBitcoinInSats = { if (isSatsUnitRead) flowOf(false) else MutableSharedFlow() },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },

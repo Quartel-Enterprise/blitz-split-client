@@ -456,6 +456,7 @@ export const sr: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Fiskalni račun',
   billDetail_attachmentQueued: 'Na čekanju',
   billDetail_addPhoto: 'Dodaj fotografiju',
+  billDetail_keepWholePhoto: 'Prikaži celu fotografiju pri otvaranju',
   billDetail_takePhoto: 'Slikaj',
   billDetail_choosePhoto: 'Izaberi fotografiju',
   billDetail_viewerPhotoTitle: 'Fotografija {number} od {count}',

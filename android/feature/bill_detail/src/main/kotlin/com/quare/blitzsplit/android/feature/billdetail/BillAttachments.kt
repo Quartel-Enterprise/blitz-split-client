@@ -45,11 +45,13 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,7 +68,9 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.theme.pendingOnInverseSurfaceColor
 import com.quare.blitzsplit.android.platform.PhotoPickers
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.model.PhotoFramePlacement
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
+import kotlin.math.roundToInt
 
 // Why: the canvas' tiles, 104×80 and 92×70 on a phone lying down, where the screen is short.
 private val regularTile = TileSize(104.dp, 80.dp)
@@ -224,11 +228,14 @@ private fun AttachmentTile(
                 )
             }
             image?.let {
+                val placement = attachment.thumbnailPlacement
                 AsyncImage(
                     model = it,
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.matchParentSize(),
+                    contentScale = if (placement == null) ContentScale.Crop else ContentScale.FillBounds,
+                    modifier = Modifier
+                        .matchParentSize()
+                        .let { modifier -> placement?.let { modifier.framedIn(it) } ?: modifier },
                     onState = { imageState -> isImageDownloading = imageState is AsyncImagePainter.State.Loading },
                 )
             }
@@ -436,4 +443,26 @@ private fun attachmentDayTextOf(
     RelativeDay.TODAY -> stringResource(R.string.bill_detail_attachment_today)
     RelativeDay.YESTERDAY -> stringResource(R.string.bill_detail_attachment_yesterday)
     RelativeDay.OTHER -> dates.toDateText(attachment.addedAt)
+}
+
+/*
+ * Why: a photo kept whole shows the square framed in "Adjust photo", covering the thumbnail around its center as the
+ * square image of an older photo does with ContentScale.Crop.
+ */
+private fun Modifier.framedIn(placement: PhotoFramePlacement): Modifier = layout { measurable, constraints ->
+    val width = constraints.maxWidth
+    val height = constraints.maxHeight
+    val side = maxOf(width, height).toFloat()
+    val image = measurable.measure(
+        Constraints.fixed(
+            width = (placement.width * side).roundToInt().coerceAtLeast(1),
+            height = (placement.height * side).roundToInt().coerceAtLeast(1),
+        ),
+    )
+    layout(width, height) {
+        image.place(
+            x = (placement.x * side + (width - side) / 2).roundToInt(),
+            y = (placement.y * side + (height - side) / 2).roundToInt(),
+        )
+    }
 }

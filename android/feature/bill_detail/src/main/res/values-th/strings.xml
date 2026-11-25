@@ -112,6 +112,7 @@
     <string name="bill_detail_attachment_yesterday">เมื่อวาน</string>
     <string name="bill_detail_attachment_open">เปิด</string>
     <string name="bill_detail_add_photo">เพิ่มรูปภาพ</string>
+    <string name="bill_detail_keep_whole_photo">แสดงรูปภาพทั้งหมดเมื่อเปิด</string>
     <string name="bill_detail_add_photo_menu">กล้องหรือแกลเลอรี</string>
     <string name="bill_detail_take_photo">ถ่ายรูป</string>
     <string name="bill_detail_choose_photo">เลือกจากแกลเลอรี</string>

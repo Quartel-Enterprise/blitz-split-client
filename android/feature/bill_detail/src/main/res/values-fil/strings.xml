@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">kahapon</string>
     <string name="bill_detail_attachment_open">Buksan</string>
     <string name="bill_detail_add_photo">Magdagdag ng larawan</string>
+    <string name="bill_detail_keep_whole_photo">Ipakita ang buong larawan kapag binuksan</string>
     <string name="bill_detail_add_photo_menu">Camera o gallery</string>
     <string name="bill_detail_take_photo">Kumuha ng larawan</string>
     <string name="bill_detail_choose_photo">Pumili sa gallery</string>

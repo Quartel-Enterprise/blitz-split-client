@@ -118,7 +118,7 @@ class ReceiptLockViewModelTest {
             offerCategoryTeach = {},
             takePickedReceipt = { null },
             readReceipt = { _, _, _ -> CompletableDeferred<ReceiptScan>().also { pendingReads += it }.await() },
-            attachBillImage = { _, _, _, _, _ -> Result.failure(IllegalStateException("not attached here")) },
+            attachBillImage = { _, _, _, _, _, _ -> Result.failure(IllegalStateException("not attached here")) },
             observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )

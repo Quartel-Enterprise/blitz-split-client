@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">gestern</string>
     <string name="bill_detail_attachment_open">Öffnen</string>
     <string name="bill_detail_add_photo">Foto hinzufügen</string>
+    <string name="bill_detail_keep_whole_photo">Ganzes Foto beim Öffnen zeigen</string>
     <string name="bill_detail_add_photo_menu">Kamera oder Galerie</string>
     <string name="bill_detail_take_photo">Foto aufnehmen</string>
     <string name="bill_detail_choose_photo">Aus Galerie wählen</string>

@@ -21,7 +21,18 @@ const WHEEL_ZOOM_SPEED = 0.002
  * ViewModel's (`JsPhotoCropState`); here only the pointer, the wheel and the pinch are read, in fractions of the
  * frame's side.
  */
-export function PhotoCropDialog({ crop, presenter, frame }: { crop: JsPhotoCropState; presenter: PhotoCropPresenter; frame: PhotoCropFrame }) {
+export function PhotoCropDialog({
+  crop,
+  presenter,
+  frame,
+  extraControl,
+}: {
+  crop: JsPhotoCropState
+  presenter: PhotoCropPresenter
+  frame: PhotoCropFrame
+  /** A control only one screen has, over Cancel and Done (a bill photo's "Show the whole photo when opened"). */
+  extraControl?: ReactNode
+}) {
   return (
     <Dialog open onOpenChange={(open) => !open && presenter.dismiss()}>
       <DialogContent
@@ -36,7 +47,7 @@ export function PhotoCropDialog({ crop, presenter, frame }: { crop: JsPhotoCropS
           <DialogDescription className="sr-only">{t('photoCrop_hint')}</DialogDescription>
         </div>
         <PhotoCropArea crop={crop} presenter={presenter} frame={frame} />
-        <PhotoCropControls crop={crop} presenter={presenter} />
+        <PhotoCropControls crop={crop} presenter={presenter} extraControl={extraControl} />
       </DialogContent>
     </Dialog>
   )
@@ -161,7 +172,7 @@ function useFrameSide(area: RefObject<HTMLDivElement | null>): number {
   return side
 }
 
-function PhotoCropControls({ crop, presenter }: { crop: JsPhotoCropState; presenter: PhotoCropPresenter }) {
+function PhotoCropControls({ crop, presenter, extraControl }: { crop: JsPhotoCropState; presenter: PhotoCropPresenter; extraControl?: ReactNode }) {
   return (
     <div className="flex shrink-0 flex-col gap-3 px-6 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
       <div className="flex items-center gap-3">
@@ -190,6 +201,7 @@ function PhotoCropControls({ crop, presenter }: { crop: JsPhotoCropState; presen
           <RotateCw />
         </OrientationButton>
       </div>
+      {extraControl}
       <div className="mt-1 grid grid-cols-2 gap-3">
         <Button variant="outline" className="h-11 border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white" onClick={() => presenter.dismiss()}>
           {t('common_cancel')}

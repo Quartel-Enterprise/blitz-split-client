@@ -4,6 +4,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.model.PhotoFrame
+import com.quare.blitzsplit.core.model.PhotoFramePlacement
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
 import kotlinx.datetime.TimeZone
 
@@ -36,6 +38,7 @@ internal fun tilesOf(
                 attachment.id !in imageUrls,
             width = attachment.width,
             height = attachment.height,
+            thumbnailPlacement = placementOf(attachment.frame, attachment.width, attachment.height),
             photoNumber = if (isReceipt) null else ++photoNumber,
             adderName = member?.name,
             isAddedByMe = member?.isMe == true,
@@ -49,4 +52,14 @@ internal fun tilesOf(
             canRemove = !isReceipt,
         )
     }
+}
+
+// Why: a photo kept whole draws its framed square in the tile, once its size is known to place it.
+internal fun placementOf(
+    frame: PhotoFrame?,
+    width: Int?,
+    height: Int?,
+): PhotoFramePlacement? {
+    if (frame == null || width == null || height == null) return null
+    return frame.toPlacement(width, height)
 }

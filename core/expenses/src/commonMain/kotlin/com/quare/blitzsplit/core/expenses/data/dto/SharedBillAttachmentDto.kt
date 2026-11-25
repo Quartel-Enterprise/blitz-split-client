@@ -10,6 +10,10 @@ data class SharedBillAttachmentDto(
     @SerialName("path") val path: String,
     @SerialName("width") val width: Int?,
     @SerialName("height") val height: Int?,
+    @SerialName("frame_left") val frameLeft: Float?,
+    @SerialName("frame_top") val frameTop: Float?,
+    @SerialName("frame_width") val frameWidth: Float?,
+    @SerialName("frame_height") val frameHeight: Float?,
     @SerialName("added_by_name") val addedByName: String?,
     @SerialName("added_at") val addedAt: Long,
 )

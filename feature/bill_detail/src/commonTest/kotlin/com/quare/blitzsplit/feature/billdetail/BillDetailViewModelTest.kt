@@ -5249,7 +5249,7 @@ class BillDetailViewModelTest {
             observeBillComments = ObserveBillCommentsUseCase(comments),
             observeBillHistory = ObserveBillHistoryUseCase(activity),
             loadCropPhoto = { Result.failure(UnsupportedOperationException()) },
-            prepareBillPhoto = { _, _ -> Result.failure(UnsupportedOperationException()) },
+            prepareBillPhoto = { _, _, _ -> Result.failure(UnsupportedOperationException()) },
             attachBillImage = AttachBillImageUseCase(
                 attachments,
                 currentTimeMillis = { nowMillis },

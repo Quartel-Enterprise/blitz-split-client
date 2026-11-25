@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">вчера</string>
     <string name="bill_detail_attachment_open">Отвори</string>
     <string name="bill_detail_add_photo">Добави снимка</string>
+    <string name="bill_detail_keep_whole_photo">Показване на цялата снимка при отваряне</string>
     <string name="bill_detail_add_photo_menu">Камера или галерия</string>
     <string name="bill_detail_take_photo">Снимай</string>
     <string name="bill_detail_choose_photo">Избери от галерията</string>

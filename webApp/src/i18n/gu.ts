@@ -457,6 +457,7 @@ export const gu: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'રસીદ',
   billDetail_attachmentQueued: 'કતારમાં',
   billDetail_addPhoto: 'ફોટો ઉમેરો',
+  billDetail_keepWholePhoto: 'ખોલતાં આખો ફોટો બતાવો',
   billDetail_takePhoto: 'ફોટો લો',
   billDetail_choosePhoto: 'ફોટો પસંદ કરો',
   billDetail_viewerPhotoTitle: '{count} માંથી ફોટો {number}',

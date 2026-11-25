@@ -571,6 +571,329 @@ class PhotoCropTest {
         assertEquals(0.3f, mirrored.offsetY, TOLERANCE)
     }
 
+    @Test
+    fun `GIVEN an upright wide photo WHEN reading its turned size THEN it is the photo size`() {
+        // Given
+        val crop = PhotoCrop.of(1200, 600)
+
+        // When
+        val size = crop.turnedWidth to crop.turnedHeight
+
+        // Then
+        assertEquals(1200 to 600, size)
+    }
+
+    @Test
+    fun `GIVEN a wide photo turned a quarter WHEN reading its turned size THEN width and height swap`() {
+        // Given
+        val crop = PhotoCrop.of(1200, 600).toTurned()
+
+        // When
+        val size = crop.turnedWidth to crop.turnedHeight
+
+        // Then
+        assertEquals(600 to 1200, size)
+    }
+
+    @Test
+    fun `GIVEN a wide photo turned half WHEN reading its turned size THEN it is the photo size`() {
+        // Given
+        val crop = PhotoCrop.of(1200, 600).copy(quarterTurns = 2)
+
+        // When
+        val size = crop.turnedWidth to crop.turnedHeight
+
+        // Then
+        assertEquals(1200 to 600, size)
+    }
+
+    @Test
+    fun `GIVEN a wide photo turned three quarters WHEN reading its turned size THEN width and height swap`() {
+        // Given
+        val crop = PhotoCrop.of(1200, 600).copy(quarterTurns = 3)
+
+        // When
+        val size = crop.turnedWidth to crop.turnedHeight
+
+        // Then
+        assertEquals(600 to 1200, size)
+    }
+
+    @Test
+    fun `GIVEN a wide photo mirrored horizontally WHEN reading its turned size THEN it is the photo size`() {
+        // Given
+        val crop = PhotoCrop.of(1200, 600).toMirroredHorizontally()
+
+        // When
+        val size = crop.turnedWidth to crop.turnedHeight
+
+        // Then
+        assertEquals(1200 to 600, size)
+    }
+
+    @Test
+    fun `GIVEN a wide photo turned and mirrored WHEN reading its turned size THEN width and height stay swapped`() {
+        // Given
+        val crop = PhotoCrop.of(1200, 600).toTurned().toMirroredVertically()
+
+        // When
+        val size = crop.turnedWidth to crop.turnedHeight
+
+        // Then
+        assertEquals(600 to 1200, size)
+    }
+
+    @Test
+    fun `GIVEN a wide photo just picked WHEN finding its frame THEN it is the centered square of full height`() {
+        // Given
+        val crop = PhotoCrop.of(1200, 600)
+
+        // When
+        val frame = crop.toFrameInTurnedPhoto()
+
+        // Then
+        assertSameFrame(
+            PhotoFrame(
+                left = 0.25f,
+                top = 0f,
+                width = 0.5f,
+                height = 1f,
+            ),
+            frame,
+        )
+    }
+
+    @Test
+    fun `GIVEN a tall photo just picked WHEN finding its frame THEN it is the centered square of full width`() {
+        // Given
+        val crop = PhotoCrop.of(600, 1200)
+
+        // When
+        val frame = crop.toFrameInTurnedPhoto()
+
+        // Then
+        assertSameFrame(
+            PhotoFrame(
+                left = 0f,
+                top = 0.25f,
+                width = 1f,
+                height = 0.5f,
+            ),
+            frame,
+        )
+    }
+
+    @Test
+    fun `GIVEN a square photo just picked WHEN finding its frame THEN it is the whole photo`() {
+        // Given
+        val crop = PhotoCrop.of(800, 800)
+
+        // When
+        val frame = crop.toFrameInTurnedPhoto()
+
+        // Then
+        assertSameFrame(
+            PhotoFrame(
+                left = 0f,
+                top = 0f,
+                width = 1f,
+                height = 1f,
+            ),
+            frame,
+        )
+    }
+
+    @Test
+    fun `GIVEN a wide photo zoomed in twice WHEN finding its frame THEN it is a smaller square still centered`() {
+        // Given
+        val crop = PhotoCrop.of(1200, 600).toZoomed(2f)
+
+        // When
+        val frame = crop.toFrameInTurnedPhoto()
+
+        // Then
+        assertSameFrame(
+            PhotoFrame(
+                left = 0.375f,
+                top = 0.25f,
+                width = 0.25f,
+                height = 0.5f,
+            ),
+            frame,
+        )
+    }
+
+    @Test
+    fun `GIVEN a wide photo dragged right WHEN finding its frame THEN the frame touches the left edge`() {
+        // Given
+        val crop = PhotoCrop.of(1200, 600).toDragged(5f, 0f)
+
+        // When
+        val frame = crop.toFrameInTurnedPhoto()
+
+        // Then
+        assertSameFrame(
+            PhotoFrame(
+                left = 0f,
+                top = 0f,
+                width = 0.5f,
+                height = 1f,
+            ),
+            frame,
+        )
+    }
+
+    @Test
+    fun `GIVEN a wide photo dragged left WHEN finding its frame THEN the frame touches the right edge`() {
+        // Given
+        val crop = PhotoCrop.of(1200, 600).toDragged(-5f, 0f)
+
+        // When
+        val frame = crop.toFrameInTurnedPhoto()
+
+        // Then
+        assertEquals(1f, frame.left + frame.width, TOLERANCE)
+        assertSameFrame(
+            PhotoFrame(
+                left = 0.5f,
+                top = 0f,
+                width = 0.5f,
+                height = 1f,
+            ),
+            frame,
+        )
+    }
+
+    @Test
+    fun `GIVEN a zoomed photo dragged to a corner WHEN finding its frame THEN it sits in the opposite corner`() {
+        // Given
+        val crop = PhotoCrop.of(1000, 1000).toZoomed(2f).toDragged(5f, -5f)
+
+        // When
+        val frame = crop.toFrameInTurnedPhoto()
+
+        // Then
+        assertSameFrame(
+            PhotoFrame(
+                left = 0f,
+                top = 0.5f,
+                width = 0.5f,
+                height = 0.5f,
+            ),
+            frame,
+        )
+    }
+
+    @Test
+    fun `GIVEN a tall photo turned a quarter WHEN finding its frame THEN fractions refer to the turned wide photo`() {
+        // Given
+        val crop = PhotoCrop.of(600, 1200).toTurned()
+
+        // When
+        val frame = crop.toFrameInTurnedPhoto()
+
+        // Then
+        assertSameFrame(
+            PhotoFrame(
+                left = 0.25f,
+                top = 0f,
+                width = 0.5f,
+                height = 1f,
+            ),
+            frame,
+        )
+    }
+
+    @Test
+    fun `GIVEN a tall photo framed at its top and turned WHEN finding its frame THEN it sits on the right edge`() {
+        // Given
+        val crop = PhotoCrop.of(600, 1200).toDragged(0f, 5f).toTurned()
+
+        // When
+        val frame = crop.toFrameInTurnedPhoto()
+
+        // Then
+        assertSameFrame(
+            PhotoFrame(
+                left = 0.5f,
+                top = 0f,
+                width = 0.5f,
+                height = 1f,
+            ),
+            frame,
+        )
+    }
+
+    @Test
+    fun `GIVEN a photo framed at its left and mirrored WHEN finding its frame THEN it lands on the right edge`() {
+        // Given
+        val crop = PhotoCrop.of(1200, 600).toDragged(5f, 0f).toMirroredHorizontally()
+
+        // When
+        val frame = crop.toFrameInTurnedPhoto()
+
+        // Then
+        assertSameFrame(
+            PhotoFrame(
+                left = 0.5f,
+                top = 0f,
+                width = 0.5f,
+                height = 1f,
+            ),
+            frame,
+        )
+    }
+
+    @Test
+    fun `GIVEN a tall photo framed at its top WHEN mirroring it vertically THEN the frame lands on the bottom edge`() {
+        // Given
+        val crop = PhotoCrop.of(600, 1200).toDragged(0f, 5f).toMirroredVertically()
+
+        // When
+        val frame = crop.toFrameInTurnedPhoto()
+
+        // Then
+        assertSameFrame(
+            PhotoFrame(
+                left = 0f,
+                top = 0.5f,
+                width = 1f,
+                height = 0.5f,
+            ),
+            frame,
+        )
+    }
+
+    @Test
+    fun `GIVEN a photo held past its edges WHEN finding its frame THEN the frame is not clamped to the photo`() {
+        // Given
+        val crop = PhotoCrop.of(1000, 1000).copy(offsetX = 0.5f)
+
+        // When
+        val frame = crop.toFrameInTurnedPhoto()
+
+        // Then
+        assertSameFrame(
+            PhotoFrame(
+                left = -0.5f,
+                top = 0f,
+                width = 1f,
+                height = 1f,
+            ),
+            frame,
+        )
+    }
+
+    private fun assertSameFrame(
+        expected: PhotoFrame,
+        actual: PhotoFrame,
+    ) {
+        assertEquals(expected.left, actual.left, TOLERANCE)
+        assertEquals(expected.top, actual.top, TOLERANCE)
+        assertEquals(expected.width, actual.width, TOLERANCE)
+        assertEquals(expected.height, actual.height, TOLERANCE)
+    }
+
     private fun assertSameCrop(
         expected: PhotoCrop,
         actual: PhotoCrop,

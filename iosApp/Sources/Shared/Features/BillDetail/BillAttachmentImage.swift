@@ -78,10 +78,27 @@ struct AttachmentImage<Placeholder: View>: View {
         }
     }
 
+    @ViewBuilder
     private func drawn(image: Image) -> some View {
-        image
-            .resizable()
-            .aspectRatio(contentMode: contentMode)
+        if contentMode == .fill, let placement = attachment.thumbnailPlacement {
+            // Why: a photo kept whole shows the square framed in "Adjust photo", covering the tile around its center.
+            GeometryReader { proxy in
+                let side = max(proxy.size.width, proxy.size.height)
+                image
+                    .resizable()
+                    .frame(width: CGFloat(placement.width) * side, height: CGFloat(placement.height) * side)
+                    .offset(
+                        x: CGFloat(placement.x) * side + (proxy.size.width - side) / 2,
+                        y: CGFloat(placement.y) * side + (proxy.size.height - side) / 2,
+                    )
+            }
+            // Why: the placement is in the photo's own left-to-right coordinates, whatever the language's direction.
+            .environment(\.layoutDirection, .leftToRight)
+        } else {
+            image
+                .resizable()
+                .aspectRatio(contentMode: contentMode)
+        }
     }
 
     private func platformImage(_ image: AttachmentPlatformImage) -> Image {

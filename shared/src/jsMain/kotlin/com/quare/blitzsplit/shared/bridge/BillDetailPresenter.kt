@@ -5,7 +5,6 @@ package com.quare.blitzsplit.shared.bridge
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentLiker
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentShare
@@ -132,31 +131,6 @@ class JsBillReplyTarget(
     val isMe: Boolean,
 )
 
-/*
- * Why: one of "Anexos": localImage (an Int8Array, the same one on every state, so the page makes one object URL per
- * id) for a photo added here, else imageUrl, the signed URL, null offline or until it is signed.
- */
-class JsBillAttachment(
-    val id: String,
-    val isReceipt: Boolean,
-    val localImage: ByteArray?,
-    val imageUrl: String?,
-    // Why: online, its URL is still being signed: the tile shimmers, as it does while the image downloads.
-    val isImageLoading: Boolean,
-    val width: Int?,
-    val height: Int?,
-    // Why: "Foto 2"; null for the receipt.
-    val photoNumber: Int?,
-    // Why: null for someone no longer in the group.
-    val adderName: String?,
-    val isAddedByMe: Boolean,
-    val addedAt: Double,
-    // Why: "today", "yesterday" or "other", when the page writes the time.
-    val addedDay: String,
-    val isPending: Boolean,
-    val canRemove: Boolean,
-)
-
 class JsBillDetailState(
     val groupName: String,
     // Why: the group's rounded square beside its name over the bill; the color's code ("blue").
@@ -226,6 +200,8 @@ class JsBillDetailState(
     val isAddingPhoto: Boolean,
     // Why: "Ajustar foto" while the photo picked is being framed, in the tile's rounded square.
     val photoCrop: JsPhotoCropState?,
+    // Why: "Show the whole photo when opened", the switch of "Ajustar foto" for a bill's photo.
+    val keepsWholePhoto: Boolean,
     // Why: "Paid with", this device's user's own mark, which only they see; null for none.
     val paidWith: JsPayingMethod?,
     // Why: the viewer's page while it is open, else null.
@@ -306,6 +282,7 @@ class BillDetailPresenter(
                 canAddPhoto = state.canAddPhoto,
                 isAddingPhoto = state.isAddingPhoto,
                 photoCrop = state.photoCrop?.toJs(),
+                keepsWholePhoto = state.keepsWholePhoto,
                 paidWith = state.shownPaidWith?.toJsPayingMethod(),
                 viewedAttachmentIndex = state.viewedAttachmentIndex,
             )
@@ -454,6 +431,10 @@ class BillDetailPresenter(
         viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(source))
     }
 
+    fun keepWholePhoto(isOn: Boolean) {
+        viewModel.onEvent(BillDetailUiEvent.OnKeepWholePhotoChanged(isOn))
+    }
+
     fun photoUnreadable() {
         viewModel.onEvent(BillDetailUiEvent.OnPhotoUnreadable)
     }
@@ -570,21 +551,4 @@ internal fun toJsBillReplyTarget(target: BillReplyTarget): JsBillReplyTarget = J
     commentId = target.commentId,
     name = target.name,
     isMe = target.isMe,
-)
-
-internal fun toJsBillAttachment(tile: BillAttachmentTile): JsBillAttachment = JsBillAttachment(
-    id = tile.id,
-    isReceipt = tile.isReceipt,
-    localImage = tile.localImage,
-    imageUrl = tile.imageUrl,
-    isImageLoading = tile.isImageLoading,
-    width = tile.width,
-    height = tile.height,
-    photoNumber = tile.photoNumber,
-    adderName = tile.adderName,
-    isAddedByMe = tile.isAddedByMe,
-    addedAt = tile.addedAt.toDouble(),
-    addedDay = toJsRelativeDay(tile.addedDay),
-    isPending = tile.isPending,
-    canRemove = tile.canRemove,
 )

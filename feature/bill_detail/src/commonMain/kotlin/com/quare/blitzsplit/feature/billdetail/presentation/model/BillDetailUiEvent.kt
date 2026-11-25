@@ -72,6 +72,11 @@ sealed interface BillDetailUiEvent : UiEvent {
 
             is OnPhotoCrop -> event.toEventAnalytics(BILL_DETAIL_SOURCE)
 
+            is OnKeepWholePhotoChanged -> EventAnalytics.Automatic(
+                name = "bill_photo_keep_whole_toggled",
+                params = mapOf("is_on" to isOn),
+            )
+
             // Why: the picker handing back an item the UI couldn't read, not a tap.
             OnPhotoUnreadable -> EventAnalytics.NotTracked
 
@@ -172,6 +177,11 @@ sealed interface BillDetailUiEvent : UiEvent {
     // Why: what was done in "Ajustar foto", which a picked photo opens in before it is attached.
     data class OnPhotoCrop(
         val event: PhotoCropEvent,
+    ) : BillDetailUiEvent
+
+    // Why: "Show the whole photo when opened" switched in "Ajustar foto".
+    data class OnKeepWholePhotoChanged(
+        val isOn: Boolean,
     ) : BillDetailUiEvent
 
     // Why: the platform couldn't read the file picked (a cloud photo not downloaded, say).

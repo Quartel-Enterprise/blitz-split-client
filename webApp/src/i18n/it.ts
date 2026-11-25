@@ -455,6 +455,7 @@ export const it: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Scontrino',
   billDetail_attachmentQueued: 'In coda',
   billDetail_addPhoto: 'Aggiungi foto',
+  billDetail_keepWholePhoto: 'Mostra la foto intera all’apertura',
   billDetail_takePhoto: 'Scatta una foto',
   billDetail_choosePhoto: 'Scegli foto',
   billDetail_viewerPhotoTitle: 'Foto {number} di {count}',

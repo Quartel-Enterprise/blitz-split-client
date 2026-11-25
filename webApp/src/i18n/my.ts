@@ -456,6 +456,7 @@ export const my: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'ပြေစာ',
   billDetail_attachmentQueued: 'တန်းစီထားသည်',
   billDetail_addPhoto: 'ဓာတ်ပုံ ထည့်ရန်',
+  billDetail_keepWholePhoto: 'ဖွင့်သည့်အခါ ဓာတ်ပုံတစ်ခုလုံးကို ပြရန်',
   billDetail_takePhoto: 'ဓာတ်ပုံ ရိုက်ရန်',
   billDetail_choosePhoto: 'ဓာတ်ပုံ ရွေးရန်',
   billDetail_viewerPhotoTitle: 'ဓာတ်ပုံ {count} ပုံအနက် {number}',

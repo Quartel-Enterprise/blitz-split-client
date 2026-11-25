@@ -439,6 +439,7 @@ export const hu: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Nyugta',
   billDetail_attachmentQueued: 'Várakozik',
   billDetail_addPhoto: 'Fotó hozzáadása',
+  billDetail_keepWholePhoto: 'A teljes fotó megjelenítése megnyitáskor',
   billDetail_takePhoto: 'Fotó készítése',
   billDetail_choosePhoto: 'Fotó kiválasztása',
   billDetail_viewerPhotoTitle: '{number}/{count}. fotó',

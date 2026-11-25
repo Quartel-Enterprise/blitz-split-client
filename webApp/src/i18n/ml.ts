@@ -440,6 +440,7 @@ export const ml: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'രസീത്',
   billDetail_attachmentQueued: 'ക്യൂവിൽ',
   billDetail_addPhoto: 'ഫോട്ടോ ചേർക്കുക',
+  billDetail_keepWholePhoto: 'തുറക്കുമ്പോൾ മുഴുവൻ ഫോട്ടോയും കാണിക്കുക',
   billDetail_takePhoto: 'ഫോട്ടോ എടുക്കുക',
   billDetail_choosePhoto: 'ഫോട്ടോ തിരഞ്ഞെടുക്കുക',
   billDetail_viewerPhotoTitle: 'ഫോട്ടോ {number} / {count}',

@@ -456,6 +456,7 @@ export const he: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'קבלה',
   billDetail_attachmentQueued: 'בתור',
   billDetail_addPhoto: 'הוספת תמונה',
+  billDetail_keepWholePhoto: 'הצגת התמונה המלאה בפתיחה',
   billDetail_takePhoto: 'צילום תמונה',
   billDetail_choosePhoto: 'בחירת תמונה',
   billDetail_viewerPhotoTitle: 'תמונה {number} מתוך {count}',

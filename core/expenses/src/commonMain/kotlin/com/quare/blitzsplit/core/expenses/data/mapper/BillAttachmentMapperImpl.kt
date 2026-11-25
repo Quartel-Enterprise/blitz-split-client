@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.expenses.data.mapper
 import com.quare.blitzsplit.core.expenses.data.dto.BillAttachmentDto
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
+import com.quare.blitzsplit.core.model.PhotoFrame
 import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentRow
 
@@ -22,6 +23,7 @@ class BillAttachmentMapperImpl : BillAttachmentMapper {
             updatedAt = row.updatedAt,
             isPending = row.pendingSync,
             hasPendingImage = row.hasPendingJpeg,
+            frame = PhotoFrame.ofOrNull(row.frameLeft, row.frameTop, row.frameWidth, row.frameHeight),
         )
     }
 
@@ -35,6 +37,10 @@ class BillAttachmentMapperImpl : BillAttachmentMapper {
         kind = attachment.kind.code,
         width = attachment.width,
         height = attachment.height,
+        frameLeft = attachment.frame?.left,
+        frameTop = attachment.frame?.top,
+        frameWidth = attachment.frame?.width,
+        frameHeight = attachment.frame?.height,
         addedByUserId = attachment.addedByUserId,
         addedByMemberId = attachment.addedByMemberId,
         addedAt = attachment.addedAt,
@@ -51,6 +57,10 @@ class BillAttachmentMapperImpl : BillAttachmentMapper {
         kind = dto.kind,
         width = dto.width,
         height = dto.height,
+        frameLeft = dto.frameLeft,
+        frameTop = dto.frameTop,
+        frameWidth = dto.frameWidth,
+        frameHeight = dto.frameHeight,
         addedByUserId = dto.addedByUserId,
         addedByMemberId = dto.addedByMemberId,
         addedAt = dto.addedAt,
@@ -73,6 +83,10 @@ class BillAttachmentMapperImpl : BillAttachmentMapper {
         addedByMemberId = entity.addedByMemberId,
         width = entity.width,
         height = entity.height,
+        frameLeft = entity.frameLeft,
+        frameTop = entity.frameTop,
+        frameWidth = entity.frameWidth,
+        frameHeight = entity.frameHeight,
         isDeleted = entity.isDeleted,
         addedAt = entity.addedAt,
         updatedAt = entity.updatedAt,

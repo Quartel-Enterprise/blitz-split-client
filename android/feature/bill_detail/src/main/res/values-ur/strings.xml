@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">کل</string>
     <string name="bill_detail_attachment_open">کھولیں</string>
     <string name="bill_detail_add_photo">تصویر شامل کریں</string>
+    <string name="bill_detail_keep_whole_photo">کھولنے پر پوری تصویر دکھائیں</string>
     <string name="bill_detail_add_photo_menu">کیمرا یا گیلری</string>
     <string name="bill_detail_take_photo">تصویر لیں</string>
     <string name="bill_detail_choose_photo">گیلری سے منتخب کریں</string>

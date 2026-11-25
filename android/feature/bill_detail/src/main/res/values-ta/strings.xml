@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">நேற்று</string>
     <string name="bill_detail_attachment_open">திறக்கவும்</string>
     <string name="bill_detail_add_photo">புகைப்படத்தைச் சேர்க்கவும்</string>
+    <string name="bill_detail_keep_whole_photo">திறக்கும்போது முழுப் புகைப்படத்தையும் காட்டு</string>
     <string name="bill_detail_add_photo_menu">கேமரா அல்லது கேலரி</string>
     <string name="bill_detail_take_photo">புகைப்படம் எடுக்கவும்</string>
     <string name="bill_detail_choose_photo">கேலரியிலிருந்து தேர்ந்தெடுக்கவும்</string>

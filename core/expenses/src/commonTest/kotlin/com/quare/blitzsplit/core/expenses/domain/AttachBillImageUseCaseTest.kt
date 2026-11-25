@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AttachBillImageUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
+import com.quare.blitzsplit.core.model.PhotoFrame
 import com.quare.blitzsplit.core.provider.image.BillImage
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -44,6 +45,7 @@ class AttachBillImageUseCaseTest {
                     updatedAt = 7_000L,
                     isPending = true,
                     hasPendingImage = true,
+                    frame = null,
                 ),
                 saved,
             )
@@ -67,6 +69,7 @@ class AttachBillImageUseCaseTest {
                 height = 1_600,
             ),
             addedByMemberId = "member-ana",
+            frame = null,
         )
 
         // Then
@@ -143,6 +146,32 @@ class AttachBillImageUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a photo that keeps its whole image WHEN attaching it THEN stores the square its tile shows`() = runTest {
+        // Given
+        prepareScenario()
+        val frame = PhotoFrame(
+            left = -0.125f,
+            top = 0.25f,
+            width = 1.25f,
+            height = 0.5f,
+        )
+
+        // When
+        addAttachment(
+            kind = BillAttachmentKind.PHOTO,
+            frame = frame,
+        )
+
+        // Then
+        assertEquals(
+            frame,
+            repository.attachments.value
+                .single()
+                .frame,
+        )
+    }
+
+    @Test
     fun `GIVEN the bill has no room left WHEN adding a photo THEN says so and stores nothing`() = runTest {
         // Given
         prepareScenario(hasRoom = false)
@@ -173,6 +202,7 @@ class AttachBillImageUseCaseTest {
     private suspend fun addAttachment(
         kind: BillAttachmentKind,
         addedByMemberId: String? = "member-ana",
+        frame: PhotoFrame? = null,
     ): Result<BillAttachmentAddition> = useCase(
         expenseId = BILL_ID,
         groupId = GROUP_ID,
@@ -183,6 +213,7 @@ class AttachBillImageUseCaseTest {
             height = 1_200,
         ),
         addedByMemberId = addedByMemberId,
+        frame = frame,
     )
 
     private fun prepareScenario(

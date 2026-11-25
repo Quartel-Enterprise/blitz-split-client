@@ -439,6 +439,7 @@ export const et: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Tšekk',
   billDetail_attachmentQueued: 'Järjekorras',
   billDetail_addPhoto: 'Lisa foto',
+  billDetail_keepWholePhoto: 'Avamisel näita kogu fotot',
   billDetail_takePhoto: 'Tee foto',
   billDetail_choosePhoto: 'Vali foto',
   billDetail_viewerPhotoTitle: 'Foto {number}/{count}',

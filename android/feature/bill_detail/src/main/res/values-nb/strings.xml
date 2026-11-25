@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">i går</string>
     <string name="bill_detail_attachment_open">Åpne</string>
     <string name="bill_detail_add_photo">Legg til bilde</string>
+    <string name="bill_detail_keep_whole_photo">Vis hele bildet når det åpnes</string>
     <string name="bill_detail_add_photo_menu">Kamera eller galleri</string>
     <string name="bill_detail_take_photo">Ta bilde</string>
     <string name="bill_detail_choose_photo">Velg fra galleriet</string>

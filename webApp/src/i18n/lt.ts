@@ -440,6 +440,7 @@ export const lt: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Kvitas',
   billDetail_attachmentQueued: 'Eilėje',
   billDetail_addPhoto: 'Pridėti nuotrauką',
+  billDetail_keepWholePhoto: 'Atidarius rodyti visą nuotrauką',
   billDetail_takePhoto: 'Fotografuoti',
   billDetail_choosePhoto: 'Pasirinkti nuotrauką',
   billDetail_viewerPhotoTitle: 'Nuotrauka {number} iš {count}',

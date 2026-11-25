@@ -113,6 +113,7 @@
     <string name="bill_detail_attachment_yesterday">jana</string>
     <string name="bill_detail_attachment_open">Fungua</string>
     <string name="bill_detail_add_photo">Ongeza picha</string>
+    <string name="bill_detail_keep_whole_photo">Onyesha picha nzima inapofunguliwa</string>
     <string name="bill_detail_add_photo_menu">Kamera au matunzio</string>
     <string name="bill_detail_take_photo">Piga picha</string>
     <string name="bill_detail_choose_photo">Chagua kutoka matunzio</string>

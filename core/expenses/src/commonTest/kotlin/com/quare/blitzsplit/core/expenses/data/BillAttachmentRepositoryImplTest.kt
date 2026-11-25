@@ -767,6 +767,7 @@ class BillAttachmentRepositoryImplTest {
         updatedAt = 1L,
         isPending = hasPendingImage,
         hasPendingImage = hasPendingImage,
+        frame = null,
     )
 
     private fun pendingPhoto(
@@ -802,6 +803,10 @@ class BillAttachmentRepositoryImplTest {
         isDeleted = isDeleted,
         pendingJpeg = pendingJpeg,
         pendingSync = pendingSync,
+        frameLeft = null,
+        frameTop = null,
+        frameWidth = null,
+        frameHeight = null,
     )
 
     private fun dto(
@@ -819,6 +824,10 @@ class BillAttachmentRepositoryImplTest {
         isDeleted = isDeleted,
         addedAt = 1L,
         updatedAt = 2L,
+        frameLeft = null,
+        frameTop = null,
+        frameWidth = null,
+        frameHeight = null,
     )
 
     private fun prepareScenario(
@@ -901,6 +910,10 @@ private class FakeBillAttachmentLocalDataSource(
                 updatedAt = entity.updatedAt,
                 pendingSync = entity.pendingSync,
                 hasPendingJpeg = entity.pendingJpeg != null,
+                frameLeft = null,
+                frameTop = null,
+                frameWidth = null,
+                frameHeight = null,
             )
         }
     }

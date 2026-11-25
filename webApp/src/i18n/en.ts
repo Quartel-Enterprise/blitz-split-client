@@ -453,6 +453,7 @@ export const en = {
   billDetail_receiptBadge: 'Receipt',
   billDetail_attachmentQueued: 'Queued',
   billDetail_addPhoto: 'Add photo',
+  billDetail_keepWholePhoto: 'Show the whole photo when opened',
   billDetail_takePhoto: 'Take photo',
   billDetail_choosePhoto: 'Choose photo',
   billDetail_viewerPhotoTitle: 'Photo {number} of {count}',

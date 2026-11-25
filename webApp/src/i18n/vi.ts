@@ -454,6 +454,7 @@ export const vi: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'Hóa đơn',
   billDetail_attachmentQueued: 'Đang chờ',
   billDetail_addPhoto: 'Thêm ảnh',
+  billDetail_keepWholePhoto: 'Hiện toàn bộ ảnh khi mở',
   billDetail_takePhoto: 'Chụp ảnh',
   billDetail_choosePhoto: 'Chọn ảnh',
   billDetail_viewerPhotoTitle: 'Ảnh {number}/{count}',

@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.PhotoFrame
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.asTimeZone
@@ -378,6 +379,105 @@ class BillAttachmentsTest {
         assertEquals(RelativeDay.YESTERDAY, tile.addedDay)
     }
 
+    @Test
+    fun `GIVEN a photo kept whole with its size WHEN making the tiles THEN places its framed square in the tile`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "photo-a",
+                frame = tallFrame,
+            ),
+        )
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
+
+        // Then
+        assertEquals(tallFrame.toPlacement(1600, 1200), tile.thumbnailPlacement)
+    }
+
+    @Test
+    fun `GIVEN a photo without a frame WHEN making the tiles THEN the tile fills from its center`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "photo-a",
+                frame = null,
+            ),
+        )
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
+
+        // Then
+        assertNull(tile.thumbnailPlacement)
+    }
+
+    @Test
+    fun `GIVEN a photo kept whole without its width WHEN making the tiles THEN the tile fills from its center`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "photo-a",
+                width = null,
+                frame = tallFrame,
+            ),
+        )
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
+
+        // Then
+        assertNull(tile.thumbnailPlacement)
+    }
+
+    @Test
+    fun `GIVEN a photo kept whole without its height WHEN making the tiles THEN the tile fills from its center`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "photo-a",
+                height = null,
+                frame = tallFrame,
+            ),
+        )
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
+
+        // Then
+        assertNull(tile.thumbnailPlacement)
+    }
+
+    @Test
+    fun `GIVEN a photo kept whole and one cropped WHEN making the tiles THEN only the whole one is placed`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "photo-a",
+                frame = tallFrame,
+            ),
+            attachment(
+                id = "photo-b",
+                frame = null,
+            ),
+        )
+
+        // When
+        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false)
+
+        // Then
+        assertEquals(listOf(tallFrame.toPlacement(1600, 1200), null), tiles.map { it.thumbnailPlacement })
+    }
+
+    // Why: the square framed on a landscape photo, as "Adjust photo" left it.
+    private val tallFrame = PhotoFrame(
+        left = 0.2f,
+        top = 0.1f,
+        width = 0.5f,
+        height = 0.6f,
+    )
+
     private val now = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
 
     private val ana = member(ANA, "Ana")
@@ -430,6 +530,7 @@ class BillAttachmentsTest {
         height: Int? = 1200,
         isPending: Boolean = false,
         hasPendingImage: Boolean = false,
+        frame: PhotoFrame? = null,
     ): BillAttachment = BillAttachment(
         id = id,
         expenseId = EXPENSE_ID,
@@ -443,6 +544,7 @@ class BillAttachmentsTest {
         updatedAt = addedAt,
         isPending = isPending,
         hasPendingImage = hasPendingImage,
+        frame = frame,
     )
 
     private companion object {

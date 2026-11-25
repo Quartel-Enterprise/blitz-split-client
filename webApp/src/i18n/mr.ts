@@ -456,6 +456,7 @@ export const mr: Record<MessageKey, string> = {
   billDetail_receiptBadge: 'पावती',
   billDetail_attachmentQueued: 'रांगेत',
   billDetail_addPhoto: 'फोटो जोडा',
+  billDetail_keepWholePhoto: 'उघडल्यावर संपूर्ण फोटो दाखवा',
   billDetail_takePhoto: 'फोटो काढा',
   billDetail_choosePhoto: 'फोटो निवडा',
   billDetail_viewerPhotoTitle: '{count} पैकी फोटो {number}',
