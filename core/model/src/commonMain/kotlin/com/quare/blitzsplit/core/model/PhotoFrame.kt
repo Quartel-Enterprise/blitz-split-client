@@ -37,7 +37,10 @@ data class PhotoFrame(
     companion object {
         private const val HALF = 0.5f
 
-        // Why: all four or none, as the server keeps them.
+        /*
+         * Why: all four or none, as the server keeps them. A side not over 0, or a value not finite, can't be
+         * placed (a division by zero that crashes a tile's layout), so such a frame fills the tile as none does.
+         */
         fun ofOrNull(
             left: Float?,
             top: Float?,
@@ -45,6 +48,9 @@ data class PhotoFrame(
             height: Float?,
         ): PhotoFrame? {
             if (left == null || top == null || width == null || height == null) return null
+            val isPlaceable = left.isFinite() && top.isFinite() && width.isFinite() && height.isFinite() &&
+                width > 0f && height > 0f
+            if (!isPlaceable) return null
             return PhotoFrame(
                 left = left,
                 top = top,

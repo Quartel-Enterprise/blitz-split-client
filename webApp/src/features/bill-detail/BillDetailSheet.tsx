@@ -448,13 +448,14 @@ function ShareRow({ row, money, onOpen }: { row: JsBillShareRow; money: Money; o
 
 /*
  * Why: "Show the whole photo when opened" in "Adjust photo", only for a bill's photo (beta feedback of 2026-11-25): on,
- * the viewer shows the whole photo and the tile the square framed; off, both show the square.
+ * the viewer shows the whole photo and the tile the square framed; off, both show the square. The editor is `dark`, so
+ * the off track overrides the switch's own dark one too.
  */
 function KeepWholePhotoSwitch({ isOn, onChange }: { isOn: boolean; onChange: (isOn: boolean) => void }) {
   return (
     <label className="flex min-h-11 cursor-pointer items-center justify-between gap-4 text-sm text-white">
       {t('billDetail_keepWholePhoto')}
-      <Switch checked={isOn} onCheckedChange={onChange} className="data-[state=checked]:bg-white data-[state=unchecked]:bg-white/12 [&>span]:data-[state=checked]:bg-black" />
+      <Switch checked={isOn} onCheckedChange={onChange} className="data-[state=checked]:bg-white data-[state=unchecked]:bg-white/12 dark:data-[state=unchecked]:bg-white/12 [&>span]:data-[state=checked]:bg-black" />
     </label>
   )
 }

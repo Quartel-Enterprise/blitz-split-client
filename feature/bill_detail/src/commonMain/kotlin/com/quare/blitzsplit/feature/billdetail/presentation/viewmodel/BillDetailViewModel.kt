@@ -347,7 +347,9 @@ class BillDetailViewModel(
                 trackEvent("photo_picked", sourceParams)
             }
 
-            is BillDetailUiEvent.OnPhotoCrop, is BillDetailUiEvent.OnKeepWholePhotoChanged -> photoAdding.onEvent(event)
+            is BillDetailUiEvent.OnPhotoCrop -> photoAdding.onCropEvent(event.event)
+
+            is BillDetailUiEvent.OnKeepWholePhotoChanged -> photoAdding.onKeepWholePhotoChanged(event.isOn)
 
             BillDetailUiEvent.OnPhotoUnreadable -> viewModelScope.launch {
                 uiAction.emit(BillDetailUiAction.ShowPhotoError(BillPhotoError.UNREADABLE))

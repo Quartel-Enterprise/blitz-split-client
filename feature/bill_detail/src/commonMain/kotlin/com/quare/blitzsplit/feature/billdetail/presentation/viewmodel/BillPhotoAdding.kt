@@ -88,16 +88,7 @@ internal class BillPhotoAdding(
         }
     }
 
-    // Why: what "Ajustar foto" sends, its own events and the bill's switch.
-    fun onEvent(event: BillDetailUiEvent) {
-        when (event) {
-            is BillDetailUiEvent.OnPhotoCrop -> onCropEvent(event.event)
-            is BillDetailUiEvent.OnKeepWholePhotoChanged -> onKeepWholePhotoChanged(event.isOn)
-            else -> Unit
-        }
-    }
-
-    private fun onCropEvent(event: PhotoCropEvent) {
+    fun onCropEvent(event: PhotoCropEvent) {
         val editor = uiState.value.photoCrop ?: return
         when (event) {
             PhotoCropEvent.OnConfirmClicked -> attach(editor)
@@ -106,7 +97,8 @@ internal class BillPhotoAdding(
         }
     }
 
-    private fun onKeepWholePhotoChanged(isOn: Boolean) {
+    // Why: "Show the whole photo when opened", the bill's own switch in "Ajustar foto".
+    fun onKeepWholePhotoChanged(isOn: Boolean) {
         uiState.update { it.copy(keepsWholePhoto = isOn) }
     }
 

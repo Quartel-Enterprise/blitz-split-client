@@ -136,9 +136,9 @@ private fun createCrop(
 ): CGImageRef = withImageSource(source) { imageSource, width, height ->
     // Why: decoded whole and upright, since the transform is in the photo's own pixels.
     val upright = imageSource.createUprightThumbnail(maxOf(width, height)) ?: throw UnsupportedImageException()
-    val square = upright.createSquare(transform, outputWidth, outputHeight)
+    val framed = upright.createFramed(transform, outputWidth, outputHeight)
     CGImageRelease(upright)
-    square ?: throw UnsupportedImageException()
+    framed ?: throw UnsupportedImageException()
 }
 
 /*
@@ -147,7 +147,7 @@ private fun createCrop(
  * down on both.
  */
 @OptIn(ExperimentalForeignApi::class)
-private fun CGImageRef.createSquare(
+private fun CGImageRef.createFramed(
     transform: CropTransform,
     widthPx: Int,
     heightPx: Int,

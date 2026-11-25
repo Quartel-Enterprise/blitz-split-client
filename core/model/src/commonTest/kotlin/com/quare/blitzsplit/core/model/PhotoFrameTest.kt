@@ -307,6 +307,57 @@ class PhotoFrameTest {
         assertNull(frame)
     }
 
+    @Test
+    fun `GIVEN a width of zero WHEN making a frame THEN there is none`() {
+        // Given
+        val width = 0f
+
+        // When
+        val frame = PhotoFrame.ofOrNull(
+            left = 0.1f,
+            top = 0.2f,
+            width = width,
+            height = 0.3f,
+        )
+
+        // Then
+        assertNull(frame)
+    }
+
+    @Test
+    fun `GIVEN a negative height WHEN making a frame THEN there is none`() {
+        // Given
+        val height = -0.3f
+
+        // When
+        val frame = PhotoFrame.ofOrNull(
+            left = 0.1f,
+            top = 0.2f,
+            width = 0.3f,
+            height = height,
+        )
+
+        // Then
+        assertNull(frame)
+    }
+
+    @Test
+    fun `GIVEN a left that is not a number WHEN making a frame THEN there is none`() {
+        // Given
+        val left = Float.NaN
+
+        // When
+        val frame = PhotoFrame.ofOrNull(
+            left = left,
+            top = 0.2f,
+            width = 0.3f,
+            height = 0.3f,
+        )
+
+        // Then
+        assertNull(frame)
+    }
+
     private fun assertSamePlacement(
         expected: PhotoFramePlacement,
         actual: PhotoFramePlacement,

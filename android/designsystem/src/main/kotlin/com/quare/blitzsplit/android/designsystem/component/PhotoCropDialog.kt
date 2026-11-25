@@ -152,9 +152,7 @@ fun PhotoCropDialog(
                             crop = editor.crop,
                             onEvent = onEvent,
                             extraControl = extraControl,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState()),
+                            modifier = Modifier.fillMaxSize(),
                         )
                     },
                     modifier = Modifier.fillMaxSize(),
@@ -175,16 +173,13 @@ fun PhotoCropDialog(
                             crop = editor.crop,
                             onEvent = onEvent,
                             extraControl = extraControl,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState()),
+                            modifier = Modifier.fillMaxSize(),
                         )
                     },
                     modifier = Modifier.fillMaxSize(),
                 )
 
                 maxWidth > maxHeight -> Row(modifier = Modifier.fillMaxSize()) {
-                    // Why: a short phone lying down (large text, a bill's extra switch) scrolls rather than hiding Done.
                     PhotoCropPane(
                         editor = editor,
                         frame = frame,
@@ -199,8 +194,7 @@ fun PhotoCropDialog(
                         extraControl = extraControl,
                         modifier = Modifier
                             .width(sidePanelWidth)
-                            .fillMaxHeight()
-                            .verticalScroll(rememberScrollState()),
+                            .fillMaxHeight(),
                     )
                 }
 
@@ -225,7 +219,10 @@ fun PhotoCropDialog(
     }
 }
 
-// Why: the header and the panel together, beside the photo lying down or in the half after the hinge.
+/*
+ * Why: the header and the panel together, beside the photo lying down or in the half after the hinge. A short window
+ * (large text, a bill's extra switch) scrolls rather than hiding Done; a taller one keeps them centered.
+ */
 @Composable
 private fun PhotoCropControlsColumn(
     crop: PhotoCrop,
@@ -233,16 +230,21 @@ private fun PhotoCropControlsColumn(
     extraControl: (@Composable () -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        PhotoCropHeader(onEvent = onEvent)
-        PhotoCropPanel(
-            crop = crop,
-            onEvent = onEvent,
-            extraControl = extraControl,
-        )
+    BoxWithConstraints(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .heightIn(min = maxHeight),
+            verticalArrangement = Arrangement.Center,
+        ) {
+            PhotoCropHeader(onEvent = onEvent)
+            PhotoCropPanel(
+                crop = crop,
+                onEvent = onEvent,
+                extraControl = extraControl,
+            )
+        }
     }
 }
 
