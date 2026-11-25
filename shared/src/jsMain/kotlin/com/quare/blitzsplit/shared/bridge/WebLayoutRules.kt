@@ -29,8 +29,13 @@ class JsHomePeopleLayout(
     val hiddenCount: Int,
     val columns: Int,
     val cardWidth: Double,
-    val maxRowWidth: Double,
     val cardGap: Double,
+    // Why: CARDS, the slots of each line, the "+N" tile counted in the last one.
+    val lineSizes: Array<Int>,
+    val showsMore: Boolean,
+    // Why: HomePeopleLayout.showsCountInTitle's answer when the carousel overflows its block, and when it doesn't.
+    val countsInTitleIfOverflowing: Boolean,
+    val countsInTitleOtherwise: Boolean,
 )
 
 // Why: Início's "Saldos com pessoas" as a list, a carousel or cards, by the block's width in CSS px, the input and the count.
@@ -46,7 +51,10 @@ fun getHomePeopleLayout(
         hiddenCount = layout.hiddenCount,
         columns = layout.columns,
         cardWidth = layout.cardWidth.toDouble(),
-        maxRowWidth = HomePeopleLayout.MAX_ROW_WIDTH.toDouble(),
         cardGap = HomePeopleLayout.CARD_GAP.toDouble(),
+        lineSizes = layout.lineSizes.toTypedArray(),
+        showsMore = layout.showsMore,
+        countsInTitleIfOverflowing = layout.showsCountInTitle(carouselOverflows = true),
+        countsInTitleOtherwise = layout.showsCountInTitle(carouselOverflows = false),
     )
 }

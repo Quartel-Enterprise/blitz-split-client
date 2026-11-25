@@ -1476,6 +1476,7 @@ export const lv: Record<MessageKey, string> = {
   home_people: 'Bilances ar cilvēkiem',
   home_peopleCount: 'Bilances ar cilvēkiem · {count}',
   home_seeBalances: 'Skatīt bilances',
+  home_seeBalancesMore: 'Skatīt bilances (+{count})',
   home_owesYouWord: 'ir parādā tev',
   home_personOwesYou: '{name} ir parādā tev {amount}',
   home_youOwePerson: 'Tu esi parādā personai {name} {amount}',

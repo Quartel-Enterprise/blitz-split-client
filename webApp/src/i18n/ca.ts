@@ -1515,6 +1515,7 @@ export const ca: Record<MessageKey, string> = {
   home_people: 'Saldos amb persones',
   home_peopleCount: 'Saldos amb persones · {count}',
   home_seeBalances: 'Veure els saldos',
+  home_seeBalancesMore: 'Veure els saldos (+{count})',
   home_owesYouWord: 'et deu',
   home_personOwesYou: '{name} et deu {amount}',
   home_youOwePerson: 'Deus {amount} a {name}',

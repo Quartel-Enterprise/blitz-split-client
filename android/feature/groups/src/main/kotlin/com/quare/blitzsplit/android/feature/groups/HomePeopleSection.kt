@@ -7,18 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -50,8 +45,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AmountText
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
-import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
-import com.quare.blitzsplit.android.designsystem.component.StackFace
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -66,15 +59,12 @@ import software.quare.loadable.valueOrNull
 import kotlin.math.abs
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
-// Why: how many of the hidden people's faces the "+N" row or tile shows.
-private const val HIDDEN_FACES = 3
-
 /*
  * Why: "Saldos com pessoas", each person once per currency, netted across the groups. HomePeopleLayout picks by the
- * block's own width, the input (Android is always touch, a tablet with a mouse included) and the count: a list for 1–3
- * on a narrow block, fixed-width cards aligned to the start on a wide one, and a carousel of cards for 4 or more. The
- * count joins the title once the carousel scrolls. While it is read, or the first download fills the device, a shimmer
- * holds its place; with everyone settled the section goes, leaving no gap.
+ * block's own width, the input (Android is always touch, a tablet with a mouse included, so nobody is ever left out)
+ * and the count: a list for 1–3 on a narrow block, fixed-width cards aligned to the start on a wide one, and a carousel
+ * of cards for 4 or more. The count joins the title once the carousel scrolls. While it is read, or the first download
+ * fills the device, a shimmer holds its place; with everyone settled the section goes, leaving no gap.
  */
 @Composable
 internal fun HomePeopleSection(
@@ -95,41 +85,32 @@ internal fun HomePeopleSection(
             blockWidth = (maxWidth - metrics.gutter * 2).value,
             isTouch = true,
         )
-        val shown = people.take(layout.shownCount)
-        val hidden = people.drop(layout.shownCount)
-        val scrolls = layout.mode == HomePeopleMode.CAROUSEL &&
-            (listState.canScrollForward || listState.canScrollBackward)
+        val overflows = listState.canScrollForward || listState.canScrollBackward
         val onPerson = { person: HomePerson -> onEvent(HomeUiEvent.OnPersonClicked(person.key, person.currency)) }
-        val onSeeBalances = { onEvent(HomeUiEvent.OnSeeBalancesClicked) }
         Column {
             HomeSectionHeader(
-                title = if (scrolls || layout.hiddenCount > 0) {
+                title = if (layout.showsCountInTitle(carouselOverflows = overflows)) {
                     stringResource(R.string.groups_home_people_title_count, people.size)
                 } else {
                     stringResource(R.string.groups_home_people_title)
                 },
                 action = stringResource(R.string.groups_home_see_balances),
-                onAction = onSeeBalances,
+                onAction = { onEvent(HomeUiEvent.OnSeeBalancesClicked) },
                 modifier = Modifier.padding(horizontal = metrics.gutter),
             )
-            val padding = Modifier.padding(horizontal = metrics.gutter)
             when (layout.mode) {
                 HomePeopleMode.LIST -> PeopleList(
-                    people = shown,
-                    hidden = hidden,
+                    people = people,
                     onPerson = onPerson,
-                    onMore = onSeeBalances,
-                    modifier = padding,
+                    modifier = Modifier.padding(horizontal = metrics.gutter),
                 )
 
                 HomePeopleMode.CARDS -> PeopleCardsGrid(
-                    people = shown,
-                    hidden = hidden,
+                    people = people,
                     layout = layout,
                     metrics = metrics,
                     onPerson = onPerson,
-                    onMore = onSeeBalances,
-                    modifier = padding,
+                    modifier = Modifier.padding(horizontal = metrics.gutter),
                 )
 
                 HomePeopleMode.CAROUSEL -> LazyRow(
@@ -138,7 +119,7 @@ internal fun HomePeopleSection(
                     horizontalArrangement = Arrangement.spacedBy(HomePeopleLayout.CARD_GAP.dp),
                 ) {
                     items(
-                        shown,
+                        people,
                         key = { person -> person.key + person.currency.code },
                     ) { person ->
                         PersonCardItem(
@@ -154,107 +135,15 @@ internal fun HomePeopleSection(
     }
 }
 
-// Why: what TalkBack reads for the "+N" row or tile: "See balances (+5)"; only a pointer's layouts hide anyone.
-@Composable
-private fun moreDescriptionOf(hiddenCount: Int): String =
-    stringResource(R.string.groups_home_see_balances) + " (+" + "%d".format(hiddenCount) + ")"
-
-// Why: the first hidden people's faces, overlapped, before "+N" says how many the row or tile stands for.
-@Composable
-private fun HiddenFacesRow(
-    hidden: List<HomePerson>,
-    size: Dp,
-) {
-    AvatarStackRow(
-        faces = hidden.take(HIDDEN_FACES).map { person ->
-            StackFace(
-                initials = person.initials,
-                color = person.color ?: AvatarColor.default,
-                photoUrl = person.photoUrl,
-            )
-        },
-        extraCount = 0,
-        size = size,
-        ringColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-    )
-}
-
-// Why: the people the layout leaves out, as the list's last row or the cards' last tile: their faces and "+N".
-@Composable
-private fun MoreItem(
-    hidden: List<HomePerson>,
-    isTile: Boolean,
-    shape: Shape,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val description = moreDescriptionOf(hidden.size)
-    Surface(
-        modifier = modifier,
-        shape = shape,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        val clickable = Modifier
-            .clickable(onClick = onClick)
-            .clearAndSetSemantics {
-                contentDescription = description
-                role = Role.Button
-            }
-        val count = "+" + "%d".format(hidden.size)
-        if (isTile) {
-            Column(
-                modifier = clickable.fillMaxSize().padding(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-            ) {
-                HiddenFacesRow(
-                    hidden = hidden,
-                    size = 32.dp,
-                )
-                Text(
-                    text = count,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-        } else {
-            Row(
-                modifier = clickable
-                    .fillMaxWidth()
-                    .heightIn(min = 56.dp)
-                    .padding(
-                        horizontal = 12.dp,
-                        vertical = 8.dp,
-                    ),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                HiddenFacesRow(
-                    hidden = hidden,
-                    size = 28.dp,
-                )
-                Text(
-                    text = count,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-        }
-    }
-}
-
-// Why: the list's rows read as one card in one column, as Últimas despesas' rows are, never wider than MAX_ROW_WIDTH.
+// Why: the list's rows read as one card in one column, as Últimas despesas' rows are.
 @Composable
 private fun PeopleList(
     people: List<HomePerson>,
-    hidden: List<HomePerson>,
     onPerson: (HomePerson) -> Unit,
-    onMore: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val rows = people.size + if (hidden.isEmpty()) 0 else 1
     Column(
-        modifier = modifier.widthIn(max = HomePeopleLayout.MAX_ROW_WIDTH.dp),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         people.forEachIndexed { index, person ->
@@ -262,66 +151,39 @@ private fun PeopleList(
                 person = person,
                 shape = groupedRowShapeOf(
                     index = index,
-                    count = rows,
+                    count = people.size,
                 ),
                 onClick = { onPerson(person) },
-            )
-        }
-        if (hidden.isNotEmpty()) {
-            MoreItem(
-                hidden = hidden,
-                isTile = false,
-                shape = groupedRowShapeOf(
-                    index = people.size,
-                    count = rows,
-                ),
-                onClick = onMore,
             )
         }
     }
 }
 
-// Why: fixed-width cards from the start, in lines of HomePeopleLayout's columns; the space after them stays empty.
+// Why: fixed-width cards from the start, in HomePeopleLayout's lines; the space after them stays empty on purpose.
 @Composable
 private fun PeopleCardsGrid(
     people: List<HomePerson>,
-    hidden: List<HomePerson>,
     layout: HomePeopleLayout,
     metrics: HomeMetrics,
     onPerson: (HomePerson) -> Unit,
-    onMore: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Why: null stands for the "+N" tile, which takes the slot after the last person.
-    val slots: List<HomePerson?> = if (hidden.isEmpty()) people else people + null
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(HomePeopleLayout.CARD_GAP.dp),
     ) {
-        slots.chunked(layout.columns).forEach { line ->
-            Row(
-                modifier = Modifier.height(IntrinsicSize.Min),
-                horizontalArrangement = Arrangement.spacedBy(HomePeopleLayout.CARD_GAP.dp),
-            ) {
+        var start = 0
+        layout.lineSizes.forEach { size ->
+            val line = people.subList(start, start + size)
+            start += size
+            Row(horizontalArrangement = Arrangement.spacedBy(HomePeopleLayout.CARD_GAP.dp)) {
                 line.forEach { person ->
-                    if (person == null) {
-                        MoreItem(
-                            hidden = hidden,
-                            isTile = true,
-                            shape = MaterialTheme.shapes.large,
-                            onClick = onMore,
-                            modifier = Modifier
-                                .width(layout.cardWidth.dp)
-                                .fillMaxHeight(),
-                        )
-                    } else {
-                        PersonCardItem(
-                            person = person,
-                            width = layout.cardWidth.dp,
-                            faceSize = metrics.faceSize,
-                            onClick = { onPerson(person) },
-                        )
-                    }
+                    PersonCardItem(
+                        person = person,
+                        width = layout.cardWidth.dp,
+                        faceSize = metrics.faceSize,
+                        onClick = { onPerson(person) },
+                    )
                 }
             }
         }
@@ -334,63 +196,60 @@ private fun PersonRowItem(
     person: HomePerson,
     shape: Shape,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val money = rememberMoneyFormatter(person.currency)
     val texts = personTextsOf(person, money)
-    Box(modifier = modifier) {
-        PersonTooltipBox(
-            person = person,
-            name = texts.name,
+    PersonTooltipBox(
+        person = person,
+        name = texts.name,
+    ) {
+        // Why: the Surface clips the ripple to the row's shape; the click sits before the semantics it keeps.
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = shape,
+            color = MaterialTheme.colorScheme.surfaceContainerLowest,
         ) {
-            // Why: the Surface clips the ripple to the row's shape; the click sits before the semantics it keeps.
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = shape,
-                color = MaterialTheme.colorScheme.surfaceContainerLowest,
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onClick)
+                    .clearAndSetSemantics {
+                        contentDescription = texts.description
+                        role = Role.Button
+                    }.heightIn(min = 56.dp)
+                    .padding(
+                        horizontal = 12.dp,
+                        vertical = 8.dp,
+                    ),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = onClick)
-                        .clearAndSetSemantics {
-                            contentDescription = texts.description
-                            role = Role.Button
-                        }.heightIn(min = 56.dp)
-                        .padding(
-                            horizontal = 12.dp,
-                            vertical = 8.dp,
-                        ),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    PersonFaceBadge(
-                        person = person,
-                        size = 40.dp,
+                PersonFaceBadge(
+                    person = person,
+                    size = 40.dp,
+                )
+                Text(
+                    text = texts.name,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    AmountText(
+                        text = money.toSignedText(person.netMinor),
+                        modifier = Modifier.alignByBaseline(),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = amountColorOf(person.netMinor),
                     )
                     Text(
-                        text = texts.name,
-                        modifier = Modifier.weight(1f),
-                        style = MaterialTheme.typography.titleSmall,
+                        text = texts.word,
+                        modifier = Modifier.alignByBaseline(),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
                     )
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        AmountText(
-                            text = money.toSignedText(person.netMinor),
-                            modifier = Modifier.alignByBaseline(),
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = amountColorOf(person.netMinor),
-                        )
-                        Text(
-                            text = texts.word,
-                            modifier = Modifier.alignByBaseline(),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                        )
-                    }
                 }
             }
         }

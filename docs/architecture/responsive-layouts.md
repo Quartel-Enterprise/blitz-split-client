@@ -210,8 +210,8 @@ card's content box), the input, and the count.
 | ≥ 560 | either | fixed-width cards, aligned to the start | touch: carousel; pointer: cards on 2 lines at most, the last slot a "+N" tile |
 
 - A list row is the face, the name, the amount with its sign and its word on one line; it is never wider than
-  **560** (`MAX_ROW_WIDTH`), so a name never sits far from its amount. The threshold, **560** (`WIDE_BLOCK_MIN_WIDTH`),
-  is the design system's `column-android-portrait`.
+  **560**, so a name never sits far from its amount: the list only comes below the threshold, **560**
+  (`WIDE_BLOCK_MIN_WIDTH`, the design system's `column-android-portrait`), which caps it.
 - A card stacks the face, the name, the amount and the word, **200** wide (`CARD_WIDTH`) with **8** between cards
   (`CARD_GAP`). Cards never stretch: the space after them stays empty on purpose. A carousel's cards narrow so about
   2.5 show (never under 112, never over 200), the cut one saying the row scrolls.
@@ -222,7 +222,8 @@ card's content box), the input, and the count.
   window get cards; the Mac's narrow window and the web's tablet with a mouse get the list (the web's phone, touch,
   the carousel from 4).
 - The people left out show as the hidden ones' first three faces and "+N", in the list's last row or the cards' last
-  slot (so one person fewer shows), and open Balances; a screen reader reads "See balances (+N)". The header's "See
+  slot (so one person fewer shows), and open Balances; a screen reader reads "See balances (+N)", a string of its own.
+  Only the Mac and the web reach it: Android and iOS are touch, where nobody is left out. The header's "See
   balances" stays the only link in words: a "See balances (+N)" button under the cards repeated it (Pierre's call,
   2026-11-24).
 - The order is the ViewModel's: whom you owe first, then who owes you, the largest first. The title counts everyone

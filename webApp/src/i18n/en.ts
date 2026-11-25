@@ -1511,6 +1511,7 @@ export const en = {
   home_people: 'Balances with people',
   home_peopleCount: 'Balances with people · {count}',
   home_seeBalances: 'See balances',
+  home_seeBalancesMore: 'See balances (+{count})',
   home_owesYouWord: 'owes you',
   home_personOwesYou: '{name} owes you {amount}',
   home_youOwePerson: 'You owe {name} {amount}',

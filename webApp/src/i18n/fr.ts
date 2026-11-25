@@ -1513,6 +1513,7 @@ export const fr: Record<MessageKey, string> = {
   home_people: 'Soldes avec les personnes',
   home_peopleCount: 'Soldes avec les personnes · {count}',
   home_seeBalances: 'Vois les soldes',
+  home_seeBalancesMore: 'Vois les soldes (+{count})',
   home_owesYouWord: 'te doit',
   home_personOwesYou: '{name} te doit {amount}',
   home_youOwePerson: 'Tu dois {amount} à {name}',

@@ -1514,6 +1514,7 @@ export const sw: Record<MessageKey, string> = {
   home_people: 'Salio na watu',
   home_peopleCount: 'Salio na watu · {count}',
   home_seeBalances: 'Ona salio',
+  home_seeBalancesMore: 'Ona salio (+{count})',
   home_owesYouWord: 'anadaiwa na wewe',
   home_personOwesYou: '{name} anadaiwa na wewe {amount}',
   home_youOwePerson: 'Unadaiwa na {name} {amount}',

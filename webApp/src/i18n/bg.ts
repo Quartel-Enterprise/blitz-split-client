@@ -1514,6 +1514,7 @@ export const bg: Record<MessageKey, string> = {
   home_people: 'Баланси с хора',
   home_peopleCount: 'Баланси с хора · {count}',
   home_seeBalances: 'Виж балансите',
+  home_seeBalancesMore: 'Виж балансите (+{count})',
   home_owesYouWord: 'ти дължи',
   home_personOwesYou: '{name} ти дължи {amount}',
   home_youOwePerson: 'Дължиш на {name} {amount}',

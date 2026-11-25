@@ -400,4 +400,89 @@ class HomePeopleLayoutTest {
         assertEquals(10, layout.shownCount)
         assertEquals(0, layout.hiddenCount)
     }
+
+    @Test
+    fun `GIVEN nine people in two lines of three with a pointer WHEN reading the lines THEN the tile ends them`() {
+        // Given
+        val layout = HomePeopleLayout.of(
+            peopleCount = 9,
+            blockWidth = 655f,
+            isTouch = false,
+        )
+
+        // When
+        val lineSizes = layout.lineSizes
+
+        // Then
+        assertEquals(listOf(3, 3), lineSizes)
+        assertEquals(5, layout.shownCount)
+        assertEquals(true, layout.showsMore)
+    }
+
+    @Test
+    fun `GIVEN three people on a wide block WHEN reading the lines THEN they fill lines of the columns`() {
+        // Given
+        val layout = HomePeopleLayout.of(
+            peopleCount = 3,
+            blockWidth = wide,
+            isTouch = true,
+        )
+
+        // When
+        val lineSizes = layout.lineSizes
+
+        // Then
+        assertEquals(listOf(2, 1), lineSizes)
+        assertEquals(false, layout.showsMore)
+    }
+
+    @Test
+    fun `GIVEN a carousel WHEN asking for the title count THEN it shows only while the carousel overflows`() {
+        // Given
+        val layout = HomePeopleLayout.of(
+            peopleCount = 4,
+            blockWidth = phone,
+            isTouch = true,
+        )
+
+        // When
+        val overflowing = layout.showsCountInTitle(carouselOverflows = true)
+        val fitting = layout.showsCountInTitle(carouselOverflows = false)
+
+        // Then
+        assertEquals(true, overflowing)
+        assertEquals(false, fitting)
+    }
+
+    @Test
+    fun `GIVEN people left out WHEN asking for the title count THEN it shows`() {
+        // Given
+        val layout = HomePeopleLayout.of(
+            peopleCount = 4,
+            blockWidth = narrow,
+            isTouch = false,
+        )
+
+        // When
+        val counts = layout.showsCountInTitle(carouselOverflows = false)
+
+        // Then
+        assertEquals(true, counts)
+    }
+
+    @Test
+    fun `GIVEN cards that all fit WHEN asking for the title count THEN it does not show even if something overflows`() {
+        // Given
+        val layout = HomePeopleLayout.of(
+            peopleCount = 3,
+            blockWidth = desktop,
+            isTouch = false,
+        )
+
+        // When
+        val counts = layout.showsCountInTitle(carouselOverflows = true)
+
+        // Then
+        assertEquals(false, counts)
+    }
 }

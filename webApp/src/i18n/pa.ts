@@ -1515,6 +1515,7 @@ export const pa: Record<MessageKey, string> = {
   home_people: 'ਲੋਕਾਂ ਨਾਲ ਬੈਲੇਂਸ',
   home_peopleCount: 'ਲੋਕਾਂ ਨਾਲ ਬੈਲੇਂਸ · {count}',
   home_seeBalances: 'ਬੈਲੇਂਸ ਦੇਖੋ',
+  home_seeBalancesMore: 'ਬੈਲੇਂਸ ਦੇਖੋ (+{count})',
   home_owesYouWord: 'ਤੁਸੀਂ ਲੈਣੇ ਹਨ',
   home_personOwesYou: '{name} ਨੇ ਤੁਹਾਨੂੰ {amount} ਦੇਣੇ ਹਨ',
   home_youOwePerson: 'ਤੁਸੀਂ {name} ਨੂੰ {amount} ਦੇਣੇ ਹਨ',

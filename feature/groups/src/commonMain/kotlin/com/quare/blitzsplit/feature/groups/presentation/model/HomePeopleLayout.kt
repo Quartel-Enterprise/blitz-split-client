@@ -14,7 +14,7 @@ package com.quare.blitzsplit.feature.groups.presentation.model
  * | ≥ 560       | pointer | CARDS, start-aligned    | CARDS, at most 2 lines, the last slot a "+N" tile       |
  *
  * Cards never stretch: they keep CARD_WIDTH and the space after them stays empty on purpose. A list row is never wider
- * than MAX_ROW_WIDTH. The order is the ViewModel's (whom you owe first, then who owes you, the largest first).
+ * than 560: LIST only comes below WIDE_BLOCK_MIN_WIDTH, so the threshold already caps it. The order is the ViewModel's (whom you owe first, then who owes you, the largest first).
  */
 data class HomePeopleLayout(
     val mode: HomePeopleMode,
@@ -30,12 +30,28 @@ data class HomePeopleLayout(
     // Why: CARDS and CAROUSEL, each card's fixed width.
     val cardWidth: Float,
 ) {
+    // Why: the "+N" row or tile follows the shown people while someone is left out.
+    val showsMore: Boolean
+        get() = hiddenCount > 0
+
+    /*
+     * Why: CARDS, how many slots each line holds, the "+N" tile counted in the last one; the UIs fill the lines in
+     * order, the shown people first, and draw nothing of their own about where a line breaks.
+     */
+    val lineSizes: List<Int>
+        get() {
+            val slots = shownCount + if (showsMore) 1 else 0
+            return (0 until slots step columns).map { start -> minOf(columns, slots - start) }
+        }
+
+    // Why: the title's " · 9" says there are more people than in sight: a carousel that scrolls, or anyone left out.
+    fun showsCountInTitle(carouselOverflows: Boolean): Boolean =
+        (mode == HomePeopleMode.CAROUSEL && carouselOverflows) || showsMore
+
     companion object {
         // Why: the design system's column-android-portrait, the width a phone column reads well up to.
         const val WIDE_BLOCK_MIN_WIDTH = 560f
 
-        // Why: a list row (face, name and amount on one line) never wider than this, so the name stays near its amount.
-        const val MAX_ROW_WIDTH = 560f
         const val MAX_LIST_PEOPLE = 3
         const val MAX_CARD_LINES = 2
 

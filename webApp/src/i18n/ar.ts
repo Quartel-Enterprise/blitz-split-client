@@ -1515,6 +1515,7 @@ export const ar: Record<MessageKey, string> = {
   home_people: 'الأرصدة مع الأشخاص',
   home_peopleCount: 'الأرصدة مع الأشخاص · {count}',
   home_seeBalances: 'عرض الأرصدة',
+  home_seeBalancesMore: 'عرض الأرصدة (+{count})',
   home_owesYouWord: 'لك',
   home_personOwesYou: 'على {name} لك {amount}',
   home_youOwePerson: 'عليك لـ{name} {amount}',

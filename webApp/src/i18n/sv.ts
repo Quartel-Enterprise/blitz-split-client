@@ -1513,6 +1513,7 @@ export const sv: Record<MessageKey, string> = {
   home_people: 'Saldon med personer',
   home_peopleCount: 'Saldon med personer · {count}',
   home_seeBalances: 'Visa saldon',
+  home_seeBalancesMore: 'Visa saldon (+{count})',
   home_owesYouWord: 'är skyldig dig',
   home_personOwesYou: '{name} är skyldig dig {amount}',
   home_youOwePerson: 'Du är skyldig {name} {amount}',

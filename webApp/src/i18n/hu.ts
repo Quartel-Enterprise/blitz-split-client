@@ -1476,6 +1476,7 @@ export const hu: Record<MessageKey, string> = {
   home_people: 'Egyenlegek másokkal',
   home_peopleCount: 'Egyenlegek másokkal · {count}',
   home_seeBalances: 'Egyenlegek megtekintése',
+  home_seeBalancesMore: 'Egyenlegek megtekintése (+{count})',
   home_owesYouWord: 'tartozik neked',
   home_personOwesYou: '{name} tartozik neked: {amount}',
   home_youOwePerson: 'Tartozol neki: {name} – {amount}',

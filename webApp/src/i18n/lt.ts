@@ -1477,6 +1477,7 @@ export const lt: Record<MessageKey, string> = {
   home_people: 'Balansai su žmonėmis',
   home_peopleCount: 'Balansai su žmonėmis · {count}',
   home_seeBalances: 'Žiūrėti balansus',
+  home_seeBalancesMore: 'Žiūrėti balansus (+{count})',
   home_owesYouWord: 'turi tau grąžinti',
   home_personOwesYou: '{name} turi tau grąžinti {amount}',
   home_youOwePerson: 'Tu turi grąžinti {amount}: {name}',

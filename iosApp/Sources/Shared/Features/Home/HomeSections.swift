@@ -52,7 +52,7 @@ struct HomePeopleSection: View {
 
     var body: some View {
         let layout = layout
-        let counts = (isCounted && layout?.mode == .carousel) || (layout?.hiddenCount ?? 0) > 0
+        let counts = layout?.showsCountInTitle(carouselOverflows: isCounted) ?? false
         VStack(alignment: .leading, spacing: 4) {
             HomeSectionHeader(
                 title: HomeCopy.peopleTitle(count: people?.count ?? 0, isCounted: counts && people != nil),
@@ -72,8 +72,13 @@ struct HomePeopleSection: View {
                     carousel(shown, cardWidth: CGFloat(layout.cardWidth))
                 }
             } else if isLoading {
-                HomeFacesPlaceholder(faceSize: faceSize)
-                    .shimmering()
+                // Clipped to the column as the faces were, so the measured width never takes the placeholder's
+                ScrollView(.horizontal) {
+                    HomeFacesPlaceholder(faceSize: faceSize)
+                        .shimmering()
+                }
+                .scrollIndicators(.hidden)
+                .scrollDisabled(true)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -101,9 +106,12 @@ struct HomePeopleSection: View {
     /// Fixed-width cards from the start, in lines of the layout's columns; the space after them stays empty on purpose.
     /// While someone is left out, the slot after the last card is the "+N" tile (nil below).
     private func cards(_ people: [HomePerson], hidden: [HomePerson], layout: HomePeopleLayout) -> some View {
-        let columns = max(Int(layout.columns), 1)
-        let slots: [HomePerson?] = hidden.isEmpty ? people : people + [nil]
-        let lines = stride(from: 0, to: slots.count, by: columns).map { Array(slots[$0..<min($0 + columns, slots.count)]) }
+        let slots: [HomePerson?] = layout.showsMore ? people + [nil] : people
+        var start = 0
+        let lines: [[HomePerson?]] = layout.lineSizes.map { size in
+            defer { start += Int(truncating: size) }
+            return Array(slots[start..<start + Int(truncating: size)])
+        }
         let width = CGFloat(layout.cardWidth)
         return VStack(alignment: .leading, spacing: gap) {
             ForEach(lines.indices, id: \.self) { index in
@@ -124,8 +132,8 @@ struct HomePeopleSection: View {
         }
     }
 
-    /// The list reads as one card, as "Latest expenses" does, never wider than a row's maximum; while someone is left
-    /// out, its last row is their faces and "+N".
+    /// The list reads as one card, as "Latest expenses" does; while someone is left out, its last row is their faces
+    /// and "+N".
     private func list(_ people: [HomePerson], hidden: [HomePerson]) -> some View {
         GroupedCard {
             VStack(spacing: 0) {
@@ -141,7 +149,6 @@ struct HomePeopleSection: View {
                 }
             }
         }
-        .frame(maxWidth: CGFloat(HomePeopleLayout.companion.MAX_ROW_WIDTH), alignment: .leading)
     }
 
     private func open(_ person: HomePerson) {
@@ -167,7 +174,7 @@ private struct PeopleMore: View {
                 : AnyLayout(HStackLayout(spacing: 12))
             layout {
                 AvatarStack(faces: faces, extraCount: 0, size: isTile ? 32 : 28)
-                Text(verbatim: "+\(hidden.count.formatted())")
+                Text(verbatim: "+\(hidden.count.formatted(.number.locale(AppNumbers.locale)))")
                     .font(isTile ? .title3.bold() : .subheadline.bold())
                     .monospacedDigit()
             }

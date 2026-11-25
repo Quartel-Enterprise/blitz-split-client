@@ -1512,6 +1512,7 @@ export const ms: Record<MessageKey, string> = {
   home_people: 'Baki dengan orang lain',
   home_peopleCount: 'Baki dengan orang lain · {count}',
   home_seeBalances: 'Lihat baki',
+  home_seeBalancesMore: 'Lihat baki (+{count})',
   home_owesYouWord: 'berhutang kepada anda',
   home_personOwesYou: '{name} berhutang {amount} kepada anda',
   home_youOwePerson: 'Anda berhutang {amount} kepada {name}',

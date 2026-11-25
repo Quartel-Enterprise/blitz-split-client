@@ -1514,6 +1514,7 @@ export const ur: Record<MessageKey, string> = {
   home_people: 'لوگوں کے ساتھ بیلنس',
   home_peopleCount: 'لوگوں کے ساتھ بیلنس · {count}',
   home_seeBalances: 'بیلنس دیکھیں',
+  home_seeBalancesMore: 'بیلنس دیکھیں (+{count})',
   home_owesYouWord: 'سے آپ کو ملنے ہیں',
   home_personOwesYou: '{name} نے آپ کو {amount} دینے ہیں',
   home_youOwePerson: 'آپ نے {name} کو {amount} دینے ہیں',

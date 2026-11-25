@@ -1513,6 +1513,7 @@ export const ja: Record<MessageKey, string> = {
   home_people: '人との残高',
   home_peopleCount: '人との残高 · {count}',
   home_seeBalances: '残高を見る',
+  home_seeBalancesMore: '残高を見る (+{count})',
   home_owesYouWord: '受け取る',
   home_personOwesYou: '{name}から{amount}を受け取ります',
   home_youOwePerson: '{name}に{amount}を払う必要があります',

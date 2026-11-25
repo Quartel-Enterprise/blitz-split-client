@@ -1477,6 +1477,7 @@ export const ml: Record<MessageKey, string> = {
   home_people: 'ആളുകളുമായുള്ള ബാലൻസുകൾ',
   home_peopleCount: 'ആളുകളുമായുള്ള ബാലൻസുകൾ · {count}',
   home_seeBalances: 'ബാലൻസുകൾ കാണുക',
+  home_seeBalancesMore: 'ബാലൻസുകൾ കാണുക (+{count})',
   home_owesYouWord: 'നിങ്ങൾക്ക് നൽകാനുണ്ട്',
   home_personOwesYou: '{name} നിങ്ങൾക്ക് നൽകാനുണ്ട്: {amount}',
   home_youOwePerson: 'നിങ്ങൾ ഇവർക്ക് {amount} നൽകാനുണ്ട്: {name}',

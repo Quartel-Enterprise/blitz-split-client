@@ -1517,6 +1517,7 @@ export const uk: Record<MessageKey, string> = {
   home_people: 'Баланси з людьми',
   home_peopleCount: 'Баланси з людьми · {count}',
   home_seeBalances: 'Переглянути баланси',
+  home_seeBalancesMore: 'Переглянути баланси (+{count})',
   home_owesYouWord: 'винен(-на) тобі',
   home_personOwesYou: '{name} винен(-на) тобі {amount}',
   home_youOwePerson: '{name} має отримати від тебе {amount}',

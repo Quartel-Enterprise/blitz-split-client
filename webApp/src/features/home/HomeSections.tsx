@@ -10,7 +10,9 @@ import { balanceTone, nameOrFormer } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { FaceStack, GroupBalance, lastActivityText, membersText } from '@/features/groups/GroupRowParts'
 import { paidText as payersText } from '@/features/groups/SearchDialog'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
+import { uiTag } from '@/lib/currency'
 import { formatDayLabel } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { CategoryBadge } from '@/lib/categories'
@@ -180,8 +182,9 @@ export function PeopleCard({ presenter, state }: SectionProps) {
   const rowRef = useRef<HTMLDivElement>(null)
   const tipId = useId()
   const [tip, setTip] = useState<GuestTip | null>(null)
-  const isScrolling = useOverflows(rowRef, state.people?.length ?? 0)
-  const isTouch = useIsTouch()
+  const isTouch = useMediaQuery('(pointer: coarse), (hover: none)')
+  // Why: a switch between touch and a mouse swaps the layout at the same width, so it measures the row again too.
+  const isScrolling = useOverflows(rowRef, `${state.people?.length ?? 0}-${isTouch}`)
   // Why: the card mounts once there is someone to show, so the width is followed from then.
   const width = useContentWidth(cardRef, state.showsPeople || state.isLoadingPeople)
   // Why: a long press shows the tip until the next touch anywhere, which a touch screen has instead of hover's end.
@@ -201,8 +204,8 @@ export function PeopleCard({ presenter, state }: SectionProps) {
   const layout = state.isLoadingPeople || people.length === 0 ? null : getHomePeopleLayout(people.length, width, isTouch)
   const mode = layout?.mode ?? 'CAROUSEL'
   const shown = layout ? people.slice(0, layout.shownCount) : people
-  const hiddenCount = layout?.hiddenCount ?? 0
-  const isCounted = (mode === 'CAROUSEL' && isScrolling) || hiddenCount > 0
+  // Why: no count while the people load: the skeleton may overflow, but there is nobody to count yet.
+  const isCounted = layout ? (isScrolling ? layout.countsInTitleIfOverflowing : layout.countsInTitleOtherwise) : false
   const showTip = (person: JsHomePerson, face: HTMLElement, isTouch: boolean) => {
     const card = cardRef.current
     if (!card) return
@@ -221,7 +224,7 @@ export function PeopleCard({ presenter, state }: SectionProps) {
         ref={rowRef}
         style={
           mode === 'LIST'
-            ? { maxWidth: layout?.maxRowWidth }
+            ? undefined
             : mode === 'CARDS'
               ? { gridTemplateColumns: `repeat(${layout?.columns ?? 1}, ${layout?.cardWidth ?? 0}px)`, gap: layout?.cardGap }
               : { gap: layout?.cardGap }
@@ -248,7 +251,7 @@ export function PeopleCard({ presenter, state }: SectionProps) {
             />
           ))
         )}
-        {hiddenCount > 0 && <PeopleMore hidden={people.slice(shown.length)} isTile={mode === 'CARDS'} onOpen={() => presenter.seeBalances()} />}
+        {layout?.showsMore && <PeopleMore hidden={people.slice(shown.length)} isTile={mode === 'CARDS'} onOpen={() => presenter.seeBalances()} />}
       </div>
       {tip && (
         <div
@@ -274,13 +277,13 @@ export function PeopleCard({ presenter, state }: SectionProps) {
  * "+N", which opens Saldos. A screen reader reads "Ver saldos (+5)"; the header's "Ver saldos" stays the only link of words.
  */
 function PeopleMore({ hidden, isTile, onOpen }: { hidden: JsHomePerson[]; isTile: boolean; onOpen: () => void }) {
-  const count = `+${hidden.length.toLocaleString()}`
+  const number = hidden.length.toLocaleString(uiTag)
   // Why: someone no longer in the group has no face to show.
   const faces = hidden.flatMap((person) => (person.color ? [{ initials: person.initials, color: person.color, photoUrl: person.photoUrl }] : [])).slice(0, 3)
   return (
     <button
       type="button"
-      aria-label={`${t('home_seeBalances')} (${count})`}
+      aria-label={t('home_seeBalancesMore', { count: number })}
       onClick={onOpen}
       className={cn(
         'rounded-lg outline-none select-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring',
@@ -288,7 +291,7 @@ function PeopleMore({ hidden, isTile, onOpen }: { hidden: JsHomePerson[]; isTile
       )}
     >
       <AvatarStack faces={faces} extraCount={0} size={isTile ? 'lg' : 'md'} />
-      <span className={cn('font-semibold tabular-nums', isTile ? 'text-xl' : 'text-sm')}>{count}</span>
+      <span className={cn('font-semibold tabular-nums', isTile ? 'text-xl' : 'text-sm')}>+{number}</span>
     </button>
   )
 }
@@ -445,22 +448,8 @@ function useContentWidth(ref: RefObject<HTMLElement | null>, isMounted: boolean)
   return width
 }
 
-/** Whether the input is touch: `(pointer: coarse)` or `(hover: none)`, followed as a mouse or a touch screen comes and goes. */
-function useIsTouch(): boolean {
-  const query = '(pointer: coarse), (hover: none)'
-  const [isTouch, setIsTouch] = useState(() => window.matchMedia(query).matches)
-  useEffect(() => {
-    const media = window.matchMedia(query)
-    const update = () => setIsTouch(media.matches)
-    update()
-    media.addEventListener('change', update)
-    return () => media.removeEventListener('change', update)
-  }, [])
-  return isTouch
-}
-
 /** Whether the row is wider than its box, so it scrolls; checked again as the window or the row changes. */
-function useOverflows(ref: RefObject<HTMLElement | null>, itemCount: number): boolean {
+function useOverflows(ref: RefObject<HTMLElement | null>, key: string): boolean {
   const [overflows, setOverflows] = useState(false)
   useLayoutEffect(() => {
     const element = ref.current
@@ -470,7 +459,7 @@ function useOverflows(ref: RefObject<HTMLElement | null>, itemCount: number): bo
     const observer = new ResizeObserver(measure)
     observer.observe(element)
     return () => observer.disconnect()
-  }, [ref, itemCount])
+  }, [ref, key])
   return overflows
 }
 

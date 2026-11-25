@@ -1513,6 +1513,7 @@ export const tr: Record<MessageKey, string> = {
   home_people: 'Kişilerle bakiyeler',
   home_peopleCount: 'Kişilerle bakiyeler · {count}',
   home_seeBalances: 'Bakiyeleri gör',
+  home_seeBalancesMore: 'Bakiyeleri gör (+{count})',
   home_owesYouWord: 'sana borçlu',
   home_personOwesYou: '{name} sana {amount} borçlu',
   home_youOwePerson: '{name} kişisine {amount} borçlusun',

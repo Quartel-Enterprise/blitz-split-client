@@ -1511,6 +1511,7 @@ export const ta: Record<MessageKey, string> = {
   home_people: 'நபர்களுடனான பேலன்ஸ்கள்',
   home_peopleCount: 'நபர்களுடனான பேலன்ஸ்கள் · {count}',
   home_seeBalances: 'பேலன்ஸ்களைப் பார்க்கவும்',
+  home_seeBalancesMore: 'பேலன்ஸ்களைப் பார்க்கவும் (+{count})',
   home_owesYouWord: 'உங்களுக்குத் தர வேண்டும்',
   home_personOwesYou: '{name} உங்களுக்கு {amount} தர வேண்டும்',
   home_youOwePerson: 'நீங்கள் தர வேண்டும்: {name}, {amount}',

@@ -1513,6 +1513,7 @@ export const ko: Record<MessageKey, string> = {
   home_people: '사람별 잔액',
   home_peopleCount: '사람별 잔액 · {count}',
   home_seeBalances: '잔액 보기',
+  home_seeBalancesMore: '잔액 보기 (+{count})',
   home_owesYouWord: '받을 돈',
   home_personOwesYou: '{name} 님이 나에게 줄 돈 {amount}',
   home_youOwePerson: '내가 {name} 님에게 줄 돈 {amount}',
