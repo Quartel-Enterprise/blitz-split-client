@@ -7,7 +7,7 @@ The home tab, its shortcuts and pinned groups.
     each, hidden when nobody owes anybody. It draws a list (the face, the name, the amount and "owes you" or "you owe" on
     one line, 560 wide at most) for 1–3 people on a narrow block, fixed-width cards aligned to the start on a wide one,
     and for 4 or more a carousel of cards on touch, or with a pointer (the Mac, the web with a mouse) the first rows or
-    two lines of cards and "See balances (+N)" (Pierre's call, 2026-11-24: a wide web window stretched one person's row
+    two lines of cards, the rest as their faces and "+N" in the last row or card slot (Pierre's call, 2026-11-24: a wide web window stretched one person's row
     across the whole width): `HomePeopleLayout`, shared by the three UIs, from the block's own width, the input and the
     count; see [Responsive layouts](../architecture/responsive-layouts.md#homes-balances-with-people)
     for the numbers. A person opens settling up for the net

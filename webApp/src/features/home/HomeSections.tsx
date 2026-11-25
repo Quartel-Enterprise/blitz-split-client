@@ -2,6 +2,7 @@ import { ChevronRight, Pin } from 'lucide-react'
 import { getHomePeopleLayout, type HomePresenter, type JsBillMenu, type JsHomeBill, type JsHomeGroup, type JsHomePerson, type JsHomeState, type JsHomeTotal } from 'blitzsplit-shared'
 import { useEffect, useId, useLayoutEffect, useRef, useState, type FocusEvent, type MouseEvent, type PointerEvent, type ReactNode, type RefObject } from 'react'
 import { homeBillMenuOptions, RowMenuButton } from '@/components/BillRowMenu'
+import { AvatarStack } from '@/components/AvatarStack'
 import { Avatar, PendingDot } from '@/components/common'
 import { SummaryCardSkeleton } from '@/components/PageSkeletons'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
@@ -168,8 +169,8 @@ interface GuestTip {
  * "Saldos com pessoas": each person you have an open balance with, whom you owe first. The shared HomePeopleLayout picks
  * by the card's own content width, the input (`(pointer: coarse)` or `(hover: none)` is touch) and the count, as
  * Android and Apple do: a list for 1–3 on a narrow card (each row 560px at most), fixed-width cards aligned to the start
- * on a wide one, and for 4 or more a carousel on touch, or with a mouse the first rows or two lines of cards with "Ver
- * saldos (+N)" under them. The title gets " · 9" once the carousel scrolls or someone is left out. A person opens
+ * on a wide one, and for 4 or more a carousel on touch, or with a mouse the first rows or two lines of cards, the last
+ * row or slot being the rest's faces and "+N". The title gets " · 9" once the carousel scrolls or someone is left out. A person opens
  * settling up with them for the net. A guest (a name nobody joined as) wears the crossed-out phone, and hovering it,
  * focusing it or a long press shows why they get no notice. Gone, leaving no gap, once everyone is settled; faces of
  * gray while the first download hasn't brought anyone yet.
@@ -247,16 +248,8 @@ export function PeopleCard({ presenter, state }: SectionProps) {
             />
           ))
         )}
+        {hiddenCount > 0 && <PeopleMore hidden={people.slice(shown.length)} isTile={mode === 'CARDS'} onOpen={() => presenter.seeBalances()} />}
       </div>
-      {hiddenCount > 0 && (
-        <button
-          type="button"
-          onClick={() => presenter.seeBalances()}
-          className="self-start rounded-md px-2 py-1.5 text-sm font-medium text-primary outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
-        >
-          {`${t('home_seeBalances')} (+${hiddenCount.toLocaleString()})`}
-        </button>
-      )}
       {tip && (
         <div
           id={tipId}
@@ -273,6 +266,30 @@ export function PeopleCard({ presenter, state }: SectionProps) {
         </div>
       )}
     </section>
+  )
+}
+
+/**
+ * The people the layout leaves out, as the list's last row or the cards' last tile (`isTile`): the first ones' faces and
+ * "+N", which opens Saldos. A screen reader reads "Ver saldos (+5)"; the header's "Ver saldos" stays the only link of words.
+ */
+function PeopleMore({ hidden, isTile, onOpen }: { hidden: JsHomePerson[]; isTile: boolean; onOpen: () => void }) {
+  const count = `+${hidden.length.toLocaleString()}`
+  // Why: someone no longer in the group has no face to show.
+  const faces = hidden.flatMap((person) => (person.color ? [{ initials: person.initials, color: person.color, photoUrl: person.photoUrl }] : [])).slice(0, 3)
+  return (
+    <button
+      type="button"
+      aria-label={`${t('home_seeBalances')} (${count})`}
+      onClick={onOpen}
+      className={cn(
+        'rounded-lg outline-none select-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring',
+        isTile ? 'flex flex-col items-center justify-center gap-2 border px-2 py-3' : 'flex min-h-14 items-center gap-3 px-2 py-2 text-start',
+      )}
+    >
+      <AvatarStack faces={faces} extraCount={0} size={isTile ? 'lg' : 'md'} />
+      <span className={cn('font-semibold tabular-nums', isTile ? 'text-xl' : 'text-sm')}>{count}</span>
+    </button>
   )
 }
 

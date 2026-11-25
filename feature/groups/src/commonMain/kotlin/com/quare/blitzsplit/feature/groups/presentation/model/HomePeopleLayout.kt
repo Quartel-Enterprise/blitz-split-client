@@ -9,16 +9,20 @@ package com.quare.blitzsplit.feature.groups.presentation.model
  *
  * | Block       | Input   | 1–3 people              | 4+ people                                               |
  * | < 560       | touch   | LIST                    | CAROUSEL, everyone, ~2.5 cards visible                  |
- * | < 560       | pointer | LIST                    | LIST of the first 3, the rest under "See balances (+N)" |
+ * | < 560       | pointer | LIST                    | LIST of the first 3, then a "+N" row for the rest       |
  * | ≥ 560       | touch   | CARDS, start-aligned    | CAROUSEL                                                |
- * | ≥ 560       | pointer | CARDS, start-aligned    | CARDS, at most 2 lines, the rest under "+N"             |
+ * | ≥ 560       | pointer | CARDS, start-aligned    | CARDS, at most 2 lines, the last slot a "+N" tile       |
  *
  * Cards never stretch: they keep CARD_WIDTH and the space after them stays empty on purpose. A list row is never wider
  * than MAX_ROW_WIDTH. The order is the ViewModel's (whom you owe first, then who owes you, the largest first).
  */
 data class HomePeopleLayout(
     val mode: HomePeopleMode,
-    // Why: how many people the UI draws, from the first; the rest are hiddenCount, under "See balances (+N)".
+    /*
+     * Why: how many people the UI draws, from the first; the rest are hiddenCount. While it is over 0 the UI draws the
+     * hidden people's faces and "+N" after the shown ones, which opens Balances: a row of the list, or a tile in the
+     * cards' last slot (shownCount leaves that slot free). The header's "See balances" stays the only link of words.
+     */
     val shownCount: Int,
     val hiddenCount: Int,
     // Why: CARDS only, how many cards fit on a line; the UI lays the shown ones in lines of this many.
@@ -57,9 +61,18 @@ data class HomePeopleLayout(
             val isFew = count <= MAX_LIST_PEOPLE
             return when {
                 isFew && isWide -> buildCardsLayout(count, count, blockWidth)
+
                 isFew -> buildListLayout(count, count)
+
                 isTouch -> buildCarouselLayout(count, blockWidth)
-                isWide -> buildCardsLayout(count, MAX_CARD_LINES * columnsOf(blockWidth), blockWidth)
+
+                isWide -> buildCardsLayout(
+                    count,
+                    MAX_CARD_LINES * columnsOf(blockWidth),
+                    blockWidth,
+                    reservesTile = true,
+                )
+
                 else -> buildListLayout(count, MAX_LIST_PEOPLE)
             }
         }
@@ -75,14 +88,16 @@ data class HomePeopleLayout(
             cardWidth = CARD_WIDTH,
         )
 
+        // Why: with reservesTile, when not everyone fits the "+N" tile takes the last slot, so one person fewer shows.
         private fun buildCardsLayout(
             count: Int,
-            limit: Int,
+            slots: Int,
             blockWidth: Float,
+            reservesTile: Boolean = false,
         ): HomePeopleLayout = buildLayout(
-            HomePeopleMode.CARDS,
-            count,
-            limit,
+            mode = HomePeopleMode.CARDS,
+            count = count,
+            limit = if (reservesTile && count > slots) slots - 1 else slots,
             columns = columnsOf(blockWidth),
             cardWidth = CARD_WIDTH,
         )

@@ -62,21 +62,14 @@ struct HomePeopleSection: View {
             }
             if let layout, let people {
                 let shown = Array(people.prefix(Int(layout.shownCount)))
+                let hidden = Array(people.dropFirst(Int(layout.shownCount)))
                 switch layout.mode {
                 case .list:
-                    list(shown)
+                    list(shown, hidden: hidden)
                 case .cards:
-                    cards(shown, layout: layout)
+                    cards(shown, hidden: hidden, layout: layout)
                 default:
                     carousel(shown, cardWidth: CGFloat(layout.cardWidth))
-                }
-                if layout.hiddenCount > 0 {
-                    Button(HomeCopy.seeMore(hidden: Int(layout.hiddenCount))) {
-                        send(HomeUiEventOnSeeBalancesClicked.shared)
-                    }
-                    .font(.subheadline)
-                    .buttonStyle(.borderless)
-                    .frame(minHeight: 44)
                 }
             } else if isLoading {
                 HomeFacesPlaceholder(faceSize: faceSize)
@@ -106,22 +99,34 @@ struct HomePeopleSection: View {
     }
 
     /// Fixed-width cards from the start, in lines of the layout's columns; the space after them stays empty on purpose.
-    private func cards(_ people: [HomePerson], layout: HomePeopleLayout) -> some View {
+    /// While someone is left out, the slot after the last card is the "+N" tile (nil below).
+    private func cards(_ people: [HomePerson], hidden: [HomePerson], layout: HomePeopleLayout) -> some View {
         let columns = max(Int(layout.columns), 1)
-        let lines = stride(from: 0, to: people.count, by: columns).map { Array(people[$0..<min($0 + columns, people.count)]) }
+        let slots: [HomePerson?] = hidden.isEmpty ? people : people + [nil]
+        let lines = stride(from: 0, to: slots.count, by: columns).map { Array(slots[$0..<min($0 + columns, slots.count)]) }
+        let width = CGFloat(layout.cardWidth)
         return VStack(alignment: .leading, spacing: gap) {
             ForEach(lines.indices, id: \.self) { index in
                 HStack(alignment: .top, spacing: gap) {
-                    ForEach(lines[index], id: \.stableId) { person in
-                        PersonCard(person: person, width: CGFloat(layout.cardWidth), faceSize: faceSize) { open(person) }
+                    ForEach(Array(lines[index].enumerated()), id: \.offset) { _, person in
+                        if let person {
+                            PersonCard(person: person, width: width, faceSize: faceSize) { open(person) }
+                        } else {
+                            PeopleMore(hidden: hidden, isTile: true) { seeBalances() }
+                                .frame(width: width)
+                                .frame(maxHeight: .infinity)
+                                .background(Palette.card, in: .rect(cornerRadius: 20))
+                        }
                     }
                 }
+                .fixedSize(horizontal: false, vertical: true)
             }
         }
     }
 
-    /// The list reads as one card, as "Latest expenses" does, never wider than a row's maximum.
-    private func list(_ people: [HomePerson]) -> some View {
+    /// The list reads as one card, as "Latest expenses" does, never wider than a row's maximum; while someone is left
+    /// out, its last row is their faces and "+N".
+    private func list(_ people: [HomePerson], hidden: [HomePerson]) -> some View {
         GroupedCard {
             VStack(spacing: 0) {
                 ForEach(Array(people.enumerated()), id: \.element.stableId) { index, person in
@@ -130,6 +135,10 @@ struct HomePeopleSection: View {
                     }
                     PersonRow(person: person) { open(person) }
                 }
+                if !hidden.isEmpty {
+                    Divider().padding(.leading, 68)
+                    PeopleMore(hidden: hidden, isTile: false) { seeBalances() }
+                }
             }
         }
         .frame(maxWidth: CGFloat(HomePeopleLayout.companion.MAX_ROW_WIDTH), alignment: .leading)
@@ -137,6 +146,49 @@ struct HomePeopleSection: View {
 
     private func open(_ person: HomePerson) {
         send(HomeUiEventOnPersonClicked(key: person.key, currency: person.currency))
+    }
+
+    private func seeBalances() {
+        send(HomeUiEventOnSeeBalancesClicked.shared)
+    }
+}
+
+/// The people the layout leaves out, as the list's last row or the cards' last tile: the first ones' faces and "+N",
+/// which opens Balances. VoiceOver reads "See balances (+5)".
+private struct PeopleMore: View {
+    let hidden: [HomePerson]
+    let isTile: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            let layout = isTile
+                ? AnyLayout(VStackLayout(spacing: 8))
+                : AnyLayout(HStackLayout(spacing: 12))
+            layout {
+                AvatarStack(faces: faces, extraCount: 0, size: isTile ? 32 : 28)
+                Text(verbatim: "+\(hidden.count.formatted())")
+                    .font(isTile ? .title3.bold() : .subheadline.bold())
+                    .monospacedDigit()
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, isTile ? 12 : 10)
+            .frame(maxWidth: .infinity, minHeight: 56, alignment: isTile ? .center : .leading)
+            .frame(maxHeight: isTile ? .infinity : nil)
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .hoverDim()
+        .accessibilityLabel(Text(verbatim: HomeCopy.seeMore(hidden: hidden.count)))
+    }
+
+    /// The first three hidden people with a face; someone no longer in the group has none to show.
+    private var faces: [StackFace] {
+        hidden.compactMap { person in
+            person.color.map { StackFace(initials: person.initials, color: $0, photoUrl: person.photoUrl) }
+        }
+        .prefix(3)
+        .map { $0 }
     }
 }
 

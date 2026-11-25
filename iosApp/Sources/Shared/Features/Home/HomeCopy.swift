@@ -33,7 +33,7 @@ enum HomeCopy {
         )
     }
 
-    /// "See balances (+5)": the people the Mac's list or cards leave out, under them.
+    /// "See balances (+5)": what VoiceOver reads for the "+N" row or tile of the people the Mac's list or cards leave out.
     static func seeMore(hidden: Int) -> String {
         "\(String(localized: "See balances", bundle: .appLanguage)) (+\(hidden.formatted()))"
     }

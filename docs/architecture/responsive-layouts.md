@@ -206,8 +206,8 @@ card's content box), the input, and the count.
 | Block | Input | 1–3 people | 4+ people |
 | --- | --- | --- | --- |
 | < 560 | touch | list | carousel of everyone, about 2.5 cards in sight |
-| < 560 | pointer | list | the first 3 rows, then "See balances (+N)" |
-| ≥ 560 | either | fixed-width cards, aligned to the start | touch: carousel; pointer: cards on 2 lines at most, then "See balances (+N)" |
+| < 560 | pointer | list | the first 3 rows, then a "+N" row |
+| ≥ 560 | either | fixed-width cards, aligned to the start | touch: carousel; pointer: cards on 2 lines at most, the last slot a "+N" tile |
 
 - A list row is the face, the name, the amount with its sign and its word on one line; it is never wider than
   **560** (`MAX_ROW_WIDTH`), so a name never sits far from its amount. The threshold, **560** (`WIDE_BLOCK_MIN_WIDTH`),
@@ -221,6 +221,10 @@ card's content box), the input, and the count.
   list or the carousel; a tablet or an iPad upright sits at the threshold; the web's desktop and the Mac's default
   window get cards; the Mac's narrow window and the web's tablet with a mouse get the list (the web's phone, touch,
   the carousel from 4).
+- The people left out show as the hidden ones' first three faces and "+N", in the list's last row or the cards' last
+  slot (so one person fewer shows), and open Balances; a screen reader reads "See balances (+N)". The header's "See
+  balances" stays the only link in words: a "See balances (+N)" button under the cards repeated it (Pierre's call,
+  2026-11-24).
 - The order is the ViewModel's: whom you owe first, then who owes you, the largest first. The title counts everyone
   (" · 9") once the carousel scrolls or someone is left out. While the people are read, the faces' shimmer holds the
   place.

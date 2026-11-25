@@ -231,7 +231,7 @@ class HomePeopleLayoutTest {
     }
 
     @Test
-    fun `GIVEN a wide block with a pointer and nine people WHEN laying them out THEN shows two lines`() {
+    fun `GIVEN a wide block with a pointer and nine people WHEN laying them out THEN keeps a slot for the tile`() {
         // Given
         val peopleCount = 9
         val blockWidth = wide
@@ -247,12 +247,12 @@ class HomePeopleLayoutTest {
         // Then
         assertEquals(HomePeopleMode.CARDS, layout.mode)
         assertEquals(2, layout.columns)
-        assertEquals(4, layout.shownCount)
-        assertEquals(5, layout.hiddenCount)
+        assertEquals(3, layout.shownCount)
+        assertEquals(6, layout.hiddenCount)
     }
 
     @Test
-    fun `GIVEN a desktop block with a pointer and nine people WHEN laying them out THEN fills two lines of cards`() {
+    fun `GIVEN a desktop block with a pointer and nine people WHEN laying them out THEN shows seven and the tile`() {
         // Given
         val peopleCount = 9
         val blockWidth = desktop
@@ -267,8 +267,8 @@ class HomePeopleLayoutTest {
 
         // Then
         assertEquals(4, layout.columns)
-        assertEquals(8, layout.shownCount)
-        assertEquals(1, layout.hiddenCount)
+        assertEquals(7, layout.shownCount)
+        assertEquals(2, layout.hiddenCount)
     }
 
     @Test
@@ -378,6 +378,26 @@ class HomePeopleLayoutTest {
 
         // Then
         assertEquals(0, layout.shownCount)
+        assertEquals(0, layout.hiddenCount)
+    }
+
+    @Test
+    fun `GIVEN a wide block with a pointer and exactly two lines of people WHEN laying them out THEN shows everyone`() {
+        // Given
+        val peopleCount = 10
+        val blockWidth = 1038f
+        val isTouch = false
+
+        // When
+        val layout = HomePeopleLayout.of(
+            peopleCount = peopleCount,
+            blockWidth = blockWidth,
+            isTouch = isTouch,
+        )
+
+        // Then
+        assertEquals(5, layout.columns)
+        assertEquals(10, layout.shownCount)
         assertEquals(0, layout.hiddenCount)
     }
 }
