@@ -78,6 +78,70 @@ class PhotoCropTest {
     }
 
     @Test
+    fun `GIVEN a tall photo that can fit WHEN reading the zoom limits THEN it zooms out until its height fits`() {
+        // Given
+        val crop = PhotoCrop.of(1000, 2500, canFit = true)
+
+        // When
+        val limits = crop.minZoom to crop.maxZoom
+
+        // Then
+        assertEquals(0.4f, limits.first, TOLERANCE)
+        assertEquals(3f, limits.second, TOLERANCE)
+    }
+
+    @Test
+    fun `GIVEN a tall photo that can fit WHEN zooming out past the fit THEN it stops where it fits whole`() {
+        // Given
+        val crop = PhotoCrop.of(1000, 2500, canFit = true)
+
+        // When
+        val zoomed = crop.toZoomed(0.1f)
+
+        // Then
+        assertEquals(0.4f, zoomed.zoom, TOLERANCE)
+        assertEquals(1f, zoomed.photoHeightInFrame * zoomed.zoom, TOLERANCE)
+    }
+
+    @Test
+    fun `GIVEN a tall photo that can fit WHEN pinching out past the fit THEN it stops where it fits whole`() {
+        // Given
+        val crop = PhotoCrop.of(1000, 2500, canFit = true)
+
+        // When
+        val pinched = crop.toZoomedBy(0.1f)
+
+        // Then
+        assertEquals(0.4f, pinched.zoom, TOLERANCE)
+    }
+
+    @Test
+    fun `GIVEN a tall photo fitting whole WHEN dragging it THEN it stays centered`() {
+        // Given
+        val crop = PhotoCrop.of(1000, 2500, canFit = true).toZoomed(0.4f)
+
+        // When
+        val dragged = crop.toDragged(0.3f, -0.2f)
+
+        // Then
+        assertEquals(0f, dragged.offsetX, TOLERANCE)
+        assertEquals(0f, dragged.offsetY, TOLERANCE)
+    }
+
+    @Test
+    fun `GIVEN a tall photo that cannot fit WHEN zooming out THEN it still covers the frame`() {
+        // Given
+        val crop = PhotoCrop.of(1000, 2500)
+
+        // When
+        val zoomed = crop.toZoomed(0.4f)
+
+        // Then
+        assertEquals(1f, crop.minZoom, TOLERANCE)
+        assertEquals(1f, zoomed.zoom, TOLERANCE)
+    }
+
+    @Test
     fun `GIVEN a square photo at zoom 1 WHEN dragging it THEN it does not move`() {
         // Given
         val crop = PhotoCrop.of(1000, 1000)

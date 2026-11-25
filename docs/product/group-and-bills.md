@@ -231,8 +231,11 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     tile's rounded square (Pierre's call, beta feedback of 2026-11-16: "square like the preview"), and only "Done"
     attaches it: the square the frame holds, cut from the editor's photo (already upright and at most 1600 px, as
     any bill photo), at as many pixels as that photo has there (its shorter side divided by the zoom, never blown
-    up), under the same 1.5 MB (`PrepareBillPhoto`, `BillCropEncoder`); ✕, Cancel or back attach nothing. The tile
-    spins while the photo is read and while the square is kept. The receipt Scan receipt attaches is not framed: it
+    up, at most 1600 px), under the same 1.5 MB (`PrepareBillPhoto`, `BillCropEncoder`); ✕, Cancel or back attach nothing. The tile
+    spins while the photo is read and while the square is kept. Unlike a profile's or a group's photo, which always
+    covers its frame, a bill photo opens covering the square but zooms out (slider or pinch) until the whole photo
+    fits, its longer side across the frame, centered, the rest of the square white in the editor and in the photo kept,
+    so a long receipt screenshot is attached whole (Pierre's call, feedback of 2026-11-25). The receipt Scan receipt attaches is not framed: it
     keeps the whole image it was read from.
   - Bill's "Share bill" (7.3h, `Route.ShareBill`, `ShareBillViewModel`): the bill's link,
     `https://blitzsplit.com/c/<code>`, one per bill, whose code the server makes (`set_bill_link`). Opening it makes

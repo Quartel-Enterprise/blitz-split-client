@@ -96,6 +96,13 @@ struct PhotoCropView: View {
             let side = min(proxy.size.width * Self.frameRatio, proxy.size.height * Self.frameRatio, Self.maxFrameSide)
             let crop = editor.crop
             ZStack {
+                // Why: a receipt zoomed out to fit leaves the frame white around it, as the square kept is. Plain white,
+                // not a Palette color: it must match the encoders' fill, whatever the theme.
+                if crop.canFit, image != nil {
+                    frameShape(side: side)
+                        .fill(Color.white)
+                        .frame(width: side, height: side)
+                }
                 if let image {
                     image
                         .resizable()
@@ -120,21 +127,23 @@ struct PhotoCropView: View {
         .environment(\.layoutDirection, .leftToRight)
     }
 
+    private func frameShape(side: CGFloat) -> AnyShape {
+        frame == .circle ? AnyShape(Circle()) : AnyShape(GroupAvatar.shape(size: side))
+    }
+
     /// The scrim with the frame cut out of it, and the frame's border.
     private func frameMask(side: CGFloat) -> some View {
-        let frameShape = frame == .circle
-            ? AnyShape(Circle())
-            : AnyShape(GroupAvatar.shape(size: side))
+        let shape = frameShape(side: side)
         return ZStack {
             Rectangle()
                 .fill(Self.background.opacity(0.72))
                 .overlay {
-                    frameShape
+                    shape
                         .frame(width: side, height: side)
                         .blendMode(.destinationOut)
                 }
                 .compositingGroup()
-            frameShape
+            shape
                 .stroke(.white.opacity(0.9), lineWidth: 2)
                 .frame(width: side, height: side)
         }
