@@ -246,6 +246,19 @@ export function HomeShellView({
   const areBarsHidden = hidesBars && phoneBars === 'home'
   // Why: slides, or moves at once under reduced motion, and comes back for a bar that takes the keyboard's focus.
   const barMotion = 'motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out'
+  const searchButton = search && (
+    <button
+      aria-label={t('groups_search')}
+      aria-keyshortcuts={search.keyShortcuts || undefined}
+      onClick={search.onOpen}
+      className="mt-3 flex flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] font-medium text-muted-foreground outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:h-9 lg:flex-row lg:justify-start lg:gap-2 lg:border lg:bg-card lg:px-2.5 lg:py-0 lg:text-sm lg:font-normal"
+    >
+      <Search aria-hidden className="size-4 shrink-0" />
+      <span aria-hidden className="lg:hidden">{t('groups_search')}</span>
+      <span className="hidden flex-1 text-start lg:inline">{t('groups_searchButton')}</span>
+      {search.shortcut && <kbd className="hidden h-5 items-center rounded border bg-muted px-1.5 font-sans text-[11px] lg:flex">{search.shortcut}</kbd>}
+    </button>
+  )
   return (
     <div className={cn('flex min-h-dvh', className)}>
       <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col border-e bg-sidebar p-2 md:flex lg:w-60 lg:p-3">
@@ -257,21 +270,10 @@ export function HomeShellView({
           <BrandMark showsName={false} className="h-10 px-1 lg:hidden" />
           <BrandMark className="hidden h-10 px-1.5 lg:flex" />
         </button>
-        {/* Why: the rail's first item and the desktop's field atop the tabs, where a keyboard-first window looks for
-            search (⌘K); the phone puts it last in its bottom navigation instead, as the apps do (Pierre's call). */}
-        {search && (
-          <button
-            aria-label={t('groups_search')}
-            aria-keyshortcuts={search.keyShortcuts || undefined}
-            onClick={search.onOpen}
-            className="mt-3 flex flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] font-medium text-muted-foreground outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:h-9 lg:flex-row lg:justify-start lg:gap-2 lg:border lg:bg-card lg:px-2.5 lg:py-0 lg:text-sm lg:font-normal"
-          >
-            <Search aria-hidden className="size-4 shrink-0" />
-            <span aria-hidden className="lg:hidden">{t('groups_search')}</span>
-            <span className="hidden flex-1 text-start lg:inline">{t('groups_searchButton')}</span>
-            {search.shortcut && <kbd className="hidden h-5 items-center rounded border bg-muted px-1.5 font-sans text-[11px] lg:flex">{search.shortcut}</kbd>}
-          </button>
-        )}
+        {/* Why: the desktop's field atop the tabs, where a keyboard-first window looks for search (⌘K); the rail and the
+            phone's bottom navigation put it last instead, as the apps do (Pierre's call). Drawn in both places, each one
+            hidden where the other shows, so the focus and reading order follow what the screen shows. */}
+        <div className="hidden lg:contents">{searchButton}</div>
         <nav aria-label={t('groups_mainNavigation')} className="mt-3 flex flex-col gap-0.5">
           {tabs.map(({ tab, label, icon }) => (
             <button
@@ -289,6 +291,7 @@ export function HomeShellView({
             </button>
           ))}
         </nav>
+        <div className="contents lg:hidden">{searchButton}</div>
         {openGroups === 'loading' ? <SidebarGroupsSkeleton /> : openGroups && <SidebarGroups openGroups={openGroups} />}
         <button
           onClick={onProfile}
