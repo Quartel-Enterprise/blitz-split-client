@@ -32,7 +32,8 @@ import SwiftUI
 /// "यांनी", which the user's drops ("Ana यांनी खर्च वाटला", "तुम्ही खर्च वाटला").
 /// Gujarati does the same with its agent "એ", which the user's "તમે" doesn't take ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ
 /// વહેંચ્યો"), and Punjabi with its ergative "ਨੇ", which the user's "ਤੁਸੀਂ" doesn't take ("Ana ਨੇ ਖਰਚਾ ਵੰਡਿਆ",
-/// "ਤੁਸੀਂ ਖਰਚਾ ਵੰਡਿਆ").
+/// "ਤੁਸੀਂ ਖਰਚਾ ਵੰਡਿਆ"). Kannada puts its verb last as Tamil does, its respectful past in "-ರು" after a consonant becoming the
+/// user's "-ಿರಿ" ("Ana ಒಂದು ಖರ್ಚನ್ನು ಹಂಚಿದರು", "ನೀವು ಒಂದು ಖರ್ಚನ್ನು ಹಂಚಿದಿರಿ").
 /// Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb stays as it is ("Ana ചെലവ് വിഭജിച്ചു",
 /// "നിങ്ങൾ ചെലവ് വിഭജിച്ചു").
 ///
@@ -121,6 +122,7 @@ enum SecondPerson {
         case "tr": return turkishVerbForYou(verb)
         case "fa": return verbLastForYou(verb, past: "[دت]$", ending: "ید")
         case "ta": return verbLastForYou(verb, past: "ார்$", ending: "ீர்கள்", dropped: "ார்")
+        case "kn": return verbLastForYou(verb, past: "[ಕ-ಹ]ರು$", ending: "ಿರಿ", dropped: "ರು")
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
         case "mr": return verbWithoutSubjectParticle(verb, particle: "यांनी")
@@ -198,8 +200,8 @@ enum SecondPerson {
     /// A language that puts its verb last (Turkish, Persian): the clause before the colon that leads to the object, if
     /// any, ends with a simple past matching `past`, which takes `ending` for the user. Persian's past stem ends in "د"
     /// or "ت" and takes the respectful "ید" ("تقسیم کرد" → "تقسیم کردید", "پیوست" → "پیوستید"). Tamil's respectful past
-    /// drops its "-ார்" (`dropped`) for the user's "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்"). A phrase whose clause
-    /// doesn't end in that past stays as it is.
+    /// drops its "-ார்" (`dropped`) for the user's "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்"), Kannada's its "ರು" for the
+    /// user's "ಿರಿ" ("ಹಂಚಿದರು" → "ಹಂಚಿದಿರಿ"). A phrase whose clause doesn't end in that past stays as it is.
     private static func verbLastForYou(_ verb: String, past: String, ending: String, dropped: String = "") -> String {
         var end = verb.firstIndex(of: ":") ?? verb.endIndex
         while end > verb.startIndex, verb[verb.index(before: end)].isWhitespace {

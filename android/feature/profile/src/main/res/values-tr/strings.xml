@@ -109,6 +109,7 @@
     <string name="profile_language_lithuanian">Litvanca</string>
     <string name="profile_language_punjabi">Pencapça</string>
     <string name="profile_language_malayalam">Malayalamca</string>
+    <string name="profile_language_kannada">Kannada dili</string>
     <string name="profile_language_system_detail">Cihaz dili</string>
     <string name="profile_notifications">Bildirimler</string>
     <plurals name="profile_notifications_active">

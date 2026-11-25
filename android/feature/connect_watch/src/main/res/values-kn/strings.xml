@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">ವಾಚ್ ಸಂಪರ್ಕಿಸಿ</string>
+    <string name="connect_watch_close">ಮುಚ್ಚಿ</string>
+    <string name="connect_watch_body">ನಿಮ್ಮ ವಾಚ್ ತೋರಿಸುವ ಕೋಡ್ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ. ಅದು ನಿಮ್ಮ ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಆಗುತ್ತದೆ ಮತ್ತು ನಂತರ ತಾನಾಗಿಯೇ ಸಿಂಕ್ ಆಗುತ್ತದೆ.</string>
+    <string name="connect_watch_code_label">ವಾಚ್ ಕೋಡ್</string>
+    <string name="connect_watch_error_invalid">ತಪ್ಪಾದ ಅಥವಾ ಅವಧಿ ಮೀರಿದ ಕೋಡ್. ವಾಚ್‌ನಲ್ಲಿ ಹೊಸ ಕೋಡ್ ಪಡೆಯಿರಿ.</string>
+    <string name="connect_watch_error_too_many">ತುಂಬಾ ತಪ್ಪು ಕೋಡ್‌ಗಳು. ಕೆಲವು ನಿಮಿಷ ಕಾಯಿರಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="connect_watch_error_needs_account">ಮೊದಲು ಒಂದು ಖಾತೆಯನ್ನು ಸಂಪರ್ಕಿಸಿ: ನಿಮ್ಮ ಡೇಟಾ ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಇದೆ.</string>
+    <string name="connect_watch_error_failed">ವಾಚ್ ಸಂಪರ್ಕಿಸಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="connect_watch_offline">ವಾಚ್ ಸಂಪರ್ಕಿಸಲು ಇಂಟರ್ನೆಟ್ ಬೇಕು.</string>
+    <string name="connect_watch_own_watch_only">ನಿಮ್ಮ ಸ್ವಂತ ವಾಚ್‌ನಲ್ಲಿ ತೋರಿಸಿದ ಕೋಡ್ ಅನ್ನು ಮಾತ್ರ ಟೈಪ್ ಮಾಡಿ: ಆ ವಾಚ್ ಯಾರ ಬಳಿ ಇದೆಯೋ ಅವರು ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಪ್ರವೇಶಿಸುತ್ತಾರೆ.</string>
+    <string name="connect_watch_validity">ಈ ಕೋಡ್ 5 ನಿಮಿಷಗಳವರೆಗೆ, ಒಂದು ಬಾರಿ ಮಾತ್ರ ಮಾನ್ಯ.</string>
+    <string name="connect_watch_button">ಸಂಪರ್ಕಿಸಿ</string>
+    <string name="connect_watch_connected_title">ವಾಚ್ ಸಂಪರ್ಕಗೊಂಡಿದೆ</string>
+    <string name="connect_watch_connected_body">ಅದು ನಿಮ್ಮ ಗುಂಪುಗಳನ್ನು ನೋಡುತ್ತದೆ ಮತ್ತು ತಾನಾಗಿಯೇ ಸಿಂಕ್ ಆಗುತ್ತದೆ. ಅದರ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲು, ವಾಚ್‌ನಲ್ಲಿ ಸೈನ್ ಔಟ್ ಮಾಡಿ.</string>
+</resources>

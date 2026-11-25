@@ -71,6 +71,7 @@ class ProfileUiStateTest {
             AppLanguage.LITHUANIAN -> listOf("Lietuvių", "Lithuanian")
             AppLanguage.PUNJABI -> listOf("ਪੰਜਾਬੀ", "Punjabi")
             AppLanguage.MALAYALAM -> listOf("മലയാളം", "Malayalam")
+            AppLanguage.KANNADA -> listOf("ಕನ್ನಡ", "Kannada")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -141,6 +142,7 @@ class ProfileUiStateTest {
         AppLanguage.LITHUANIAN,
         AppLanguage.PUNJABI,
         AppLanguage.MALAYALAM,
+        AppLanguage.KANNADA,
     )
 
     @Test
@@ -754,6 +756,7 @@ class ProfileUiStateTest {
                 AppLanguage.LITHUANIAN,
                 AppLanguage.PUNJABI,
                 AppLanguage.MALAYALAM,
+                AppLanguage.KANNADA,
             ),
             options,
         )
@@ -826,6 +829,7 @@ class ProfileUiStateTest {
                 AppLanguage.LITHUANIAN,
                 AppLanguage.PUNJABI,
                 AppLanguage.MALAYALAM,
+                AppLanguage.KANNADA,
             ),
             options,
         )

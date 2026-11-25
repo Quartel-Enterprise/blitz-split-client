@@ -108,6 +108,7 @@
     <string name="profile_language_lithuanian">立陶宛文</string>
     <string name="profile_language_punjabi">旁遮普文</string>
     <string name="profile_language_malayalam">馬拉雅拉姆文</string>
+    <string name="profile_language_kannada">坎那達文</string>
     <string name="profile_language_system_detail">裝置語言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

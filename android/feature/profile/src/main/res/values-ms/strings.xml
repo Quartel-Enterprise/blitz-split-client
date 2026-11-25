@@ -108,6 +108,7 @@
     <string name="profile_language_lithuanian">Bahasa Lithuania</string>
     <string name="profile_language_punjabi">Bahasa Punjabi</string>
     <string name="profile_language_malayalam">Bahasa Malayalam</string>
+    <string name="profile_language_kannada">Bahasa Kannada</string>
     <string name="profile_language_system_detail">Bahasa peranti</string>
     <string name="profile_notifications">Pemberitahuan</string>
     <plurals name="profile_notifications_active">

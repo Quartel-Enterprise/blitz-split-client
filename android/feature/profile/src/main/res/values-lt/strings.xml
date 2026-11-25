@@ -111,6 +111,7 @@
     <string name="profile_language_lithuanian">Lietuvių</string>
     <string name="profile_language_punjabi">Pendžabų</string>
     <string name="profile_language_malayalam">Malajalių</string>
+    <string name="profile_language_kannada">Kanadų</string>
     <string name="profile_language_system_detail">Įrenginio kalba</string>
     <string name="profile_notifications">Pranešimai</string>
     <plurals name="profile_notifications_active">

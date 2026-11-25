@@ -109,6 +109,7 @@
     <string name="profile_language_lithuanian">ലിത്വാനിയൻ</string>
     <string name="profile_language_punjabi">പഞ്ചാബി</string>
     <string name="profile_language_malayalam">മലയാളം</string>
+    <string name="profile_language_kannada">കന്നഡ</string>
     <string name="profile_language_system_detail">ഉപകരണത്തിന്റെ ഭാഷ</string>
     <string name="profile_notifications">അറിയിപ്പുകൾ</string>
     <plurals name="profile_notifications_active">

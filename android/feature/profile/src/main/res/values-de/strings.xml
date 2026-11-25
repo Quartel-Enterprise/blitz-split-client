@@ -109,6 +109,7 @@
     <string name="profile_language_lithuanian">Litauisch</string>
     <string name="profile_language_punjabi">Punjabi</string>
     <string name="profile_language_malayalam">Malayalam</string>
+    <string name="profile_language_kannada">Kannada</string>
     <string name="profile_language_system_detail">Sprache des Geräts</string>
     <string name="profile_notifications">Mitteilungen</string>
     <plurals name="profile_notifications_active">
