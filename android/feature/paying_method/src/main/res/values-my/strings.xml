@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">ငွေပေးချေနည်း အသစ်</string>
+    <string name="paying_method_edit_title">ငွေပေးချေနည်း ပြင်ဆင်ရန်</string>
+    <string name="paying_method_type">အမျိုးအစား</string>
+    <string name="paying_method_name">အမည်</string>
+    <string name="paying_method_name_optional">အမည် (မထည့်လည်း ရသည်)</string>
+    <string name="paying_method_color">အရောင်</string>
+    <string name="paying_method_default">မူရင်း နည်းလမ်း</string>
+    <string name="paying_method_default_hint">သင် ပေးချေသော စရိတ်အသစ်များသည် ၎င်းဖြင့် စတင်ပါမည်။</string>
+    <string name="paying_method_delete">ငွေပေးချေနည်း ဖျက်ရန်</string>
+    <string name="paying_method_delete_title">ဤငွေပေးချေနည်းကို ဖျက်မလား?</string>
+    <string name="paying_method_delete_body">၎င်းဖြင့် မှတ်ထားသော စရိတ်များတွင် ၎င်းကို မပြတော့ပါ။</string>
+    <string name="paying_method_delete_confirm">ဖျက်ရန်</string>
+    <string name="paying_method_save">သိမ်းရန်</string>
+</resources>

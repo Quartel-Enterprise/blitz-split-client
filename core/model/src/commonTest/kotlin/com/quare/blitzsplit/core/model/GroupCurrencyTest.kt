@@ -238,6 +238,30 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN Myanmar WHEN picking its currency THEN it is the kyat typed without decimals`() {
+        // Given
+        val region = "MM"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.MMK to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Cambodia WHEN picking its currency THEN it is the riel typed without decimals`() {
+        // Given
+        val region = "KH"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.KHR to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
     fun `GIVEN India WHEN picking its currency THEN it is the rupee with its 2 decimals`() {
         // Given
         val region = "IN"

@@ -882,6 +882,8 @@ export const sv: Record<MessageKey, string> = {
   profile_languagePunjabi: 'Punjabi',
   profile_languageMalayalam: 'Malayalam',
   profile_languageKannada: 'Kannada',
+  profile_languageBurmese: 'Burmesiska',
+  profile_languageKhmer: 'Khmer',
   profile_bitcoinInSats: 'Bitcoin i satoshi',
   profile_bitcoinInSatsDetail: 'Visar och skriver bitcoinbelopp i sats (1 ₿ = 100 000 000 sats).',
   profile_shareUsageData: 'Dela användningsdata',

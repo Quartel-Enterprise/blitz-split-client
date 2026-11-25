@@ -109,6 +109,8 @@
     <string name="profile_language_punjabi">Punjabi</string>
     <string name="profile_language_malayalam">Malayalam</string>
     <string name="profile_language_kannada">Kannada</string>
+    <string name="profile_language_burmese">Burma</string>
+    <string name="profile_language_khmer">Khmer</string>
     <string name="profile_language_system_detail">Bahasa perangkat</string>
     <string name="profile_notifications">Notifikasi</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">ပရိုဖိုင် ပြင်ဆင်ရန်</string>
+    <string name="edit_profile_save">သိမ်းရန်</string>
+    <string name="edit_profile_change_photo">ဓာတ်ပုံ ပြောင်းရန်</string>
+    <string name="edit_profile_take_photo">ဓာတ်ပုံ ရိုက်ရန်</string>
+    <string name="edit_profile_choose_photo">ဓာတ်ပုံပြခန်းမှ ရွေးရန်</string>
+    <string name="edit_profile_use_account_photo">%1$s အကောင့် ဓာတ်ပုံကို သုံးရန်</string>
+    <string name="edit_profile_remove_photo">ဓာတ်ပုံ ဖယ်ရှားရန်</string>
+    <string name="edit_profile_photo_error">ဤဓာတ်ပုံကို သုံး၍ မရပါ။ နောက်တစ်ပုံ စမ်းပါ။</string>
+    <string name="edit_profile_avatar_color">အဗတ်တာ အရောင်</string>
+    <string name="edit_profile_avatar_color_hint">ဓာတ်ပုံ မရှိသည့်အခါ ပြပါသည်။</string>
+    <string name="edit_profile_name_label">သင့်အမည်</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">အနည်းဆုံး စာလုံး %d လုံး ရိုက်ပါ။</string>
+    <string name="edit_profile_name_too_long">စာလုံး %d လုံးအထိသာ သုံးပါ။</string>
+    <string name="edit_profile_account_notice">အမည်နှင့် ဓာတ်ပုံသည် သင့် %1$s အကောင့်မှ လာပါသည်။ ဤနေရာတွင် ပြောင်းလျှင် Blitz Split တွင်သာ သက်ရောက်ပြီး သင့် %1$s အကောင့်ကို မပြောင်းပါ။</string>
+    <string name="edit_profile_footer">သင့်အဖွဲ့များနှင့် သင့်ပရိုဖိုင်လင့်ခ် ရှိသူ မည်သူမဆို သင့်အမည်နှင့် ဓာတ်ပုံကို မြင်ရပါသည်။</string>
+    <string name="profile_photo_close">ပိတ်ရန်</string>
+    <string name="profile_photo_camera">ကင်မရာ</string>
+    <string name="profile_photo_gallery">ဓာတ်ပုံပြခန်း</string>
+    <string name="profile_photo_remove">ဖယ်ရှားရန်</string>
+    <string name="profile_photo_title">ပရိုဖိုင် ဓာတ်ပုံ</string>
+</resources>

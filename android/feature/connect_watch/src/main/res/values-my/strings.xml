@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">နာရီ ချိတ်ဆက်ရန်</string>
+    <string name="connect_watch_close">ပိတ်ရန်</string>
+    <string name="connect_watch_body">သင့်နာရီတွင် ပြသော ကုဒ်ကို ရိုက်ထည့်ပါ။ ၎င်းသည် သင့်အကောင့်သို့ ဝင်ပြီး အလိုအလျောက် စင့်ခ်လုပ်ပါမည်။</string>
+    <string name="connect_watch_code_label">နာရီ ကုဒ်</string>
+    <string name="connect_watch_error_invalid">ကုဒ် မှားနေသည် သို့မဟုတ် သက်တမ်းကုန်သွားပြီ။ နာရီတွင် ကုဒ်အသစ် ယူပါ။</string>
+    <string name="connect_watch_error_too_many">ကုဒ် မှားသည်မှာ များလွန်းသည်။ မိနစ်အနည်းငယ် စောင့်ပြီး ထပ်ကြိုးစားပါ။</string>
+    <string name="connect_watch_error_needs_account">အကောင့်တစ်ခု အရင် ချိတ်ဆက်ပါ: သင့်ဒေတာသည် ဤစက်တွင်သာ ရှိသည်။</string>
+    <string name="connect_watch_error_failed">နာရီကို ချိတ်ဆက်၍ မရပါ။ ထပ်ကြိုးစားပါ။</string>
+    <string name="connect_watch_offline">နာရီ ချိတ်ဆက်ရန် အင်တာနက် လိုအပ်သည်။</string>
+    <string name="connect_watch_own_watch_only">သင့်ကိုယ်ပိုင် နာရီတွင် ပြသော ကုဒ်ကိုသာ ရိုက်ထည့်ပါ: ထိုနာရီ ရှိသူသည် သင့်အကောင့်ထဲ ဝင်နိုင်မည်။</string>
+    <string name="connect_watch_validity">ကုဒ်သည် 5 မိနစ်အတွင်း တစ်ကြိမ်သာ သုံးနိုင်သည်။</string>
+    <string name="connect_watch_button">ချိတ်ဆက်ရန်</string>
+    <string name="connect_watch_connected_title">နာရီ ချိတ်ဆက်ပြီးပါပြီ</string>
+    <string name="connect_watch_connected_body">၎င်းသည် သင့်အဖွဲ့များကို မြင်ရပြီး အလိုအလျောက် စင့်ခ်လုပ်သည်။ ချိတ်ဆက်မှု ဖြုတ်ရန် နာရီတွင် အကောင့်မှ ထွက်ပါ။</string>
+</resources>

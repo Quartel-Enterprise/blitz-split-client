@@ -109,6 +109,8 @@
     <string name="profile_language_punjabi">旁遮普语</string>
     <string name="profile_language_malayalam">马拉雅拉姆语</string>
     <string name="profile_language_kannada">卡纳达语</string>
+    <string name="profile_language_burmese">缅甸语</string>
+    <string name="profile_language_khmer">高棉语</string>
     <string name="profile_language_system_detail">设备语言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

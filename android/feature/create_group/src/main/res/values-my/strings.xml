@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">အဖွဲ့အသစ်</string>
+    <string name="create_group_close">ပိတ်ရန်</string>
+    <string name="create_group_create">ဖန်တီးရန်</string>
+    <string name="create_group_change_color">အဖွဲ့၏ အရောင်ကို ပြောင်းရန်</string>
+    <string name="create_group_name_label">အဖွဲ့ အမည်</string>
+    <string name="create_group_type_label">အဖွဲ့ အမျိုးအစား</string>
+    <string name="create_group_members_title">ပါဝင်သူများ</string>
+    <plurals name="create_group_member_count">
+        <item quantity="other">လူ %d ဦး</item>
+    </plurals>
+    <string name="create_group_me">သင်</string>
+    <string name="create_group_remove_member">%s ကို ဖယ်ရှားရန်</string>
+    <string name="create_group_add_placeholder">အမည်ဖြင့် ထည့်ရန်</string>
+    <string name="create_group_add">ထည့်ရန်</string>
+    <string name="create_group_no_app_notice">ယခု မည်သူမျှ အက်ပ် မလိုသေးပါ။ လူတိုင်းအတွက် စရိတ်များကို ယခုပင် ထည့်နိုင်ပြီး လင့်ခ်ကို နောက်မှ ပို့နိုင်သည်။</string>
+    <string name="create_group_currency">မူလ ငွေကြေး</string>
+    <string name="create_group_currency_caption">စရိတ်အသစ်များသည် ဤငွေကြေးဖြင့် စတင်သည်၊ စရိတ်တစ်ခုစီသည် အခြားငွေကြေးကို သုံးနိုင်သည်။</string>
+    <string name="create_group_save_error">အဖွဲ့ကို သိမ်း၍ မရပါ။ ထပ်ကြိုးစားပါ။</string>
+    <string name="create_group_photo">အဖွဲ့ ဓာတ်ပုံ</string>
+    <string name="create_group_take_photo">ဓာတ်ပုံ ရိုက်ရန်</string>
+    <string name="create_group_choose_photo">ဓာတ်ပုံ ရွေးရန်</string>
+    <string name="create_group_remove_photo">ဓာတ်ပုံ ဖယ်ရှားရန်</string>
+    <string name="create_group_photo_error">ဤဓာတ်ပုံကို သုံး၍ မရပါ။ အခြားတစ်ပုံ စမ်းကြည့်ပါ။</string>
+</resources>

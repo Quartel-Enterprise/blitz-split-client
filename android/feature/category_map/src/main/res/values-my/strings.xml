@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">စကားလုံး မရှိပါ</string>
+    <string name="category_map_title">အမျိုးအစား မြေပုံ</string>
+    <string name="category_map_search">စကားလုံးများကို ရှာရန်</string>
+    <string name="category_map_add">စကားလုံး ထည့်ရန်</string>
+    <string name="category_map_more">နောက်ထပ် ရွေးချယ်စရာများ</string>
+    <string name="category_map_restore">မူလအတိုင်း ပြန်ထားရန်</string>
+    <string name="category_map_back">နောက်သို့</string>
+    <string name="category_map_intro">စရိတ်၏ ခေါင်းစဉ်တွင် ဤစကားလုံးများထဲမှ တစ်ခု ပါလျှင် ၎င်း၏ အမျိုးအစားကို အလိုအလျောက် သတ်မှတ်ပါသည်။ “Uber home” သည် သယ်ယူပို့ဆောင်ရေး ဖြစ်လာပါသည်။</string>
+    <string name="category_map_intro_offline">မြေပုံသည် အော့ဖ်လိုင်း အလုပ်လုပ်ပါသည်: ပြောင်းလဲမှုများသည် ဤစက်တွင် ချက်ချင်း သက်ရောက်ပြီး အွန်လိုင်း ပြန်ဖြစ်သည်နှင့် သင့်အခြားစက်များသို့ ရောက်ပါသည်။</string>
+    <string name="category_map_device_only">သင့်မြေပုံသည် ဤစက်တွင်သာ ရှိပါသည်။ သင့်အခြားစက်များသို့ ယူသွားရန် သင့်ပရိုဖိုင်တွင် Google သို့မဟုတ် Apple ဖြင့် အကောင့်ဝင်ပါ။</string>
+    <string name="category_map_open_profile">ပရိုဖိုင် ဖွင့်ရန်</string>
+    <string name="category_map_longest_wins">စကားလုံး နှစ်ခုသည် ခေါင်းစဉ်တစ်ခုနှင့် ကိုက်ညီလျှင် အရှည်ဆုံးတစ်ခုကို ယူပါသည်။</string>
+    <string name="category_map_no_result">“%1$s” ပါသော စကားလုံး မရှိပါ</string>
+    <string name="category_map_no_result_body">၎င်းကို ထည့်ပါက ခေါင်းစဉ်တွင် ဤစကားလုံး ပါသော စရိတ်များသည် မှန်ကန်သော အမျိုးအစားဖြင့် ရောက်လာပါမည်။</string>
+    <string name="category_map_add_query">“%1$s” ကို ထည့်ရန်</string>
+    <string name="category_map_empty_title">သင့်မြေပုံ ဗလာဖြစ်နေသည်</string>
+    <string name="category_map_empty_body">စကားလုံးများ မရှိပါက အမျိုးအစားသည် ခေါင်းစဉ်မှ မလာပါ: စရိတ်တိုင်းတွင် သင်ကိုယ်တိုင် ရွေးရပါမည်။</string>
+    <string name="category_map_group_category"> · %1$s ၏ အမျိုးအစား</string>
+    <string name="category_map_only_main">%1$s သာ</string>
+    <string name="category_map_only_in_group">%1$s တွင်သာ</string>
+    <string name="category_map_no_terms_yet">စကားလုံး မရှိသေးပါ။</string>
+    <string name="category_map_add_in">%1$s တွင် စကားလုံး ထည့်ရန်</string>
+    <string name="category_map_tip">စကားလုံးတစ်ခု၏ အမျိုးအစားကို ပြောင်းရန် သို့မဟုတ် ဖယ်ရှားရန် ၎င်းကို တို့ပါ။ ၎င်းသည် အသံထွက် သင်္ကေတနှင့် စာလုံးအကြီးအသေးကို ထည့်မတွက်ဘဲ စကားလုံးတစ်ခုလုံးနှင့် ကိုက်ညီပါသည်။</string>
+    <string name="category_map_queued">တန်းစီထားသည်</string>
+    <string name="category_map_term_action">%1$s၊ %2$s။ ပြင်ဆင်ရန်</string>
+    <string name="category_map_new_term">စကားလုံး အသစ်</string>
+    <string name="category_map_edit_term">စကားလုံး ပြင်ဆင်ရန်</string>
+    <string name="category_map_term_label">စကားလုံး သို့မဟုတ် စကားစု</string>
+    <string name="category_map_term_help">အသံထွက် သင်္ကေတနှင့် စာလုံးအကြီးအသေးကို ထည့်မတွက်ဘဲ စကားလုံးတစ်ခုလုံးနှင့် ကိုက်ညီပါသည်။</string>
+    <string name="category_map_term_help_app">အက်ပ်၏ စကားလုံးတစ်ခု။ မူလအတိုင်း ပြန်ထားလျှင် ၎င်းကို မူလအတိုင်း ပြန်ရပါမည်။</string>
+    <string name="category_map_term_duplicate">“%1$s” သည် %2$s ကို ရွေးပြီးဖြစ်သည်။ စကားလုံးတစ်ခုစီတွင် အမျိုးအစား တစ်ခုသာ ရှိပါသည်။</string>
+    <string name="category_map_term_too_short">အနည်းဆုံး စာလုံး 2 လုံး သုံးပါ။</string>
+    <string name="category_map_term_too_long">အများဆုံး စာလုံး 30 လုံး သုံးပါ။</string>
+    <string name="category_map_term_invalid">စာလုံး၊ ဂဏန်းနှင့် space များကိုသာ သုံးပါ။</string>
+    <string name="category_map_category">အမျိုးအစား</string>
+    <string name="category_map_category_help">၎င်းသည် အမျိုးအစား သို့မဟုတ် အမျိုးအစားခွဲ ဖြစ်နိုင်ပါသည်။</string>
+    <string name="category_map_category_help_edit">ဤနေရာတွင် ပြောင်းပါက စကားလုံးကို အခြားအမျိုးအစားသို့ ရွှေ့ပါမည်။</string>
+    <string name="category_map_category_help_move">ရွှေ့ပါက စကားလုံးကို %1$s မှ ထုတ်ပါမည်။</string>
+    <string name="category_map_example">ဥပမာ</string>
+    <string name="category_map_example_move">ရွှေ့လျှင်</string>
+    <string name="category_map_remove">ဖယ်ရှားရန်</string>
+    <string name="category_map_cancel">မလုပ်တော့ပါ</string>
+    <string name="category_map_save">သိမ်းရန်</string>
+    <string name="category_map_move_to">%1$s သို့ ရွှေ့ရန်</string>
+    <string name="category_map_removed">“%1$s” ကို မြေပုံမှ ဖယ်ရှားလိုက်ပါပြီ</string>
+    <string name="category_map_undo">နောက်ပြန်ရန်</string>
+    <string name="category_map_restore_title">မူလ မြေပုံကို ပြန်ထားမလား?</string>
+    <string name="category_map_restore_body">သင်ဖယ်ရှားခဲ့သော သို့မဟုတ် ရွှေ့ခဲ့သော စကားလုံးများ အပါအဝင် အက်ပ်၏ စကားလုံး 60 လုံးသည် မူလအတိုင်း ပြန်ရောက်ပါမည်။</string>
+    <string name="category_map_restore_own_one">သင်ဖန်တီးခဲ့သော စကားလုံး “%1$s” ကျန်ရှိနေပါမည်။</string>
+    <string name="category_map_restore_confirm">ပြန်ထားရန်</string>
+    <string name="category_map_save_error">မြေပုံကို သိမ်း၍ မရပါ။ ထပ်ကြိုးစားပါ။</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="other">စကားလုံး %d ခု</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="other">အမျိုးအစားခွဲ %d ခု</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="other">“%2$s” ပါသော စကားလုံး %1$d ခု</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="other">အော့ဖ်လိုင်း · ပြောင်းလဲမှု %d ခု တန်းစီထားသည်</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="other">သင်ဖန်တီးခဲ့သော စကားလုံး %d ခု ကျန်ရှိနေပါမည်။</item>
+    </plurals>
+    <string name="category_map_new_category">အမျိုးအစား အသစ်</string>
+    <string name="category_map_new_subcategory_in">%s တွင် အမျိုးအစားခွဲ အသစ်</string>
+    <string name="category_map_edit_category">%s ကို ပြင်ဆင်ရန်</string>
+    <string name="category_map_category_group">အဖွဲ့</string>
+    <string name="category_map_change_color">%1$s ၏ အရောင် ပြောင်းရန်</string>
+    <string name="category_map_restore_color">အရောင် ပြန်ထားရန်</string>
+    <string name="category_map_color_done">ပြီးပါပြီ</string>
+</resources>

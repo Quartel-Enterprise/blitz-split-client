@@ -109,6 +109,8 @@
     <string name="profile_language_punjabi">펀자브어</string>
     <string name="profile_language_malayalam">말라얄람어</string>
     <string name="profile_language_kannada">칸나다어</string>
+    <string name="profile_language_burmese">미얀마어</string>
+    <string name="profile_language_khmer">크메르어</string>
     <string name="profile_language_system_detail">기기 언어</string>
     <string name="profile_notifications">알림</string>
     <plurals name="profile_notifications_active">

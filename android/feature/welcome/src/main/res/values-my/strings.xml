@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">စရိတ်ကို အလွယ်တကူ ခွဲဝေပါ</string>
+    <string name="welcome_offline_title">အော့ဖ်လိုင်း အလုပ်လုပ်သည်</string>
+    <string name="welcome_offline_body">အားလုံးကို သင့်စက်တွင် သိမ်းထားပြီး နောက်မှ စင့်ခ်လုပ်ပါသည်။</string>
+    <string name="welcome_optional_title">အကောင့်သည် မဖြစ်မနေ မဟုတ်ပါ</string>
+    <string name="welcome_optional_body">Google သို့မဟုတ် Apple သည် စက်ပြောင်းသည့်အခါ မည်သည့်အရာမျှ မပျောက်စေရန်သာ ဖြစ်ပါသည်။</string>
+    <string name="welcome_invite_title">လင့်ခ် သို့မဟုတ် QR ကုဒ်ဖြင့် ဖိတ်ခေါ်ပါ</string>
+    <string name="welcome_invite_body">သူငယ်ချင်းများသည် အကောင့်ဖွင့်စရာမလိုဘဲ အဖွဲ့သို့ ဝင်နိုင်ပါသည်။</string>
+    <string name="welcome_no_connection_title">ချိတ်ဆက်မှု မရှိပါ။</string>
+    <string name="welcome_no_connection_body">အကောင့်ဖြင့် ဝင်ရန် အင်တာနက် လိုအပ်ပါသည်။ ယခု အကောင့်မရှိဘဲ အသုံးပြုပြီး နောက်မှ ပရိုဖိုင်တွင် ချိတ်ဆက်ပါ။</string>
+    <string name="welcome_or">သို့မဟုတ်</string>
+    <string name="welcome_use_without_account">အကောင့်မရှိဘဲ အသုံးပြုရန်</string>
+    <string name="welcome_used_on_another_device">အခြားစက်တွင် အသုံးပြုဖူးသည်</string>
+    <string name="welcome_sign_in_failed">ယခု အကောင့်ဝင်၍ မရပါ။ ထပ်ကြိုးစားပါ။</string>
+    <string name="welcome_legal_notice">ဆက်လုပ်ခြင်းဖြင့် သင်သည် %1$s ကို လက်ခံပြီး %2$s ကို အသိအမှတ်ပြုပါသည်။</string>
+    <string name="welcome_legal_terms">ဝန်ဆောင်မှု စည်းမျဉ်းများ</string>
+    <string name="welcome_legal_privacy">ကိုယ်ရေးအချက်အလက် မူဝါဒ</string>
+    <string name="welcome_no_account_note">အကောင့်မရှိပါက 30 ရက် အသုံးမပြုလျှင် သင့်ဒေတာကို ဖျက်ပါမည်။ ထိန်းသိမ်းထားရန် Google သို့မဟုတ် Apple ကို ချိတ်ဆက်ပါ။</string>
+    <string name="welcome_no_account_note_offline">အကောင့်မရှိပါက 30 ရက် အသုံးမပြုလျှင် သင့်ဒေတာကို ဖျက်ပါမည်။ ထိန်းသိမ်းထားရန် နောက်မှ ပရိုဖိုင်တွင် Google သို့မဟုတ် Apple ကို ချိတ်ဆက်ပါ။</string>
+    <string name="welcome_expired_title">သင့်ဒေတာကို ဖျက်လိုက်ပါပြီ</string>
+    <string name="welcome_expired_body">သင်သည် အကောင့်မရှိဘဲ အက်ပ်ကို အသုံးပြုခဲ့ပြီး 30 ရက်ကြာ မဖွင့်ခဲ့သဖြင့် သင့်ဒေတာကို ဖျက်လိုက်ပါပြီ။ နောက်တစ်ကြိမ်တွင် ထိန်းသိမ်းထားရန် Google သို့မဟုတ် Apple ကို ချိတ်ဆက်ပါ။</string>
+    <string name="welcome_expired_ok">အိုကေ</string>
+</resources>

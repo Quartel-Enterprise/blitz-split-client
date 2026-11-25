@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">သင့်ဖုန်းနှင့် တူညီသော အကောင့်ကို ဤနေရာတွင် သုံးပါ။ ထို့နောက် နာရီသည် သီးခြား အလုပ်လုပ်ပါမည်။</string>
+    <string name="pair_connect">ချိတ်ဆက်ရန်</string>
+    <string name="pair_connecting">သင့်ဖုန်းမှ အကောင့်ကို ယူနေသည်…</string>
+    <string name="pair_connected_title">အဆင်သင့်ပါပြီ၊ %1$s</string>
+    <string name="pair_connected_title_unnamed">အဆင်သင့်ပါပြီ</string>
+    <string name="pair_connected_body">ဖုန်းနှင့် ဝေးနေသည့်တိုင် နာရီသည် အလိုအလျောက် စင့်ခ်လုပ်သည်။</string>
+    <string name="pair_continue">ဆက်လုပ်ရန်</string>
+    <string name="pair_local_only_title">သင့်ဒေတာသည် ဖုန်းတွင်သာ ရှိသည်</string>
+    <string name="pair_local_only_body">ဖုန်းရှိ ပရိုဖိုင်တွင် အကောင့်တစ်ခု ချိတ်ဆက်ပြီး ဤနေရာရှိ “ချိတ်ဆက်ရန်” ကို ထပ်နှိပ်ပါ။</string>
+    <string name="pair_ok">အိုကေ</string>
+    <string name="pair_far_title">ဖုန်း အကွာအဝေး ပြင်ပတွင် ရှိသည်</string>
+    <string name="pair_far_body">ဖုန်းကို နီးနီး ယူလာပါ သို့မဟုတ် ကုဒ်ဖြင့် ချိတ်ဆက်ပါ။</string>
+    <string name="pair_try_again">ထပ်ကြိုးစားရန်</string>
+    <string name="pair_use_code">ကုဒ် သုံးရန်</string>
+    <string name="pair_code_label">သင့်ကုဒ်</string>
+    <string name="pair_code_description">ကုဒ် %1$s</string>
+    <string name="pair_code_where">ဖုန်းတွင်: ပရိုဖိုင် › နာရီ ချိတ်ဆက်ရန်</string>
+    <string name="pair_code_validity">5 မိနစ် သက်တမ်းရှိသည်</string>
+    <string name="pair_cancel">မလုပ်တော့ပါ</string>
+    <string name="pair_signed_out_title">ဖုန်းတွင် အကောင့်မှ ထွက်ခဲ့သည်</string>
+    <string name="pair_signed_out_body">ဒေတာသည် ဤနာရီမှလည်း ဖယ်ရှားသွားပါပြီ။</string>
+    <string name="pair_connect_again">ထပ်ချိတ်ဆက်ရန်</string>
+    <string name="pair_error_offline">နာရီ ချိတ်ဆက်ရန် အင်တာနက် လိုအပ်သည်။</string>
+    <string name="pair_error_too_many">ကြိုးစားမှု များလွန်းသည်။ မိနစ်အနည်းငယ် စောင့်ပြီး ထပ်ချိတ်ဆက်ပါ။</string>
+    <string name="pair_error_failed">နာရီကို ချိတ်ဆက်၍ မရပါ။ ထပ်ကြိုးစားပါ။</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">လက်ကျန်များ</string>
+    <string name="balances_offline">အော့ဖ်လိုင်း</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="other">အော့ဖ်လိုင်း · ပြောင်းလဲမှု %d ခု တန်းစီထားသည်</item>
+    </plurals>
+    <string name="balances_overall">စုစုပေါင်း လက်ကျန်</string>
+    <string name="balances_to_receive">ပြန်ရရန်</string>
+    <string name="balances_you_owe">သင် ပေးရန်</string>
+    <string name="balances_group_to_receive">%1$s ပြန်ရရန်</string>
+    <string name="balances_group_you_owe">သင် %1$s ပေးရန်</string>
+    <string name="balances_group_even">စုစုပေါင်း ညီနေသည်</string>
+    <string name="balances_waiting">ပို့ရန် စောင့်နေသည်</string>
+    <string name="balances_updated_at">%1$s တွင် အပ်ဒိတ်လုပ်ခဲ့သည်</string>
+    <string name="balances_sign_out">အကောင့်မှ ထွက်ရန်</string>
+    <string name="balances_sign_out_title">ဤနာရီတွင် အကောင့်မှ ထွက်မလား?</string>
+    <string name="balances_sign_out_body">တန်းစီထားသည်များ ပို့ပြီးသည်နှင့် ၎င်း၏ ဒေတာကို ဖျက်ပါမည်။ သင့်ဖုန်းတွင် အကောင့် ဝင်ထားဆဲ ဖြစ်မည်။</string>
+    <string name="balances_sign_out_scheduled">အကောင့်မှ ထွက်ရန် စီစဉ်ထားသည်</string>
+    <string name="balances_sign_out_scheduled_detail">အားလုံး တင်ပြီးသည်နှင့် အကောင့်မှ ထွက်ပါမည်</string>
+    <string name="balances_settled_title">မရှင်းရသေးသည်များ မရှိ</string>
+    <string name="balances_settled_body">သင် ပေးရန် မရှိသလို မည်သူမျှ သင့်ကို ပေးရန် မရှိပါ။ အဖွဲ့နှင့် စရိတ်အသစ်များ ဤနေရာတွင် အလိုအလျောက် ပေါ်လာပါမည်။</string>
+    <string name="group_you_owe_person">သင် %1$s ကို ပေးရန်</string>
+    <string name="group_owes_you">%1$s က သင့်ကို ပေးရန်</string>
+    <string name="group_former_member">အဖွဲ့ဝင်ဟောင်း</string>
+    <string name="group_i_paid">ပေးပြီးပါပြီ</string>
+    <string name="group_confirm_title">%2$s ကို %1$s ပေးခဲ့ပြီလား?</string>
+    <string name="group_confirm_body">%1$s။ အဖွဲ့က ချက်ချင်း သို့မဟုတ် အင်တာနက် ပြန်ရသည့်အခါ မြင်ရပါမည်။</string>
+    <string name="group_payment_recorded">ငွေပေးချေမှု မှတ်တမ်းတင်ပြီးပါပြီ</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">လက်ကျန်များ</string>
+    <string name="tile_to_receive_total">စုစုပေါင်း ပြန်ရရန်</string>
+    <string name="tile_to_pay_total">စုစုပေါင်း ပေးရန်</string>
+    <string name="tile_owed_to_you">သင် ပြန်ရရန် %1$s</string>
+    <string name="tile_you_owe">သင် ပေးရန် %1$s</string>
+    <string name="tile_settled_title">အားလုံး ရှင်းပြီး</string>
+    <string name="tile_settled_body">ပေးရန် သို့မဟုတ် ရရန် မရှိပါ</string>
+    <string name="tile_open">ဖွင့်ရန်</string>
+    <string name="complication_name">စုစုပေါင်း လက်ကျန်</string>
+    <string name="complication_you_owe">သင် ပေးရန် %1$s</string>
+    <string name="complication_owed_to_you">သင် ပြန်ရရန် %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">ရရှိပြီး</string>
+    <string name="push_view_group">အဖွဲ့ ကြည့်ရန်</string>
+</resources>

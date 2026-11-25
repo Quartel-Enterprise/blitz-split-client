@@ -110,6 +110,8 @@
     <string name="profile_language_punjabi">পাঞ্জাবি</string>
     <string name="profile_language_malayalam">মালায়ালাম</string>
     <string name="profile_language_kannada">কন্নড়</string>
+    <string name="profile_language_burmese">বর্মী</string>
+    <string name="profile_language_khmer">খমের</string>
     <string name="profile_language_system_detail">ডিভাইসের ভাষা</string>
     <string name="profile_notifications">নোটিফিকেশন</string>
     <plurals name="profile_notifications_active">

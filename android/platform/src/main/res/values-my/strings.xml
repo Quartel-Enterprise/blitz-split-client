@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · ပြန်လည်ရယူရေး ကုဒ်</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">ဓာတ်ပုံ ရိုက်ရန် ဆက်တင်များတွင် ကင်မရာကို ခွင့်ပြုပါ။</string>
+    <string name="platform_camera_settings">ဆက်တင်များ</string>
+    <string name="platform_receipt_source_camera">ဓာတ်ပုံ ရိုက်ရန်</string>
+    <string name="platform_receipt_source_gallery">ဓာတ်ပုံပြခန်းမှ ရွေးရန်</string>
+    <string name="platform_receipt_source_file">ဖိုင် ရွေးရန်</string>
+    <string name="platform_receipt_camera_title">ပြေစာ စကင်ဖတ်ရန်</string>
+    <string name="platform_receipt_camera_close">ပိတ်ရန်</string>
+    <string name="platform_receipt_camera_flash_on">ဓာတ်မီး ဖွင့်ရန်</string>
+    <string name="platform_receipt_camera_flash_off">ဓာတ်မီး ပိတ်ရန်</string>
+    <string name="platform_receipt_camera_hint">ပြေစာတစ်ခုလုံးကို ဘောင်အတွင်း ထည့်ပါ။ ပမာဏ၊ ရက်စွဲနှင့် ဖော်ပြချက်ကို ကျွန်ုပ်တို့ ဖြည့်ပေးမည်၊ မသိမ်းမီ သင် စစ်ဆေးပါ။</string>
+    <string name="platform_receipt_camera_gallery">ဓာတ်ပုံပြခန်းမှ ရွေးရန်</string>
+    <string name="platform_receipt_camera_shutter">ဓာတ်ပုံ ရိုက်ရန်</string>
+    <string name="platform_receipt_camera_unavailable">ကင်မရာ မရနိုင်ပါ။ ဓာတ်ပုံပြခန်းမှ ပြေစာ ဓာတ်ပုံကို ရွေးပါ။</string>
+    <string name="platform_receipt_camera_permission">ပြေစာ စကင်ဖတ်ရန် ကင်မရာကို ခွင့်ပြုပါ သို့မဟုတ် ဓာတ်ပုံပြခန်းမှ ဓာတ်ပုံတစ်ပုံ ရွေးပါ။</string>
+    <string name="platform_receipt_camera_allow">ကင်မရာ ခွင့်ပြုရန်</string>
+    <string name="platform_receipt_camera_settings">ဆက်တင်များ ဖွင့်ရန်</string>
+</resources>

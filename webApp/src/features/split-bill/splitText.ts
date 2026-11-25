@@ -25,7 +25,7 @@ function withoutValue(people: JsBillPerson[]): string {
 function sentences(...parts: (string | null)[]): string {
   return parts
     .filter((part): part is string => !!part)
-    .map((part) => (/[.。।]$/.test(part) ? part : `${part}${fullStop}`))
+    .map((part) => (/[.。।။។]$/.test(part) ? part : `${part}${fullStop}`))
     .join(wordGap)
 }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">သင့်သူငယ်ချင်းများက သင့်ကို ဘယ်လို ခေါ်ကြသလဲ?</string>
+    <string name="profile_setup_subtitle">သင့်အဖွဲ့များနှင့် သင့်ပရိုဖိုင် လင့်ခ် ရှိသူ မည်သူမဆို သင့်အမည်ကို မြင်ရမည်။</string>
+    <string name="profile_setup_avatar_color">ပရိုဖိုင်ပုံ အရောင်</string>
+    <string name="profile_setup_add_photo">ဓာတ်ပုံ ထည့်ရန်</string>
+    <string name="profile_setup_photo_error">ဤဓာတ်ပုံကို သုံး၍ မရပါ။ အခြားတစ်ပုံ စမ်းကြည့်ပါ။</string>
+    <string name="profile_setup_name_label">သင့်အမည်</string>
+    <string name="profile_setup_name_placeholder">အောင်ကျော်</string>
+    <string name="profile_setup_name_too_short">အနည်းဆုံး စာလုံး %d လုံး ရိုက်ပါ။</string>
+    <string name="profile_setup_name_too_long">စာလုံး %d လုံးအထိ သုံးပါ။</string>
+    <string name="profile_setup_name_hint">နောက်မှ ပရိုဖိုင်တွင် ပြောင်းနိုင်သည်။</string>
+    <string name="profile_setup_saved_locally">ယခုအတွက် ဤစက်တွင်သာ သိမ်းထားသည်။</string>
+    <string name="profile_setup_continue">ဆက်လုပ်ရန်</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">ការជូនដំណឹង</string>
+    <string name="notification_settings_denied_title">ការជូនដំណឹងរបស់ Blitz Split ត្រូវបានបិទនៅលើ Android។</string>
+    <string name="notification_settings_denied_body">សូមបើកពួកវាក្នុងការកំណត់ប្រព័ន្ធ ដើម្បីទទួលការជូនដំណឹងខាងក្រោម។ កណ្ដឹងនៅតែដំណើរការ។</string>
+    <string name="notification_settings_open_settings">បើកការកំណត់</string>
+    <string name="notification_settings_refused_body">Android អនុញ្ញាតឱ្យអ្នកអនុញ្ញាតពួកវាម្តងទៀត ដើម្បីទទួលការជូនដំណឹងខាងក្រោម។ កណ្ដឹងនៅតែដំណើរការ។</string>
+    <string name="notification_settings_turn_on">បើក</string>
+    <string name="notification_settings_blocked_in_android">បានទប់ស្កាត់ក្នុង Android</string>
+    <string name="notification_settings_open_channel_settings_description">បើកការកំណត់ Android សម្រាប់ %1$s</string>
+    <string name="notification_settings_push_switch">ការជូនដំណឹង Push</string>
+    <string name="notification_settings_push_switch_detail">តែលើឧបករណ៍នេះប៉ុណ្ណោះ</string>
+    <string name="notification_settings_section">ជូនដំណឹងខ្ញុំអំពី</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">ក្នុងកម្មវិធី</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push ផ្ញើការជូនដំណឹងទៅឧបករណ៍នេះ។ ក្នុងកម្មវិធី សម្គាល់វាថាថ្មីលើកណ្ដឹង និងក្នុងសកម្មភាព ពេលបិទ វានៅតែបង្ហាញក្នុងសកម្មភាព ដោយបានអានរួចហើយ។</string>
+    <string name="notification_settings_footer">ការជូនដំណឹងមកដល់នៅពេលមានអ៊ីនធឺណិត។ ដើម្បីបិទសំឡេងក្រុម សូមប្រើម៉ឺនុយនៅក្នុងក្រុមនោះ។</string>
+</resources>

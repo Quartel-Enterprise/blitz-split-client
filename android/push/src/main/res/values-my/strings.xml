@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">ကြွေးရှင်းရန် သတိပေးချက်</string>
+    <string name="push_bill_created">%1$s က သင်ပါဝင်သော “%2$s” စရိတ်ကို ထည့်ခဲ့သည်</string>
+    <string name="push_bill_edited">%1$s က “%2$s” ကို ပြင်ဆင်ခဲ့သည်</string>
+    <string name="push_bill_deleted">%1$s က “%2$s” ကို ဖျက်ခဲ့သည်</string>
+    <string name="push_comment_added">%1$s က “%2$s” တွင် မှတ်ချက်ရေးခဲ့သည်: %3$s</string>
+    <string name="push_payment_paid_you">%1$s က သင့်ကို ပေးပြီးဟု မှတ်ခဲ့သည်</string>
+    <string name="push_payment_to_you">%1$s က %2$s သည် သင့်ကို ပေးပြီးဟု မှတ်ခဲ့သည်</string>
+    <string name="push_payment_received_yours">%1$s က သင့်ငွေပေးချေမှုကို ရရှိပြီးဟု မှတ်ခဲ့သည်</string>
+    <string name="push_payment_from_you">%1$s က သင် %2$s ကို ပေးပြီးဟု မှတ်ခဲ့သည်</string>
+    <string name="push_payment_undone">%1$s က သင်နှင့် ငွေပေးချေမှုတစ်ခုကို ပြန်ဖျက်ခဲ့သည်</string>
+    <string name="push_charge_sent">%1$s က ကြွေးရှင်းရန် သင့်ထံ သတိပေးချက် ပို့ခဲ့သည်</string>
+    <string name="push_settle_reminder">%1$s တွင် သင့်လက်ကျန် မရှင်းရသေးပါ</string>
+    <string name="push_settle_reminders">အဖွဲ့ %1$s ခုတွင် သင့်လက်ကျန်များ မရှင်းရသေးပါ</string>
+    <string name="push_added_to_group">%1$s က သင့်ကို အဖွဲ့ထဲ ထည့်ခဲ့သည်</string>
+    <string name="push_member_joined">%1$s အဖွဲ့ထဲ ဝင်လာသည်</string>
+    <string name="push_debts_simplified_to_you">%1$s က ကြွေးများကို ရိုးရှင်းစေခဲ့သည်။ ယခု %2$s က သင့်ကို %3$s ပေးသည်။</string>
+    <string name="push_debts_simplified_from_you">%1$s က ကြွေးများကို ရိုးရှင်းစေခဲ့သည်။ ယခု သင် %2$s ကို %3$s ပေးရမည်။</string>
+    <string name="push_debts_simplified_other">%1$s က ကြွေးများကို ရိုးရှင်းစေခဲ့သည်။ သင့်အတွက် မည်သို့ ဖြစ်သည်ကို ကြည့်ပါ။</string>
+    <string name="push_debts_unsimplified_to_you">%1$s က “ကြွေးများ ရိုးရှင်းစေရန်” ကို ပိတ်ခဲ့သည်။ ယခု %2$s က သင့်ကို %3$s ပေးသည်။</string>
+    <string name="push_debts_unsimplified_from_you">%1$s က “ကြွေးများ ရိုးရှင်းစေရန်” ကို ပိတ်ခဲ့သည်။ ယခု သင် %2$s ကို %3$s ပေးရမည်။</string>
+    <string name="push_debts_unsimplified_other">%1$s က “ကြွေးများ ရိုးရှင်းစေရန်” ကို ပိတ်ခဲ့သည်။ သင့်အတွက် မည်သို့ ဖြစ်သည်ကို ကြည့်ပါ။</string>
+    <string name="notification_settings_bills">စရိတ်များ</string>
+    <string name="notification_settings_bills_detail">သင်ပါဝင်သော စရိတ်အသစ်၊ ပြင်ဆင်ထားသော သို့မဟုတ် ဖျက်ထားသော စရိတ်များ</string>
+    <string name="notification_settings_payments">ငွေပေးချေမှုနှင့် ကြွေးရှင်းမှုများ</string>
+    <string name="notification_settings_payments_detail">သင့်ထံ သို့မဟုတ် သင့်ထံမှ ငွေပေးချေမှုများနှင့် ရိုးရှင်းစေထားသော ကြွေးများ</string>
+    <string name="notification_settings_comments">မှတ်ချက်များ</string>
+    <string name="notification_settings_comments_detail">သင်ပါဝင်သော စရိတ်များနှင့် သင်ရေးခဲ့သော ဆွေးနွေးချက်များတွင်</string>
+    <string name="notification_settings_people_and_groups">လူများနှင့် အဖွဲ့များ</string>
+    <string name="notification_settings_people_and_groups_detail">သင့်အဖွဲ့များသို့ ဝင်သူ သို့မဟုတ် ထွက်သူနှင့် ၎င်းတို့တွင် ပြောင်းလဲသည့်အရာ</string>
+    <string name="notification_settings_payment_requests">ငွေတောင်းခံမှုများ</string>
+    <string name="notification_settings_payment_requests_detail">တစ်စုံတစ်ယောက်က သင့်ကို ငွေပေးရန် တောင်းသည့်အခါ</string>
+    <string name="notification_settings_balance_reminder">မရှင်းရသေးသော လက်ကျန် သတိပေးချက်</string>
+    <string name="notification_settings_balance_reminder_detail">မရှင်းရသေးသော လက်ကျန် ရှိလျှင် တစ်ပတ်တစ်ကြိမ်</string>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">ការរំលឹកឱ្យទូទាត់បំណុល</string>
+    <string name="push_bill_created">%1$s បានបន្ថែម “%2$s” ជាមួយអ្នក</string>
+    <string name="push_bill_edited">%1$s បានកែ “%2$s”</string>
+    <string name="push_bill_deleted">%1$s បានលុប “%2$s”</string>
+    <string name="push_comment_added">%1$s បានបញ្ចេញមតិលើ “%2$s”៖ %3$s</string>
+    <string name="push_payment_paid_you">%1$s បានសម្គាល់ថាពួកគេបានបង់ឱ្យអ្នក</string>
+    <string name="push_payment_to_you">%1$s បានសម្គាល់ថា %2$s បានបង់ឱ្យអ្នក</string>
+    <string name="push_payment_received_yours">%1$s បានសម្គាល់ការទូទាត់របស់អ្នកថាបានទទួល</string>
+    <string name="push_payment_from_you">%1$s បានសម្គាល់ថាអ្នកបានបង់ឱ្យ %2$s</string>
+    <string name="push_payment_undone">%1$s បានលុបចោលការទូទាត់មួយជាមួយអ្នក</string>
+    <string name="push_charge_sent">%1$s បានផ្ញើការរំលឹកឱ្យអ្នកទូទាត់បំណុល</string>
+    <string name="push_settle_reminder">អ្នកមានសមតុល្យមិនទាន់ទូទាត់ក្នុង %1$s</string>
+    <string name="push_settle_reminders">អ្នកមានសមតុល្យមិនទាន់ទូទាត់ក្នុង %1$s ក្រុម</string>
+    <string name="push_added_to_group">%1$s បានបន្ថែមអ្នកទៅក្នុងក្រុម</string>
+    <string name="push_member_joined">%1$s បានចូលរួមក្រុម</string>
+    <string name="push_debts_simplified_to_you">%1$s បានសម្រួលបំណុល។ ឥឡូវនេះ %2$s បង់ឱ្យអ្នក %3$s។</string>
+    <string name="push_debts_simplified_from_you">%1$s បានសម្រួលបំណុល។ ឥឡូវនេះអ្នកបង់ឱ្យ %2$s %3$s។</string>
+    <string name="push_debts_simplified_other">%1$s បានសម្រួលបំណុល។ សូមមើលថាវាយ៉ាងណាសម្រាប់អ្នក។</string>
+    <string name="push_debts_unsimplified_to_you">%1$s បានបិទសម្រួលបំណុល។ ឥឡូវនេះ %2$s បង់ឱ្យអ្នក %3$s។</string>
+    <string name="push_debts_unsimplified_from_you">%1$s បានបិទសម្រួលបំណុល។ ឥឡូវនេះអ្នកបង់ឱ្យ %2$s %3$s។</string>
+    <string name="push_debts_unsimplified_other">%1$s បានបិទសម្រួលបំណុល។ សូមមើលថាវាយ៉ាងណាសម្រាប់អ្នក។</string>
+    <string name="notification_settings_bills">ចំណាយ</string>
+    <string name="notification_settings_bills_detail">ចំណាយថ្មី ដែលបានកែ ឬបានលុប ដែលអ្នកមានចំណែក</string>
+    <string name="notification_settings_payments">ការទូទាត់ និងការទូទាត់បំណុល</string>
+    <string name="notification_settings_payments_detail">ការទូទាត់ទៅ ឬពីអ្នក និងបំណុលដែលបានសម្រួល</string>
+    <string name="notification_settings_comments">មតិ</string>
+    <string name="notification_settings_comments_detail">លើចំណាយដែលអ្នកមានចំណែក និងការសន្ទនាដែលអ្នកបានសរសេរ</string>
+    <string name="notification_settings_people_and_groups">មនុស្ស និងក្រុម</string>
+    <string name="notification_settings_people_and_groups_detail">អ្នកណាចូលរួម ឬចាកចេញពីក្រុមរបស់អ្នក និងអ្វីដែលផ្លាស់ប្តូរក្នុងក្រុមទាំងនោះ</string>
+    <string name="notification_settings_payment_requests">សំណើទារប្រាក់</string>
+    <string name="notification_settings_payment_requests_detail">នៅពេលនរណាម្នាក់ស្នើឱ្យអ្នកបង់ប្រាក់</string>
+    <string name="notification_settings_balance_reminder">ការរំលឹកសមតុល្យមិនទាន់ទូទាត់</string>
+    <string name="notification_settings_balance_reminder_detail">ម្តងក្នុងមួយសប្តាហ៍ ប្រសិនបើមានសមតុល្យមិនទាន់ទូទាត់</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">កែប្រវត្តិរូប</string>
+    <string name="edit_profile_save">រក្សាទុក</string>
+    <string name="edit_profile_change_photo">ប្ដូររូបថត</string>
+    <string name="edit_profile_take_photo">ថតរូប</string>
+    <string name="edit_profile_choose_photo">ជ្រើសរើសពីវិចិត្រសាល</string>
+    <string name="edit_profile_use_account_photo">ប្រើរូបថតគណនី %1$s</string>
+    <string name="edit_profile_remove_photo">ដករូបថតចេញ</string>
+    <string name="edit_profile_photo_error">មិនអាចប្រើរូបថតនេះបានទេ។ សូមសាកល្បងរូបផ្សេងទៀត។</string>
+    <string name="edit_profile_avatar_color">ពណ៌រូបតំណាង</string>
+    <string name="edit_profile_avatar_color_hint">បង្ហាញនៅពេលអ្នកគ្មានរូបថត។</string>
+    <string name="edit_profile_name_label">ឈ្មោះរបស់អ្នក</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">សូមវាយយ៉ាងហោចណាស់ %d តួអក្សរ។</string>
+    <string name="edit_profile_name_too_long">សូមប្រើមិនលើសពី %d តួអក្សរ។</string>
+    <string name="edit_profile_account_notice">ឈ្មោះ និងរូបថតបានមកពីគណនី %1$s របស់អ្នក។ ការប្ដូរពួកវានៅទីនេះ អនុវត្តតែលើ Blitz Split ប៉ុណ្ណោះ ហើយមិនប្ដូរគណនី %1$s របស់អ្នកទេ។</string>
+    <string name="edit_profile_footer">ក្រុមរបស់អ្នក និងអ្នកណាដែលមានតំណប្រវត្តិរូបរបស់អ្នក ឃើញឈ្មោះ និងរូបថតរបស់អ្នក។</string>
+    <string name="profile_photo_close">បិទ</string>
+    <string name="profile_photo_camera">កាមេរ៉ា</string>
+    <string name="profile_photo_gallery">វិចិត្រសាល</string>
+    <string name="profile_photo_remove">ដកចេញ</string>
+    <string name="profile_photo_title">រូបថតប្រវត្តិរូប</string>
+</resources>

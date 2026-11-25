@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">បិទ</string>
+    <string name="invite_group_created">បានបង្កើតក្រុម</string>
+    <string name="invite_title">អញ្ជើញគ្រប់គ្នាទៅ %s</string>
+    <string name="invite_qr_description">កូដ QR នៃតំណអញ្ជើញរបស់ក្រុម</string>
+    <string name="invite_copy">ចម្លង</string>
+    <string name="invite_copied">បានចម្លង</string>
+    <string name="invite_who_picks">អ្នកដែលបើកតំណនឹងជ្រើសរើសថាខ្លួនជានរណានៅក្នុងបញ្ជី៖ %s។ មិនត្រូវការគណនីទេ។</string>
+    <string name="invite_names_or">%1$s ឬ %2$s</string>
+    <string name="invite_anyone_joins">អ្នកដែលបើកតំណនឹងចូលរួមក្រុម។ មិនត្រូវការគណនីទេ។</string>
+    <string name="invite_pending_title">តំណកំពុងរង់ចាំ</string>
+    <string name="invite_pending_offline">វានឹងត្រូវបានបង្កើតភ្លាមៗនៅពេលអ្នកមានអ៊ីនធឺណិត។</string>
+    <string name="invite_pending_online">កំពុងបង្កើតតំណ…</string>
+    <string name="invite_failed_title">មិនអាចបង្កើតតំណបានទេ</string>
+    <string name="invite_failed_body">មានបញ្ហាកើតឡើងពេលធ្វើសមកាលកម្មក្រុម។</string>
+    <string name="invite_retry">ព្យាយាមម្តងទៀត</string>
+    <string name="invite_share">ចែករំលែកតំណ</string>
+    <string name="invite_see_who_joined">មើលអ្នកដែលបានចូលរួម</string>
+    <string name="invite_add_person">បន្ថែមនរណាម្នាក់ដែលគ្មានកម្មវិធី</string>
+    <string name="invite_go_to_group">ទៅកាន់ក្រុម</string>
+    <string name="invite_change_link">ប្ដូរតំណ</string>
+    <string name="invite_change_link_title">ប្ដូរតំណអញ្ជើញឬ?</string>
+    <string name="invite_change_link_message">តំណ និងកូដ QR បច្ចុប្បន្ននឹងឈប់ដំណើរការ រួមទាំងការអញ្ជើញផ្ទាល់ខ្លួនដែលមិនទាន់ប្រើ។ អ្នកដែលបានចូលរួមរួចនៅតែស្ថិតក្នុងក្រុម។</string>
+    <string name="invite_change_link_failed">មិនអាចប្ដូរតំណបានទេ។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="invite_share_message">តោះចែកចំណាយរបស់ %1$s នៅលើ Blitz Split។ ចូលរួមតាមតំណនេះ៖ %2$s</string>
+</resources>

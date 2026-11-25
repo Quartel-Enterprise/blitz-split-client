@@ -115,6 +115,8 @@ export const PLAY_LOCALES = {
   pa: ["pa"],
   ml: ["ml-IN"],
   kn: ["kn-IN"],
+  my: ["my-MM"],
+  km: ["km-KH"],
 };
 export const APP_STORE_LOCALES = {
   en: ["en-US"],
@@ -181,14 +183,18 @@ export const APP_STORE_LOCALES = {
   pa: ["pa-IN"],
   ml: ["ml-IN"],
   kn: ["kn-IN"],
+  // Apple has no Burmese listing locale either: the language has a Play listing and no App Store one.
+  my: [],
+  // Apple has no Khmer listing locale either: the language has a Play listing and no App Store one.
+  km: [],
 };
 
 /** The app's name in a listing: Bora Rachar in Brazil's Portuguese, Blitz Split in every other language. */
 export const brandOf = (lang) => (lang === "pt" ? "Bora Rachar" : "Blitz Split");
 
 const HEADING = /^## (.+)$/;
-/** A word of a script written without spaces: kanji, hiragana, katakana or Thai. */
-const UNSPACED = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}]/u;
+/** A word of a script written without spaces: kanji, hiragana, katakana, Thai, Burmese or Khmer. */
+const UNSPACED = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}\p{Script=Myanmar}\p{Script=Khmer}]/u;
 /** What each file fastlane reads is called, by field. */
 const PLAY_FILES = {
   playTitle: "title.txt",

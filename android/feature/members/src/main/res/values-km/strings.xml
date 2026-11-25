@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">តំណអញ្ជើញ</string>
+    <string name="members_link_pending">មិនទាន់បានបង្កើតនៅឡើយ</string>
+    <string name="members_share">ចែករំលែក</string>
+    <string name="members_me">%s (អ្នក)</string>
+    <string name="members_status_this_device">ឧបករណ៍នេះ</string>
+    <string name="members_status_joined">បានចូលរួម</string>
+    <string name="members_status_not_joined">មិនទាន់បានចូលរួមនៅឡើយ</string>
+    <string name="members_options">ជម្រើសសម្រាប់ %s</string>
+    <string name="members_rename">ប្ដូរឈ្មោះ</string>
+    <string name="members_personal_invite">ការអញ្ជើញផ្ទាល់ខ្លួនសម្រាប់ %s</string>
+    <string name="members_personal_message">អ្នកដែលបើកតំណនេះនឹងចូលរួមភ្លាមជា %s ដោយមិនចាំបាច់ជ្រើសរើសពីបញ្ជី។ វាដំណើរការបានតែម្តង។</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="other">អ្នកដែលបើកតំណនេះនឹងចូលរួមភ្លាមជា %1$s ដោយមិនចាំបាច់ជ្រើសរើសពីបញ្ជី ហើយឃើញចំណែក %2$s របស់ខ្លួនរួចហើយក្នុងចំណាយ %3$d ដែលបានបន្ថែមរហូតមកដល់ពេលនេះ។ វាដំណើរការបានតែម្តង។</item>
+    </plurals>
+    <string name="members_personal_copy">ចម្លងតំណ</string>
+    <string name="members_personal_copied">បានចម្លង</string>
+    <string name="members_personal_share">ចែករំលែកជាមួយ %s</string>
+    <string name="members_personal_share_message">ចូលរួម %1$s ជា %2$s នៅលើ Blitz Split៖ %3$s</string>
+    <string name="members_remove">ដកចេញពីក្រុម</string>
+    <string name="members_remove_joined">%s បានចូលរួមក្រុមរួចហើយ</string>
+    <string name="members_remove_title">ដក %s ចេញពីក្រុមឬ?</string>
+    <string name="members_remove_message">%s មិនទាន់បានចូលរួមនៅឡើយទេ។ អ្នកអាចបន្ថែមពួកគេម្តងទៀតពេលក្រោយ។</string>
+    <string name="members_remove_confirm">ដកចេញ</string>
+    <string name="members_release">ដោះលែងឈ្មោះ</string>
+    <string name="members_release_title">ដោះលែងឈ្មោះរបស់ %s ឬ?</string>
+    <string name="members_release_message">អ្នកដែលបានចូលរួមជា %1$s នឹងចាកចេញពីក្រុម។ ឈ្មោះ ពណ៌ និងចំណាយរបស់ %1$s នៅតែមាន ហើយ %1$s អាចត្រូវបានជ្រើសរើសម្តងទៀតតាមតំណរបស់ក្រុម។</string>
+    <string name="members_release_confirm">ដោះលែង</string>
+    <string name="members_release_error">មិនអាចដោះលែងឈ្មោះបានទេ។ សូមពិនិត្យការតភ្ជាប់របស់អ្នក ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="members_add">បន្ថែមមនុស្ស</string>
+    <string name="members_invite_instead">មានកម្មវិធីឬ? អញ្ជើញតាមតំណ</string>
+    <string name="members_name_label">ឈ្មោះ</string>
+    <string name="members_save">រក្សាទុក</string>
+    <string name="members_cancel">បោះបង់</string>
+    <string name="members_change_error">មិនអាចរក្សាទុកការផ្លាស់ប្ដូរបានទេ។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="members_remove_open_balance">%s មានសមតុល្យមិនទាន់ទូទាត់</string>
+    <string name="members_balance_to_get_back">ត្រូវទទួលវិញ %s</string>
+    <string name="members_balance_owes">ជំពាក់ %s</string>
+    <string name="members_balance_settled">បានទូទាត់រួច</string>
+</resources>

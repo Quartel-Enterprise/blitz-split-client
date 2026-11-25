@@ -883,6 +883,8 @@ export const th: Record<MessageKey, string> = {
   profile_languagePunjabi: 'ปัญจาบ',
   profile_languageMalayalam: 'มาลายาลัม',
   profile_languageKannada: 'กันนาดา',
+  profile_languageBurmese: 'พม่า',
+  profile_languageKhmer: 'เขมร',
   profile_bitcoinInSats: 'Bitcoin เป็นซาโตชิ',
   profile_bitcoinInSatsDetail: 'แสดงและพิมพ์จำนวนบิตคอยน์เป็น sats (1 ₿ = 100,000,000 sats)',
   profile_shareUsageData: 'แชร์ข้อมูลการใช้งาน',

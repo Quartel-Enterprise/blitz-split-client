@@ -884,6 +884,8 @@ export const gu: Record<MessageKey, string> = {
   profile_languagePunjabi: 'પંજાબી',
   profile_languageMalayalam: 'મલયાલમ',
   profile_languageKannada: 'કન્નડ',
+  profile_languageBurmese: 'બર્મીઝ',
+  profile_languageKhmer: 'ખ્મેર',
   profile_bitcoinInSats: 'સાતોશીમાં બિટકૉઇન',
   profile_bitcoinInSatsDetail: 'બિટકૉઇનની રકમ sats માં બતાવે અને લખે છે (1 ₿ = 100,000,000 sats).',
   profile_shareUsageData: 'વપરાશનો ડેટા શેર કરો',

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">វិធីសាស្ត្រទូទាត់ថ្មី</string>
+    <string name="paying_method_edit_title">កែវិធីសាស្ត្រទូទាត់</string>
+    <string name="paying_method_type">ប្រភេទ</string>
+    <string name="paying_method_name">ឈ្មោះ</string>
+    <string name="paying_method_name_optional">ឈ្មោះ (ស្រេចចិត្ត)</string>
+    <string name="paying_method_color">ពណ៌</string>
+    <string name="paying_method_default">វិធីសាស្ត្រលំនាំដើម</string>
+    <string name="paying_method_default_hint">ចំណាយថ្មីដែលអ្នកបង់ នឹងចាប់ផ្ដើមជាមួយវា។</string>
+    <string name="paying_method_delete">លុបវិធីសាស្ត្រទូទាត់</string>
+    <string name="paying_method_delete_title">លុបវិធីសាស្ត្រទូទាត់នេះឬ?</string>
+    <string name="paying_method_delete_body">ចំណាយដែលអ្នកបានសម្គាល់ជាមួយវា នឹងលែងបង្ហាញវាទៀតហើយ។</string>
+    <string name="paying_method_delete_confirm">លុប</string>
+    <string name="paying_method_save">រក្សាទុក</string>
+</resources>

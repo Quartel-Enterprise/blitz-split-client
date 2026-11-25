@@ -880,6 +880,8 @@ export const en = {
   profile_languagePunjabi: 'Punjabi',
   profile_languageMalayalam: 'Malayalam',
   profile_languageKannada: 'Kannada',
+  profile_languageBurmese: 'Burmese',
+  profile_languageKhmer: 'Khmer',
   profile_bitcoinInSats: 'Bitcoin in satoshis',
   profile_bitcoinInSatsDetail: 'Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).',
   profile_shareUsageData: "Share usage data",

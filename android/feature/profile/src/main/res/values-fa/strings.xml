@@ -110,6 +110,8 @@
     <string name="profile_language_punjabi">پنجابی</string>
     <string name="profile_language_malayalam">مالایالامی</string>
     <string name="profile_language_kannada">کانارا</string>
+    <string name="profile_language_burmese">برمه‌ای</string>
+    <string name="profile_language_khmer">خمری</string>
     <string name="profile_language_system_detail">زبان دستگاه</string>
     <string name="profile_notifications">اعلان‌ها</string>
     <plurals name="profile_notifications_active">

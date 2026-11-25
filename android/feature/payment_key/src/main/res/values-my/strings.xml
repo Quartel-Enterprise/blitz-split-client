@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Pix ကီး အသစ်</string>
+    <string name="payment_key_title_pix_edit">Pix ကီး ပြင်ဆင်ရန်</string>
+    <string name="payment_key_title_bitcoin_new">Bitcoin ကီး အသစ်</string>
+    <string name="payment_key_title_bitcoin_edit">Bitcoin ကီး ပြင်ဆင်ရန်</string>
+    <string name="payment_key_save">သိမ်းရန်</string>
+
+    <string name="payment_key_pix_intro">သင့်ကို ငွေပေးသူသည် ကြွေးရှင်းသည့်အခါ ဤကီးကို မြင်ရပါသည်။ မည်သည့် ကီးအမျိုးအစားလဲ?</string>
+    <string name="payment_key_pix_question">မည်သည့် ကီးအမျိုးအစားလဲ?</string>
+    <string name="payment_key_pix_explanation">သင့်ကို ငွေပေးသူသည် ကြွေးရှင်းသည့်အခါ ဤကီးကို မြင်ရပါသည်။</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">ဖုန်း</string>
+    <string name="payment_key_type_email">အီးမေးလ်</string>
+    <string name="payment_key_type_random">ကျပန်း</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">ဧရိယာကုဒ်ပါသော မိုဘိုင်းနံပါတ်</string>
+    <string name="payment_key_label_email">အီးမေးလ်</string>
+    <string name="payment_key_label_random">ကျပန်း ကီး</string>
+
+    <string name="payment_key_bitcoin_intro">မည်သို့ လက်ခံလိုပါသလဲ?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">မြန်ဆန်၊ အခကြေးငွေ နည်း</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">blockchain ပေါ်တွင်</string>
+    <string name="payment_key_label_lightning">Lightning Address သို့မဟုတ် LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin လိပ်စာ</string>
+
+    <string name="payment_key_paste">ကူးထည့်ရန်</string>
+
+    <string name="payment_key_hint_cpf">ပုံစံ 000.000.000-00</string>
+    <string name="payment_key_hint_phone">ပုံစံ +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">ပုံစံ name@domain.com</string>
+    <string name="payment_key_hint_random">သင့်ဘဏ်က ပြသည့်အတိုင်း စာလုံးနှင့် ဂဏန်း 32 လုံး</string>
+    <string name="payment_key_hint_lightning">name@wallet.com သို့မဟုတ် LNURL1… ကဲ့သို့</string>
+    <string name="payment_key_hint_onchain">bc1q သို့မဟုတ် bc1p ဖြင့် စသော mainnet လိပ်စာ</string>
+
+    <string name="payment_key_valid_cpf">ပုံစံ 000.000.000-00 · စစ်ဆေးဂဏန်းများ ကိုက်ညီသည်</string>
+    <string name="payment_key_valid_phone">ပုံစံ +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">ပုံစံ name@domain.com</string>
+    <string name="payment_key_valid_random">ကျပန်း ကီးကို အသိအမှတ်ပြုပြီး (စာလုံး 32 လုံး)</string>
+    <string name="payment_key_valid_lightning_address">မှန်ကန်သော Lightning Address</string>
+    <string name="payment_key_valid_lnurl">မှန်ကန်သော LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF မမှန်ပါ: စစ်ဆေးဂဏန်းများ မကိုက်ညီပါ။</string>
+    <string name="payment_key_error_invalid_phone">မိုဘိုင်းနံပါတ် မပြည့်စုံပါ: ဧရိယာကုဒ်နှင့် 9 ဖြင့် စသော ဂဏန်း 9 လုံးကို သုံးပါ။</string>
+    <string name="payment_key_error_invalid_email">အီးမေးလ် မပြည့်စုံပါ: .com သို့မဟုတ် .com.br ကဲ့သို့ domain ပျောက်နေသည်။</string>
+    <string name="payment_key_error_invalid_random">ကျပန်း ကီး မပြည့်စုံပါ: ၎င်းတွင် စာလုံးနှင့် ဂဏန်း 32 လုံး ရှိရပါမည်။</string>
+    <string name="payment_key_error_invalid_lightning">ဤသည်မှာ Lightning Address (name@wallet) သို့မဟုတ် LNURL မဟုတ်ပါ။</string>
+    <string name="payment_key_error_lightning_invoice">ဤသည်မှာ Lightning invoice (lnbc…) ဖြစ်သည်: တစ်ကြိမ်သာ ပေးချေနိုင်ပြီး သက်တမ်းကုန်ပါသည်။ Lightning Address သို့မဟုတ် LNURL ကို ကူးထည့်ပါ။</string>
+    <string name="payment_key_error_invalid_onchain">လိပ်စာ မမှန်ပါ။ mainnet bc1q သို့မဟုတ် bc1p လိပ်စာကို သုံးပါ။</string>
+    <string name="payment_key_error_testnet_address">ဤသည်မှာ testnet လိပ်စာ (tb1…) ဖြစ်သည်။ ဤနေရာတွင် bc1… လိပ်စာများဖြင့် Bitcoin mainnet သာ အလုပ်လုပ်ပါသည်။</string>
+    <string name="payment_key_error_already_saved">ဤကီး သင့်တွင် ရှိပြီးဖြစ်သည်။</string>
+
+    <string name="payment_key_switched_to_onchain">ဤသည်မှာ on-chain လိပ်စာ ဖြစ်သဖြင့် On-chain သို့ ပြောင်းလိုက်ပါပြီ။</string>
+    <string name="payment_key_switched_to_lightning">ဤသည်မှာ Lightning Address ဖြစ်သဖြင့် Lightning သို့ ပြောင်းလိုက်ပါပြီ။</string>
+    <string name="payment_key_cpf_notice">သင့်ကို ငွေပေးသူသည် သင့် CPF အပြည့်အစုံကို မြင်ရပါသည်။ မမျှဝေလိုပါက ဖုန်း၊ အီးမေးလ် သို့မဟုတ် ကျပန်း ကီးကို သုံးပါ။</string>
+    <string name="payment_key_held_notice">ဤအမျိုးအစား Pix ကီး တစ်ခုသာ ရှိနိုင်သဖြင့် ဤသည်မှာ သင်သိမ်းထားသော ကီး ဖြစ်သည်။ လိုပါက ဤနေရာတွင် ပြောင်းပါ။</string>
+
+    <string name="payment_key_accepted_title">ကျွန်ုပ်တို့ လက်ခံသည်</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">မူလ Pix ကီး</string>
+    <string name="payment_key_default_bitcoin_title">မူလ Bitcoin ကီး</string>
+    <string name="payment_key_default_pix_detail">ကြွေးရှင်းသည့်အခါ ပထမဆုံး ပြသည်။</string>
+    <string name="payment_key_default_bitcoin_detail">တစ်စုံတစ်ယောက် BTC ဖြင့် ပေးသည့်အခါ ပထမဆုံး ပြသည်။</string>
+    <string name="payment_key_default_now">ယခု: %1$s။</string>
+    <string name="payment_key_default_locked_editing">၎င်းကို ပြောင်းရန် အခြားကီးကို မူလ အဖြစ် သတ်မှတ်ပါ။</string>
+    <string name="payment_key_default_locked_new">ဤအမျိုးအစား၏ သင့်ပထမဆုံး ကီးသည် မူလ ဖြစ်သည်။</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">ဖုန်း</string>
+    <string name="payment_key_default_type_email">အီးမေးလ်</string>
+    <string name="payment_key_default_type_random">ကျပန်း ကီး</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split သည် ငွေကို မလွှဲပါ: ပေးချေသူသည် ၎င်း၏ ဘဏ်အက်ပ်တွင် ပေးချေပါသည်။ ကီးသည် သင့်အမည်ဖြင့် ဖြစ်ကြောင်း စစ်ဆေးပါ။</string>
+    <string name="payment_key_footer_bitcoin">ကြွေးရှင်းသည့်အခါ ပမာဏကို လက်ရှိနှုန်းဖြင့် sats ဖြင့် ပြပါသည်။ ၎င်းသည် ခန့်မှန်းချက်သာ ဖြစ်သည်: ပေးချေသူသည် ၎င်း၏ wallet တွင် အတည်ပြုပါသည်။</string>
+
+    <string name="payment_key_delete">ကီး ဖျက်ရန်</string>
+    <string name="payment_key_delete_title">ဤကီးကို ဖျက်မလား?</string>
+    <string name="payment_key_delete_body">သင့်ကို ပေးရန် ရှိသူများသည် ကြွေးရှင်းသည့်အခါ ၎င်းကို မမြင်ရတော့ပါ။</string>
+    <string name="payment_key_delete_confirm">ဖျက်ရန်</string>
+</resources>

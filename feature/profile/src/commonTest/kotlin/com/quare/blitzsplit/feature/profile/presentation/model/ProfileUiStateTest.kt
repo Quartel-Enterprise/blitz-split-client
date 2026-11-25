@@ -72,6 +72,8 @@ class ProfileUiStateTest {
             AppLanguage.PUNJABI -> listOf("ਪੰਜਾਬੀ", "Punjabi")
             AppLanguage.MALAYALAM -> listOf("മലയാളം", "Malayalam")
             AppLanguage.KANNADA -> listOf("ಕನ್ನಡ", "Kannada")
+            AppLanguage.BURMESE -> listOf("မြန်မာ", "Burmese")
+            AppLanguage.KHMER -> listOf("ខ្មែរ", "Khmer")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -143,6 +145,8 @@ class ProfileUiStateTest {
         AppLanguage.PUNJABI,
         AppLanguage.MALAYALAM,
         AppLanguage.KANNADA,
+        AppLanguage.BURMESE,
+        AppLanguage.KHMER,
     )
 
     @Test
@@ -757,6 +761,8 @@ class ProfileUiStateTest {
                 AppLanguage.PUNJABI,
                 AppLanguage.MALAYALAM,
                 AppLanguage.KANNADA,
+                AppLanguage.BURMESE,
+                AppLanguage.KHMER,
             ),
             options,
         )
@@ -830,6 +836,8 @@ class ProfileUiStateTest {
                 AppLanguage.PUNJABI,
                 AppLanguage.MALAYALAM,
                 AppLanguage.KANNADA,
+                AppLanguage.BURMESE,
+                AppLanguage.KHMER,
             ),
             options,
         )

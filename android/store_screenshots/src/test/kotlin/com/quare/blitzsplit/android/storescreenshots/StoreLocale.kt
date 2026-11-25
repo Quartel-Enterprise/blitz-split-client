@@ -318,6 +318,16 @@ internal val storeLocales = listOf(
         drawnLocale = "kn",
     ),
     StoreLocale(
+        tag = "my",
+        language = "my",
+        drawnLocale = "my",
+    ),
+    StoreLocale(
+        tag = "km",
+        language = "km",
+        drawnLocale = "km",
+    ),
+    StoreLocale(
         tag = "ja",
         language = "ja",
         drawnLocale = "ja",

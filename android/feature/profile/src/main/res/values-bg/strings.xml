@@ -110,6 +110,8 @@
     <string name="profile_language_punjabi">Пенджабски</string>
     <string name="profile_language_malayalam">Малаялам</string>
     <string name="profile_language_kannada">Каннада</string>
+    <string name="profile_language_burmese">Бирмански</string>
+    <string name="profile_language_khmer">Кхмерски</string>
     <string name="profile_language_system_detail">Език на устройството</string>
     <string name="profile_notifications">Известия</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">ပိတ်ရန်</string>
+    <string name="invite_group_created">အဖွဲ့ ဖန်တီးပြီးပါပြီ</string>
+    <string name="invite_title">လူတိုင်းကို %s သို့ ဖိတ်ခေါ်ပါ</string>
+    <string name="invite_qr_description">အဖွဲ့၏ ဖိတ်ကြားချက် လင့်ခ် QR ကုဒ်</string>
+    <string name="invite_copy">ကူးရန်</string>
+    <string name="invite_copied">ကူးပြီးပါပြီ</string>
+    <string name="invite_who_picks">လင့်ခ်ကို ဖွင့်သူသည် စာရင်းထဲတွင် မိမိမည်သူဖြစ်ကြောင်း ရွေးပါသည်: %s။ အကောင့် မလိုပါ။</string>
+    <string name="invite_names_or">%1$s သို့မဟုတ် %2$s</string>
+    <string name="invite_anyone_joins">လင့်ခ်ကို ဖွင့်သူသည် အဖွဲ့သို့ ဝင်ပါသည်။ အကောင့် မလိုပါ။</string>
+    <string name="invite_pending_title">လင့်ခ် ဆိုင်းငံ့ထားသည်</string>
+    <string name="invite_pending_offline">သင် အွန်လိုင်းဖြစ်သည်နှင့် ၎င်းကို ဖန်တီးပါမည်။</string>
+    <string name="invite_pending_online">လင့်ခ်ကို ဖန်တီးနေသည်…</string>
+    <string name="invite_failed_title">လင့်ခ်ကို ဖန်တီး၍ မရပါ</string>
+    <string name="invite_failed_body">အဖွဲ့ကို စင့်ခ်လုပ်နေစဉ် တစ်ခုခု မှားယွင်းသွားပါသည်။</string>
+    <string name="invite_retry">ထပ်ကြိုးစားရန်</string>
+    <string name="invite_share">လင့်ခ် မျှဝေရန်</string>
+    <string name="invite_see_who_joined">ဝင်လာသူများကို ကြည့်ရန်</string>
+    <string name="invite_add_person">အက်ပ်မရှိသူကို ထည့်ရန်</string>
+    <string name="invite_go_to_group">အဖွဲ့သို့ သွားရန်</string>
+    <string name="invite_change_link">လင့်ခ် ပြောင်းရန်</string>
+    <string name="invite_change_link_title">ဖိတ်ကြားချက် လင့်ခ်ကို ပြောင်းမလား?</string>
+    <string name="invite_change_link_message">လက်ရှိ လင့်ခ်နှင့် QR ကုဒ်သည် အလုပ်မလုပ်တော့ပါ၊ အသုံးမပြုရသေးသော ကိုယ်ပိုင် ဖိတ်ကြားချက်များ အပါအဝင်။ ဝင်ပြီးသူများသည် အဖွဲ့တွင် ဆက်ရှိနေပါမည်။</string>
+    <string name="invite_change_link_failed">လင့်ခ်ကို ပြောင်း၍ မရပါ။ ထပ်ကြိုးစားပါ။</string>
+    <string name="invite_share_message">Blitz Split တွင် %1$s ၏ စရိတ်များကို ခွဲဝေကြစို့။ ဤလင့်ခ်ဖြင့် ဝင်ပါ: %2$s</string>
+</resources>

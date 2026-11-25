@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">ကိုယ်ရေးအချက်အလက် မူဝါဒ</string>
+    <string name="legal_terms">ဝန်ဆောင်မှု စည်းမျဉ်းများ</string>
+    <string name="legal_updated_privacy_policy">%1$s တွင် အပ်ဒိတ်လုပ်ခဲ့သည်</string>
+    <string name="legal_updated_terms">%1$s တွင် အပ်ဒိတ်လုပ်ခဲ့သည်</string>
+    <string name="legal_load_failed_title">ဤစာမျက်နှာကို ဖွင့်၍ မရပါ</string>
+    <string name="legal_load_failed_body">ချိတ်ဆက်မှုကို စစ်ပြီး ထပ်ကြိုးစားပါ။</string>
+    <string name="legal_retry">ထပ်ကြိုးစားရန်</string>
+</resources>

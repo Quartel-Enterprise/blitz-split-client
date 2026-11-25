@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">သင့်ပြန်လည်ရယူရေး ကုဒ်ကို သိမ်းထားပါ</string>
+    <string name="recovery_code_body">သင်သည် အကောင့်မရှိဘဲ အသုံးပြုနေပါသည်။ စက်ပစ္စည်း ပြောင်းလျှင် သို့မဟုတ် ပျောက်လျှင် ဤစကားလုံး 12 လုံးက သင့်ဒေတာကို ပြန်ယူပေးပါသည်။ ၎င်းတို့ကို အစီအစဉ်အတိုင်း ချရေးထားပါ။ 30 ရက် အသုံးမပြုပါက သင့်ဒေတာကို ဖျက်ပြီး စကားလုံးများ အလုပ်မလုပ်တော့ပါ။</string>
+    <string name="recovery_code_copy">စကားလုံးများကို ကူးရန်</string>
+    <string name="recovery_code_save_to_password_manager">စကားဝှက် မန်နေဂျာတွင် သိမ်းရန်</string>
+    <string name="recovery_code_connect_instead">၎င်းအစား Google သို့မဟုတ် Apple ကို ချိတ်ဆက်ရန်</string>
+    <string name="recovery_code_connect_instead_body">ကုဒ် မလိုပါ</string>
+    <string name="recovery_code_sign_in_failed">ယခု ချိတ်ဆက်၍ မရပါ။ ထပ်ကြိုးစားပါ။</string>
+    <string name="recovery_code_also_in_profile">၎င်းကို ပရိုဖိုင် › ပြန်လည်ရယူရေး တွင်လည်း တွေ့နိုင်ပါသည်။</string>
+    <string name="recovery_code_remind_later">နောက်မှ သတိပေးရန်</string>
+    <string name="recovery_code_saved">သိမ်းပြီးပါပြီ</string>
+    <string name="recovery_code_download">ဒေါင်းလုဒ်လုပ်ရန်</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · ပြန်လည်ရယူရေး ကုဒ်\n\n%1$s\n\nသင့်ဒေတာကို ပြန်ယူရန် \"အခြားစက်တွင် အသုံးပြုဖူးသည်\" တွင် ၎င်းကို အသုံးပြုပါ။\n</string>
+</resources>

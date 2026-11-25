@@ -881,6 +881,8 @@ export const ms: Record<MessageKey, string> = {
   profile_languagePunjabi: 'Bahasa Punjabi',
   profile_languageMalayalam: 'Bahasa Malayalam',
   profile_languageKannada: 'Bahasa Kannada',
+  profile_languageBurmese: 'Bahasa Burma',
+  profile_languageKhmer: 'Bahasa Khmer',
   profile_bitcoinInSats: 'Bitcoin dalam satoshi',
   profile_bitcoinInSatsDetail: 'Memaparkan dan memasukkan amaun bitcoin dalam sats (1 ₿ = 100,000,000 sats).',
   profile_shareUsageData: 'Kongsi data penggunaan',

@@ -143,6 +143,12 @@
             "value" : "Blitz Split"
           }
         },
+        "km" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "kn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -180,6 +186,12 @@
           }
         },
         "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "my" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -461,6 +473,12 @@
             "value" : "Blitz Split"
           }
         },
+        "km" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "kn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -498,6 +516,12 @@
           }
         },
         "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "my" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -779,6 +803,12 @@
             "value" : "招待や古いデバイスのQRコードのスキャン、プロフィール写真や支出の写真の撮影に使用します。"
           }
         },
+        "km" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ដើម្បីស្កេនកូដ QR នៃការអញ្ជើញ ឬពីឧបករណ៍ចាស់របស់អ្នក និងដើម្បីថតរូបប្រវត្តិរូប និងរូបថតនៃចំណាយ។"
+          }
+        },
         "kn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -819,6 +849,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Untuk mengimbas kod QR jemputan atau daripada peranti lama anda, serta mengambil foto profil dan foto bil anda."
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ဖိတ်ကြားချက်၏ သို့မဟုတ် သင့်စက်အဟောင်းမှ QR ကုဒ်ကို စကင်ဖတ်ရန်နှင့် သင့်ပရိုဖိုင် ဓာတ်ပုံနှင့် စရိတ်များ၏ ဓာတ်ပုံများကို ရိုက်ရန်။"
           }
         },
         "nb" : {
@@ -1097,6 +1133,12 @@
             "value" : "グループのリンクで連絡先から招待するために使用します。電話番号はこのデバイスから出ません。"
           }
         },
+        "km" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ដើម្បីអញ្ជើញមនុស្សពីទំនាក់ទំនងរបស់អ្នក តាមតំណរបស់ក្រុម។ លេខទូរសព្ទរបស់ពួកគេនៅតែលើឧបករណ៍នេះ។"
+          }
+        },
         "kn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1137,6 +1179,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Untuk menjemput orang daripada kenalan anda dengan pautan kumpulan. Nombor mereka kekal pada peranti ini."
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "သင့်အဆက်အသွယ်များထဲမှ လူများကို အဖွဲ့၏ လင့်ခ်ဖြင့် ဖိတ်ခေါ်ရန်။ ၎င်းတို့၏ ဖုန်းနံပါတ်များသည် ဤစက်ပေါ်တွင်သာ ရှိနေပါမည်။"
           }
         },
         "nb" : {
@@ -1415,6 +1463,12 @@
             "value" : "支出の写真をライブラリに保存するために使用します。"
           }
         },
+        "km" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ដើម្បីរក្សាទុករូបថតនៃចំណាយទៅក្នុងបណ្ណាល័យរូបថតរបស់អ្នក។"
+          }
+        },
         "kn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1455,6 +1509,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Untuk menyimpan foto bil ke pustaka anda."
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "စရိတ်တစ်ခု၏ ဓာတ်ပုံများကို သင့်ဓာတ်ပုံပြခန်းထဲသို့ သိမ်းရန်။"
           }
         },
         "nb" : {

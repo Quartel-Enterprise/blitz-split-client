@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်နေသည်…</string>
+    <string name="in_app_update_download_failed">အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။ နောက်မှ ထပ်ကြိုးစားပါ။</string>
+</resources>

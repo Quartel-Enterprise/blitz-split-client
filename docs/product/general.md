@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam and Kannada: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam, Kannada, Burmese and Khmer: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -339,7 +339,24 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     noun that carries the ending ("‘%1$s’ ಗುಂಪಿನಲ್ಲಿ"). A person's gender is never assumed: a person is always in the
     respectful plural ("-ರು"). Its verb says the person, the respectful past "-ದರು" of a name differing from the
     "-ದಿರಿ" of "ನೀವು", so its activity sentences follow Tamil's rule ([activity-and-push.md](activity-and-push.md)).
-    The picker names it "ಕನ್ನಡ", and its chip reads "KN". It uses INR. Lithuanian
+    The picker names it "ಕನ್ನಡ", and its chip reads "KN". It uses INR. Burmese (Pierre's calls, issue #581) is one
+    variant for every `my` tag, in Unicode Burmese (never the Zawgyi encoding), and talks to the user with the polite,
+    gender-free "သင်" (never the gendered "ခင်ဗျား" or "ရှင်"), in the plain written style Myanmar apps use ("…ပါသည်။",
+    "…ပါ။" for a request); it calls the app Blitz Split, writes no space between words but one between phrases and
+    around a name, an amount or a Latin word, ends a sentence with "။" and parts two clauses with "၊" (`fullStopUi`,
+    `WordGap.fullStop`, the web's `fullStop` and `clauseBreak`, its word gap staying a space, as Thai's). Its plurals
+    have one form, a count taking its classifier ("အဖွဲ့ဝင် 3 ဦး"). Its default digits are Burmese (၀-၉), so the code
+    writes its numbers, amounts and dates with 0-9 ("nu-latn": `latinDigitLanguages`, `AppNumbers`, the web's
+    `formattingKeys`), in the Gregorian calendar. Its verbs don't change with the person, so its activity sentences
+    need no rule ([activity-and-push.md](activity-and-push.md)). The picker names it "မြန်မာ", and its chip reads "MY".
+    The Myanmar kyat (MMK) comes with it (below). Khmer (Pierre's calls, issue #581) is one variant for every `km` tag
+    and talks to the user with the polite, gender-free "អ្នក", in the standard written Khmer of Cambodian apps ("សូម…"
+    for a request); it calls the app Blitz Split, writes no space between words but one between phrases and around a
+    name, an amount or a Latin word, ends a sentence with "។" and parts two clauses with a space, as Thai does
+    (`fullStopUi`, `WordGap.fullStop`, the web's `fullStop` and `clauseBreak`). Its plurals have one form. Its default
+    digits are already 0-9, and the code keeps them even on a device set to Khmer digits (០-៩), in the Gregorian
+    calendar. Its verbs don't change with the person, so its activity sentences need no rule. The picker names it
+    "ខ្មែរ", and its chip reads "KM". The Cambodian riel (KHR) comes with it (below). Lithuanian
     (Pierre's calls, issue #581) is one variant for every `lt` tag, talks to the user in the informal "tu" and calls
     the app Blitz Split. A name the app fills in is never declined: it stands as the subject or after a noun that
     carries the case ("narys Ana"). Its simple past says no gender, and every activity verb phrase starts with it,
@@ -610,6 +627,13 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     new group in Denmark, Greenland and the Faroe Islands. It has 2 decimals, as ISO gives it, and the usual 100 million
     cap, so an app version from before it shows its amounts by the raw code, with the right decimals. The store
     screenshots' sample trip for Danish is priced in it.
+  - The Myanmar kyat (MMK) and the Cambodian riel (KHR) come with Burmese and Khmer (Pierre's calls), in that order
+    after the Danish krone, and start a new group in Myanmar and Cambodia. Both have no decimals, as the yen and the won
+    (Pierre's call): ISO gives each 2, but no price or receipt in Myanmar or Cambodia shows pyas or sen. Their cap is the
+    usual 100 million, about US$ 47,000 at 2,100 kyats a dollar and US$ 25,000 at 4,000 riels a dollar: less than the
+    won's, but still far above a bill among friends. An app version from before them reads MMK and KHR as unknown codes
+    with two decimals and shows their amounts 100 times smaller until it updates, as with HUF and TZS. The store
+    screenshots' sample trips for Burmese and Khmer are priced in them.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · លេខកូដស្ដារ</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">សូមអនុញ្ញាតកាមេរ៉ាក្នុងការកំណត់ ដើម្បីថតរូប។</string>
+    <string name="platform_camera_settings">ការកំណត់</string>
+    <string name="platform_receipt_source_camera">ថតរូប</string>
+    <string name="platform_receipt_source_gallery">ជ្រើសរើសពីវិចិត្រសាល</string>
+    <string name="platform_receipt_source_file">ជ្រើសរើសឯកសារ</string>
+    <string name="platform_receipt_camera_title">ស្កេនបង្កាន់ដៃ</string>
+    <string name="platform_receipt_camera_close">បិទ</string>
+    <string name="platform_receipt_camera_flash_on">បើកពន្លឺហ្វ្លាស</string>
+    <string name="platform_receipt_camera_flash_off">បិទពន្លឺហ្វ្លាស</string>
+    <string name="platform_receipt_camera_hint">ដាក់បង្កាន់ដៃទាំងមូលឱ្យនៅក្នុងស៊ុម។ យើងនឹងបំពេញចំនួនទឹកប្រាក់ កាលបរិច្ឆេទ និងការពិពណ៌នា ហើយអ្នកពិនិត្យមុនពេលរក្សាទុក។</string>
+    <string name="platform_receipt_camera_gallery">ជ្រើសរើសពីវិចិត្រសាល</string>
+    <string name="platform_receipt_camera_shutter">ថតរូប</string>
+    <string name="platform_receipt_camera_unavailable">កាមេរ៉ាមិនអាចប្រើបានទេ។ សូមជ្រើសរើសរូបថតបង្កាន់ដៃពីវិចិត្រសាល។</string>
+    <string name="platform_receipt_camera_permission">សូមអនុញ្ញាតកាមេរ៉ាដើម្បីស្កេនបង្កាន់ដៃ ឬជ្រើសរើសរូបថតពីវិចិត្រសាល។</string>
+    <string name="platform_receipt_camera_allow">អនុញ្ញាតកាមេរ៉ា</string>
+    <string name="platform_receipt_camera_settings">បើកការកំណត់</string>
+</resources>

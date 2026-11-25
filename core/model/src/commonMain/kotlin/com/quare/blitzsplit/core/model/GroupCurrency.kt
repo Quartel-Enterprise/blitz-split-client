@@ -138,6 +138,8 @@ class GroupCurrency private constructor(
         val KES = GroupCurrency("KES", setOf("KE"))
         val TZS = GroupCurrency("TZS", setOf("TZ"), fractionDigits = 0)
         val DKK = GroupCurrency("DKK", setOf("DK", "GL", "FO"))
+        val MMK = GroupCurrency("MMK", setOf("MM"), fractionDigits = 0)
+        val KHR = GroupCurrency("KHR", setOf("KH"), fractionDigits = 0)
 
         // Why: no decimals, as the rupiah: ISO gives it 2, but no price in Iran shows a fraction of a rial.
         val IRR = GroupCurrency("IRR", setOf("IR"), fractionDigits = 0)
@@ -213,6 +215,8 @@ class GroupCurrency private constructor(
             KES,
             TZS,
             DKK,
+            MMK,
+            KHR,
             BTC,
             ETH,
         )

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">គោលការណ៍ឯកជនភាព</string>
+    <string name="legal_terms">លក្ខខណ្ឌប្រើប្រាស់</string>
+    <string name="legal_updated_privacy_policy">បានធ្វើបច្ចុប្បន្នភាព %1$s</string>
+    <string name="legal_updated_terms">បានធ្វើបច្ចុប្បន្នភាព %1$s</string>
+    <string name="legal_load_failed_title">មិនអាចផ្ទុកទំព័រនេះបានទេ</string>
+    <string name="legal_load_failed_body">សូមពិនិត្យការតភ្ជាប់របស់អ្នក ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="legal_retry">ព្យាយាមម្តងទៀត</string>
+</resources>

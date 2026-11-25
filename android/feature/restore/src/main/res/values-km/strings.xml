@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">នាំក្រុមរបស់អ្នកមកវិញ</string>
+    <string name="restore_subtitle">ធ្លាប់ចូលដោយប្រើគណនីពីមុនឬ? គ្រាន់តែចូលម្តងទៀត។ បើមិនធ្លាប់ទេ សូមប្រើលេខកូដស្ដារ ឬកូដ QR ពីឧបករណ៍ចាស់របស់អ្នក។</string>
+    <string name="restore_no_connection_title">គ្មានការតភ្ជាប់</string>
+    <string name="restore_no_connection_body">ការចូលដោយប្រើគណនី ឬលេខកូដត្រូវការអ៊ីនធឺណិតដើម្បីទាញយកក្រុមរបស់អ្នក។ អ្វីដែលអ្នកបានវាយត្រូវបានរក្សាទុក។</string>
+    <string name="restore_code_label">ឬប្រើលេខកូដស្ដារ</string>
+    <string name="restore_code_hint">ពាក្យ 12 តាមលំដាប់។ បិទភ្ជាប់ពាក្យទាំងអស់ក្នុងប្រអប់មួយ ដើម្បីបំពេញប្រអប់ទាំងអស់។</string>
+    <string name="restore_scan_qr_title">ស្កេនកូដ QR ពីឧបករណ៍ចាស់របស់អ្នក</string>
+    <string name="restore_scan_qr_body">នៅទីនោះ៖ ប្រវត្តិរូប › ការស្ដារ › បង្ហាញកូដ QR</string>
+    <string name="restore_recover">ស្ដារ</string>
+    <string name="restore_try_again">ព្យាយាមម្តងទៀត</string>
+    <string name="restore_start_fresh">ចាប់ផ្ដើមថ្មីនៅលើឧបករណ៍នេះ</string>
+    <string name="restore_error_invalid_code">រកមិនឃើញលេខកូដទេ។ សូមពិនិត្យពាក្យ និងលំដាប់របស់វា រួចព្យាយាមម្តងទៀត។</string>
+    <string name="restore_error_too_many_attempts">ព្យាយាមច្រើនដងពេក។ សូមរង់ចាំពីរបីនាទី ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="restore_error_sign_in_failed">មិនអាចចូលបានទេឥឡូវនេះ។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="restore_error_unknown">មានបញ្ហាកើតឡើង។ សូមព្យាយាមម្តងទៀត។</string>
+</resources>

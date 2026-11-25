@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">កំណត់ចំណាំការចេញផ្សាយ</string>
+    <string name="release_notes_show_beta">បង្ហាញកំណែបេតា</string>
+    <string name="release_notes_beta_badge">បេតា %1$d</string>
+    <string name="release_notes_installed_badge">កំណែនេះ</string>
+    <string name="release_notes_empty">មិនទាន់មានកំណត់ចំណាំការចេញផ្សាយនៅឡើយ។</string>
+    <string name="release_notes_empty_only_betas">មិនទាន់មានកំណែស្ថិរភាពនៅឡើយទេ។ បើកកំណែបេតា ដើម្បីមើលអ្វីដែលកំពុងសាកល្បង។</string>
+    <string name="release_notes_load_failed_title">មិនអាចផ្ទុកកំណត់ចំណាំការចេញផ្សាយបានទេ</string>
+    <string name="release_notes_load_failed_body">សូមពិនិត្យការតភ្ជាប់របស់អ្នក ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="release_notes_retry">ព្យាយាមម្តងទៀត</string>
+    <string name="release_notes_open_on_github">បើកនៅលើ GitHub</string>
+</resources>

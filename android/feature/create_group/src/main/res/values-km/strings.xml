@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">ក្រុមថ្មី</string>
+    <string name="create_group_close">បិទ</string>
+    <string name="create_group_create">បង្កើត</string>
+    <string name="create_group_change_color">ប្តូរពណ៌ក្រុម</string>
+    <string name="create_group_name_label">ឈ្មោះក្រុម</string>
+    <string name="create_group_type_label">ប្រភេទក្រុម</string>
+    <string name="create_group_members_title">អ្នកដែលចូលរួម</string>
+    <plurals name="create_group_member_count">
+        <item quantity="other">%d នាក់</item>
+    </plurals>
+    <string name="create_group_me">អ្នក</string>
+    <string name="create_group_remove_member">ដក %s ចេញ</string>
+    <string name="create_group_add_placeholder">បន្ថែមតាមឈ្មោះ</string>
+    <string name="create_group_add">បន្ថែម</string>
+    <string name="create_group_no_app_notice">ឥឡូវនេះគ្មាននរណាត្រូវការកម្មវិធីទេ។ អ្នកអាចបន្ថែមចំណាយសម្រាប់គ្រប់គ្នាបានរួចហើយ និងផ្ញើតំណនៅពេលក្រោយ។</string>
+    <string name="create_group_currency">រូបិយប័ណ្ណលំនាំដើម</string>
+    <string name="create_group_currency_caption">ចំណាយថ្មីចាប់ផ្តើមជារូបិយប័ណ្ណនេះ ចំណាយនីមួយៗអាចប្រើរូបិយប័ណ្ណផ្សេងបាន។</string>
+    <string name="create_group_save_error">មិនអាចរក្សាទុកក្រុមបានទេ។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="create_group_photo">រូបថតក្រុម</string>
+    <string name="create_group_take_photo">ថតរូប</string>
+    <string name="create_group_choose_photo">ជ្រើសរើសរូបថត</string>
+    <string name="create_group_remove_photo">ដករូបថតចេញ</string>
+    <string name="create_group_photo_error">មិនអាចប្រើរូបថតនេះបានទេ។ សូមសាកល្បងរូបផ្សេង។</string>
+</resources>

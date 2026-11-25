@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">សោ Pix ថ្មី</string>
+    <string name="payment_key_title_pix_edit">កែសោ Pix</string>
+    <string name="payment_key_title_bitcoin_new">សោ Bitcoin ថ្មី</string>
+    <string name="payment_key_title_bitcoin_edit">កែសោ Bitcoin</string>
+    <string name="payment_key_save">រក្សាទុក</string>
+
+    <string name="payment_key_pix_intro">អ្នកដែលបង់ឱ្យអ្នកនឹងឃើញសោនេះនៅពេលទូទាត់បំណុល។ សោប្រភេទណា?</string>
+    <string name="payment_key_pix_question">សោប្រភេទណា?</string>
+    <string name="payment_key_pix_explanation">អ្នកដែលបង់ឱ្យអ្នកនឹងឃើញសោនេះនៅពេលទូទាត់បំណុល។</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">ទូរសព្ទ</string>
+    <string name="payment_key_type_email">អ៊ីមែល</string>
+    <string name="payment_key_type_random">ចៃដន្យ</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">លេខទូរសព្ទដៃរួមទាំងលេខកូដតំបន់</string>
+    <string name="payment_key_label_email">អ៊ីមែល</string>
+    <string name="payment_key_label_random">សោចៃដន្យ</string>
+
+    <string name="payment_key_bitcoin_intro">តើអ្នកចង់ទទួលដោយរបៀបណា?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">លឿន ថ្លៃសេវាទាប</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">នៅលើ blockchain</string>
+    <string name="payment_key_label_lightning">Lightning Address ឬ LNURL</string>
+    <string name="payment_key_label_onchain">អាសយដ្ឋាន Bitcoin</string>
+
+    <string name="payment_key_paste">បិទភ្ជាប់</string>
+
+    <string name="payment_key_hint_cpf">ទម្រង់ 000.000.000-00</string>
+    <string name="payment_key_hint_phone">ទម្រង់ +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">ទម្រង់ name@domain.com</string>
+    <string name="payment_key_hint_random">អក្សរ និងលេខ 32 ដូចដែលធនាគាររបស់អ្នកបង្ហាញ</string>
+    <string name="payment_key_hint_lightning">ដូចជា name@wallet.com ឬ LNURL1…</string>
+    <string name="payment_key_hint_onchain">អាសយដ្ឋាន mainnet ដែលចាប់ផ្ដើមដោយ bc1q ឬ bc1p</string>
+
+    <string name="payment_key_valid_cpf">ទម្រង់ 000.000.000-00 · លេខផ្ទៀងផ្ទាត់ត្រូវគ្នា</string>
+    <string name="payment_key_valid_phone">ទម្រង់ +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">ទម្រង់ name@domain.com</string>
+    <string name="payment_key_valid_random">បានស្គាល់សោចៃដន្យ (32 តួអក្សរ)</string>
+    <string name="payment_key_valid_lightning_address">Lightning Address ត្រឹមត្រូវ</string>
+    <string name="payment_key_valid_lnurl">LNURL ត្រឹមត្រូវ</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF មិនត្រឹមត្រូវ៖ លេខផ្ទៀងផ្ទាត់មិនត្រូវគ្នាទេ។</string>
+    <string name="payment_key_error_invalid_phone">លេខទូរសព្ទដៃមិនពេញលេញ៖ សូមប្រើលេខកូដតំបន់ និងលេខ 9 ខ្ទង់ ដែលចាប់ផ្ដើមដោយ 9។</string>
+    <string name="payment_key_error_invalid_email">អ៊ីមែលមិនពេញលេញ៖ ខ្វះដែន ដូចជា .com ឬ .com.br។</string>
+    <string name="payment_key_error_invalid_random">សោចៃដន្យមិនពេញលេញ៖ វាមានអក្សរ និងលេខ 32។</string>
+    <string name="payment_key_error_invalid_lightning">នេះមិនមែនជា Lightning Address (name@wallet) ឬ LNURL ទេ។</string>
+    <string name="payment_key_error_lightning_invoice">នេះជាវិក្កយបត្រ Lightning (lnbc…)៖ វាបង់បានតែម្តង ហើយផុតកំណត់។ សូមបិទភ្ជាប់ Lightning Address ឬ LNURL។</string>
+    <string name="payment_key_error_invalid_onchain">អាសយដ្ឋានមិនត្រឹមត្រូវ។ សូមប្រើអាសយដ្ឋាន mainnet bc1q ឬ bc1p។</string>
+    <string name="payment_key_error_testnet_address">នេះជាអាសយដ្ឋាន testnet (tb1…)។ មានតែ Bitcoin mainnet ប៉ុណ្ណោះដែលដំណើរការនៅទីនេះ ជាមួយអាសយដ្ឋាន bc1…។</string>
+    <string name="payment_key_error_already_saved">អ្នកមានសោនេះរួចហើយ។</string>
+
+    <string name="payment_key_switched_to_onchain">នេះជាអាសយដ្ឋាន on-chain ដូច្នេះយើងបានប្ដូរទៅ On-chain។</string>
+    <string name="payment_key_switched_to_lightning">នេះជា Lightning Address ដូច្នេះយើងបានប្ដូរទៅ Lightning។</string>
+    <string name="payment_key_cpf_notice">អ្នកដែលបង់ឱ្យអ្នកនឹងឃើញ CPF ពេញរបស់អ្នក។ បើអ្នកមិនចង់ចែករំលែកវាទេ សូមប្រើសោទូរសព្ទ អ៊ីមែល ឬសោចៃដន្យ។</string>
+    <string name="payment_key_held_notice">អ្នកអាចមានសោ Pix ប្រភេទនេះបានតែមួយប៉ុណ្ណោះ ដូច្នេះនេះជាសោដែលអ្នកបានរក្សាទុក។ ប្ដូរវានៅទីនេះបើអ្នកចង់។</string>
+
+    <string name="payment_key_accepted_title">យើងទទួលយក</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">សោ Pix លំនាំដើម</string>
+    <string name="payment_key_default_bitcoin_title">សោ Bitcoin លំនាំដើម</string>
+    <string name="payment_key_default_pix_detail">បង្ហាញមុនគេនៅពេលទូទាត់បំណុល។</string>
+    <string name="payment_key_default_bitcoin_detail">បង្ហាញមុនគេនៅពេលនរណាម្នាក់បង់ជា BTC។</string>
+    <string name="payment_key_default_now">ឥឡូវនេះ៖ %1$s។</string>
+    <string name="payment_key_default_locked_editing">ដើម្បីប្ដូរវា សូមកំណត់សោផ្សេងទៀតជាលំនាំដើម។</string>
+    <string name="payment_key_default_locked_new">សោដំបូងរបស់អ្នកនៃប្រភេទនេះគឺជាលំនាំដើម។</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">ទូរសព្ទ</string>
+    <string name="payment_key_default_type_email">អ៊ីមែល</string>
+    <string name="payment_key_default_type_random">សោចៃដន្យ</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split មិនផ្ទេរប្រាក់ទេ៖ អ្នកបង់បង់តាមកម្មវិធីធនាគាររបស់ពួកគេ។ សូមពិនិត្យថាសោនោះជាឈ្មោះរបស់អ្នក។</string>
+    <string name="payment_key_footer_bitcoin">នៅពេលទូទាត់បំណុល យើងបង្ហាញចំនួនទឹកប្រាក់ជា sats តាមអត្រាបច្ចុប្បន្ន។ វាគ្រាន់តែជាការប៉ាន់ស្មានប៉ុណ្ណោះ៖ អ្នកបង់បញ្ជាក់វានៅក្នុងកាបូបរបស់ពួកគេ។</string>
+
+    <string name="payment_key_delete">លុបសោ</string>
+    <string name="payment_key_delete_title">លុបសោនេះឬ?</string>
+    <string name="payment_key_delete_body">អ្នកដែលជំពាក់អ្នកនឹងលែងឃើញវានៅពេលទូទាត់បំណុលទៀតហើយ។</string>
+    <string name="payment_key_delete_confirm">លុប</string>
+</resources>

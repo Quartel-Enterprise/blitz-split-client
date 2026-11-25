@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">သင် ဤအဖွဲ့ထဲတွင် မရှိပါ</string>
+    <string name="bill_link_not_in_group_message">ဤမှတ်ချက်သည် သင်မပါသော အဖွဲ့ထဲတွင် ရှိပါသည်။ လင့်ခ်ပို့သူထံ ဖိတ်ကြားချက် တောင်းပါ။</string>
+    <string name="bill_link_offline_title">အင်တာနက် မရှိပါ</string>
+    <string name="bill_link_offline_message">အွန်လိုင်း ပြန်ဖြစ်လျှင် လင့်ခ်ကို ထပ်ဖွင့်ပါ။</string>
+    <string name="bill_link_go_home">ပင်မသို့ သွားရန်</string>
+    <string name="discard_changes_title">ပြောင်းလဲမှုများကို ပယ်မလား?</string>
+    <string name="discard_changes_message">မသိမ်းရသေးသော ပြောင်းလဲမှုများ ဆုံးရှုံးသွားပါမည်။</string>
+    <string name="discard_changes_discard">ပယ်ရန်</string>
+    <string name="discard_changes_keep_editing">ဆက်ပြင်ရန်</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">နာရီ</string>
+    <string name="watch_connected_title">%1$s ကို သင့်အကောင့်နှင့် ချိတ်ဆက်ပြီးပါပြီ</string>
+    <string name="watch_connected_title_unnamed">နာရီကို သင့်အကောင့်နှင့် ချိတ်ဆက်ပြီးပါပြီ</string>
+    <string name="watch_connected_text">၎င်းသည် သင့်အဖွဲ့များကို မြင်ရပြီး အလိုအလျောက် စင့်ခ်လုပ်ပါသည်။ ချိတ်ဆက်မှု ဖြုတ်ရန် နာရီပေါ်တွင် အကောင့်မှ ထွက်ပါ။</string>
+</resources>

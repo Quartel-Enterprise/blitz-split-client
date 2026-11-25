@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">ទាក់ទងផ្នែកជំនួយ</string>
+    <string name="contact_support_description">យើងនឹងបើកកម្មវិធីអ៊ីមែលរបស់អ្នក ជាមួយសារដែលរៀបចំរួចជាស្រេច។ សូមពិពណ៌នាអំពីអ្វីដែលបានកើតឡើង ហើយផ្ញើវា៖ មនុស្សពិតៗអានគ្រប់សារ។</string>
+    <string name="contact_support_to">ទៅ</string>
+    <string name="contact_support_diagnostics">នឹងត្រូវបញ្ចូលក្នុងអ៊ីមែល</string>
+    <string name="contact_support_app_version">កំណែកម្មវិធី</string>
+    <string name="contact_support_platform">វេទិកា</string>
+    <string name="contact_support_language">ភាសា</string>
+    <string name="contact_support_account">គណនី</string>
+    <string name="contact_support_profile">ប្រវត្តិរូប</string>
+    <string name="contact_support_language_system">ប្រព័ន្ធ</string>
+    <string name="contact_support_account_local">តែឧបករណ៍នេះប៉ុណ្ណោះ</string>
+    <string name="contact_support_account_anonymous">មិនបានភ្ជាប់</string>
+    <string name="contact_support_open_email">បើកអ៊ីមែល</string>
+    <string name="contact_support_copy_email">ចម្លងអាសយដ្ឋានអ៊ីមែល</string>
+    <string name="contact_support_notice_copied">បានចម្លងអាសយដ្ឋានអ៊ីមែល។</string>
+    <string name="contact_support_notice_no_app">រកមិនឃើញកម្មវិធីអ៊ីមែលទេ។ អាសយដ្ឋានត្រូវបានចម្លងជំនួសវិញ។</string>
+    <string name="contact_support_close">បិទ</string>
+</resources>

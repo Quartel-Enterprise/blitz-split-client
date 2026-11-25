@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">အသိပေးချက်များ</string>
+    <string name="notification_settings_denied_title">Blitz Split အသိပေးချက်များကို Android တွင် ပိတ်ထားသည်။</string>
+    <string name="notification_settings_denied_body">အောက်ပါ push အသိပေးချက်များ ရရှိရန် စနစ် ဆက်တင်များတွင် ဖွင့်ပါ။ ခေါင်းလောင်းသည် ဆက်အလုပ်လုပ်ပါမည်။</string>
+    <string name="notification_settings_open_settings">ဆက်တင်များ ဖွင့်ရန်</string>
+    <string name="notification_settings_refused_body">အောက်ပါ push အသိပေးချက်များ ရရှိရန် Android က နောက်တစ်ကြိမ် ခွင့်ပြုခွင့် ပေးသည်။ ခေါင်းလောင်းသည် ဆက်အလုပ်လုပ်ပါမည်။</string>
+    <string name="notification_settings_turn_on">ဖွင့်ရန်</string>
+    <string name="notification_settings_blocked_in_android">Android တွင် ပိတ်ဆို့ထားသည်</string>
+    <string name="notification_settings_open_channel_settings_description">%1$s အတွက် Android ဆက်တင်များ ဖွင့်ရန်</string>
+    <string name="notification_settings_push_switch">Push အသိပေးချက်များ</string>
+    <string name="notification_settings_push_switch_detail">ဤစက်တွင်သာ</string>
+    <string name="notification_settings_section">ကျွန်ုပ်ကို အသိပေးရန်</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">အက်ပ်အတွင်း</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push သည် ဤစက်သို့ အသိပေးချက် ပို့သည်။ “အက်ပ်အတွင်း” သည် ခေါင်းလောင်းနှင့် လှုပ်ရှားမှုတွင် အသစ်ဟု မှတ်သည်၊ ပိတ်ထားလျှင် လှုပ်ရှားမှုတွင် ဖတ်ပြီးသားအဖြစ် ဆက်ပြပါမည်။</string>
+    <string name="notification_settings_footer">အင်တာနက် ရှိသည့်အခါ အသိပေးချက်များ ရောက်လာမည်။ အဖွဲ့တစ်ခုကို အသံပိတ်ရန် ၎င်းအတွင်းရှိ မီနူးကို သုံးပါ။</string>
+</resources>

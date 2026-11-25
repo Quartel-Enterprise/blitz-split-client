@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">ဗားရှင်း မှတ်စုများ</string>
+    <string name="release_notes_show_beta">ဘီတာ ဗားရှင်းများကို ပြရန်</string>
+    <string name="release_notes_beta_badge">ဘီတာ %1$d</string>
+    <string name="release_notes_installed_badge">ဤဗားရှင်း</string>
+    <string name="release_notes_empty">ဗားရှင်း မှတ်စုများ မရှိသေးပါ။</string>
+    <string name="release_notes_empty_only_betas">တည်ငြိမ်သော ဗားရှင်း မရှိသေးပါ။ စမ်းသပ်နေသည်များကို ကြည့်ရန် ဘီတာ ဗားရှင်းများကို ဖွင့်ပါ။</string>
+    <string name="release_notes_load_failed_title">ဗားရှင်း မှတ်စုများကို ဖွင့်၍ မရပါ</string>
+    <string name="release_notes_load_failed_body">သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်ကြိုးစားပါ။</string>
+    <string name="release_notes_retry">ထပ်ကြိုးစားရန်</string>
+    <string name="release_notes_open_on_github">GitHub တွင် ဖွင့်ရန်</string>
+</resources>
