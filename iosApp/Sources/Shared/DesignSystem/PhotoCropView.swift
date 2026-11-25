@@ -96,7 +96,8 @@ struct PhotoCropView: View {
             let side = min(proxy.size.width * Self.frameRatio, proxy.size.height * Self.frameRatio, Self.maxFrameSide)
             let crop = editor.crop
             ZStack {
-                // Why: a receipt zoomed out to fit leaves the frame white around it, as the square kept is.
+                // Why: a receipt zoomed out to fit leaves the frame white around it, as the square kept is. Plain white,
+                // not a Palette color: it must match the encoders' fill, whatever the theme.
                 if crop.canFit, image != nil {
                     frameShape(side: side)
                         .fill(Color.white)
