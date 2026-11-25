@@ -251,7 +251,7 @@ export function HomeShellView({
       aria-label={t('groups_search')}
       aria-keyshortcuts={search.keyShortcuts || undefined}
       onClick={search.onOpen}
-      className="mt-3 flex flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] font-medium text-muted-foreground outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:h-9 lg:flex-row lg:justify-start lg:gap-2 lg:border lg:bg-card lg:px-2.5 lg:py-0 lg:text-sm lg:font-normal"
+      className="flex flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] font-medium text-muted-foreground outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:mt-3 lg:h-9 lg:flex-row lg:justify-start lg:gap-2 lg:border lg:bg-card lg:px-2.5 lg:py-0 lg:text-sm lg:font-normal"
     >
       <Search aria-hidden className="size-4 shrink-0" />
       <span aria-hidden className="lg:hidden">{t('groups_search')}</span>
@@ -290,8 +290,9 @@ export function HomeShellView({
               <span>{t(label)}</span>
             </button>
           ))}
+          {/* Why: the rail's last item, spaced as the tabs and in their navigation, as the phone's bottom navigation keeps it. */}
+          <div className="contents lg:hidden">{searchButton}</div>
         </nav>
-        <div className="contents lg:hidden">{searchButton}</div>
         {openGroups === 'loading' ? <SidebarGroupsSkeleton /> : openGroups && <SidebarGroups openGroups={openGroups} />}
         <button
           onClick={onProfile}
