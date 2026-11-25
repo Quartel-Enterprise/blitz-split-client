@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">നിങ്ങളുടെ റിക്കവറി കോഡ് സേവ് ചെയ്യുക</string>
+    <string name="recovery_code_body">നിങ്ങൾ അക്കൗണ്ട് ഇല്ലാതെയാണ് ഉപയോഗിക്കുന്നത്. നിങ്ങൾ ഉപകരണം മാറ്റുകയോ നഷ്ടപ്പെടുകയോ ചെയ്താൽ ഈ 12 വാക്കുകൾ നിങ്ങളുടെ ഡാറ്റ തിരികെ കൊണ്ടുവരും. അവ ക്രമത്തിൽ എഴുതിവയ്ക്കുക. 30 ദിവസം ഉപയോഗിക്കാതിരുന്നാൽ, നിങ്ങളുടെ ഡാറ്റ ഡിലീറ്റ് ചെയ്യപ്പെടും, വാക്കുകൾ പ്രവർത്തിക്കാതാകും.</string>
+    <string name="recovery_code_copy">വാക്കുകൾ കോപ്പി ചെയ്യുക</string>
+    <string name="recovery_code_save_to_password_manager">പാസ്‌വേഡ് മാനേജറിൽ സേവ് ചെയ്യുക</string>
+    <string name="recovery_code_connect_instead">പകരം Google അല്ലെങ്കിൽ Apple കണക്റ്റ് ചെയ്യുക</string>
+    <string name="recovery_code_connect_instead_body">കോഡ് ആവശ്യമില്ല</string>
+    <string name="recovery_code_sign_in_failed">ഇപ്പോൾ കണക്റ്റ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="recovery_code_also_in_profile">ഇത് പ്രൊഫൈൽ › റിക്കവറി എന്നതിലും ഉണ്ട്.</string>
+    <string name="recovery_code_remind_later">പിന്നീട് ഓർമ്മിപ്പിക്കുക</string>
+    <string name="recovery_code_saved">ഞാൻ ഇത് സേവ് ചെയ്തു</string>
+    <string name="recovery_code_download">ഡൗൺലോഡ് ചെയ്യുക</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · റിക്കവറി കോഡ്\n\n%1$s\n\nനിങ്ങളുടെ ഡാറ്റ തിരികെ കൊണ്ടുവരാൻ, \"ഞാൻ ഇത് മറ്റൊരു ഉപകരണത്തിൽ ഉപയോഗിച്ചിട്ടുണ്ട്\" എന്നതിൽ ഇത് ഉപയോഗിക്കുക.\n</string>
+</resources>

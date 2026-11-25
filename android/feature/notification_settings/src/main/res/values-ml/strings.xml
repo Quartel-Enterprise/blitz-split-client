@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">അറിയിപ്പുകൾ</string>
+    <string name="notification_settings_denied_title">Android-ൽ Blitz Split അറിയിപ്പുകൾ ഓഫാണ്.</string>
+    <string name="notification_settings_denied_body">താഴെയുള്ള പുഷ് അറിയിപ്പുകൾ ലഭിക്കാൻ സിസ്റ്റം ക്രമീകരണങ്ങളിൽ അവ ഓണാക്കുക. ബെൽ പ്രവർത്തിച്ചുകൊണ്ടിരിക്കും.</string>
+    <string name="notification_settings_open_settings">ക്രമീകരണങ്ങൾ തുറക്കുക</string>
+    <string name="notification_settings_refused_body">താഴെയുള്ള പുഷ് അറിയിപ്പുകൾ ലഭിക്കാൻ ഒരിക്കൽ കൂടി അവ അനുവദിക്കാൻ Android നിങ്ങളെ അനുവദിക്കുന്നു. ബെൽ പ്രവർത്തിച്ചുകൊണ്ടിരിക്കും.</string>
+    <string name="notification_settings_turn_on">ഓണാക്കുക</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Android-ൽ ബ്ലോക്ക് ചെയ്തു</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Android ക്രമീകരണങ്ങൾ തുറക്കുക: %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">പുഷ് അറിയിപ്പുകൾ</string>
+    <string name="notification_settings_push_switch_detail">ഈ ഉപകരണത്തിൽ മാത്രം</string>
+    <string name="notification_settings_section">ഇവയെക്കുറിച്ച് എന്നെ അറിയിക്കുക</string>
+    <string name="notification_settings_push">പുഷ്</string>
+    <string name="notification_settings_in_app">ആപ്പിൽ</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">പുഷ് ഈ ഉപകരണത്തിലേക്ക് ഒരു അറിയിപ്പ് അയയ്ക്കുന്നു. ‘ആപ്പിൽ’ ബെല്ലിലും ആക്റ്റിവിറ്റിയിലും അതിനെ പുതിയതായി അടയാളപ്പെടുത്തുന്നു; ഓഫാക്കിയാലും, അത് ആക്റ്റിവിറ്റിയിൽ വായിച്ചതായി കാണിക്കും.</string>
+    <string name="notification_settings_footer">ഇന്റർനെറ്റ് ഉള്ളപ്പോൾ അറിയിപ്പുകൾ എത്തും. ഒരു ഗ്രൂപ്പ് മ്യൂട്ട് ചെയ്യാൻ, അതിനുള്ളിലെ മെനു ഉപയോഗിക്കുക.</string>
+</resources>

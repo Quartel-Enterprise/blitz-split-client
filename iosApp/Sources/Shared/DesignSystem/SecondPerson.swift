@@ -34,6 +34,8 @@ import SwiftUI
 /// વહેંચ્યો"), and Punjabi with its ergative "ਨੇ", which the user's "ਤੁਸੀਂ" doesn't take ("Ana ਨੇ ਖਰਚਾ ਵੰਡਿਆ",
 /// "ਤੁਸੀਂ ਖਰਚਾ ਵੰਡਿਆ"). Kannada puts its verb last as Tamil does, its respectful past in "-ರು" after a consonant becoming the
 /// user's "-ಿರಿ" ("Ana ಒಂದು ಖರ್ಚನ್ನು ಹಂಚಿದರು", "ನೀವು ಒಂದು ಖರ್ಚನ್ನು ಹಂಚಿದಿರಿ").
+/// Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb stays as it is ("Ana ചെലവ് വിഭജിച്ചു",
+/// "നിങ്ങൾ ചെലവ് വിഭജിച്ചു").
 ///
 /// Latvian starts each verb phrase with a simple past, which says the person but not the gender: its third person in
 /// "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji"; "Ana

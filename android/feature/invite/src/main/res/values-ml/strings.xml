@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">അടയ്ക്കുക</string>
+    <string name="invite_group_created">ഗ്രൂപ്പ് സൃഷ്ടിച്ചു</string>
+    <string name="invite_title">എല്ലാവരെയും ക്ഷണിക്കുക: %s</string>
+    <string name="invite_qr_description">ഗ്രൂപ്പിന്റെ ക്ഷണ ലിങ്കിന്റെ QR കോഡ്</string>
+    <string name="invite_copy">കോപ്പി ചെയ്യുക</string>
+    <string name="invite_copied">കോപ്പി ചെയ്തു</string>
+    <string name="invite_who_picks">ലിങ്ക് തുറക്കുന്നയാൾ ലിസ്റ്റിൽ താൻ ആരാണെന്ന് തിരഞ്ഞെടുക്കും: %s. അക്കൗണ്ട് ആവശ്യമില്ല.</string>
+    <string name="invite_names_or">%1$s അല്ലെങ്കിൽ %2$s</string>
+    <string name="invite_anyone_joins">ലിങ്ക് തുറക്കുന്നയാൾ ഗ്രൂപ്പിൽ ജോയിൻ ചെയ്യും. അക്കൗണ്ട് ആവശ്യമില്ല.</string>
+    <string name="invite_pending_title">ലിങ്ക് തീർപ്പുകൽപ്പിച്ചിട്ടില്ല</string>
+    <string name="invite_pending_offline">നിങ്ങൾ ഓൺലൈനാകുമ്പോൾ തന്നെ ഇത് സൃഷ്ടിക്കും.</string>
+    <string name="invite_pending_online">ലിങ്ക് സൃഷ്ടിക്കുന്നു…</string>
+    <string name="invite_failed_title">ലിങ്ക് സൃഷ്ടിക്കാനായില്ല</string>
+    <string name="invite_failed_body">ഗ്രൂപ്പ് സിങ്ക് ചെയ്യുമ്പോൾ എന്തോ പിശക് സംഭവിച്ചു.</string>
+    <string name="invite_retry">വീണ്ടും ശ്രമിക്കുക</string>
+    <string name="invite_share">ലിങ്ക് ഷെയർ ചെയ്യുക</string>
+    <string name="invite_see_who_joined">ആരൊക്കെ ജോയിൻ ചെയ്തെന്ന് കാണുക</string>
+    <string name="invite_add_person">ആപ്പ് ഇല്ലാത്ത ഒരാളെ ചേർക്കുക</string>
+    <string name="invite_go_to_group">ഗ്രൂപ്പിലേക്ക് പോകുക</string>
+    <string name="invite_change_link">ലിങ്ക് മാറ്റുക</string>
+    <string name="invite_change_link_title">ക്ഷണ ലിങ്ക് മാറ്റണോ?</string>
+    <string name="invite_change_link_message">ഉപയോഗിക്കാത്ത വ്യക്തിഗത ക്ഷണങ്ങൾ ഉൾപ്പെടെ, നിലവിലെ ലിങ്കും QR കോഡും പ്രവർത്തിക്കാതാകും. ഇതിനകം ജോയിൻ ചെയ്തവർ ഗ്രൂപ്പിൽ തുടരും.</string>
+    <string name="invite_change_link_failed">ലിങ്ക് മാറ്റാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="invite_share_message">നമുക്ക് Blitz Split-ൽ ചെലവുകൾ വിഭജിക്കാം: %1$s. ഈ ലിങ്ക് വഴി ജോയിൻ ചെയ്യുക: %2$s</string>
+</resources>

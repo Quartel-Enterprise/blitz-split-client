@@ -157,6 +157,11 @@ The feed, unread state, real time and push notifications.
     past "-ారు" is the same for a name and for "మీరు" ("Ana ఒక ఖర్చును పంచారు: డిన్నర్", "మీరు ఒక ఖర్చును పంచారు: డిన్నర్"),
     and the object after a colon keeps every name free of case endings, as Tamil's. Its deleted-item notice starts with
     who deleted it ("మీరు తొలగించారు: …", `youSubjectLanguages`), and "You" is "మీరు" everywhere.
+    Malayalam needs no rule either: its past is the same for a name and for "നിങ്ങൾ" ("Ana ഒരു ചെലവ് വിഭജിച്ചു:
+    ഡിന്നർ", "നിങ്ങൾ ഒരു ചെലവ് വിഭജിച്ചു: ഡിന്നർ"), and an object that can be the user ("You" taking an ending in
+    Malayalam: നിങ്ങളെ, നിങ്ങൾക്ക്) stands after a colon, which keeps every name free of case endings too. Its
+    deleted-item notice starts with who deleted it ("നിങ്ങൾ ഡിലീറ്റ് ചെയ്തു: …", `youSubjectLanguages`), and "You"
+    is "നിങ്ങൾ" everywhere.
     Bulgarian needs no rule: every Bulgarian verb phrase starts with an aorist, whose second and third person singular
     are the same ("Ana раздели разхода…", "Ти раздели разхода…"), and which says nothing of the gender either. Its
     deleted-item notice starts with who deleted it too ("Ти изтри…", `youSubjectLanguages`).

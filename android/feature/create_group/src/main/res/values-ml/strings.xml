@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">പുതിയ ഗ്രൂപ്പ്</string>
+    <string name="create_group_close">അടയ്ക്കുക</string>
+    <string name="create_group_create">സൃഷ്ടിക്കുക</string>
+    <string name="create_group_change_color">ഗ്രൂപ്പിന്റെ നിറം മാറ്റുക</string>
+    <string name="create_group_name_label">ഗ്രൂപ്പിന്റെ പേര്</string>
+    <string name="create_group_type_label">ഗ്രൂപ്പ് തരം</string>
+    <string name="create_group_members_title">ആരൊക്കെ ഉണ്ട്</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d ആൾ</item>
+        <item quantity="other">%d പേർ</item>
+    </plurals>
+    <string name="create_group_me">നിങ്ങൾ</string>
+    <string name="create_group_remove_member">നീക്കം ചെയ്യുക: %s</string>
+    <string name="create_group_add_placeholder">പേര് നൽകി ചേർക്കുക</string>
+    <string name="create_group_add">ചേർക്കുക</string>
+    <string name="create_group_no_app_notice">ഇപ്പോൾ ആർക്കും ആപ്പ് ആവശ്യമില്ല. നിങ്ങൾക്ക് ഇപ്പോൾ തന്നെ എല്ലാവർക്കുമായി ചെലവുകൾ ചേർക്കാം, ലിങ്ക് പിന്നീട് അയയ്ക്കാം.</string>
+    <string name="create_group_currency">ഡിഫോൾട്ട് കറൻസി</string>
+    <string name="create_group_currency_caption">പുതിയ ചെലവുകൾ ഈ കറൻസിയിൽ ആരംഭിക്കും; ഓരോ ചെലവിനും മറ്റൊന്ന് ഉപയോഗിക്കാം.</string>
+    <string name="create_group_save_error">ഗ്രൂപ്പ് സേവ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="create_group_photo">ഗ്രൂപ്പ് ഫോട്ടോ</string>
+    <string name="create_group_take_photo">ഫോട്ടോ എടുക്കുക</string>
+    <string name="create_group_choose_photo">ഫോട്ടോ തിരഞ്ഞെടുക്കുക</string>
+    <string name="create_group_remove_photo">ഫോട്ടോ നീക്കം ചെയ്യുക</string>
+    <string name="create_group_photo_error">ഈ ഫോട്ടോ ഉപയോഗിക്കാനായില്ല. മറ്റൊന്ന് പരീക്ഷിക്കുക.</string>
+</resources>

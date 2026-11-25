@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">സെറ്റിൽ ചെയ്യാനുള്ള ഓർമ്മപ്പെടുത്തൽ</string>
+    <string name="push_bill_created">%1$s നിങ്ങളെ ഉൾപ്പെടുത്തി ഒരു ചെലവ് ചേർത്തു: “%2$s”</string>
+    <string name="push_bill_edited">%1$s ഒരു ചെലവ് എഡിറ്റ് ചെയ്തു: “%2$s”</string>
+    <string name="push_bill_deleted">%1$s ഒരു ചെലവ് ഡിലീറ്റ് ചെയ്തു: “%2$s”</string>
+    <string name="push_comment_added">%1$s കമന്റ് ചെയ്തു (“%2$s”): %3$s</string>
+    <string name="push_payment_paid_you">%1$s നിങ്ങൾക്ക് പണം നൽകിയതായി അടയാളപ്പെടുത്തി</string>
+    <string name="push_payment_to_you">%1$s അടയാളപ്പെടുത്തി: %2$s നിങ്ങൾക്ക് പണം നൽകി</string>
+    <string name="push_payment_received_yours">%1$s നിങ്ങളുടെ പേയ്‌മെന്റ് ലഭിച്ചതായി അടയാളപ്പെടുത്തി</string>
+    <string name="push_payment_from_you">%1$s അടയാളപ്പെടുത്തി: നിങ്ങൾ പണം നൽകി, സ്വീകരിച്ചത്: %2$s</string>
+    <string name="push_payment_undone">%1$s നിങ്ങളുമായുള്ള ഒരു പേയ്‌മെന്റ് പഴയപടിയാക്കി</string>
+    <string name="push_charge_sent">%1$s സെറ്റിൽ ചെയ്യാൻ നിങ്ങൾക്ക് ഒരു ഓർമ്മപ്പെടുത്തൽ അയച്ചു</string>
+    <string name="push_settle_reminder">‘%1$s’ ഗ്രൂപ്പിൽ നിങ്ങൾക്ക് ബാക്കിയുള്ള ബാലൻസ് ഉണ്ട്</string>
+    <string name="push_settle_reminders">%1$s ഗ്രൂപ്പുകളിൽ നിങ്ങൾക്ക് ബാക്കിയുള്ള ബാലൻസുകൾ ഉണ്ട്</string>
+    <string name="push_added_to_group">%1$s നിങ്ങളെ ഗ്രൂപ്പിൽ ചേർത്തു</string>
+    <string name="push_member_joined">%1$s ഗ്രൂപ്പിൽ ജോയിൻ ചെയ്തു</string>
+    <string name="push_debts_simplified_to_you">%1$s കടങ്ങൾ ലളിതമാക്കി. ഇപ്പോൾ %2$s നിങ്ങൾക്ക് %3$s നൽകും.</string>
+    <string name="push_debts_simplified_from_you">%1$s കടങ്ങൾ ലളിതമാക്കി. ഇപ്പോൾ നിങ്ങൾ %3$s നൽകണം, സ്വീകരിക്കുന്നത്: %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s കടങ്ങൾ ലളിതമാക്കി. നിങ്ങൾക്ക് എന്ത് മാറി എന്ന് കാണുക.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ‘കടങ്ങൾ ലളിതമാക്കുക’ ഓഫ് ചെയ്തു. ഇപ്പോൾ %2$s നിങ്ങൾക്ക് %3$s നൽകും.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ‘കടങ്ങൾ ലളിതമാക്കുക’ ഓഫ് ചെയ്തു. ഇപ്പോൾ നിങ്ങൾ %3$s നൽകണം, സ്വീകരിക്കുന്നത്: %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s ‘കടങ്ങൾ ലളിതമാക്കുക’ ഓഫ് ചെയ്തു. നിങ്ങൾക്ക് എന്ത് മാറി എന്ന് കാണുക.</string>
+    <!-- The channels, one per row of Notifications (4.8), which the phone and the watch create alike -->
+    <string name="notification_settings_bills">ചെലവുകൾ</string>
+    <string name="notification_settings_bills_detail">നിങ്ങൾ ഉൾപ്പെട്ട പുതിയതോ എഡിറ്റ് ചെയ്തതോ ഡിലീറ്റ് ചെയ്തതോ ആയ ചെലവുകൾ</string>
+    <string name="notification_settings_payments">പേയ്‌മെന്റുകളും സെറ്റിൽമെന്റുകളും</string>
+    <string name="notification_settings_payments_detail">നിങ്ങൾക്കുള്ളതോ നിങ്ങളിൽ നിന്നുള്ളതോ ആയ പേയ്‌മെന്റുകളും ലളിതമാക്കിയ കടങ്ങളും</string>
+    <string name="notification_settings_comments">കമന്റുകൾ</string>
+    <string name="notification_settings_comments_detail">നിങ്ങൾ ഉൾപ്പെട്ട ചെലവുകളിലും നിങ്ങൾ എഴുതിയ ത്രെഡുകളിലും</string>
+    <string name="notification_settings_people_and_groups">ആളുകളും ഗ്രൂപ്പുകളും</string>
+    <string name="notification_settings_people_and_groups_detail">നിങ്ങളുടെ ഗ്രൂപ്പുകളിൽ ആര് ജോയിൻ ചെയ്യുന്നു അല്ലെങ്കിൽ വിടുന്നു, അവയിൽ എന്ത് മാറുന്നു</string>
+    <string name="notification_settings_payment_requests">പേയ്‌മെന്റ് അഭ്യർത്ഥനകൾ</string>
+    <string name="notification_settings_payment_requests_detail">ആരെങ്കിലും നിങ്ങളോട് പണം നൽകാൻ ആവശ്യപ്പെടുമ്പോൾ</string>
+    <string name="notification_settings_balance_reminder">ബാക്കിയുള്ള ബാലൻസിന്റെ ഓർമ്മപ്പെടുത്തൽ</string>
+    <string name="notification_settings_balance_reminder_detail">ആഴ്ചയിൽ ഒരിക്കൽ, ബാക്കിയുള്ള ബാലൻസ് ഉണ്ടെങ്കിൽ</string>
+</resources>

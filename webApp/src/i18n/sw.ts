@@ -881,6 +881,7 @@ export const sw: Record<MessageKey, string> = {
   profile_languageSlovenian: 'Kislovenia',
   profile_languageLithuanian: 'Kilithuania',
   profile_languagePunjabi: 'Kipunjabi',
+  profile_languageMalayalam: 'Kimalayalam',
   profile_languageKannada: 'Kikannada',
   profile_bitcoinInSats: 'Bitcoin kwa satoshi',
   profile_bitcoinInSatsDetail: 'Inaonyesha na kuandika viasi vya bitcoin kwa sats (1 ₿ = 100,000,000 sats).',

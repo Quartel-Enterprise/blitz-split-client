@@ -66,8 +66,9 @@ each platform.
       `res/values-gu/strings.xml` (no case ending glued to a placeholder),
       in Slovenian in `res/values-sl/strings.xml` (one, two, few and other, no name declined), in Lithuanian in
       `res/values-lt/strings.xml` (one, few, many and other, no name declined), in Punjabi in
-      `res/values-pa/strings.xml` (Gurmukhi, no postposition glued to a placeholder)
-      and in Kannada in `res/values-kn/strings.xml` (no case ending glued to a placeholder)
+      `res/values-pa/strings.xml` (Gurmukhi, no postposition glued to a placeholder), in Malayalam in
+      `res/values-ml/strings.xml` (no case ending glued to a placeholder) and in Kannada in
+      `res/values-kn/strings.xml` (no case ending glued to a placeholder)
 - [ ] A new English string with a word Britain or Canada writes differently ("color", "gray", "center", "math",
   "recognized", "toward") also in `values-b+en+001` and `values-en-rCA`, Apple's `en-GB`, `en-AU` and `en-CA`, and
   the web's `enGB.ts` or `enCA.ts` ([general.md](../product/general.md))

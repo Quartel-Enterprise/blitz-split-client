@@ -883,6 +883,7 @@ export const pa: Record<MessageKey, string> = {
   profile_languageSlovenian: 'ਸਲੋਵੇਨੀਆਈ',
   profile_languageLithuanian: 'ਲਿਥੁਆਨੀਆਈ',
   profile_languagePunjabi: 'ਪੰਜਾਬੀ',
+  profile_languageMalayalam: 'ਮਲਿਆਲਮ',
   profile_languageKannada: 'ਕੰਨੜ',
   profile_bitcoinInSats: 'ਸਤੋਸ਼ੀ ਵਿੱਚ ਬਿਟਕੋਇਨ',
   profile_bitcoinInSatsDetail: 'ਬਿਟਕੋਇਨ ਦੀਆਂ ਰਕਮਾਂ sats ਵਿੱਚ ਦਿਖਾਉਂਦਾ ਅਤੇ ਲਿਖਦਾ ਹੈ (1 ₿ = 100,000,000 sats)।',
