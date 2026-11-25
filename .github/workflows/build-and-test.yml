@@ -3,6 +3,9 @@ name: build-and-test
 # The shared Kotlin's unit tests and coverage, the same tests on the JS target, the Android app and
 # its lint, and the web app. The Apple side runs in apple.yml, on a macOS runner.
 #
+# On a pull request, `changes` says which of these jobs the changed paths reach, and the others are skipped: a skipped
+# job counts as passed for merge-when-green, and no check is required by the ruleset. On main every job runs.
+#
 # Every job has a timeout: a runner that hangs would otherwise hold the check for GitHub's default
 # of six hours, and merge-when-green would wait on it all that time. The timeouts are about three
 # times what each job takes on a pull request that recompiles everything.
@@ -19,6 +22,8 @@ on:
       - 'docs/**'
       - '.claude/**'
       - 'iosApp/**'
+      - 'release-notes/**'
+      - 'store-listing/**'
   push:
     branches:
       - main
@@ -27,6 +32,8 @@ on:
       - 'docs/**'
       - '.claude/**'
       - 'iosApp/**'
+      - 'release-notes/**'
+      - 'store-listing/**'
 
 permissions:
   contents: read
@@ -52,9 +59,124 @@ jobs:
       actions: read
       pull-requests: read
 
+  # Says which jobs below the change reaches, from the changed paths, as apple.yml's `changes` does for its own. Each
+  # output is "false" when that job has nothing to check; a job runs unless its answer is exactly "false", so when this
+  # job is skipped (on main), fails, or gives no answer, everything runs. On main every job runs anyway: only main's
+  # runs save the Gradle cache the pull requests restore (.github/actions/gradle), and a job main skipped would leave
+  # its entries behind. It doesn't wait for the review gate, since it checks nothing.
+  #
+  # Each changed file reaches some of the jobs:
+  # - the build itself (build-logic, the root's Gradle scripts, gradle/, gradle.properties, version.properties, the
+  #   wrapper, the Gradle action, this workflow and the review gate) reaches every job;
+  # - a module of core/ and feature/ reaches every job by its commonMain and its build script; by commonTest only the
+  #   tests (jvm and JS); by jvmMain or jvmTest only unit-tests; by jsMain the JS tests and the web; by jsTest the JS
+  #   tests; by androidMain only the Android jobs; by an Apple source set none (apple.yml builds them). shared/ is the
+  #   same but for the JS tests: it has no tests, and no tested module depends on it;
+  # - every main source set's Kotlin of core/ and feature/, and docs/analytics/README.md, reach unit-tests too:
+  #   AnalyticsCatalogTest reads them all;
+  # - android/ reaches the Android jobs and unit-tests, which compiles the store screenshots' sample screens, and
+  #   those call the android/feature screens; androidApp/ and wearApp/ the Android jobs; webApp/ the web job;
+  #   scripts/modules-with-tests.sh the JS tests, whose shards it deals;
+  # - what no build here reads reaches none: Markdown and docs, iosApp/, the release notes and store listings (left
+  #   out of the paths that start this workflow too), the other workflows, the store and release scripts, the style and
+  #   copied-code checks' scripts and config, and the translations' check of the Android strings, which has a job of its
+  #   own (translations.yml) and is checked again here by lintDebug whenever a strings.xml changes.
+  #
+  # Any other path reaches every job: a file this list doesn't know runs everything, as before.
+  changes:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      unit: ${{ steps.diff.outputs.unit }}
+      js: ${{ steps.diff.outputs.js }}
+      android: ${{ steps.diff.outputs.android }}
+      web: ${{ steps.diff.outputs.web }}
+    steps:
+      # Two commits: GitHub's merge of the pull request with main and main itself, its first parent. Without their
+      # files: the diff below compares names, which the commits' trees hold, so no file's content is downloaded and
+      # only this workflow is written to disk.
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+          filter: blob:none
+          sparse-checkout: .github/workflows/build-and-test.yml
+          sparse-checkout-cone-mode: false
+
+      # --no-renames lists both paths of a moved file, and without core.quotePath a name with an accent would come
+      # quoted and match nothing. A diff that fails or lists no file counts as a change to all of it.
+      - name: Look at what the change reaches
+        id: diff
+        run: |
+          set -euo pipefail
+          unit=false js=false android=false web=false
+          everything() { unit=true js=true android=true web=true; }
+          build='^(build-logic/|gradle/|[^/]+\.gradle\.kts$|gradle\.properties$|version\.properties$|gradlew(\.bat)?$)'
+          build="$build|^\.github/actions/gradle/|^\.github/workflows/(build-and-test|review-gate)\.yml$"
+          # AnalyticsCatalogTest, a jvmTest, reads the analytics catalog and every main source set's Kotlin.
+          catalog='^docs/analytics/README\.md$|^(core|feature)/.*/src/[A-Za-z0-9]*Main/.*\.kt$'
+          none='\.md$|^docs/|^\.claude/|^iosApp/|^release-notes/|^store-listing/|^fastlane/|^\.github/'
+          none="$none|^scripts/(release|store-screenshots|store-video|readme-hero)/|^scripts/(cpd|ktlint)\.sh$"
+          none="$none|^scripts/heavy-check\.|^scripts/check-android-strings\.py$|^\.jscpd|^\.editorconfig$"
+          if ! files=$(git -c core.quotePath=false diff --name-only --no-renames HEAD^1 HEAD) || [ -z "$files" ]; then
+            everything
+          else
+            while IFS= read -r file; do
+              if [[ $file =~ $catalog ]]; then
+                unit=true
+              fi
+              if [[ $file =~ $build ]]; then
+                everything
+              elif [[ $file =~ $none ]]; then
+                :
+              elif [[ $file =~ ^(core|feature|shared)/ ]]; then
+                # A flag only turns on: a later file never turns off what an earlier one reached.
+                tested=true
+                [[ $file == shared/* ]] && tested=false
+                if [[ $file =~ /src/(apple|ios|macos|watchos|native)[A-Za-z0-9]*/ ]]; then
+                  :
+                elif [[ $file =~ /src/androidMain/ ]]; then
+                  android=true
+                elif [[ $file =~ /src/jvm(Main|Test)/ ]]; then
+                  unit=true
+                elif [[ $file =~ /src/jsMain/ ]]; then
+                  web=true
+                  [[ $tested == true ]] && js=true
+                elif [[ $file =~ /src/jsTest/ ]]; then
+                  js=true
+                elif [[ $file =~ /src/commonTest/ ]]; then
+                  unit=true js=true
+                else
+                  unit=true android=true web=true
+                  [[ $tested == true ]] && js=true
+                fi
+              elif [[ $file =~ ^android/ ]]; then
+                unit=true android=true
+              elif [[ $file =~ ^(androidApp|wearApp)/ ]]; then
+                android=true
+              elif [[ $file =~ ^webApp/ ]]; then
+                web=true
+              elif [[ $file == scripts/modules-with-tests.sh ]]; then
+                js=true
+              else
+                echo "$file reaches every job."
+                everything
+              fi
+            done <<< "$files"
+          fi
+          {
+            echo "unit=$unit"
+            echo "js=$js"
+            echo "android=$android"
+            echo "web=$web"
+          } | tee -a "$GITHUB_OUTPUT"
+
   unit-tests:
-    needs: review-gate
-    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    needs: [review-gate, changes]
+    if: >-
+      ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' &&
+      needs.changes.outputs.unit != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -101,8 +223,10 @@ jobs:
   # compiles what its modules depend on again; that part runs in parallel and is the smaller one.
   # Adding a shard is adding a number to the list: the split reads the count from the matrix.
   js-tests:
-    needs: review-gate
-    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    needs: [review-gate, changes]
+    if: >-
+      ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' &&
+      needs.changes.outputs.js != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -158,8 +282,10 @@ jobs:
   # The release build and the lint compile different variants (release and debug), so they share
   # no compilation and run side by side: one job doing both ran them one after the other.
   android:
-    needs: review-gate
-    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    needs: [review-gate, changes]
+    if: >-
+      ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' &&
+      needs.changes.outputs.android != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -181,8 +307,10 @@ jobs:
         run: ./gradlew :androidApp:assembleRelease :wearApp:assembleRelease
 
   android-lint:
-    needs: review-gate
-    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    needs: [review-gate, changes]
+    if: >-
+      ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' &&
+      needs.changes.outputs.android != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -208,8 +336,10 @@ jobs:
           path: '**/build/reports/lint-results-*.html'
 
   web:
-    needs: review-gate
-    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    needs: [review-gate, changes]
+    if: >-
+      ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' &&
+      needs.changes.outputs.web != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

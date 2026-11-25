@@ -49,6 +49,7 @@ on:
       - duplication
       - module-graph
       - release-notes
+      - translations
       - codeql
       - claude-review
       - claude-review-on-request
