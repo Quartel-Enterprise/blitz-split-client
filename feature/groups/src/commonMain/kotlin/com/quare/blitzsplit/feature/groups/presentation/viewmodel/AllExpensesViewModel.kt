@@ -31,6 +31,7 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.groupOptionsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.homeBillsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.myExpensesOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.narrowedOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.payerKeysOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.payerOptionsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.periodSpanOrNull
 import com.quare.blitzsplit.feature.groups.presentation.model.ALL_EXPENSES_SOURCE
@@ -281,10 +282,12 @@ class AllExpensesViewModel(
          * Why: someone picked in Who paid who is in no group any more (removed, or their group deleted) has no row to
          * let go of them; the pick goes with them, and the list shows again under the picks left.
          */
-        val goneKeys = picked.payerKeys - payerOptionsOf(bills.groups, AllExpensesFilters.none).map { it.key }.toSet()
-        if (goneKeys.isNotEmpty() && bills.groups.isNotEmpty()) {
-            filters.value = picked.copy(payerKeys = picked.payerKeys - goneKeys)
-            return
+        if (picked.payerKeys.isNotEmpty() && bills.groups.isNotEmpty()) {
+            val left = picked.payerKeys intersect payerKeysOf(bills.groups)
+            if (left != picked.payerKeys) {
+                filters.value = picked.copy(payerKeys = left)
+                return
+            }
         }
         val mine = myExpensesOf(bills.device.expenses, bills.groups, wholeGroupIdOf(picked))
         val narrowed = if (window != null) {

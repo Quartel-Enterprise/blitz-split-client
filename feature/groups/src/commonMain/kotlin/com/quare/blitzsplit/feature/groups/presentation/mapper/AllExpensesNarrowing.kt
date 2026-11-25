@@ -58,8 +58,17 @@ internal fun narrowedOf(
     // Why: the days of the period picked, in the device's zone; null for the whole history.
     period: DatedSpan?,
 ): List<LatestExpense> {
+    // Why: each group's members' Who paid keys worked out once, not again for every payer of every bill.
+    val payerKeysByGroup = if (filters.payerKeys.isEmpty()) {
+        emptyMap()
+    } else {
+        bills
+            .map { it.group }
+            .distinctBy { it.id }
+            .associate { group -> group.id to group.members.associate { it.id to payerKeyOf(it) } }
+    }
     val filtered = bills.filter {
-        it.isPassing(filters, categories) &&
+        it.isPassing(filters, categories, payerKeysByGroup[it.group.id].orEmpty()) &&
             (period == null || it.expense.spentAt in period)
     }
     val typed = TypoTolerantQuery.of(filters.query)
@@ -105,6 +114,8 @@ internal fun AllExpensesFilters.periodSpanOrNull(
 private fun LatestExpense.isPassing(
     filters: AllExpensesFilters,
     categories: CategoryTree,
+    // Why: the Who paid key of each member of the bill's group, by member id.
+    payerKeys: Map<String, String>,
 ): Boolean = (filters.groupIds.isEmpty() || group.id in filters.groupIds) &&
     (
         filters.categoryIds.isEmpty() ||
@@ -115,16 +126,20 @@ private fun LatestExpense.isPassing(
         ShareFilter.TO_RECEIVE -> myBalanceMinor > 0
         ShareFilter.TO_PAY -> myBalanceMinor < 0
     } &&
-    (filters.payerKeys.isEmpty() || isPaidByAny(filters.payerKeys))
+    (filters.payerKeys.isEmpty() || isPaidByAny(filters.payerKeys, payerKeys))
 
 // Why: any of the people picked paid part of the bill; someone no longer in the group is no one's pick.
-private fun LatestExpense.isPaidByAny(keys: Set<String>): Boolean = expense.payers.any { payer ->
-    payer.amountMinor > 0 &&
-        group.members.firstOrNull { it.id == payer.memberId }?.let(::payerKeyOf) in keys
-}
+private fun LatestExpense.isPaidByAny(
+    picked: Set<String>,
+    payerKeys: Map<String, String>,
+): Boolean = expense.payers.any { payer -> payer.amountMinor > 0 && payerKeys[payer.memberId] in picked }
 
 // Why: the user is PAYER_KEY_ME in every group; anyone else the same person in every group, as the global Balances.
 private fun payerKeyOf(member: GroupMember): String = if (member.isMe) PAYER_KEY_ME else PeopleBalances.keyOf(member)
+
+// Why: everyone Who paid may hold, of every group: a pick outside it is someone gone from every group.
+internal fun payerKeysOf(groups: List<Group>): Set<String> =
+    groups.flatMapTo(HashSet()) { group -> group.members.map(::payerKeyOf) }
 
 /*
  * Why: Who paid's people: the user first, then everyone of the groups picked (none picked: of every group) by name, once
