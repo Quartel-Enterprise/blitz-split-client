@@ -1,0 +1,63 @@
+{
+  "notes": [
+    {
+      "kind": "fixed",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "“Balances with people” on Home no longer stretches across a wide window: people show as cards, and those who don't fit as “+N”.",
+        "pt": "“Saldos com pessoas” no Início não se estica mais numa janela larga: as pessoas aparecem como cartões, e as que não cabem como “+N”.",
+        "pt-PT": "“Saldos com pessoas” no Início já não se estica numa janela larga: as pessoas aparecem como cartões, e as que não cabem como “+N”.",
+        "es": "“Saldos con personas” en Inicio ya no se estira en una ventana ancha: las personas aparecen como tarjetas, y las que no caben como “+N”.",
+        "fr": "« Soldes avec les personnes » sur l’accueil ne s’étire plus dans une fenêtre large : les personnes s’affichent en cartes, et celles qui ne tiennent pas en « +N ».",
+        "de": "„Salden mit Personen“ auf der Startseite zieht sich in einem breiten Fenster nicht mehr in die Länge: Personen erscheinen als Karten, die übrigen als „+N“.",
+        "it": "“Saldi con le persone” nella Home non si allarga più in una finestra ampia: le persone appaiono come schede, e quelle che non ci stanno come “+N”.",
+        "pl": "„Salda z osobami” na ekranie głównym nie rozciąga się już w szerokim oknie: osoby są pokazane jako karty, a te, które się nie mieszczą, jako „+N”.",
+        "nl": "“Saldi met mensen” op Home rekt niet meer uit in een breed venster: mensen staan als kaarten, en wie niet past als “+N”.",
+        "ja": "ホームの「人ごとの残高」が広いウィンドウで横に伸びなくなりました。人はカードで表示され、入りきらない人は「+N」で表示されます。",
+        "tr": "Ana sayfadaki “Kişilerle bakiyeler” geniş bir pencerede artık uzamıyor: kişiler kart olarak, sığmayanlar “+N” olarak görünüyor.",
+        "id": "“Saldo dengan orang” di Beranda tidak lagi melebar di jendela yang lebar: orang tampil sebagai kartu, dan yang tidak muat sebagai “+N”.",
+        "ru": "«Балансы с людьми» на главной больше не растягиваются в широком окне: люди показаны карточками, а не поместившиеся — как «+N».",
+        "uk": "«Баланси з людьми» на головній більше не розтягуються в широкому вікні: люди показані картками, а ті, що не вмістилися, — як «+N».",
+        "ko": "홈의 ‘사람별 잔액’이 넓은 창에서 더 이상 늘어나지 않습니다. 사람은 카드로, 들어가지 않는 사람은 ‘+N’으로 표시됩니다.",
+        "hi": "होम पर “लोगों के साथ बैलेंस” अब चौड़ी विंडो में नहीं फैलता: लोग कार्ड के रूप में दिखते हैं, और जो नहीं समाते वे “+N” के रूप में।",
+        "ar": "لم يعد قسم «الأرصدة مع الأشخاص» في الرئيسية يتمدد في النافذة العريضة: يظهر الأشخاص كبطاقات، ومن لا يتسع لهم المكان كـ «+N».",
+        "zh": "首页的“与他人的余额”在宽窗口中不再被拉伸：每个人显示为卡片，放不下的显示为“+N”。",
+        "he": "„יתרות עם אנשים” במסך הבית כבר לא נמתח בחלון רחב: אנשים מוצגים ככרטיסים, ומי שלא נכנס מוצג כ־„+N”.",
+        "th": "“ยอดคงเหลือกับแต่ละคน” ในหน้าหลักไม่ยืดเต็มหน้าต่างกว้างอีกต่อไป: แต่ละคนแสดงเป็นการ์ด และคนที่แสดงไม่พอแสดงเป็น “+N”",
+        "vi": "“Số dư với mọi người” ở Trang chủ không còn bị kéo giãn trong cửa sổ rộng: mọi người hiện thành thẻ, và những người không vừa hiện thành “+N”.",
+        "zh-Hant": "首頁的「與他人的餘額」在寬視窗中不再被拉長：每個人顯示為卡片，放不下的顯示為「+N」。",
+        "sv": "”Saldon med personer” på Hem sträcks inte längre ut i ett brett fönster: personer visas som kort, och de som inte får plats som ”+N”.",
+        "cs": "„Zůstatky s lidmi“ na domovské obrazovce se v širokém okně už neroztahují: lidé se zobrazují jako karty a ti, kteří se nevejdou, jako „+N“.",
+        "ro": "„Solduri cu persoane” de pe Acasă nu se mai întinde într-o fereastră lată: persoanele apar ca carduri, iar cele care nu încap ca „+N”.",
+        "bn": "হোমের “ব্যক্তিদের সঙ্গে ব্যালেন্স” আর চওড়া উইন্ডোতে ছড়িয়ে যায় না: ব্যক্তিরা কার্ড হিসেবে দেখায়, আর যারা জায়গা পায় না তারা “+N” হিসেবে।",
+        "ms": "“Baki dengan orang lain” di Laman Utama tidak lagi meregang dalam tetingkap yang lebar: orang dipaparkan sebagai kad, dan yang tidak muat sebagai “+N”.",
+        "el": "Τα «Υπόλοιπα με άτομα» στην Αρχική δεν τεντώνονται πια σε φαρδύ παράθυρο: τα άτομα εμφανίζονται ως κάρτες και όσα δεν χωρούν ως «+N».",
+        "hr": "„Salda s osobama” na početnom zaslonu više se ne razvlače u širokom prozoru: osobe se prikazuju kao kartice, a one koje ne stanu kao „+N”.",
+        "hu": "A Kezdőlap „Egyenlegek emberekkel” része széles ablakban már nem nyúlik szét: az emberek kártyákként jelennek meg, akik nem férnek el, azok „+N”-ként.",
+        "ur": "ہوم پر “لوگوں کے ساتھ بیلنس” اب چوڑی ونڈو میں نہیں پھیلتا: لوگ کارڈز کی صورت میں دکھتے ہیں، اور جو جگہ نہ پائیں وہ “+N” کی صورت میں۔",
+        "fil": "Hindi na umaabot sa buong malapad na window ang “Mga balanse sa mga tao” sa Home: lumalabas ang mga tao bilang card, at ang hindi kasya bilang “+N”.",
+        "sr": "„Stanja sa ljudima” na početnom ekranu više se ne razvlače u širokom prozoru: ljudi se prikazuju kao kartice, a oni koji ne stanu kao „+N”.",
+        "sk": "„Zostatky s ľuďmi“ na domovskej obrazovke sa v širokom okne už neroztiahnu: ľudia sa zobrazujú ako karty a tí, ktorí sa nezmestia, ako „+N“.",
+        "fa": "بخش «تراز با افراد» در خانه دیگر در پنجره‌ی پهن کشیده نمی‌شود: افراد به‌صورت کارت نمایش داده می‌شوند و آن‌هایی که جا نمی‌شوند به‌صورت «+N».",
+        "ta": "முகப்பில் உள்ள “நபர்களுடனான பேலன்ஸ்கள்” இனி அகலமான சாளரத்தில் நீளாது: நபர்கள் கார்டுகளாகவும், இடம் போதாதவர்கள் “+N” ஆகவும் காட்டப்படுவார்கள்.",
+        "nb": "«Saldoer med personer» på Hjem strekkes ikke lenger ut i et bredt vindu: personer vises som kort, og de som ikke får plass som «+N».",
+        "te": "హోమ్‌లోని “వ్యక్తులతో బ్యాలెన్స్‌లు” ఇక వెడల్పాటి విండోలో సాగదు: వ్యక్తులు కార్డులుగా, చోటు సరిపోనివారు “+N”గా కనిపిస్తారు.",
+        "bg": "„Баланси с хора“ на началния екран вече не се разтяга в широк прозорец: хората се показват като карти, а тези, които не се побират, като „+N“.",
+        "mr": "होमवरील “लोकांसोबत बॅलन्स” आता रुंद विंडोमध्ये ताणले जात नाही: लोक कार्ड म्हणून दिसतात, आणि जे बसत नाहीत ते “+N” म्हणून.",
+        "sw": "“Salio na watu” kwenye Mwanzo halitanuki tena kwenye dirisha pana: watu wanaonekana kama kadi, na wasioenea kama “+N”.",
+        "ca": "«Saldos amb persones» a l’Inici ja no s’estira en una finestra ampla: les persones apareixen com a targetes, i les que no hi caben com a «+N».",
+        "da": "“Saldi med personer” på Hjem strækkes ikke længere ud i et bredt vindue: personer vises som kort, og dem, der ikke er plads til, som “+N”.",
+        "fi": "Etusivun ”Saldot ihmisten kanssa” ei enää veny leveässä ikkunassa: ihmiset näkyvät kortteina ja ne, jotka eivät mahdu, muodossa ”+N”.",
+        "lv": "“Bilances ar cilvēkiem” sākumlapā vairs neizstiepjas platā logā: cilvēki redzami kā kartītes, bet tie, kas neietilpst, kā “+N”.",
+        "et": "Avalehe „Saldod inimestega” ei veni enam laias aknas välja: inimesed on kaartidena ja need, kes ei mahu, kujul „+N”.",
+        "gu": "હોમ પરનું “લોકો સાથેનું બેલેન્સ” હવે પહોળી વિન્ડોમાં ખેંચાતું નથી: લોકો કાર્ડ તરીકે દેખાય છે, અને જે ન સમાય તે “+N” તરીકે.",
+        "sl": "»Stanja z ljudmi« na začetnem zaslonu se v širokem oknu ne raztegnejo več: ljudje so prikazani kot kartice, tisti, ki ne gredo zraven, pa kot »+N«.",
+        "lt": "„Balansai su žmonėmis“ pradžios ekrane plačiame lange nebeišsitempia: žmonės rodomi kaip kortelės, o netilpę – kaip „+N“.",
+        "pa": "ਹੋਮ ’ਤੇ “ਲੋਕਾਂ ਨਾਲ ਬੈਲੇਂਸ” ਹੁਣ ਚੌੜੀ ਵਿੰਡੋ ਵਿੱਚ ਨਹੀਂ ਖਿੱਚਿਆ ਜਾਂਦਾ: ਲੋਕ ਕਾਰਡਾਂ ਵਜੋਂ ਦਿਸਦੇ ਹਨ, ਅਤੇ ਜੋ ਨਾ ਸਮਾਉਣ ਉਹ “+N” ਵਜੋਂ।",
+        "ml": "ഹോമിലെ “ആളുകളുമായുള്ള ബാലൻസുകൾ” ഇനി വീതിയുള്ള വിൻഡോയിൽ നീളില്ല: ആളുകൾ കാർഡുകളായും, ഇടം കിട്ടാത്തവർ “+N” ആയും കാണിക്കും."
+      }
+    }
+  ]
+}
