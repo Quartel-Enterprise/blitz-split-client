@@ -1,13 +1,16 @@
 name: translations
 
-# Every check of the app's words that needs no build, on one Linux runner, in about half a minute: each language
-# against English on Android, Apple and the web, and the release notes' fragments in every language.
+# Every check of the app's strings that needs no build, on one Linux runner, in about half a minute: each language
+# against English on Android, Apple and the web. The release notes' and store listings' languages are release-notes's,
+# already a short Node job.
 #
 # Each of these also runs in a slower job (lintDebug in build-and-test, check-translations.py in both Xcode builds of
-# apple, check:messages in build-and-test's web, release-notes.mjs in release-notes), minutes into a Gradle or Xcode
-# build, or not at all when the path filters leave that workflow out. A language added by one pull request and a string
+# apple, check:messages in build-and-test's web), minutes into a Gradle or Xcode build, or not at all when the path
+# filters leave that workflow out. A language added by one pull request and a string
 # added by another, each green alone, are what turned main red on 2026-11-25 (#604 and #605); this job names every
-# platform's missing string at once, on the pull request and on main, before the builds get there.
+# platform's missing string at once, before the builds get there. It doesn't stop two green pull requests from
+# combining into a red main: each one is checked against the main it was last merged with. It makes main's red
+# show in seconds, with every platform's gaps listed.
 on:
   pull_request:
     # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
@@ -24,10 +27,6 @@ on:
       - 'iosApp/check-translations.py'
       - 'webApp/src/i18n/**'
       - 'webApp/scripts/check-messages.mjs'
-      - 'release-notes/**'
-      - 'store-listing/**'
-      - 'scripts/release/release-notes.mjs'
-      - 'scripts/release/store-listing.mjs'
   push:
     branches:
       - main
@@ -39,16 +38,12 @@ on:
       - 'iosApp/check-translations.py'
       - 'webApp/src/i18n/**'
       - 'webApp/scripts/check-messages.mjs'
-      - 'release-notes/**'
-      - 'store-listing/**'
-      - 'scripts/release/release-notes.mjs'
-      - 'scripts/release/store-listing.mjs'
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -94,11 +89,3 @@ jobs:
       - name: Web
         if: ${{ !cancelled() }}
         run: node webApp/scripts/check-messages.mjs
-
-      - name: Release notes
-        if: ${{ !cancelled() }}
-        run: node scripts/release/release-notes.mjs check
-
-      - name: Store listings
-        if: ${{ !cancelled() }}
-        run: node scripts/release/store-listing.mjs check

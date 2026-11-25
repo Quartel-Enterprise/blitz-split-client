@@ -72,9 +72,11 @@ jobs:
   #   tests (jvm and JS); by jvmMain or jvmTest only unit-tests; by jsMain the JS tests and the web; by jsTest the JS
   #   tests; by androidMain only the Android jobs; by an Apple source set none (apple.yml builds them). shared/ is the
   #   same but for the JS tests: it has no tests, and no tested module depends on it;
-  # - android/store_screenshots reaches unit-tests, which compiles its sample states, and the Android jobs; the rest of
-  #   android/, androidApp/ and wearApp/ the Android jobs; webApp/ the web job; scripts/modules-with-tests.sh the JS
-  #   tests, whose shards it deals;
+  # - every main source set's Kotlin of core/ and feature/, and docs/analytics/README.md, reach unit-tests too:
+  #   AnalyticsCatalogTest reads them all;
+  # - android/ reaches the Android jobs and unit-tests, which compiles the store screenshots' sample screens, and
+  #   those call the android/feature screens; androidApp/ and wearApp/ the Android jobs; webApp/ the web job;
+  #   scripts/modules-with-tests.sh the JS tests, whose shards it deals;
   # - what no build here reads reaches none: Markdown and docs, iosApp/, the release notes and store listings (left
   #   out of the paths that start this workflow too), the other workflows, the store and release scripts, the style and
   #   copied-code checks' scripts and config, and the translations' check of the Android strings, which has a job of its
@@ -112,6 +114,8 @@ jobs:
           everything() { unit=true js=true android=true web=true; }
           build='^(build-logic/|gradle/|[^/]+\.gradle\.kts$|gradle\.properties$|version\.properties$|gradlew(\.bat)?$)'
           build="$build|^\.github/actions/gradle/|^\.github/workflows/(build-and-test|review-gate)\.yml$"
+          # AnalyticsCatalogTest, a jvmTest, reads the analytics catalog and every main source set's Kotlin.
+          catalog='^docs/analytics/README\.md$|^(core|feature)/.*/src/[A-Za-z0-9]*Main/.*\.kt$'
           none='\.md$|^docs/|^\.claude/|^iosApp/|^release-notes/|^store-listing/|^fastlane/|^\.github/'
           none="$none|^scripts/(release|store-screenshots|store-video|readme-hero)/|^scripts/(cpd|ktlint)\.sh$"
           none="$none|^scripts/heavy-check\.|^scripts/check-android-strings\.py$|^\.jscpd|^\.editorconfig$"
@@ -119,6 +123,9 @@ jobs:
             everything
           else
             while IFS= read -r file; do
+              if [[ $file =~ $catalog ]]; then
+                unit=true
+              fi
               if [[ $file =~ $build ]]; then
                 everything
               elif [[ $file =~ $none ]]; then
@@ -144,9 +151,9 @@ jobs:
                   unit=true android=true web=true
                   [[ $tested == true ]] && js=true
                 fi
-              elif [[ $file =~ ^android/store_screenshots/ ]]; then
+              elif [[ $file =~ ^android/ ]]; then
                 unit=true android=true
-              elif [[ $file =~ ^(android|androidApp|wearApp)/ ]]; then
+              elif [[ $file =~ ^(androidApp|wearApp)/ ]]; then
                 android=true
               elif [[ $file =~ ^webApp/ ]]; then
                 web=true

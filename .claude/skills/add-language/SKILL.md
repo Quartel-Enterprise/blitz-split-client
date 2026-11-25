@@ -194,10 +194,11 @@ merge first.
 
 ## 8. Verify
 
-Through `./scripts/heavy-check.sh`, one build at a time: `./gradlew jvmTest`, `./gradlew lintDebug`,
+First the checks that need no build, in seconds: `python3 scripts/check-android-strings.py`,
+`python3 iosApp/check-translations.py iosApp/Resources` and `node webApp/scripts/check-messages.mjs`. Then, through
+`./scripts/heavy-check.sh`, one build at a time: `./gradlew jvmTest`, `./gradlew lintDebug`,
 `./scripts/ktlint.sh`, `npm --prefix webApp run check:messages` and `npm --prefix webApp run build`,
-`python3 iosApp/check-translations.py iosApp/Resources`, `python3 scripts/check-android-strings.py` (the Android
-strings in a second, before `lintDebug`), then the Apple build (it runs the check too). Then look at the
+then the Apple build (it runs the check too). Then look at the
 language in each app: Profile › Language picks it, a long sentence does not break a layout (German, Finnish), and an
 Activity row of the user's reads right in the second person.
 

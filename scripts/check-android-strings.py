@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Fails on an Android string a language lacks, has extra, or formats differently from English.
 
-`lintDebug` already fails on these (MissingTranslation, ExtraTranslation, StringFormatMatches), but only after compiling
-every Android module, minutes into build-and-test. This reads the XML alone, in a second, so the translations job of CI
+`lintDebug` already fails on most of these (MissingTranslation, ExtraTranslation, StringFormatMatches), but only after
+compiling every Android module, minutes into build-and-test. This one is stricter on the format arguments: a dropped
+argument (only lint's StringFormatCount warning) and a different conversion (%d for %s) fail here. This reads the XML alone, in a second, so the translations job of CI
 says it first, and a pull request that only touches strings learns it without waiting for a Gradle build.
 
 For every Android module with a `src/main/res/values/strings.xml` (English, the source):
@@ -23,12 +24,14 @@ import sys
 from pathlib import Path
 from xml.etree import ElementTree
 
-# A regional variant that only overrides some words: values-pt-rPT, values-en-rCA, values-b+en+001 (BCP 47 region).
-PARTIAL = re.compile(r"^values-(?:[a-z]{2,3}-r[A-Z]{2}|b\+[a-z]{2,3}\+(?:[A-Z]{2}|\d{3}))$")
-# A language directory, full or partial; values-night, values-v31 and the like are not languages.
+# The regional variants that hold only the words their region says differently (see docs/ai_agents.md). Any other
+# language directory, a regional one included (values-zh-rTW), is a full language.
+PARTIAL = {"values-pt-rPT", "values-es-rES", "values-en-rCA", "values-en-rGB", "values-en-rAU", "values-b+en+001"}
+# A language directory; values-night, values-v31, values-land and the like are not languages.
 LANGUAGE = re.compile(r"^values-(?:[a-z]{2,3}(?:-r[A-Z]{2})?|b\+[a-z]{2,3}(?:\+[A-Za-z0-9]+)*)$")
-# %s, %1$s, %d, %.2f; %% is a literal percent and no argument.
-ARGUMENT = re.compile(r"%(?:(\d+)\$)?[-+0#,(]*\d*(?:\.\d+)?([sSdfxXoeEgGcbBhH])")
+NOT_LANGUAGE = {"values-car", "values-tv", "values-vr", "values-ldrtl", "values-ldltr", "values-port", "values-land"}
+# %s, %1$s, %d, %.2f, % d (the space flag); %% is a literal percent and no argument.
+ARGUMENT = re.compile(r"%(?:(\d+)\$)?[-+0#,( ]*\d*(?:\.\d+)?([sSdfxXoeEgGcbBhH])")
 TRANSLATABLE_FALSE = "false"
 
 
@@ -67,12 +70,12 @@ def check_module(res: Path, languages: set, root: Path) -> list:
     english = read(res / "values" / "strings.xml")
     present = {directory.name for directory in res.iterdir() if (directory / "strings.xml").is_file()}
     for language in sorted(languages - present):
-        errors.append(f"{res.relative_to(root)}: no {language}/strings.xml, which every other module has")
-    for language in sorted(present & (languages | {name for name in present if PARTIAL.match(name)})):
+        errors.append(f"{res.relative_to(root)}: no {language}/strings.xml, which another module has")
+    for language in sorted(present & (languages | PARTIAL)):
         path = res / language / "strings.xml"
         shown = path.relative_to(root)
         translated = read(path)
-        if not PARTIAL.match(language):
+        if language not in PARTIAL:
             for kind, name in sorted(english.keys() - translated.keys()):
                 errors.append(f'{shown}: missing <{kind} name="{name}">')
         for kind, name in sorted(translated.keys() - english.keys()):
@@ -109,11 +112,16 @@ def format_of(taken: dict) -> str:
 
 
 def main(root: Path) -> int:
-    modules = sorted(
-        path.parent.parent
-        for path in root.glob("**/src/main/res/values/strings.xml")
-        if not any(part in ("build", "node_modules") or part.startswith(".") for part in path.relative_to(root).parts)
-    )
+    modules = []
+    # Pruned while walking: build outputs, node_modules, .git, .gradle and the worktrees under .claude hold
+    # hundreds of thousands of files no module's strings are in.
+    for directory, children, _ in os.walk(root):
+        children[:] = sorted(child for child in children if child not in ("build", "node_modules") and child[0] != ".")
+        if directory.endswith(os.path.join("src", "main", "res")) and os.path.isfile(
+            os.path.join(directory, "values", "strings.xml")
+        ):
+            modules.append(Path(directory))
+            children[:] = []
     if not modules:
         print(f"No Android strings.xml under {root}", file=sys.stderr)
         return 2
@@ -122,7 +130,7 @@ def main(root: Path) -> int:
         for res in modules
         for directory in res.iterdir()
         if LANGUAGE.match(directory.name)
-        and not PARTIAL.match(directory.name)
+        and directory.name not in PARTIAL | NOT_LANGUAGE
         and (directory / "strings.xml").is_file()
     }
     errors = [error for res in modules for error in check_module(res, languages, root)]
