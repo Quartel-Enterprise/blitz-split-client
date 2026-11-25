@@ -188,9 +188,9 @@ private fun PayerChip(
                 isChecked = person.key in picked,
                 leading = {
                     AvatarBadge(
-                        initial = person.initials,
-                        color = person.color,
-                        photoUrl = person.photoUrl,
+                        initial = person.face.initials,
+                        color = person.face.color,
+                        photoUrl = person.face.photoUrl,
                         size = 24.dp,
                     )
                 },

@@ -120,7 +120,7 @@ export function AllExpensesFilterBar({ presenter, state }: { presenter: AllExpen
         )
       case 'PAYER':
         return (
-          <FilterMenu label={payerText(payers.filter((payer) => payerKeys.includes(payer.key)), payerKeys.length)} isActive={payerKeys.length > 0}>
+          <FilterMenu label={payerText(payers.filter((payer) => payerKeys.includes(payer.key)))} isActive={payerKeys.length > 0}>
             <CheckedItem label={t('allExpenses_payerAll')} isChecked={payerKeys.length === 0} onSelect={() => presenter.pickAnyPayer()} />
             <DropdownMenuSeparator />
             {payers.map((payer) => (
@@ -192,12 +192,12 @@ export function AllExpensesFilterBar({ presenter, state }: { presenter: AllExpen
   )
 }
 
-/** "Who paid" with nobody picked, "You paid" or "Paid by Ana" with one, "Who paid · 2" with several. */
-function payerText(picked: { name: string; isMe: boolean }[], count: number): string {
-  if (count === 1 && picked.length === 1) {
+/** "You paid" or "Paid by Ana" with one person picked; otherwise "Who paid" or "Who paid · 2", as pickedLabel counts. */
+function payerText(picked: { name: string; isMe: boolean }[]): string {
+  if (picked.length === 1) {
     return picked[0].isMe ? t('allExpenses_payerYou') : t('allExpenses_payerBy', { name: picked[0].name })
   }
-  return count > 1 ? `${t('allExpenses_payer')} · ${count}` : t('allExpenses_payer')
+  return pickedLabel(t('allExpenses_payer'), picked.map((person) => person.name))
 }
 
 /** "Period" while it is the whole history, a custom period's days ("Oct 24 – 26"), any other by its name. */

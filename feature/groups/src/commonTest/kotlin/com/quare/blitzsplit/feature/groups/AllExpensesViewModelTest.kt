@@ -3763,9 +3763,9 @@ class AllExpensesViewModelTest {
 
             // Then
             assertEquals("Ana", ana.name)
-            assertEquals("A", ana.initials)
-            assertEquals(AvatarColor.GREEN, ana.color)
-            assertEquals("https://photos/ana.jpg", ana.photoUrl)
+            assertEquals("A", ana.face.initials)
+            assertEquals(AvatarColor.GREEN, ana.face.color)
+            assertEquals("https://photos/ana.jpg", ana.face.photoUrl)
         }
 
     @Test
@@ -3861,10 +3861,12 @@ class AllExpensesViewModelTest {
         }
 
     @Test
-    fun `GIVEN All expenses open WHEN picking anyone in who paid THEN tracks the payer filter changed`() =
+    fun `GIVEN Ana picked in who paid WHEN picking anyone THEN tracks the payer filter changed`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(AllExpensesUiEvent.OnPayerToggled(payerKeyNamed("Ana")))
+            trackedEvents.clear()
             val event = AllExpensesUiEvent.OnAnyPayerPicked
 
             // When
@@ -3873,6 +3875,34 @@ class AllExpensesViewModelTest {
             // Then
             assertEquals(listOf(filterChanged("payer")), trackedEvents)
         }
+
+    @Test
+    fun `GIVEN nobody picked in who paid WHEN picking anyone THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        val event = AllExpensesUiEvent.OnAnyPayerPicked
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN Ana picked in who paid WHEN every group is deleted THEN lets her go`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        viewModel.onEvent(AllExpensesUiEvent.OnPayerToggled(payerKeyNamed("Ana")))
+
+        // When
+        groups.groups.value = emptyList()
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(emptySet(), state.filters.payerKeys)
+        assertFalse(state.filters.isFiltering)
+    }
 
     @Test
     fun `GIVEN a bill Ana paid older than the first page WHEN picking Ana THEN reads every bill and shows it`() =

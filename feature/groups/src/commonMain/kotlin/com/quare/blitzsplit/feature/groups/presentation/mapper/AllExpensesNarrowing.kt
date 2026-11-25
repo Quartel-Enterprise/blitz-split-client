@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
+import com.quare.blitzsplit.core.expenses.domain.model.faceOf
 import com.quare.blitzsplit.core.expenses.domain.model.findSpanOrNull
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -162,9 +163,7 @@ internal fun payerOptionsOf(
                         key = key,
                         name = member.name,
                         isMe = member.isMe,
-                        initials = Initials.firstOf(member.name),
-                        color = member.avatarColor,
-                        photoUrl = member.photoUrl,
+                        face = faceOf(member),
                     )
                 }
             }

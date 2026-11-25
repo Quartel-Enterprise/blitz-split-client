@@ -104,7 +104,14 @@ class AllExpensesPresenter(
                 categoryOptions = state.categoryOptions.map(::toJsCategory).toTypedArray(),
                 payerOptions = state.payerOptions
                     .map {
-                        JsFilterPayerOption(it.key, it.name, it.isMe, it.initials, it.color.code, it.photoUrl)
+                        JsFilterPayerOption(
+                            it.key,
+                            it.name,
+                            it.isMe,
+                            it.face.initials,
+                            it.face.color.code,
+                            it.face.photoUrl,
+                        )
                     }.toTypedArray(),
                 showsNoResults = state.showsNoResults,
                 showsSkeleton = state.showsSkeleton,

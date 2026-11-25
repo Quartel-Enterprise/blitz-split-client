@@ -217,7 +217,10 @@ class AllExpensesViewModel(
 
             is AllExpensesUiEvent.OnPayerToggled -> narrow { it.copy(payerKeys = it.payerKeys.toToggled(event.key)) }
 
-            AllExpensesUiEvent.OnAnyPayerPicked -> narrow { it.copy(payerKeys = emptySet()) }
+            // Why: tracked only when someone was picked, never "Anyone" again while it is already on.
+            AllExpensesUiEvent.OnAnyPayerPicked -> if (isNarrowed { it.copy(payerKeys = emptySet()) }) {
+                trackEvent("all_expenses_filter_changed", mapOf("source" to ALL_EXPENSES_SOURCE, "filter" to "payer"))
+            }
 
             is AllExpensesUiEvent.OnSortPicked -> narrow { it.copy(sort = event.sort) }
 
@@ -280,9 +283,11 @@ class AllExpensesViewModel(
         }
         /*
          * Why: someone picked in Who paid who is in no group any more (removed, or their group deleted) has no row to
-         * let go of them; the pick goes with them, and the list shows again under the picks left.
+         * let go of them; the pick goes with them, and the list shows again under the picks left. No group left at all
+         * (every one deleted or left) lets go of every pick: Room reads the groups as they are, never an empty list in
+         * between.
          */
-        if (picked.payerKeys.isNotEmpty() && bills.groups.isNotEmpty()) {
+        if (picked.payerKeys.isNotEmpty()) {
             val left = picked.payerKeys intersect payerKeysOf(bills.groups)
             if (left != picked.payerKeys) {
                 filters.value = picked.copy(payerKeys = left)

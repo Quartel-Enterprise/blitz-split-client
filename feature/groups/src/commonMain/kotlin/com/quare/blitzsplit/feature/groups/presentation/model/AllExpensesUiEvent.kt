@@ -34,7 +34,8 @@ sealed interface AllExpensesUiEvent : UiEvent {
 
             is OnPayerToggled -> filterChanged("payer")
 
-            OnAnyPayerPicked -> filterChanged("payer")
+            // Why: only when someone was picked, never "Anyone" while it is already on.
+            OnAnyPayerPicked -> EventAnalytics.Manual("all_expenses_filter_changed")
 
             is OnSortPicked -> EventAnalytics.Automatic("all_expenses_sort_changed", mapOf("sort" to sort))
 

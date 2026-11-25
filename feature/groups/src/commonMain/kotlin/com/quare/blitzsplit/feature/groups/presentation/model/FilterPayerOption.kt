@@ -1,6 +1,6 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
-import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 
 /*
  * Why: a person "All expenses"' Who paid offers (Pierre's call, 2026-11-24): this device's user first, whom each UI
@@ -12,10 +12,8 @@ data class FilterPayerOption(
     // Why: as the first group in the device's order names them; the user's own name, which no UI writes.
     val name: String,
     val isMe: Boolean,
-    val initials: String,
-    val color: AvatarColor,
-    // Why: the profile photo over the initials, null for someone with none or nobody joined as.
-    val photoUrl: String?,
+    // Why: drawn as a member's face everywhere (faceOf): one initial, their color, their photo over it.
+    val face: GroupFace,
 )
 
 // Why: the user's key in every group, also before the first sync gives them an account (and so a userId).
