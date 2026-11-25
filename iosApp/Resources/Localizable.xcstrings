@@ -235089,6 +235089,12 @@
             "value" : "残高を見る (+%lld)"
           }
         },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಬ್ಯಾಲೆನ್ಸ್ ನೋಡಿ (+%lld)"
+          }
+        },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",

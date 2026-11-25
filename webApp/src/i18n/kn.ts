@@ -1478,6 +1478,7 @@ export const kn: Record<MessageKey, string> = {
   home_people: 'ಜನರೊಂದಿಗಿನ ಬ್ಯಾಲೆನ್ಸ್',
   home_peopleCount: 'ಜನರೊಂದಿಗಿನ ಬ್ಯಾಲೆನ್ಸ್ · {count}',
   home_seeBalances: 'ಬ್ಯಾಲೆನ್ಸ್ ನೋಡಿ',
+  home_seeBalancesMore: 'ಬ್ಯಾಲೆನ್ಸ್ ನೋಡಿ (+{count})',
   home_owesYouWord: 'ನಿಮಗೆ ಕೊಡಬೇಕು',
   home_personOwesYou: '{name} ನಿಮಗೆ {amount} ಕೊಡಬೇಕು',
   home_youOwePerson: 'ನೀವು ಕೊಡಬೇಕು: {name}, {amount}',
