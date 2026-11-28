@@ -94,7 +94,7 @@ private val secondPersonAuxiliaries = mapOf(
     SLOVENIAN to mapOf("je" to "si"),
     CATALAN to mapOf("ha" to "has", "l’ha" to "l’has", "l'ha" to "l'has"),
 )
-private val turkishPast = Regex("[dt][ıiuü]$")
+private val turkicPast = Regex("[dt][ıiuü]$")
 private val persianPast = Regex("[دت]$")
 private const val PERSIAN_SECOND_PERSON_ENDING = "ید"
 private const val TAMIL = "ta"
@@ -110,7 +110,6 @@ private const val ODIA = "or"
 private const val NEPALI = "ne"
 private const val NEPALI_ERGATIVE = "ले"
 private const val AZERBAIJANI = "az"
-private val azerbaijaniPast = Regex("[dt][ıiuü]$")
 private val azerbaijaniSecondPersonEndings = mapOf('ı' to "nız", 'i' to "niz", 'u' to "nuz", 'ü' to "nüz")
 private const val AMHARIC = "am"
 private const val SINHALA = "si"
@@ -273,7 +272,7 @@ fun toSecondPerson(
         }
     }
 
-    TURKISH -> toVerbLastSecondPerson(verb, turkishPast, "n")
+    TURKISH -> toVerbLastSecondPerson(verb, turkicPast, "n")
 
     PERSIAN -> toVerbLastSecondPerson(verb, persianPast, PERSIAN_SECOND_PERSON_ENDING)
 
@@ -286,7 +285,7 @@ fun toSecondPerson(
         dropped = KANNADA_THIRD_PERSON_PAST,
     )
 
-    AZERBAIJANI -> toVerbLastSecondPerson(verb, azerbaijaniPast) { clause ->
+    AZERBAIJANI -> toVerbLastSecondPerson(verb, turkicPast) { clause ->
         azerbaijaniSecondPersonEndings.getValue(clause.last())
     }
 

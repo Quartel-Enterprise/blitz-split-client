@@ -76,8 +76,8 @@
     <string name="activity_detail_charge">%s · хабарлама жіберілді</string>
     <string name="activity_detail_comment">“%s”</string>
     <string name="activity_detail_change">%1$s %2$s → %3$s</string>
-    <string name="activity_deleted_notice_bill">%2$s %3$s күні жойды: %1$s. Жазба лентада қалады, бірақ шығын енді ашылмайды.</string>
-    <string name="activity_deleted_notice_group">%2$s %3$s күні жойды: %1$s. Жазба лентада қалады, бірақ топ енді ашылмайды.</string>
+    <string name="activity_deleted_notice_bill">%2$s жойды: %1$s, %3$s. Жазба лентада қалады, бірақ шығын енді ашылмайды.</string>
+    <string name="activity_deleted_notice_group">%2$s жойды: %1$s, %3$s. Жазба лентада қалады, бірақ топ енді ашылмайды.</string>
     <string name="activity_deleted_notice_bill_unknown">Жойылды: %s. Жазба лентада қалады, бірақ шығын енді ашылмайды.</string>
     <string name="activity_deleted_notice_group_unknown">Жойылды: %s. Жазба лентада қалады, бірақ топ енді ашылмайды.</string>
     <string name="activity_this_bill">Бұл шығын</string>
