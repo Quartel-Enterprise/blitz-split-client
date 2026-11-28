@@ -58,7 +58,7 @@
     <string name="default_split_more">Een deel meer</string>
     <string name="default_split_sum_left">Die som is %1$d%%. %2$d%% kort.</string>
     <string name="default_split_sum_over">Die som is %1$d%%. %2$d%% te veel.</string>
-    <string name="default_split_sum_help">Pas die persentasies aan totdat hulle 100% beloop om te stoor.</string>
+    <string name="default_split_sum_help">Pas die persentasies aan totdat hulle 100 persent beloop om te stoor.</string>
     <string name="default_split_example_equal">Op \'n uitgawe van %1$s: %2$s elk</string>
     <string name="default_split_example">Op \'n uitgawe van %s:</string>
     <string name="default_split_example_equal_help">Wie nie in \'n uitgawe is nie, val uit wanneer dit verdeel word.</string>

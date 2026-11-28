@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="designsystem_continue_with_google">Qhubeka nge-Google</string>
     <string name="designsystem_continue_with_apple">Qhubeka nge-Apple</string>
     <string name="designsystem_google_short">Google</string>
@@ -71,7 +71,7 @@
     <string name="designsystem_group_exit_leave_blocked_message">Usenebhalansi evulekile eqenjini elithi “%s”. Uma uphuma manje, abanye bazosala nayo ingaxazululiwe.</string>
     <string name="designsystem_group_exit_leave_title">Phuma eqenjini elithi “%s”?</string>
     <plurals name="designsystem_group_exit_leave_message">
-        <item quantity="one">Ibhalansi yakho ixazululiwe. Iqembu liyasuka kule divayisi, futhi izindleko zakho zigcina igama lakho ukuze libonwe yilelo lungu elisele. Ukuze ubuye, kufanele othile akumeme futhi.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Ibhalansi yakho ixazululiwe. Iqembu liyasuka kule divayisi, futhi izindleko zakho zigcina igama lakho ukuze libonwe yilelo lungu elisele. Ukuze ubuye, kufanele othile akumeme futhi.</item>
         <item quantity="other">Ibhalansi yakho ixazululiwe. Iqembu liyasuka kule divayisi, futhi izindleko zakho zigcina igama lakho ukuze libonwe amanye amalungu angu-%d. Ukuze ubuye, kufanele othile akumeme futhi.</item>
     </plurals>
     <string name="designsystem_group_exit_leave_message_alone">Ibhalansi yakho ixazululiwe. Akekho omunye oseqenjini osejoyinile, ngakho liyasuswa unomphela.</string>
