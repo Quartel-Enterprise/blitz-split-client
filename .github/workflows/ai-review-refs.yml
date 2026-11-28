@@ -1,13 +1,13 @@
-name: claude-review-refs
+name: ai-review-refs
 
-# Fails when the workflows pin different releases of Quartel-Enterprise/claude-review. The gate and
+# Fails when the workflows pin different releases of Quartel-Enterprise/ai-review. The gate and
 # the threads action have to agree on which threads hold the checks and which step marks a hold, so
 # a bump that misses one `uses:` would let the gate hold runs nothing re-runs.
 on:
   pull_request:
     paths:
       - '.github/workflows/**'
-      - 'scripts/ci/claude-review-refs-*.sh'
+      - 'scripts/ci/ai-review-refs-*.sh'
 
 permissions:
   contents: read
@@ -28,5 +28,5 @@ jobs:
           sparse-checkout: |
             .github/workflows
             scripts/ci
-      - name: Check that every claude-review ref is the same
-        run: scripts/ci/claude-review-refs-check-that-every-claude-review-ref-is-the-same.sh
+      - name: Check that every ai-review ref is the same
+        run: scripts/ci/ai-review-refs-check-that-every-ai-review-ref-is-the-same.sh

@@ -4,7 +4,7 @@ name: duplication
 # which static-analysis's ktlint has no reason to.
 on:
   pull_request:
-    # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
+    # The defaults, plus a draft marked ready, which ai-review reviews then (see review-gate below).
     types:
       - opened
       - synchronize

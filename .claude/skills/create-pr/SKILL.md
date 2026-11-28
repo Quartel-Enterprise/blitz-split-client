@@ -178,27 +178,18 @@ Two reviews run on the whole change, the commits ahead of `main` and the uncommi
 Both start with a fresh context, so they judge the change rather than the conversation that produced
 it:
 
-- `/code-review high --max-findings all` looks for correctness bugs and for cleanups of the changed
-  code (reuse, simplification, efficiency).
+- The `pre-pr-review` skill (from [`Quartel-Enterprise/quare-skills`](https://github.com/Quartel-Enterprise/quare-skills), running `ai-review --provider antigravity --fallback claude --effort high`) looks for correctness bugs and for cleanups of the changed
+  code (reuse, simplification, efficiency) using Gemini/Antigravity first and automatically falling back to Claude on quota or errors.
 - `review-conventions` checks the change against the docs under `docs/`, the product invariants of
   Bora Rachar, and the description from step 6.
 
-`/code-review` reads `git diff @{upstream}...HEAD` plus `git diff HEAD`. The second leaves out files
-git doesn't track yet, so mark new files as intended to be added first:
+Mark untracked new files as intended to be added so `git diff` includes them:
 
 ```bash
 git add -N .
 ```
 
-The first covers the whole branch only while its upstream is `origin/main`. Once the branch has been
-pushed, its upstream is its own remote branch, and the pushed commits would drop out of the review.
-In that case, commit any uncommitted changes now (step 9) and pass the branch name as the target.
-
-Then invoke the `code-review` skill with `high --max-findings all` as its arguments
-(`high <branch> --max-findings all` for a pushed branch): without the flag it keeps only the ten
-most severe findings. The skill remembers the flag, so the user's own `/code-review` runs report
-every finding too, until they pass `--max-findings default`. Invoke the `review-conventions` skill
-with the description from step 6 as its argument. Wait for both results before going on.
+Then run the `pre-pr-review` skill (`ai-review --provider antigravity --fallback claude --effort high --base origin/main`, which reviews every commit ahead of `origin/main` plus uncommitted changes and reports all findings by default), and invoke the `review-conventions` skill with the description from step 6 as its argument. Wait for both results before going on.
 
 If neither reports anything, continue to step 8. Otherwise fix every finding of both reviews, the
 cleanups and nitpicks too, without asking the user first. Check each one against the code before
@@ -505,7 +496,7 @@ gh pr edit --add-label merge-when-green
 
 The workflow squash merges the pull request once every check on its head commit has passed and
 every review conversation is resolved, including the checks of the fix commit the opening
-`claude-review` pushes. The label is this project's merge, not GitHub's auto-merge: don't call
+`ai-review` pushes. The label is this project's merge, not GitHub's auto-merge: don't call
 `set_auto_merge` or `gh pr merge --auto`. That merge happens minutes later, so wait for it without
 blocking the turn, in one of the three ways below. Before ending the turn, tell the user the label
 and the wait are on, and that the task gets cleaned up once the merge happens.
@@ -522,7 +513,7 @@ and the wait are on, and that the task gets cleaned up once the merge happens.
   again. Handle each event as the outcomes below say, with the loop's filter: a failed
   `review-gate` check is the hold for the review's open threads, not a failure, and a cancelled
   `merge-when-green` run was only replaced by a newer one. A review comment that arrives while the
-  label is still on is one of the opening `claude-review`'s threads: it is outcome 3's work, which
+  label is still on is one of the opening `ai-review`'s threads: it is outcome 3's work, which
   `merge-when-green` starts once every check has passed. Do it then, or sooner when a failed check
   or a conflict already has the session pushing ("Push once per round" below), never twice.
   Diagnose an event with `get_status` or that one look; don't poll the checks yourself. Once an
@@ -575,7 +566,7 @@ exit 4
 ```
 
 Every fix below goes the same way, without asking: pull first, before any local commit
-(`git pull --ff-only`: the opening `claude-review` may have pushed its fix commit), fix, run step 2
+(`git pull --ff-only`: the opening `ai-review` may have pushed its fix commit), fix, run step 2
 again if a Kotlin file changed and the step 8 checks of the areas the fix touches, run
 `update-readme-screenshots` again if the fix changes what the README's image shows (step 8's last
 part), commit it with step 9's message rules, push (step 10), and wait again as above. Never amend, rebase or force push
@@ -625,7 +616,7 @@ When the loop exits, or a PR event or `<ci-monitor-event>` says the same:
     a product choice nobody wrote down yet, or the same check still fails after two fixes.
 - **3, label removed:** `merge-when-green` removes its label with a comment saying why. Read its
   latest comment (`gh pr view <pr> --comments`):
-  - **Unresolved review conversations**, often `claude-review` findings, after every check passed
+  - **Unresolved review conversations**, often `ai-review` findings, after every check passed
     or was held. List them:
 
     ```bash

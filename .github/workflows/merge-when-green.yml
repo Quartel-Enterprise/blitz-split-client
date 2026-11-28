@@ -14,7 +14,7 @@ name: merge-when-green
 #
 # A green pull request with an unresolved review conversation is not merged: the ruleset refuses it,
 # so the label goes and a comment says why. Resolving a conversation starts no workflow, so adding
-# the label again is what merges it then. The checks review-gate held for claude-review's threads
+# the label again is what merges it then. The checks review-gate held for ai-review's threads
 # (see review-gate.yml) don't count as failed: once every conversation is resolved, this workflow
 # re-runs them and merges when they pass.
 #
@@ -51,9 +51,9 @@ on:
       - release-notes
       - translations
       - codeql
-      - claude-review
-      - claude-review-on-request
-      - claude-review-refs
+      - ai-review
+      - ai-review-on-request
+      - ai-review-refs
     types:
       - completed
 
@@ -153,7 +153,7 @@ jobs:
       # first leaves a comment on the pull request instead of a failed merge nobody looks at.
       - id: threads
         if: steps.green.outputs.pr != ''
-        uses: Quartel-Enterprise/claude-review/threads@1.5.0
+        uses: Quartel-Enterprise/ai-review/threads@2.1.0
         with:
           command: open-threads
           pull-request: ${{ steps.green.outputs.pr }}
@@ -175,7 +175,7 @@ jobs:
       # GITHUB_TOKEN does starts no other workflow, so its re-runs might never start this one.
       - id: rerun
         if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0' && steps.green.outputs.held != '0'
-        uses: Quartel-Enterprise/claude-review/threads@1.5.0
+        uses: Quartel-Enterprise/ai-review/threads@2.1.0
         with:
           command: rerun-held
           sha: ${{ steps.green.outputs.head }}

@@ -31,9 +31,9 @@ if ! prs=$(gh pr list --state open --head "$HEAD_BRANCH" \
 fi
 
 # The pull request's current head is what gets judged, not the commit of the run that
-# started this one: claude-review's run ends on the opening commit after it pushed its fix
+# started this one: ai-review's run ends on the opening commit after it pushed its fix
 # commit, and on a pull request whose changes run no check workflow (docs only) only
-# claude-review's own short run of the push completes on the fix commit, possibly before the
+# ai-review's own short run of the push completes on the fix commit, possibly before the
 # review's run ends. A draft can't be merged; marking it ready runs its
 # checks again. Two labeled pull requests can share a branch (one into two bases): one is
 # handled per run, and its merge or label change starts this workflow again for the other.
@@ -153,7 +153,7 @@ while :; do
       and ((.link // "") | contains("/actions/runs/\($id)/job/")) then .bucket = $bucket else . end)' <<< "$others")
   done
 
-  # A gate that held its workflow's checks for claude-review's open threads is the only
+  # A gate that held its workflow's checks for ai-review's open threads is the only
   # review-gate check that fails. Its run completes failed, which starts this workflow too.
   held=$(jq '[.[] | select((.name | startswith("review-gate")) and .bucket == "fail")] | length' <<< "$others")
   unfinished=$(jq -r '.[] | select(.bucket != "pass" and .bucket != "skipping")
@@ -221,17 +221,17 @@ done
 # A job waiting on another (the checks behind review-gate) has no check until it starts, so
 # while review-gate waits for the review, or right after it passes, every check can be green
 # while its workflow still has jobs to run. A run of the head commit counts as unfinished
-# until it completes; its completion starts this workflow again. So does a claude-review run
+# until it completes; its completion starts this workflow again. So does a ai-review run
 # of an earlier commit: it ends on the opening commit after pushing its fix commit, and its
-# threads come last. Runs started by a label (claude-review-on-request, run-checks, this
+# threads come last. Runs started by a label (ai-review-on-request, run-checks, this
 # one) don't count: their job is skipped for any other label, and a skipped run starts
 # nothing; a review on request shows as a pending check instead. The run that started this
 # one counts as complete whatever the listing says, which can lag behind the event.
 running=$(GH_TOKEN="$GITHUB_TOKEN" HEAD="$head" gh api --method GET "repos/$GH_REPO/actions/runs" \
   -f branch="$HEAD_BRANCH" -f event=pull_request -f per_page=100 \
   --jq '.workflow_runs[] | select(.status != "completed" and .id != (env.TRIGGER_RUN_ID | tonumber))
-    | select(.path | test("^\\.github/workflows/(claude-review-on-request|run-checks|merge-when-green)\\.yml$") | not)
-    | select(.head_sha == env.HEAD or .path == ".github/workflows/claude-review.yml")
+    | select(.path | test("^\\.github/workflows/(ai-review-on-request|run-checks|merge-when-green)\\.yml$") | not)
+    | select(.head_sha == env.HEAD or .path == ".github/workflows/ai-review.yml")
     | "\(.name) (\(.head_sha[:7]))"')
 if [ -n "$running" ]; then
   echo "#$pr still has workflows running:"

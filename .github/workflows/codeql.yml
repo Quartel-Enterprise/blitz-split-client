@@ -8,7 +8,7 @@ name: codeql
 # (https://github.blog/changelog/2026-10-19-codeql-changes-for-macos-27-xcode-27-and-swift-6-4/).
 on:
   pull_request:
-    # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
+    # The defaults, plus a draft marked ready, which ai-review reviews then (see review-gate below).
     types:
       - opened
       - synchronize
