@@ -83,6 +83,12 @@
             "value" : "Blitz Split"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
@@ -102,6 +108,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "gl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -143,6 +155,12 @@
             "value" : "Blitz Split"
           }
         },
+        "is" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -179,6 +197,18 @@
             "value" : "Blitz Split"
           }
         },
+        "ky" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "lo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
@@ -192,6 +222,12 @@
           }
         },
         "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "mn" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -258,6 +294,12 @@
           }
         },
         "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "rm" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -449,6 +491,12 @@
             "value" : "Blitz Split"
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
@@ -468,6 +516,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "gl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -509,6 +563,12 @@
             "value" : "Blitz Split"
           }
         },
+        "is" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -545,6 +605,18 @@
             "value" : "Blitz Split"
           }
         },
+        "ky" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "lo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
@@ -558,6 +630,12 @@
           }
         },
         "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "mn" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -624,6 +702,12 @@
           }
         },
         "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "rm" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -815,6 +899,12 @@
             "value" : "Et skannida kutse või vana seadme QR-koodi ning teha oma profiilifoto ja kulude fotosid."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gonbidapen baten edo zure gailu zaharraren QR kodea eskaneatzeko, eta zure profileko argazkia eta gastuen argazkiak ateratzeko."
+          }
+        },
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
@@ -837,6 +927,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pour scanner le QR code d’une invitation ou de ton ancien appareil, et pour prendre ta photo de profil et des photos de dépenses."
+          }
+        },
+        "gl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para escanear o código QR dun convite ou do seu dispositivo anterior, e para facer a súa foto de perfil e fotos dos gastos."
           }
         },
         "gu" : {
@@ -875,6 +971,12 @@
             "value" : "Untuk memindai kode QR undangan atau dari perangkat lamamu, serta mengambil foto profil dan foto tagihan."
           }
         },
+        "is" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Til að skanna QR-kóða boðs eða gamla tækisins þíns og taka prófílmyndina þína og myndir af kostnaði."
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -911,6 +1013,18 @@
             "value" : "초대나 이전 기기의 QR 코드를 스캔하고, 프로필 사진과 지출 사진을 찍기 위해 사용해요."
           }
         },
+        "ky" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чакыруунун же эски түзмөгүңүздүн QR кодун скандоо, профиль сүрөтүңүздү жана чыгым сүрөттөрүн тартуу үчүн."
+          }
+        },
+        "lo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ເພື່ອສະແກນລະຫັດ QR ຂອງຄຳເຊີນ ຫຼື ຂອງອຸປະກອນເກົ່າຂອງທ່ານ ແລະ ຖ່າຍຮູບໂປຣໄຟລ໌ ແລະ ຮູບລາຍຈ່າຍ"
+          }
+        },
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
@@ -927,6 +1041,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ഒരു ക്ഷണത്തിന്റെയോ നിങ്ങളുടെ പഴയ ഉപകരണത്തിന്റെയോ QR കോഡ് സ്കാൻ ചെയ്യാനും, നിങ്ങളുടെ പ്രൊഫൈൽ ഫോട്ടോയും ചെലവുകളുടെ ഫോട്ടോകളും എടുക്കാനും."
+          }
+        },
+        "mn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Урилгын эсвэл хуучин төхөөрөмжийнхөө QR кодыг уншуулах, профайлын зураг болон зардлын зураг авахын тулд."
           }
         },
         "mr" : {
@@ -993,6 +1113,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para ler o código QR de um convite ou do teu aparelho antigo, e tirar a fotografia do teu perfil e as fotografias das contas."
+          }
+        },
+        "rm" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per scannar il code QR d'in envit u da Voss apparat vegl e per far Vossa fotografia da profil e fotografias da custs."
           }
         },
         "ro" : {
@@ -1181,6 +1307,12 @@
             "value" : "Et kutsuda kontaktidest inimesi grupi lingiga. Nende numbrid jäävad sellesse seadmesse."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zure kontaktuetako jendea taldearen estekarekin gonbidatzeko. Haien zenbakiak gailu honetan geratzen dira."
+          }
+        },
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1203,6 +1335,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pour inviter des personnes de tes contacts avec le lien d’un groupe. Leurs numéros restent uniquement sur cet appareil."
+          }
+        },
+        "gl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para convidar xente dos seus contactos coa ligazón do grupo. Os seus números quedan neste dispositivo."
           }
         },
         "gu" : {
@@ -1241,6 +1379,12 @@
             "value" : "Untuk mengundang orang dari kontakmu dengan tautan grup. Nomor mereka tetap di perangkat ini."
           }
         },
+        "is" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Til að bjóða fólki úr tengiliðunum þínum með tengli hópsins. Númerin þeirra verða eftir á þessu tæki."
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1277,6 +1421,18 @@
             "value" : "그룹 링크로 연락처의 사람들을 초대하기 위해 사용해요. 전화번호는 이 기기에만 남아 있어요."
           }
         },
+        "ky" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Топтун шилтемеси аркылуу байланыштарыңыздан адамдарды чакыруу үчүн. Алардын номерлери ушул түзмөктө калат."
+          }
+        },
+        "lo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ເພື່ອເຊີນຄົນຈາກລາຍຊື່ຕິດຕໍ່ຂອງທ່ານດ້ວຍລິ້ງຂອງກຸ່ມ ເບີໂທຂອງເຂົາເຈົ້າຢູ່ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ"
+          }
+        },
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1293,6 +1449,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ഗ്രൂപ്പിന്റെ ലിങ്ക് ഉപയോഗിച്ച് നിങ്ങളുടെ കോൺടാക്റ്റുകളിലെ ആളുകളെ ക്ഷണിക്കാൻ. അവരുടെ നമ്പറുകൾ ഈ ഉപകരണത്തിൽ തന്നെ തുടരും."
+          }
+        },
+        "mn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Бүлгийн холбоосоор харилцагчдаасаа хүмүүсийг урихын тулд. Тэдний дугаар энэ төхөөрөмжид үлдэнэ."
           }
         },
         "mr" : {
@@ -1359,6 +1521,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para convidar pessoas dos teus contactos com o link de um grupo. Os números ficam só neste aparelho."
+          }
+        },
+        "rm" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per envidar persunas da Voss contacts cun la colliaziun da la gruppa. Lur numers restan sin quest apparat."
           }
         },
         "ro" : {
@@ -1547,6 +1715,12 @@
             "value" : "Et salvestada kulude fotosid sinu fototeeki."
           }
         },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gastuen argazkiak zure liburutegian gordetzeko."
+          }
+        },
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1569,6 +1743,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pour enregistrer les photos des dépenses dans ta photothèque."
+          }
+        },
+        "gl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para gardar as fotos dos gastos na súa fototeca."
           }
         },
         "gu" : {
@@ -1607,6 +1787,12 @@
             "value" : "Untuk menyimpan foto tagihan ke galerimu."
           }
         },
+        "is" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Til að vista myndir af kostnaði í myndasafnið þitt."
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1643,6 +1829,18 @@
             "value" : "지출 사진을 사진 보관함에 저장하기 위해 사용해요."
           }
         },
+        "ky" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чыгым сүрөттөрүн китепканаңызга сактоо үчүн."
+          }
+        },
+        "lo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ເພື່ອບັນທຶກຮູບລາຍຈ່າຍໄວ້ໃນຄັງຮູບຂອງທ່ານ"
+          }
+        },
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1659,6 +1857,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ചെലവുകളുടെ ഫോട്ടോകൾ നിങ്ങളുടെ ലൈബ്രറിയിൽ സേവ് ചെയ്യാൻ."
+          }
+        },
+        "mn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зардлын зургийг таны номын санд хадгалахын тулд."
           }
         },
         "mr" : {
@@ -1725,6 +1929,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para guardar as fotografias das contas na tua galeria."
+          }
+        },
+        "rm" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per memorisar fotografias da custs en Vossa biblioteca."
           }
         },
         "ro" : {

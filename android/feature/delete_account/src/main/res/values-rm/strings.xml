@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Stizzar il conto</string>
+    <string name="delete_account_offline_title">Nagin internet.</string>
+    <string name="delete_account_offline_body">Per stizzar Voss conto dovri ina connexiun d\'internet. Connectai ed empruvai anc ina giada.</string>
+    <string name="delete_account_heading">Stizzar Voss conto e Vossas datas?</string>
+    <string name="delete_account_deleted_title">Tge che vegn stizzà</string>
+    <string name="delete_account_deleted_profile">Voss profil (num, foto e colur)</string>
+    <string name="delete_account_deleted_keys">Vossas clavs Pix e Bitcoin</string>
+    <string name="delete_account_deleted_provider">La colliaziun cun Voss conto %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Voss code da recuperaziun</string>
+    <string name="delete_account_deleted_device">La copia da Vossas datas sin quest apparat</string>
+    <string name="delete_account_kept_title">Tge che resta en Vossas gruppas</string>
+    <string name="delete_account_kept_groups">Las gruppas, cun lur expensas e pajaments, per ils auters commembers</string>
+    <string name="delete_account_kept_member">Voss num en mintga gruppa, sco commember senza conto</string>
+    <string name="delete_account_kept_comments">Voss commentaris e las fotos che Vus avais agiuntà, sut Voss num</string>
+    <string name="delete_account_export">Exportar avant mias datas</string>
+    <string name="delete_account_confirm">Jau chapesch che quai na po betg vegnir revocà</string>
+    <string name="delete_account_delete">Stizzar il conto</string>
+    <string name="delete_account_cancel">Interrumper</string>
+    <string name="delete_account_failed">Impussibel da stizzar Voss conto. Empruvai anc ina giada.</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">ບັນທຶກລະຫັດກູ້ຄືນຂອງທ່ານ</string>
+    <string name="recovery_code_body">ທ່ານກຳລັງໃຊ້ໂດຍບໍ່ມີບັນຊີ ຄຳ 12 ຄຳນີ້ຈະນຳຂໍ້ມູນຂອງທ່ານກັບຄືນມາ ຖ້າທ່ານປ່ຽນ ຫຼື ເຮັດອຸປະກອນເສຍ ກະລຸນາຂຽນໄວ້ຕາມລຳດັບ ຫຼັງຈາກບໍ່ໄດ້ໃຊ້ 30 ມື້ ຂໍ້ມູນຂອງທ່ານຈະຖືກລຶບ ແລະ ຄຳເຫຼົ່ານີ້ຈະໃຊ້ບໍ່ໄດ້</string>
+    <string name="recovery_code_copy">ສຳເນົາຄຳ</string>
+    <string name="recovery_code_save_to_password_manager">ບັນທຶກໃສ່ຕົວຈັດການລະຫັດຜ່ານ</string>
+    <string name="recovery_code_connect_instead">ເຊື່ອມຕໍ່ Google ຫຼື Apple ແທນ</string>
+    <string name="recovery_code_connect_instead_body">ບໍ່ຕ້ອງໃຊ້ລະຫັດ</string>
+    <string name="recovery_code_sign_in_failed">ບໍ່ສາມາດເຊື່ອມຕໍ່ໄດ້ໃນຕອນນີ້ ກະລຸນາລອງໃໝ່</string>
+    <string name="recovery_code_also_in_profile">ມັນຢູ່ໃນ ໂປຣໄຟລ໌ › ການກູ້ຄືນ ນຳ</string>
+    <string name="recovery_code_remind_later">ເຕືອນຂ້ອຍພາຍຫຼັງ</string>
+    <string name="recovery_code_saved">ຂ້ອຍບັນທຶກແລ້ວ</string>
+    <string name="recovery_code_download">ດາວໂຫຼດ</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · ລະຫັດກູ້ຄືນ\n\n%1$s\n\nໃຊ້ມັນໃນ “ຂ້ອຍເຄີຍໃຊ້ໃນອຸປະກອນອື່ນ” ເພື່ອນຳຂໍ້ມູນຂອງທ່ານກັບຄືນມາ\n</string>
+</resources>

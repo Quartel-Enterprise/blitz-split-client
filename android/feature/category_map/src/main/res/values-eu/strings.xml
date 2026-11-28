@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Hitzik ez</string>
+    <string name="category_map_title">Kategoria-mapa</string>
+    <string name="category_map_search">Bilatu hitzak</string>
+    <string name="category_map_add">Gehitu hitza</string>
+    <string name="category_map_more">Aukera gehiago</string>
+    <string name="category_map_restore">Leheneratu lehenetsia</string>
+    <string name="category_map_back">Atzera</string>
+    <string name="category_map_intro">Gastu baten izenburuak hitz hauetako bat duenean, kategoria berez jartzen da. “Uber etxera” Garraioa bihurtzen da.</string>
+    <string name="category_map_intro_offline">Mapak lineaz kanpo funtzionatzen du: aldaketak berehala aplikatzen dira gailu honetan, eta zure beste gailuetara iristen dira berriro linean zaudenean.</string>
+    <string name="category_map_device_only">Zure mapa gailu honetan bakarrik dago. Zure beste gailuetara eramateko, hasi saioa Google edo Apple kontuarekin Profilean.</string>
+    <string name="category_map_open_profile">Ireki profila</string>
+    <string name="category_map_longest_wins">Bi hitz izenburu batekin bat datozenean, luzeenak irabazten du.</string>
+    <string name="category_map_no_result">Ez dago hitzik “%1$s” testuarekin</string>
+    <string name="category_map_no_result_body">Gehitu, eta izenburuan hitz hau duten gastuak kategoria egokiarekin iritsiko dira.</string>
+    <string name="category_map_add_query">Gehitu “%1$s”</string>
+    <string name="category_map_empty_title">Zure mapa hutsik dago</string>
+    <string name="category_map_empty_body">Hitzik gabe, kategoria ez dator izenburutik: gastu bakoitzean zuk aukeratzen duzu.</string>
+    <string name="category_map_group_category"> · kategoria nagusia: %1$s</string>
+    <string name="category_map_only_main">%1$s bakarrik</string>
+    <string name="category_map_only_in_group">‘%1$s’ kategorian bakarrik</string>
+    <string name="category_map_no_terms_yet">Oraindik ez dago hitzik.</string>
+    <string name="category_map_add_in">Gehitu hitza ‘%1$s’ kategorian</string>
+    <string name="category_map_tip">Sakatu hitz bat haren kategoria aldatzeko edo kentzeko. Hitz osoarekin bat egiten du, azentuak eta maiuskulak kontuan hartu gabe.</string>
+    <string name="category_map_queued">ilaran</string>
+    <string name="category_map_term_action">%1$s, %2$s. Editatu</string>
+    <string name="category_map_new_term">Hitz berria</string>
+    <string name="category_map_edit_term">Editatu hitza</string>
+    <string name="category_map_term_label">Hitza edo esaldia</string>
+    <string name="category_map_term_help">Hitz osoarekin bat egiten du, azentuak eta maiuskulak kontuan hartu gabe.</string>
+    <string name="category_map_term_help_app">Aplikazioaren hitza. Leheneratu lehenetsia aukerak hasierako moduan itzultzen du.</string>
+    <string name="category_map_term_duplicate">“%1$s” hitzak kategoria hau aukeratzen du dagoeneko: %2$s. Hitz bakoitzak kategoria bakarra du.</string>
+    <string name="category_map_term_too_short">Erabili gutxienez 2 letra.</string>
+    <string name="category_map_term_too_long">Erabili gehienez 30 letra.</string>
+    <string name="category_map_term_invalid">Erabili letrak, digituak eta zuriuneak bakarrik.</string>
+    <string name="category_map_category">Kategoria</string>
+    <string name="category_map_category_help">Kategoria edo azpikategoria bat izan daiteke.</string>
+    <string name="category_map_category_help_edit">Hemen aldatuz gero, hitza beste kategoria batera eramaten da.</string>
+    <string name="category_map_category_help_move">Mugitzean, hitza kategoria honetatik ateratzen da: %1$s.</string>
+    <string name="category_map_example">Adibidea</string>
+    <string name="category_map_example_move">Mugituz gero</string>
+    <string name="category_map_remove">Kendu</string>
+    <string name="category_map_cancel">Utzi</string>
+    <string name="category_map_save">Gorde</string>
+    <string name="category_map_move_to">Mugitu hona: %1$s</string>
+    <string name="category_map_removed">“%1$s” mapatik atera da</string>
+    <string name="category_map_undo">Desegin</string>
+    <string name="category_map_restore_title">Mapa lehenetsia leheneratu?</string>
+    <string name="category_map_restore_body">Aplikazioaren 60 hitzak hasierako moduan itzultzen dira, kendu edo mugitu dituzunak barne.</string>
+    <string name="category_map_restore_own_one">Zuk sortutako hitza, “%1$s”, geratu egiten da.</string>
+    <string name="category_map_restore_confirm">Leheneratu</string>
+    <string name="category_map_save_error">Ezin izan da mapa gorde. Saiatu berriro.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d hitz</item>
+        <item quantity="other">%d hitz</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d azpikategoria</item>
+        <item quantity="other">%d azpikategoria</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d hitz “%2$s” testuarekin</item>
+        <item quantity="other">%1$d hitz “%2$s” testuarekin</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Lineaz kanpo · %d aldaketa ilaran</item>
+        <item quantity="other">Lineaz kanpo · %d aldaketa ilaran</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Zuk sortutako hitzak (%d) geratu egiten dira.</item>
+        <item quantity="other">Zuk sortutako hitzak (%d) geratu egiten dira.</item>
+    </plurals>
+    <string name="category_map_new_category">Kategoria berria</string>
+    <string name="category_map_new_subcategory_in">Azpikategoria berria ‘%s’ kategorian</string>
+    <string name="category_map_edit_category">Editatu: %s</string>
+    <string name="category_map_category_group">Taldea</string>
+    <string name="category_map_change_color">Aldatu kolorea: %1$s</string>
+    <string name="category_map_restore_color">Leheneratu kolorea</string>
+    <string name="category_map_color_done">Eginda</string>
+</resources>

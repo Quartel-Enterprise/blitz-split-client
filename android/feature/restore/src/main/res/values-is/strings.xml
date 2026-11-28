@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Fáðu hópana þína aftur</string>
+    <string name="restore_subtitle">Skráðir þú þig áður inn með aðgangi? Skráðu þig þá bara inn aftur. Ef ekki, notaðu endurheimtarkóðann eða QR-kóðann úr gamla tækinu þínu.</string>
+    <string name="restore_no_connection_title">Engin tenging</string>
+    <string name="restore_no_connection_body">Innskráning með aðgangi eða kóða þarf nettengingu til að sækja hópana þína. Það sem þú slóst inn er geymt.</string>
+    <string name="restore_code_label">Eða notaðu endurheimtarkóðann</string>
+    <string name="restore_code_hint">Orðin 12 í réttri röð. Límdu þau öll í einn reit til að fylla út alla reitina.</string>
+    <string name="restore_scan_qr_title">Skannaðu QR-kóðann úr gamla tækinu þínu</string>
+    <string name="restore_scan_qr_body">Þar: Prófíll › Endurheimt › Sýna QR-kóða</string>
+    <string name="restore_recover">Endurheimta</string>
+    <string name="restore_try_again">Reyna aftur</string>
+    <string name="restore_start_fresh">Byrja upp á nýtt á þessu tæki</string>
+    <string name="restore_error_invalid_code">Kóðinn fannst ekki. Athugaðu orðin og röð þeirra og reyndu svo aftur.</string>
+    <string name="restore_error_too_many_attempts">Of margar tilraunir. Bíddu í nokkrar mínútur og reyndu aftur.</string>
+    <string name="restore_error_sign_in_failed">Ekki tókst að skrá inn núna. Reyndu aftur.</string>
+    <string name="restore_error_unknown">Eitthvað fór úrskeiðis. Reyndu aftur.</string>
+</resources>

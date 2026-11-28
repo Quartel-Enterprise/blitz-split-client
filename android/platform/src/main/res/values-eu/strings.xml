@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · berreskuratze-kodea</string>
+    <string name="platform_export_file_name">blitz-split-datuak-%1$s.json</string>
+    <string name="platform_camera_denied">Baimendu kamera Ezarpenetan argazki bat ateratzeko.</string>
+    <string name="platform_camera_settings">Ezarpenak</string>
+    <string name="platform_receipt_source_camera">Atera argazkia</string>
+    <string name="platform_receipt_source_gallery">Aukeratu galeriatik</string>
+    <string name="platform_receipt_source_file">Aukeratu fitxategia</string>
+    <string name="platform_receipt_camera_title">Eskaneatu tiketa</string>
+    <string name="platform_receipt_camera_close">Itxi</string>
+    <string name="platform_receipt_camera_flash_on">Piztu flasha</string>
+    <string name="platform_receipt_camera_flash_off">Itzali flasha</string>
+    <string name="platform_receipt_camera_hint">Sartu tiket osoa markoan. Zenbatekoa, data eta deskribapena guk betetzen ditugu; zuk egiaztatzen duzu gorde aurretik.</string>
+    <string name="platform_receipt_camera_gallery">Aukeratu galeriatik</string>
+    <string name="platform_receipt_camera_shutter">Atera argazkia</string>
+    <string name="platform_receipt_camera_unavailable">Kamera ez dago erabilgarri. Aukeratu tiketaren argazki bat galeriatik.</string>
+    <string name="platform_receipt_camera_permission">Baimendu kamera tiketa eskaneatzeko, edo aukeratu argazki bat galeriatik.</string>
+    <string name="platform_receipt_camera_allow">Baimendu kamera</string>
+    <string name="platform_receipt_camera_settings">Ireki ezarpenak</string>
+</resources>

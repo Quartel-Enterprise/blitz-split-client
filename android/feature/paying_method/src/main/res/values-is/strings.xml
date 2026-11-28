@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Nýr greiðslumáti</string>
+    <string name="paying_method_edit_title">Breyta greiðslumáta</string>
+    <string name="paying_method_type">Gerð</string>
+    <string name="paying_method_name">Nafn</string>
+    <string name="paying_method_name_optional">Nafn (valfrjálst)</string>
+    <string name="paying_method_color">Litur</string>
+    <string name="paying_method_default">Sjálfgefinn greiðslumáti</string>
+    <string name="paying_method_default_hint">Nýr kostnaður sem þú greiðir byrjar með honum.</string>
+    <string name="paying_method_delete">Eyða greiðslumáta</string>
+    <string name="paying_method_delete_title">Eyða þessum greiðslumáta?</string>
+    <string name="paying_method_delete_body">Kostnaður sem þú merktir með honum mun ekki lengur sýna hann.</string>
+    <string name="paying_method_delete_confirm">Eyða</string>
+    <string name="paying_method_save">Vista</string>
+</resources>

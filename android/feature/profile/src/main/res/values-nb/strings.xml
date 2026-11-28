@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">Amharisk</string>
     <string name="profile_language_sinhala">Singalesisk</string>
     <string name="profile_language_kazakh">Kasakhisk</string>
+    <string name="profile_language_mongolian">Mongolsk</string>
+    <string name="profile_language_kyrgyz">Kirgisisk</string>
+    <string name="profile_language_lao">Laotisk</string>
+    <string name="profile_language_icelandic">Islandsk</string>
+    <string name="profile_language_basque">Baskisk</string>
+    <string name="profile_language_galician">Galisisk</string>
+    <string name="profile_language_romansh">Retoromansk</string>
     <string name="profile_language_system_detail">Enhetens språk</string>
     <string name="profile_notifications">Varsler</string>
     <plurals name="profile_notifications_active">

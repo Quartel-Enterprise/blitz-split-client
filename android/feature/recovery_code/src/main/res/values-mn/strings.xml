@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Сэргээх кодоо хадгалах</string>
+    <string name="recovery_code_body">Та бүртгэлгүй ашиглаж байна. Төхөөрөмжөө солих эсвэл гээвэл эдгээр 12 үг таны өгөгдлийг буцааж авчирна. Тэдгээрийг дарааллаар нь бичиж авна уу. 30 хоног ашиглаагүй бол таны өгөгдөл устгагдаж, үгс ажиллахаа больно.</string>
+    <string name="recovery_code_copy">Үгсийг хуулах</string>
+    <string name="recovery_code_save_to_password_manager">Нууц үгийн менежерт хадгалах</string>
+    <string name="recovery_code_connect_instead">Оронд нь Google эсвэл Apple холбох</string>
+    <string name="recovery_code_connect_instead_body">Код шаардлагагүй</string>
+    <string name="recovery_code_sign_in_failed">Одоогоор холбогдож чадсангүй. Дахин оролдоно уу.</string>
+    <string name="recovery_code_also_in_profile">Мөн Профайл › Сэргээх хэсэгт байгаа.</string>
+    <string name="recovery_code_remind_later">Дараа сануулах</string>
+    <string name="recovery_code_saved">Би хадгалсан</string>
+    <string name="recovery_code_download">Татах</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · сэргээх код\n\n%1$s\n\nӨгөгдлөө буцааж авахын тулд \"Би өөр төхөөрөмж дээр ашиглаж байсан\" хэсэгт ашиглана уу.\n</string>
+</resources>

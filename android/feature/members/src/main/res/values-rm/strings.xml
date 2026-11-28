@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Colliaziun d\'invitaziun</string>
+    <string name="members_link_pending">Anc betg creada</string>
+    <string name="members_share">Cundivider</string>
+    <string name="members_me">%s (Vus)</string>
+    <string name="members_status_this_device">Quest apparat</string>
+    <string name="members_status_joined">Aderì</string>
+    <string name="members_status_not_joined">Anc betg aderì</string>
+    <string name="members_options">Opziuns per %s</string>
+    <string name="members_rename">Renumnar</string>
+    <string name="members_personal_invite">Invitaziun persunala per %s</string>
+    <string name="members_personal_message">Tgi che avra questa colliaziun adera directamain sco %s, senza tscherner da la glista. Ella funcziuna mo ina giada.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Tgi che avra questa colliaziun adera directamain sco %1$s, senza tscherner da la glista, e vesa gia sia part da %2$s en l\'expensa agiuntada fin ussa. Ella funcziuna mo ina giada.</item>
+        <item quantity="other">Tgi che avra questa colliaziun adera directamain sco %1$s, senza tscherner da la glista, e vesa gia sia part da %2$s en las %3$d expensas agiuntadas fin ussa. Ella funcziuna mo ina giada.</item>
+    </plurals>
+    <string name="members_personal_copy">Copiar la colliaziun</string>
+    <string name="members_personal_copied">Copià</string>
+    <string name="members_personal_share">Cundivider cun %s</string>
+    <string name="members_personal_share_message">Invitaziun en la gruppa %1$s sco %2$s sin Blitz Split: %3$s</string>
+    <string name="members_remove">Allontanar da la gruppa</string>
+    <string name="members_remove_joined">%s ha gia aderì a la gruppa</string>
+    <string name="members_remove_title">Allontanar %s da la gruppa?</string>
+    <string name="members_remove_message">%s n\'ha anc betg aderì. Vus pudais agiuntar puspè questa persuna pli tard.</string>
+    <string name="members_remove_confirm">Allontanar</string>
+    <string name="members_release">Liberar il num</string>
+    <string name="members_release_title">Liberar il num da %s?</string>
+    <string name="members_release_message">Tgi che ha aderì sco %1$s banduna la gruppa. Il num, la colur e las expensas da %1$s restan, ed insatgi po puspè tscherner %1$s tras la colliaziun da la gruppa.</string>
+    <string name="members_release_confirm">Liberar</string>
+    <string name="members_release_error">Impussibel da liberar il num. Controllai Vossa connexiun ed empruvai anc ina giada.</string>
+    <string name="members_add">Agiuntar ina persuna</string>
+    <string name="members_invite_instead">Ha la persuna l\'app? Envidai cun la colliaziun</string>
+    <string name="members_name_label">Num</string>
+    <string name="members_save">Memorisar</string>
+    <string name="members_cancel">Interrumper</string>
+    <string name="members_change_error">Impussibel da memorisar la midada. Empruvai anc ina giada.</string>
+    <string name="members_remove_open_balance">%s ha in saldo avert</string>
+    <string name="members_balance_to_get_back">%s da survegnir</string>
+    <string name="members_balance_owes">sto pajar %s</string>
+    <string name="members_balance_settled">Pareggià</string>
+</resources>

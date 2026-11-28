@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">ວິທີຈ່າຍເງິນໃໝ່</string>
+    <string name="paying_method_edit_title">ແກ້ໄຂວິທີຈ່າຍເງິນ</string>
+    <string name="paying_method_type">ປະເພດ</string>
+    <string name="paying_method_name">ຊື່</string>
+    <string name="paying_method_name_optional">ຊື່ (ບໍ່ບັງຄັບ)</string>
+    <string name="paying_method_color">ສີ</string>
+    <string name="paying_method_default">ວິທີເລີ່ມຕົ້ນ</string>
+    <string name="paying_method_default_hint">ລາຍຈ່າຍໃໝ່ທີ່ທ່ານຈ່າຍຈະເລີ່ມດ້ວຍວິທີນີ້</string>
+    <string name="paying_method_delete">ລຶບວິທີຈ່າຍເງິນ</string>
+    <string name="paying_method_delete_title">ລຶບວິທີຈ່າຍເງິນນີ້ບໍ?</string>
+    <string name="paying_method_delete_body">ລາຍຈ່າຍທີ່ທ່ານໝາຍດ້ວຍວິທີນີ້ຈະບໍ່ສະແດງມັນອີກ</string>
+    <string name="paying_method_delete_confirm">ລຶບ</string>
+    <string name="paying_method_save">ບັນທຶກ</string>
+</resources>

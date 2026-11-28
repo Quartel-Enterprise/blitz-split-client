@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Жабуу</string>
+    <string name="invite_group_created">Топ түзүлдү</string>
+    <string name="invite_title">Баарын чакырыңыз: %s</string>
+    <string name="invite_qr_description">Топтун чакыруу шилтемесинин QR коду</string>
+    <string name="invite_copy">Көчүрүү</string>
+    <string name="invite_copied">Көчүрүлдү</string>
+    <string name="invite_who_picks">Шилтемени ачкан адам тизмеден ким экенин тандайт: %s. Аккаунттун кереги жок.</string>
+    <string name="invite_names_or">%1$s же %2$s</string>
+    <string name="invite_anyone_joins">Шилтемени ачкан адам топко кошулат. Аккаунттун кереги жок.</string>
+    <string name="invite_pending_title">Шилтеме күтүүдө</string>
+    <string name="invite_pending_offline">Интернетке туташаарыңыз менен түзүлөт.</string>
+    <string name="invite_pending_online">Шилтеме түзүлүүдө…</string>
+    <string name="invite_failed_title">Шилтемени түзө алган жокпуз</string>
+    <string name="invite_failed_body">Топту шайкештирүүдө бир ката кетти.</string>
+    <string name="invite_retry">Кайра аракет кылуу</string>
+    <string name="invite_share">Шилтемени бөлүшүү</string>
+    <string name="invite_see_who_joined">Кимдер кошулганын көрүү</string>
+    <string name="invite_add_person">Колдонмосу жок адамды кошуу</string>
+    <string name="invite_go_to_group">Топко өтүү</string>
+    <string name="invite_change_link">Шилтемени өзгөртүү</string>
+    <string name="invite_change_link_title">Чакыруу шилтемесин өзгөртөсүзбү?</string>
+    <string name="invite_change_link_message">Учурдагы шилтеме жана QR код, колдонулбаган жеке чакырууларды кошо, иштебей калат. Мурунтан кошулгандар топто калат.</string>
+    <string name="invite_change_link_failed">Шилтемени өзгөртө алган жокпуз. Кайра аракет кылыңыз.</string>
+    <string name="invite_share_message">Blitz Split колдонмосунда чыгымдарды бөлөлү, топ: %1$s. Ушул шилтеме менен кошулуңуз: %2$s</string>
+</resources>

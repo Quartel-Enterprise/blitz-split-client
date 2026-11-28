@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Memorisai Voss code da recuperaziun</string>
+    <string name="recovery_code_body">Vus duvrais l\'app senza conto. Quests 12 pleds restitueschan Vossas datas, sche Vus midais u perdais Voss apparat. Notai els en urden. Suenter 30 dis senza utilisaziun vegnan Vossas datas stizzadas ed ils pleds na funcziunan betg pli.</string>
+    <string name="recovery_code_copy">Copiar ils pleds</string>
+    <string name="recovery_code_save_to_password_manager">Memorisar en il manader da pleds-clav</string>
+    <string name="recovery_code_connect_instead">Colliar empè Google u Apple</string>
+    <string name="recovery_code_connect_instead_body">Nagin code necessari</string>
+    <string name="recovery_code_sign_in_failed">Impussibel da colliar en quest mument. Empruvai anc ina giada.</string>
+    <string name="recovery_code_also_in_profile">El è er en Profil › Recuperaziun.</string>
+    <string name="recovery_code_remind_later">Ma regurdar pli tard</string>
+    <string name="recovery_code_saved">Jau al hai memorisà</string>
+    <string name="recovery_code_download">Telechargiar</string>
+    <string name="recovery_code_file_name">blitz-split-code-da-recuperaziun.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · code da recuperaziun\n\n%1$s\n\nDuvrai el en \"Jau hai gia duvrà l\'app sin in auter apparat\" per recuperar Vossas datas.\n</string>
+</resources>

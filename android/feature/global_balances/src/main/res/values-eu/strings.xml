@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Saldoak</string>
+    <string name="global_balances_profile">Profila</string>
+    <string name="global_balances_offline">Lineaz kanpo · gailu honetako saldoak</string>
+    <string name="global_balances_filter">Erakutsi</string>
+    <string name="global_balances_filter_all">Guztiak</string>
+    <string name="global_balances_filter_you_owe">Ordainduko duzu</string>
+    <string name="global_balances_filter_owes_you">Jasoko duzu</string>
+    <string name="global_balances_hint">Taldeen artean konpentsatuta dago dagoeneko: pertsona bakoitza behin agertzen da.</string>
+    <string name="global_balances_hint_empty">Gailu honetako talde guztiak batzen.</string>
+    <string name="global_balances_section_you_owe">Ordainduko duzu · %d</string>
+    <string name="global_balances_section_owes_you">Jasoko duzu · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d talde</item>
+        <item quantity="other">%d talde</item>
+    </plurals>
+    <string name="global_balances_guest">%s · gonbidatua</string>
+    <string name="global_balances_you_owe">ordainduko duzu</string>
+    <string name="global_balances_owes_you">jasoko duzu</string>
+    <string name="global_balances_by_group_show">Erakutsi taldeka: %s</string>
+    <string name="global_balances_by_group_hide">Ezkutatu taldeka: %s</string>
+    <string name="global_balances_received">Jasota</string>
+    <string name="global_balances_received_from">Jasota · %s</string>
+    <string name="global_balances_settle">Kontuak kitatu</string>
+    <string name="global_balances_settle_with">Kitatu kontuak: %s</string>
+    <string name="global_balances_charge">Eskatu</string>
+    <string name="global_balances_charge_person">Eskatu dirua: %s</string>
+    <string name="global_balances_detail_pane">Saldoa · %s</string>
+    <string name="global_balances_detail_owes_you">%s · jasoko duzu</string>
+    <string name="global_balances_detail_you_owe">%s · ordainduko duzu</string>
+    <string name="global_balances_detail_guest">%s · aplikaziorik gabeko gonbidatua</string>
+    <string name="global_balances_detail_note_owed">Saldo garbiak taldeak konpentsatzen ditu dagoeneko. Eskatu eta Jasota aukerek zenbateko hau erabiltzen dute: %s. Aplikazioak ordainketa bat erregistratzen du talde bakoitzean.</string>
+    <string name="global_balances_detail_note_settle">Saldo garbiak taldeak konpentsatzen ditu dagoeneko. Kontuak kitatu aukerak zenbateko hau erabiltzen du: %s. Aplikazioak ordainketa bat erregistratzen du talde bakoitzean.</string>
+    <string name="global_balances_detail_note_single">Talde bakarra irekita pertsona honekin: %s.</string>
+    <string name="global_balances_settled_title">Dena kitatuta</string>
+    <string name="global_balances_settled_body">Inork ez dizu ezer zor, eta zuk ez diozu inori ezer zor. Norbaitek gastu bat gehitzean, saldoa hemen agertuko da.</string>
+    <string name="global_balances_settled_action">Ikusi taldeak</string>
+    <string name="global_balances_nothing_to_pay_title">Ez duzu ezer ordaindu behar</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Kontuak guztiekin kitatu dituzu. Oraindik jasoko duzu: %2$s, %1$d pertsonarengandik.</item>
+        <item quantity="other">Kontuak guztiekin kitatu dituzu. Oraindik jasoko duzu: %2$s, %1$d pertsonarengandik.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Ikusi nork zor dizun</string>
+    <string name="global_balances_nothing_to_receive_title">Inork ez dizu zor</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Oraindik ordainduko duzu: %2$s, %1$d pertsonari.</item>
+        <item quantity="other">Oraindik ordainduko duzu: %2$s, %1$d pertsonari.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Ikusi nori zor diozun</string>
+    <string name="global_balances_coming_soon">Laster</string>
+    <string name="global_balances_change_error">Ezin izan da aldaketa gorde. Saiatu berriro.</string>
+    <string name="global_balances_copied">Kopiatuta</string>
+    <string name="global_balances_charge_title">Eskatu dirua: %s</string>
+    <string name="global_balances_charge_owes">Jasoko duzu: %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Itxi</string>
+    <string name="global_balances_charge_guest">%s aplikaziorik gabeko gonbidatua da. Mezu honen bidez bakarrik jakingo du; beraz, mezuak dagoeneko azaltzen du gastuan zer sartu zen.</string>
+    <string name="global_balances_charge_message">Mezua</string>
+    <string name="global_balances_charge_pix">Sartu nire Pix gakoa</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Kopiatu mezua</string>
+    <string name="global_balances_charge_send">Bidali</string>
+    <string name="global_balances_message">Kaixo, %1$s! Blitz Split aplikazioaren kontuen arabera, %2$s zor didazu (%3$s).</string>
+    <string name="global_balances_message_guest">Kaixo, %1$s! %2$s zor didazu (%3$s), zure zatia hemen: %4$s.</string>
+    <string name="global_balances_message_guest_paid">Kaixo, %1$s! %2$s zor didazu (%3$s), zure zatia hemen: %4$s, dagoeneko ordaindutakoa (%5$s) kenduta.</string>
+    <string name="global_balances_message_group">‘%s’ taldea</string>
+    <string name="global_balances_message_groups">taldeak: %s</string>
+    <string name="global_balances_message_pix">Pix (%1$s): %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telefonoa</string>
+    <string name="global_balances_key_email">Posta elektronikoa</string>
+    <string name="global_balances_key_random">Ausazko gakoa</string>
+    <string name="global_balances_message_reroute">‘%1$s’ taldeak zorrak sinplifikatu ditu; beraz, %2$s pertsonari ordaindu beharrean, zuzenean niri ordaintzen didazu. Zure guztizkoa ez da aldatu.</string>
+</resources>

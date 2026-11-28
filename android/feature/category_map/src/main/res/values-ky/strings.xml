@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Сөз жок</string>
+    <string name="category_map_title">Категория картасы</string>
+    <string name="category_map_search">Сөздөрдү издөө</string>
+    <string name="category_map_add">Сөз кошуу</string>
+    <string name="category_map_more">Башка параметрлер</string>
+    <string name="category_map_restore">Демейкини калыбына келтирүү</string>
+    <string name="category_map_back">Артка</string>
+    <string name="category_map_intro">Чыгымдын аталышында ушул сөздөрдүн бири болсо, анын категориясы өзү коюлат. “Uber үйгө” Транспорт болуп калат.</string>
+    <string name="category_map_intro_offline">Карта офлайн иштейт: өзгөртүүлөр бул түзмөктө дароо күчүнө кирет жана интернет кайра келгенде башка түзмөктөрүңүзгө жетет.</string>
+    <string name="category_map_device_only">Картаңыз ушул түзмөктө гана калат. Аны башка түзмөктөрүңүзгө алып өтүү үчүн Профилиңизде Google же Apple аркылуу кириңиз.</string>
+    <string name="category_map_open_profile">Профилди ачуу</string>
+    <string name="category_map_longest_wins">Аталышка эки сөз дал келсе, эң узуну жеңет.</string>
+    <string name="category_map_no_result">Сөз табылган жок: “%1$s”</string>
+    <string name="category_map_no_result_body">Аны кошуңуз, ошондо аталышында бул сөз бар чыгымдар туура категория менен келет.</string>
+    <string name="category_map_add_query">“%1$s” кошуу</string>
+    <string name="category_map_empty_title">Картаңыз бош</string>
+    <string name="category_map_empty_body">Сөздөр жок болсо, категория аталыштан алынбайт: аны ар бир чыгымда өзүңүз тандайсыз.</string>
+    <string name="category_map_group_category"> · ‘%1$s’ тобунун категориясы</string>
+    <string name="category_map_only_main">%1$s гана</string>
+    <string name="category_map_only_in_group">‘%1$s’ тобунда гана</string>
+    <string name="category_map_no_terms_yet">Азырынча сөз жок.</string>
+    <string name="category_map_add_in">Сөз кошуу: %1$s</string>
+    <string name="category_map_tip">Категориясын өзгөртүү же өчүрүү үчүн сөздү басыңыз. Тамгалардын чоң-кичинесине жана белгилерине карабастан, бүтүн сөз дал келет.</string>
+    <string name="category_map_queued">кезекте</string>
+    <string name="category_map_term_action">%1$s, %2$s. Түзөтүү</string>
+    <string name="category_map_new_term">Жаңы сөз</string>
+    <string name="category_map_edit_term">Сөздү түзөтүү</string>
+    <string name="category_map_term_label">Сөз же сөз айкашы</string>
+    <string name="category_map_term_help">Тамгалардын чоң-кичинесине жана белгилерине карабастан, бүтүн сөз дал келет.</string>
+    <string name="category_map_term_help_app">Колдонмонун сөзү. Демейкини калыбына келтирүү аны баштапкы абалына кайтарат.</string>
+    <string name="category_map_term_duplicate">“%1$s” мурунтан эле категория тандайт: %2$s. Ар бир сөздүн бир категориясы болот.</string>
+    <string name="category_map_term_too_short">Кеминде 2 тамга колдонуңуз.</string>
+    <string name="category_map_term_too_long">Эң көп 30 тамга колдонуңуз.</string>
+    <string name="category_map_term_invalid">Тамгаларды, сандарды жана боштуктарды гана колдонуңуз.</string>
+    <string name="category_map_category">Категория</string>
+    <string name="category_map_category_help">Бул категория же ички категория болушу мүмкүн.</string>
+    <string name="category_map_category_help_edit">Муну бул жерден өзгөртсөңүз, сөз башка категорияга өтөт.</string>
+    <string name="category_map_category_help_move">Жылдырсаңыз, сөз бул категориядан чыгат: %1$s.</string>
+    <string name="category_map_example">Мисал</string>
+    <string name="category_map_example_move">Жылдырылса</string>
+    <string name="category_map_remove">Өчүрүү</string>
+    <string name="category_map_cancel">Жокко чыгаруу</string>
+    <string name="category_map_save">Сактоо</string>
+    <string name="category_map_move_to">Жылдыруу: %1$s</string>
+    <string name="category_map_removed">“%1$s” картадан чыгарылды</string>
+    <string name="category_map_undo">Кайтаруу</string>
+    <string name="category_map_restore_title">Демейки картаны калыбына келтиресизби?</string>
+    <string name="category_map_restore_body">Колдонмонун 60 сөзү, сиз өчүргөн же жылдырган сөздөрдү кошо, баштапкы абалына кайтат.</string>
+    <string name="category_map_restore_own_one">Сиз түзгөн “%1$s” сөзү калат.</string>
+    <string name="category_map_restore_confirm">Калыбына келтирүү</string>
+    <string name="category_map_save_error">Картаны сактай алган жокпуз. Кайра аракет кылыңыз.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d сөз</item>
+        <item quantity="other">%d сөз</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d ички категория</item>
+        <item quantity="other">%d ички категория</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">“%2$s” менен %1$d сөз</item>
+        <item quantity="other">“%2$s” менен %1$d сөз</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Офлайн · %d өзгөртүү кезекте</item>
+        <item quantity="other">Офлайн · %d өзгөртүү кезекте</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Сиз түзгөн %d сөз калат.</item>
+        <item quantity="other">Сиз түзгөн %d сөз калат.</item>
+    </plurals>
+    <string name="category_map_new_category">Жаңы категория</string>
+    <string name="category_map_new_subcategory_in">Жаңы ички категория: %s</string>
+    <string name="category_map_edit_category">Түзөтүү: %s</string>
+    <string name="category_map_category_group">Топ</string>
+    <string name="category_map_change_color">Түсүн өзгөртүү: %1$s</string>
+    <string name="category_map_restore_color">Түстү калыбына келтирүү</string>
+    <string name="category_map_color_done">Даяр</string>
+</resources>

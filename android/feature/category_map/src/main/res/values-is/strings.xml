@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Engin orð</string>
+    <string name="category_map_title">Flokkakort</string>
+    <string name="category_map_search">Leita að orðum</string>
+    <string name="category_map_add">Bæta við orði</string>
+    <string name="category_map_more">Fleiri valkostir</string>
+    <string name="category_map_restore">Endurheimta sjálfgefið</string>
+    <string name="category_map_back">Til baka</string>
+    <string name="category_map_intro">Þegar titill kostnaðar inniheldur eitt þessara orða kemur flokkurinn sjálfkrafa. “Uber heim” verður Samgöngur.</string>
+    <string name="category_map_intro_offline">Kortið virkar án nettengingar: breytingar gilda strax á þessu tæki og berast í hin tækin þín þegar nettenging er komin aftur.</string>
+    <string name="category_map_device_only">Kortið þitt er aðeins á þessu tæki. Til að fá það í hin tækin þín skaltu skrá þig inn með Google eða Apple í prófílnum þínum.</string>
+    <string name="category_map_open_profile">Opna prófíl</string>
+    <string name="category_map_longest_wins">Þegar tvö orð passa við titil vinnur það lengra.</string>
+    <string name="category_map_no_result">Ekkert orð með “%1$s”</string>
+    <string name="category_map_no_result_body">Bættu því við og kostnaður með þessu orði í titlinum fær réttan flokk.</string>
+    <string name="category_map_add_query">Bæta við “%1$s”</string>
+    <string name="category_map_empty_title">Kortið þitt er tómt</string>
+    <string name="category_map_empty_body">Án orða kemur flokkurinn ekki úr titlinum: þú velur hann fyrir hvern kostnað.</string>
+    <string name="category_map_group_category"> · flokkur: %1$s</string>
+    <string name="category_map_only_main">Aðeins %1$s</string>
+    <string name="category_map_only_in_group">aðeins í: %1$s</string>
+    <string name="category_map_no_terms_yet">Engin orð enn.</string>
+    <string name="category_map_add_in">Bæta við orði í: %1$s</string>
+    <string name="category_map_tip">Ýttu á orð til að breyta flokki þess eða fjarlægja það. Það passar við heilt orð og hunsar broddstafi og há- og lágstafi.</string>
+    <string name="category_map_queued">í biðröð</string>
+    <string name="category_map_term_action">%1$s, %2$s. Breyta</string>
+    <string name="category_map_new_term">Nýtt orð</string>
+    <string name="category_map_edit_term">Breyta orði</string>
+    <string name="category_map_term_label">Orð eða orðasamband</string>
+    <string name="category_map_term_help">Passar við heilt orð og hunsar broddstafi og há- og lágstafi.</string>
+    <string name="category_map_term_help_app">Orð frá appinu. Endurheimta sjálfgefið skilar því eins og það kom.</string>
+    <string name="category_map_term_duplicate">“%1$s” velur nú þegar flokkinn ‘%2$s’. Hvert orð hefur einn flokk.</string>
+    <string name="category_map_term_too_short">Notaðu að minnsta kosti 2 stafi.</string>
+    <string name="category_map_term_too_long">Notaðu í mesta lagi 30 stafi.</string>
+    <string name="category_map_term_invalid">Notaðu aðeins bókstafi, tölustafi og bil.</string>
+    <string name="category_map_category">Flokkur</string>
+    <string name="category_map_category_help">Það getur verið flokkur eða undirflokkur.</string>
+    <string name="category_map_category_help_edit">Ef þú breytir þessu hér færist orðið í annan flokk.</string>
+    <string name="category_map_category_help_move">Við flutning fer orðið úr flokknum ‘%1$s’.</string>
+    <string name="category_map_example">Dæmi</string>
+    <string name="category_map_example_move">Ef það er flutt</string>
+    <string name="category_map_remove">Fjarlægja</string>
+    <string name="category_map_cancel">Hætta við</string>
+    <string name="category_map_save">Vista</string>
+    <string name="category_map_move_to">Færa í: %1$s</string>
+    <string name="category_map_removed">“%1$s” fór úr kortinu</string>
+    <string name="category_map_undo">Afturkalla</string>
+    <string name="category_map_restore_title">Endurheimta sjálfgefna kortið?</string>
+    <string name="category_map_restore_body">60 orð appsins koma aftur eins og þau komu, líka þau sem þú fjarlægðir eða færðir.</string>
+    <string name="category_map_restore_own_one">Orðið sem þú bjóst til, “%1$s”, verður áfram.</string>
+    <string name="category_map_restore_confirm">Endurheimta</string>
+    <string name="category_map_save_error">Ekki tókst að vista kortið. Reyndu aftur.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d orð</item>
+        <item quantity="other">%d orð</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d undirflokkur</item>
+        <item quantity="other">%d undirflokkar</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d orð með “%2$s”</item>
+        <item quantity="other">%1$d orð með “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Ótengt · %d breyting í biðröð</item>
+        <item quantity="other">Ótengt · %d breytingar í biðröð</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">%d orð sem þú bjóst til verður áfram.</item>
+        <item quantity="other">%d orð sem þú bjóst til verða áfram.</item>
+    </plurals>
+    <string name="category_map_new_category">Nýr flokkur</string>
+    <string name="category_map_new_subcategory_in">Nýr undirflokkur í: %s</string>
+    <string name="category_map_edit_category">Breyta: %s</string>
+    <string name="category_map_category_group">Hópur</string>
+    <string name="category_map_change_color">Breyta lit: %1$s</string>
+    <string name="category_map_restore_color">Endurheimta lit</string>
+    <string name="category_map_color_done">Lokið</string>
+</resources>

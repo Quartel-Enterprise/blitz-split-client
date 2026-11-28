@@ -122,6 +122,13 @@
     <string name="profile_language_amharic">الأمهرية</string>
     <string name="profile_language_sinhala">السنهالية</string>
     <string name="profile_language_kazakh">الكازاخية</string>
+    <string name="profile_language_mongolian">المنغولية</string>
+    <string name="profile_language_kyrgyz">القيرغيزية</string>
+    <string name="profile_language_lao">اللاوية</string>
+    <string name="profile_language_icelandic">الأيسلندية</string>
+    <string name="profile_language_basque">الباسكية</string>
+    <string name="profile_language_galician">الجاليكية</string>
+    <string name="profile_language_romansh">الرومانشية</string>
     <string name="profile_language_system_detail">لغة الجهاز</string>
     <string name="profile_notifications">الإشعارات</string>
     <plurals name="profile_notifications_active">

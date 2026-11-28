@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Lembrete para liquidar contas</string>
+    <string name="push_bill_created">%1$s engadiu o gasto “%2$s” con vostede</string>
+    <string name="push_bill_edited">%1$s editou o gasto “%2$s”</string>
+    <string name="push_bill_deleted">%1$s eliminou o gasto “%2$s”</string>
+    <string name="push_comment_added">%1$s comentou no gasto “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s marcou que lle pagou a vostede</string>
+    <string name="push_payment_to_you">%1$s marcou que %2$s lle pagou a vostede</string>
+    <string name="push_payment_received_yours">%1$s marcou o seu pagamento como recibido</string>
+    <string name="push_payment_from_you">%1$s marcou que vostede lle pagou a %2$s</string>
+    <string name="push_payment_undone">%1$s desfixo un pagamento con vostede</string>
+    <string name="push_charge_sent">%1$s envioulle un lembrete para liquidar contas</string>
+    <string name="push_settle_reminder">Ten un saldo aberto en %1$s</string>
+    <string name="push_settle_reminders">Ten saldos abertos en %1$s grupos</string>
+    <string name="push_added_to_group">%1$s engadiu a vostede ao grupo</string>
+    <string name="push_member_joined">%1$s entrou no grupo</string>
+    <string name="push_debts_simplified_to_you">%1$s simplificou as débedas. Agora vai recibir %3$s de %2$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s simplificou as débedas. Agora ten que pagarlle %3$s a %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s simplificou as débedas. Vexa como queda para vostede.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s desactivou Simplificar débedas. Agora vai recibir %3$s de %2$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s desactivou Simplificar débedas. Agora ten que pagarlle %3$s a %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s desactivou Simplificar débedas. Vexa como queda para vostede.</string>
+    <string name="notification_settings_bills">Gastos</string>
+    <string name="notification_settings_bills_detail">Gastos novos, editados ou eliminados nos que participa</string>
+    <string name="notification_settings_payments">Pagamentos e liquidacións</string>
+    <string name="notification_settings_payments_detail">Pagamentos feitos a vostede ou por vostede, e débedas simplificadas</string>
+    <string name="notification_settings_comments">Comentarios</string>
+    <string name="notification_settings_comments_detail">Nos gastos nos que participa e nos fíos nos que escribiu</string>
+    <string name="notification_settings_people_and_groups">Persoas e grupos</string>
+    <string name="notification_settings_people_and_groups_detail">Quen entra ou sae dos seus grupos, e que cambia neles</string>
+    <string name="notification_settings_payment_requests">Solicitudes de pagamento</string>
+    <string name="notification_settings_payment_requests_detail">Cando alguén lle pide que pague</string>
+    <string name="notification_settings_balance_reminder">Lembrete de saldo aberto</string>
+    <string name="notification_settings_balance_reminder_detail">Unha vez á semana, se hai un saldo aberto</string>
+</resources>

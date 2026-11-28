@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">ການແຈ້ງເຕືອນ</string>
+    <string name="notification_settings_denied_title">ການແຈ້ງເຕືອນ Blitz Split ຖືກປິດໃນ Android</string>
+    <string name="notification_settings_denied_body">ເປີດມັນໃນການຕັ້ງຄ່າລະບົບເພື່ອຮັບການແຈ້ງເຕືອນແບບພຸດດ້ານລຸ່ມ ກະດິ່ງຍັງໃຊ້ໄດ້ຕາມປົກກະຕິ</string>
+    <string name="notification_settings_open_settings">ເປີດການຕັ້ງຄ່າ</string>
+    <string name="notification_settings_refused_body">Android ໃຫ້ທ່ານອະນຸຍາດໄດ້ອີກຄັ້ງໜຶ່ງເພື່ອຮັບການແຈ້ງເຕືອນແບບພຸດດ້ານລຸ່ມ ກະດິ່ງຍັງໃຊ້ໄດ້ຕາມປົກກະຕິ</string>
+    <string name="notification_settings_turn_on">ເປີດ</string>
+    <string name="notification_settings_blocked_in_android">ຖືກບລັອກໃນ Android</string>
+    <string name="notification_settings_open_channel_settings_description">ເປີດການຕັ້ງຄ່າ Android ສຳລັບ %1$s</string>
+    <string name="notification_settings_push_switch">ການແຈ້ງເຕືອນແບບພຸດ</string>
+    <string name="notification_settings_push_switch_detail">ສະເພາະອຸປະກອນນີ້</string>
+    <string name="notification_settings_section">ແຈ້ງເຕືອນຂ້ອຍກ່ຽວກັບ</string>
+    <string name="notification_settings_push">ພຸດ</string>
+    <string name="notification_settings_in_app">ໃນແອັບ</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">ພຸດ ສົ່ງການແຈ້ງເຕືອນມາອຸປະກອນນີ້ ໃນແອັບ ໝາຍເປັນລາຍການໃໝ່ຢູ່ກະດິ່ງ ແລະ ໃນ ກິດຈະກຳ ເມື່ອປິດ ມັນຍັງສະແດງໃນ ກິດຈະກຳ ແຕ່ອ່ານແລ້ວ</string>
+    <string name="notification_settings_footer">ການແຈ້ງເຕືອນມາຮອດເມື່ອມີອິນເຕີເນັດ ເພື່ອປິດສຽງກຸ່ມ ກະລຸນາໃຊ້ເມນູພາຍໃນກຸ່ມ</string>
+</resources>

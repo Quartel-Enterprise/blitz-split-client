@@ -322,6 +322,54 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN Mongolia WHEN picking its currency THEN it is the tugrik typed without decimals`() {
+        // Given
+        val region = "MN"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.MNT to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Kyrgyzstan WHEN picking its currency THEN it is the som with its 2 decimals`() {
+        // Given
+        val region = "KG"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.KGS to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Laos WHEN picking its currency THEN it is the kip typed without decimals`() {
+        // Given
+        val region = "LA"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.LAK to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Iceland WHEN picking its currency THEN it is the Icelandic krona with no decimals`() {
+        // Given
+        val region = "IS"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.ISK to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
     fun `GIVEN India WHEN picking its currency THEN it is the rupee with its 2 decimals`() {
         // Given
         val region = "IN"

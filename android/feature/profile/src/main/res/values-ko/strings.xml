@@ -117,6 +117,13 @@
     <string name="profile_language_amharic">암하라어</string>
     <string name="profile_language_sinhala">싱할라어</string>
     <string name="profile_language_kazakh">카자흐어</string>
+    <string name="profile_language_mongolian">몽골어</string>
+    <string name="profile_language_kyrgyz">키르기스어</string>
+    <string name="profile_language_lao">라오어</string>
+    <string name="profile_language_icelandic">아이슬란드어</string>
+    <string name="profile_language_basque">바스크어</string>
+    <string name="profile_language_galician">갈리시아어</string>
+    <string name="profile_language_romansh">로망슈어</string>
     <string name="profile_language_system_detail">기기 언어</string>
     <string name="profile_notifications">알림</string>
     <plurals name="profile_notifications_active">

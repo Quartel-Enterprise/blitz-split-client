@@ -75,7 +75,12 @@ each platform.
       `res/values-ne/strings.xml` (no postposition glued to a placeholder; sentences end with "।"), in Azerbaijani in
       `res/values-az/strings.xml` (no suffix glued to a placeholder), in Amharic in `res/values-am/strings.xml` (no
       affix glued to a placeholder; sentences end with "።"), in Sinhala in `res/values-si/strings.xml` (no case ending
-      glued to a placeholder) and in Kazakh in `res/values-kk/strings.xml` (no suffix glued to a placeholder)
+      glued to a placeholder), in Kazakh in `res/values-kk/strings.xml` (no suffix glued to a placeholder), in
+      Mongolian in `res/values-mn/strings.xml` (Cyrillic; no case ending glued to a placeholder), in Kyrgyz in
+      `res/values-ky/strings.xml` (no suffix glued to a placeholder), in Lao in `res/values-lo/strings.xml` (no space
+      between words, a space between phrases, no full stop), in Icelandic in `res/values-is/strings.xml` (no name
+      declined), in Basque in `res/values-eu/strings.xml` (no case ending glued to a placeholder), in Galician in
+      `res/values-gl/strings.xml` and in Romansh in `res/values-rm/strings.xml`
 - [ ] A new English string with a word Britain or Canada writes differently ("color", "gray", "center", "math",
   "recognized", "toward") also in `values-b+en+001` and `values-en-rCA`, Apple's `en-GB`, `en-AU` and `en-CA`, and
   the web's `enGB.ts` or `enCA.ts` ([general.md](../product/general.md))

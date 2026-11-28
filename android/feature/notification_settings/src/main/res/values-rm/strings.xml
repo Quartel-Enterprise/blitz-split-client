@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Notificaziuns</string>
+    <string name="notification_settings_denied_title">Las notificaziuns da Blitz Split èn deactivadas en Android.</string>
+    <string name="notification_settings_denied_body">Activai ellas en ils parameters dal sistem per retschaiver las notificaziuns push sutvart. La sain cuntinuescha a funcziunar.</string>
+    <string name="notification_settings_open_settings">Avrir ils parameters</string>
+    <string name="notification_settings_refused_body">Android As lubescha da las permetter anc ina giada per retschaiver las notificaziuns push sutvart. La sain cuntinuescha a funcziunar.</string>
+    <string name="notification_settings_turn_on">Activar</string>
+    <string name="notification_settings_blocked_in_android">Bloccà en Android</string>
+    <string name="notification_settings_open_channel_settings_description">Avrir ils parameters dad Android per %1$s</string>
+    <string name="notification_settings_push_switch">Notificaziuns push</string>
+    <string name="notification_settings_push_switch_detail">Mo sin quest apparat</string>
+    <string name="notification_settings_section">Ma notifitgar davart</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">En l\'app</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push trametta ina notificaziun a quest apparat. En l\'app la marca sco nova sin la sain ed en Activitad; deactivà, cumpara ella tuttina en Activitad, gia legida.</string>
+    <string name="notification_settings_footer">Ils avis arrivan cur ch\'i dat internet. Per far taschair ina gruppa, duvrai il menu en la gruppa.</string>
+</resources>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">ລິ້ງເຊີນ</string>
+    <string name="members_link_pending">ຍັງບໍ່ໄດ້ສ້າງ</string>
+    <string name="members_share">ແບ່ງປັນ</string>
+    <string name="members_me">%s (ທ່ານ)</string>
+    <string name="members_status_this_device">ອຸປະກອນນີ້</string>
+    <string name="members_status_joined">ເຂົ້າຮ່ວມແລ້ວ</string>
+    <string name="members_status_not_joined">ຍັງບໍ່ໄດ້ເຂົ້າຮ່ວມ</string>
+    <string name="members_options">ຕົວເລືອກສຳລັບ %s</string>
+    <string name="members_rename">ປ່ຽນຊື່</string>
+    <string name="members_personal_invite">ຄຳເຊີນສ່ວນຕົວສຳລັບ %s</string>
+    <string name="members_personal_message">ຄົນທີ່ເປີດລິ້ງນີ້ຈະເຂົ້າຮ່ວມທັນທີໃນນາມ %s ໂດຍບໍ່ຕ້ອງເລືອກຈາກລາຍຊື່ ໃຊ້ໄດ້ຄັ້ງດຽວ</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="other">ຄົນທີ່ເປີດລິ້ງນີ້ຈະເຂົ້າຮ່ວມທັນທີໃນນາມ %1$s ໂດຍບໍ່ຕ້ອງເລືອກຈາກລາຍຊື່ ແລະ ຈະເຫັນສ່ວນ %2$s ຂອງຕົນໃນລາຍຈ່າຍ %3$d ລາຍການທີ່ເພີ່ມມາຮອດຕອນນີ້ ໃຊ້ໄດ້ຄັ້ງດຽວ</item>
+    </plurals>
+    <string name="members_personal_copy">ສຳເນົາລິ້ງ</string>
+    <string name="members_personal_copied">ສຳເນົາແລ້ວ</string>
+    <string name="members_personal_share">ແບ່ງປັນກັບ %s</string>
+    <string name="members_personal_share_message">ເຂົ້າຮ່ວມ %1$s ໃນນາມ %2$s ໃນ Blitz Split: %3$s</string>
+    <string name="members_remove">ເອົາອອກຈາກກຸ່ມ</string>
+    <string name="members_remove_joined">%s ເຂົ້າຮ່ວມກຸ່ມແລ້ວ</string>
+    <string name="members_remove_title">ເອົາ %s ອອກຈາກກຸ່ມບໍ?</string>
+    <string name="members_remove_message">%s ຍັງບໍ່ໄດ້ເຂົ້າຮ່ວມ ທ່ານສາມາດເພີ່ມຄືນໄດ້ພາຍຫຼັງ</string>
+    <string name="members_remove_confirm">ເອົາອອກ</string>
+    <string name="members_release">ປ່ອຍຊື່</string>
+    <string name="members_release_title">ປ່ອຍຊື່ຂອງ %s ບໍ?</string>
+    <string name="members_release_message">ຄົນທີ່ເຂົ້າຮ່ວມໃນນາມ %1$s ຈະອອກຈາກກຸ່ມ ຊື່, ສີ ແລະ ລາຍຈ່າຍຂອງ %1$s ຍັງຢູ່ ແລະ %1$s ສາມາດຖືກເລືອກອີກຄັ້ງຜ່ານລິ້ງຂອງກຸ່ມ</string>
+    <string name="members_release_confirm">ປ່ອຍ</string>
+    <string name="members_release_error">ບໍ່ສາມາດປ່ອຍຊື່ໄດ້ ກະລຸນາກວດເບິ່ງການເຊື່ອມຕໍ່ ແລ້ວລອງໃໝ່</string>
+    <string name="members_add">ເພີ່ມຄົນ</string>
+    <string name="members_invite_instead">ມີແອັບບໍ? ເຊີນດ້ວຍລິ້ງ</string>
+    <string name="members_name_label">ຊື່</string>
+    <string name="members_save">ບັນທຶກ</string>
+    <string name="members_cancel">ຍົກເລີກ</string>
+    <string name="members_change_error">ບໍ່ສາມາດບັນທຶກການປ່ຽນແປງໄດ້ ກະລຸນາລອງໃໝ່</string>
+    <string name="members_remove_open_balance">%s ມີຍອດຄົງເຫຼືອທີ່ຍັງຄ້າງ</string>
+    <string name="members_balance_to_get_back">ຈະໄດ້ຮັບຄືນ %s</string>
+    <string name="members_balance_owes">ຕ້ອງຈ່າຍ %s</string>
+    <string name="members_balance_settled">ຊຳລະແລ້ວ</string>
+</resources>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Баланс</string>
+    <string name="global_balances_profile">Профайл</string>
+    <string name="global_balances_offline">Офлайн · энэ төхөөрөмжийн баланс</string>
+    <string name="global_balances_filter">Харуулах</string>
+    <string name="global_balances_filter_all">Бүгд</string>
+    <string name="global_balances_filter_you_owe">Та төлнө</string>
+    <string name="global_balances_filter_owes_you">Та авна</string>
+    <string name="global_balances_hint">Бүлгүүдийн хооронд аль хэдийн суутгасан: хүн бүр нэг удаа харагдана.</string>
+    <string name="global_balances_hint_empty">Энэ төхөөрөмж дээрх бүх бүлгийг нэгтгэж байна.</string>
+    <string name="global_balances_section_you_owe">Та төлнө · %d</string>
+    <string name="global_balances_section_owes_you">Та авна · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d бүлэг</item>
+        <item quantity="other">%d бүлэг</item>
+    </plurals>
+    <string name="global_balances_guest">%s · зочин</string>
+    <string name="global_balances_you_owe">та төлнө</string>
+    <string name="global_balances_owes_you">та авна</string>
+    <string name="global_balances_by_group_show">Бүлгээр харуулах: %s</string>
+    <string name="global_balances_by_group_hide">Бүлгээр харуулахгүй: %s</string>
+    <string name="global_balances_received">Хүлээн авсан</string>
+    <string name="global_balances_received_from">Хүлээн авсан: %s</string>
+    <string name="global_balances_settle">Тооцоо хаах</string>
+    <string name="global_balances_settle_with">Тооцоо хаах: %s</string>
+    <string name="global_balances_charge">Нэхэх</string>
+    <string name="global_balances_charge_person">Мөнгө нэхэх: %s</string>
+    <string name="global_balances_detail_pane">Баланс: %s</string>
+    <string name="global_balances_detail_owes_you">%s танд өртэй</string>
+    <string name="global_balances_detail_you_owe">Та дараах хүнд өртэй: %s</string>
+    <string name="global_balances_detail_guest">%s · апп ашигладаггүй зочин</string>
+    <string name="global_balances_detail_note_owed">Цэвэр дүн бүлгүүдийг аль хэдийн суутгасан: Нэхэх болон Хүлээн авсан нь энэ дүнг ашиглана: %s. Апп бүлэг бүрт нэг төлбөр бүртгэнэ.</string>
+    <string name="global_balances_detail_note_settle">Цэвэр дүн бүлгүүдийг аль хэдийн суутгасан: Тооцоо хаах нь энэ дүнг ашиглана: %s. Апп бүлэг бүрт нэг төлбөр бүртгэнэ.</string>
+    <string name="global_balances_detail_note_single">Энэ хүнтэй ганцхан бүлэг нээлттэй байна: %s.</string>
+    <string name="global_balances_settled_title">Бүх тооцоо хаагдсан</string>
+    <string name="global_balances_settled_body">Хэн ч танд өргүй, та ч хэнд ч өргүй. Хэн нэгэн зардал нэмэхэд баланс энд харагдана.</string>
+    <string name="global_balances_settled_action">Бүлгүүдийг харах</string>
+    <string name="global_balances_nothing_to_pay_title">Та хэнд ч өргүй</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Та бүх хүнтэй тооцоогоо хаасан. %1$d хүнээс авах %2$s үлдсэн байна.</item>
+        <item quantity="other">Та бүх хүнтэй тооцоогоо хаасан. %1$d хүнээс авах %2$s үлдсэн байна.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Танд хэн өртэйг харах</string>
+    <string name="global_balances_nothing_to_receive_title">Хэн ч танд өргүй</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Та %1$d хүнд %2$s өртэй хэвээр байна.</item>
+        <item quantity="other">Та %1$d хүнд %2$s өртэй хэвээр байна.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Хэнд өртэйгөө харах</string>
+    <string name="global_balances_coming_soon">Тун удахгүй</string>
+    <string name="global_balances_change_error">Өөрчлөлтийг хадгалж чадсангүй. Дахин оролдоно уу.</string>
+    <string name="global_balances_copied">Хуулсан</string>
+    <string name="global_balances_charge_title">Мөнгө нэхэх: %s</string>
+    <string name="global_balances_charge_owes">Танд өртэй: %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Хаах</string>
+    <string name="global_balances_charge_guest">%s апп ашигладаггүй зочин. Тэр зөвхөн энэ мессежээс мэдэх тул тооцоонд юу орсныг мессежид аль хэдийн бичсэн байна.</string>
+    <string name="global_balances_charge_message">Мессеж</string>
+    <string name="global_balances_charge_pix">Миний Pix түлхүүрийг оруулах</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Мессеж хуулах</string>
+    <string name="global_balances_charge_send">Илгээх</string>
+    <string name="global_balances_message">Сайн уу, %1$s! Blitz Split аппын тооцоогоор та надад %2$s өртэй байна (%3$s).</string>
+    <string name="global_balances_message_guest">Сайн уу, %1$s! Та надад %2$s өртэй байна (%3$s). Энэ нь таны ногдох хэсэг: %4$s.</string>
+    <string name="global_balances_message_guest_paid">Сайн уу, %1$s! Та надад %2$s өртэй байна (%3$s). Энэ нь таны ногдох хэсэг (%4$s), аль хэдийн төлсөн %5$s дүнг хассан.</string>
+    <string name="global_balances_message_group">бүлэг: %s</string>
+    <string name="global_balances_message_groups">бүлгүүд: %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Утас</string>
+    <string name="global_balances_key_email">Имэйл</string>
+    <string name="global_balances_key_random">Санамсаргүй түлхүүр</string>
+    <string name="global_balances_message_reroute">‘%1$s’ бүлэг өрөө хялбарчилсан тул та шууд надад төлнө (өмнө нь төлөх байсан хүн: %2$s); таны нийт дүн өөрчлөгдөөгүй.</string>
+</resources>

@@ -19,6 +19,12 @@ object ExpenseRules {
     private const val MAX_DONG = 100_000_000_000L
 
     /*
+     * Why: 100 million kip is only about US$ 4,500, a week's trip around Laos for a few friends; this is about
+     * US$ 4.5 million, the API's cap for it too.
+     */
+    private const val MAX_KIP = 100_000_000_000L
+
+    /*
      * Why: 100 million rials is less than US$ 100 (about a million rials a dollar in 2026), not even a dinner out in
      * Tehran; this is about US$ 5 million, and keeps room as the rial falls.
      */
@@ -35,6 +41,7 @@ object ExpenseRules {
         GroupCurrency.ETH -> MAX_ETHER
         GroupCurrency.IDR -> MAX_RUPIAH
         GroupCurrency.VND -> MAX_DONG
+        GroupCurrency.LAK -> MAX_KIP
         GroupCurrency.IRR -> MAX_RIAL
         else -> MAX_AMOUNT_MAJOR
     } * minorPerMajorFor(currency)

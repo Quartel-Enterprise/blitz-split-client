@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala and Kazakh: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala, Kazakh, Mongolian, Kyrgyz, Lao, Icelandic, Basque, Galician and Romansh: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -414,7 +414,28 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     fills in. It puts its simple past last, and the user's "Сіз" adds "-ңыз" or "-ңіз" to it by its last vowel
     ([activity-and-push.md](activity-and-push.md)). The picker names it "Қазақ тілі", and its chip reads "KK". The
     Kazakhstani tenge (KZT) comes with it (below). The store listings of these five are left for later too (Pierre's
-    call): the stores keep showing the default language's for them. Lithuanian
+    call): the stores keep showing the default language's for them.
+    Mongolian, Kyrgyz, Lao, Icelandic, Basque, Galician and Romansh (issue #602, the most standard choices, with no
+    product owner input) are each one variant for every tag of theirs, call the app Blitz Split, write 0-9 and the
+    Gregorian calendar on any device, and never glue a case ending, suffix or particle to a value the app fills in: a
+    name stands as the subject, after a colon or after a noun that carries the ending. Mongolian and Kyrgyz are in the
+    Cyrillic script only, so a tag in another script (mn-Mong, ky-Arab) or China's with none (mn-CN, ky-CN) reads as
+    a language the app doesn't have (`AppLanguage.fromTag`, the web's `pickLocale`, Android's
+    `secondPersonLanguageUi`), as Serbian's Cyrillic does. Mongolian talks to the user with the polite "Та", and its
+    verbs don't change with the person; the picker names it "Монгол", chip "MN". Kyrgyz talks with the polite "Сиз",
+    puts its simple past last as Kazakh does, and the user's "Сиз" adds "-ңыз", "-ңиз", "-ңуз" or "-ңүз" to it by its
+    last vowel ([activity-and-push.md](activity-and-push.md)); "Кыргызча", chip "KY". Lao talks with the polite
+    "ທ່ານ" and is written as Thai is: no space between words, a space between phrases and no full stop (`fullStopUi`,
+    `WordGap.fullStop`, the web's `fullStop` and `clauseBreak`); its plural has other alone, its own digits (໐-໙) are
+    written 0-9 (`latinDigitLanguages`, `AppNumbers`, the web's `formattingKeys`); "ລາວ", chip "LO". Icelandic talks
+    with "þú", never declines a name, and writes each activity in the perfect with "hefur", the same for a name and for
+    "Þú"; its plural's one takes 21, 31… too; "Íslenska", chip "IS". Basque talks with "zu" and writes each activity
+    sentence as a noun phrase ("Ana · gastuaren banaketa: …"), so no ergative or auxiliary depends on the actor;
+    "Euskara", chip "EU". Galician talks with the respectful "vostede", which takes a name's verb; "Galego", chip
+    "GL". Romansh (Rumantsch Grischun) talks with the formal "Vus", and every activity verb phrase starts with its
+    perfect's "ha", which the user's turns into "avais", as Italian's auxiliary map does; "Rumantsch", chip "RM". The
+    tugrik, the som, the kip and the krona come with the first four (below); Basque and Galician use the euro and
+    Romansh the Swiss franc. Their store listings are left for later too (`UNLISTED_LANGS`). Lithuanian
     (Pierre's calls, issue #581) is one variant for every `lt` tag, talks to the user in the informal "tu" and calls
     the app Blitz Split. A name the app fills in is never declined: it stands as the subject or after a noun that
     carries the case ("narys Ana"). Its simple past says no gender, and every activity verb phrase starts with it,
@@ -701,6 +722,16 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     decimals: it shows the rupees', the manat's and the birr's amounts right, by the raw code, and the tenge's 100 times
     smaller until it updates, as with the kyat. No store screenshots are priced in them, since their languages have no
     store listing yet.
+  - The Mongolian tugrik (MNT), the Kyrgyzstani som (KGS), the Lao kip (LAK) and the Icelandic krona (ISK) come with
+    Mongolian, Kyrgyz, Lao and Icelandic (issue #602), in that order after the tenge, and start a new group in
+    Mongolia, Kyrgyzstan, Laos and Iceland; Basque and Galician use the euro and Romansh the Swiss franc, already there.
+    The som keeps ISO's 2 decimals and the krona has ISO's none; the tugrik and the kip have none, as the tenge: ISO
+    gives each 2, but no price in Mongolia or Laos shows möngö or att. The kip is weak (about 22,000 a dollar), so its
+    cap is 100 billion, as the rupiah's and the API's (`ExpenseRules.maxAmountMinorFor`), about US$ 4.5 million; the
+    others keep the usual 100 million. An app version from before them reads them as unknown codes with two decimals: it
+    shows the som's amounts right, by the raw code, and the tugrik's, the kip's and the krona's 100 times smaller until
+    it updates, as with the tenge. No store screenshots are priced in them, since their languages have no store
+    listing yet.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

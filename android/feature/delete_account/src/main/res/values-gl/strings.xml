@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Eliminar conta</string>
+    <string name="delete_account_offline_title">Sen internet.</string>
+    <string name="delete_account_offline_body">Para eliminar a súa conta precisa conexión a internet. Conéctese e ténteo de novo.</string>
+    <string name="delete_account_heading">Quere eliminar a súa conta e os seus datos?</string>
+    <string name="delete_account_deleted_title">O que se elimina</string>
+    <string name="delete_account_deleted_profile">O seu perfil (nome, foto e cor)</string>
+    <string name="delete_account_deleted_keys">As súas chaves Pix e Bitcoin</string>
+    <string name="delete_account_deleted_provider">A vinculación coa súa conta de %1$s</string>
+    <string name="delete_account_deleted_recovery_code">O seu código de recuperación</string>
+    <string name="delete_account_deleted_device">A copia dos seus datos neste dispositivo</string>
+    <string name="delete_account_kept_title">O que queda nos seus grupos</string>
+    <string name="delete_account_kept_groups">Os grupos, cos seus gastos e pagamentos, para os demais membros</string>
+    <string name="delete_account_kept_member">O seu nome en cada grupo, como membro sen conta</string>
+    <string name="delete_account_kept_comments">Os seus comentarios e as fotos que engadiu, co seu nome</string>
+    <string name="delete_account_export">Exportar primeiro os meus datos</string>
+    <string name="delete_account_confirm">Entendo que isto non se pode desfacer</string>
+    <string name="delete_account_delete">Eliminar conta</string>
+    <string name="delete_account_cancel">Cancelar</string>
+    <string name="delete_account_failed">Non foi posible eliminar a súa conta. Ténteo de novo.</string>
+</resources>

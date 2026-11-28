@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Gonbidapen-esteka</string>
+    <string name="members_link_pending">Oraindik sortu gabe</string>
+    <string name="members_share">Partekatu</string>
+    <string name="members_me">%s (zu)</string>
+    <string name="members_status_this_device">Gailu hau</string>
+    <string name="members_status_joined">Sartuta</string>
+    <string name="members_status_not_joined">Oraindik sartu gabe</string>
+    <string name="members_options">Aukerak: %s</string>
+    <string name="members_rename">Aldatu izena</string>
+    <string name="members_personal_invite">Gonbidapen pertsonala: %s</string>
+    <string name="members_personal_message">Esteka hau irekitzen duena zuzenean sartzen da izen honekin, zerrendatik aukeratu gabe: %s. Behin bakarrik balio du.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Esteka hau irekitzen duena zuzenean sartzen da izen honekin, zerrendatik aukeratu gabe: %1$s. Orain arte gehitutako gastuan bere zatia ikusiko du dagoeneko: %2$s. Behin bakarrik balio du.</item>
+        <item quantity="other">Esteka hau irekitzen duena zuzenean sartzen da izen honekin, zerrendatik aukeratu gabe: %1$s. Orain arte gehitutako %3$d gastutan bere zatia ikusiko du dagoeneko: %2$s. Behin bakarrik balio du.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopiatu esteka</string>
+    <string name="members_personal_copied">Kopiatuta</string>
+    <string name="members_personal_share">Partekatu honekin: %s</string>
+    <string name="members_personal_share_message">Sartu ‘%1$s’ taldean Blitz Split aplikazioan, izen honekin: %2$s. Esteka: %3$s</string>
+    <string name="members_remove">Kendu taldetik</string>
+    <string name="members_remove_joined">%s taldean sartu da dagoeneko</string>
+    <string name="members_remove_title">%s taldetik kendu?</string>
+    <string name="members_remove_message">%s oraindik ez da sartu. Geroago berriro gehi dezakezu.</string>
+    <string name="members_remove_confirm">Kendu</string>
+    <string name="members_release">Askatu izena</string>
+    <string name="members_release_title">Askatu izena: %s?</string>
+    <string name="members_release_message">%1$s izenarekin sartu dena taldetik irteten da. Izena (%1$s), kolorea eta gastuak geratu egiten dira, eta %1$s berriro aukeratu ahal izango da taldearen estekaren bidez.</string>
+    <string name="members_release_confirm">Askatu</string>
+    <string name="members_release_error">Ezin izan da izena askatu. Egiaztatu konexioa eta saiatu berriro.</string>
+    <string name="members_add">Gehitu pertsona</string>
+    <string name="members_invite_instead">Aplikazioa du? Gonbidatu estekarekin</string>
+    <string name="members_name_label">Izena</string>
+    <string name="members_save">Gorde</string>
+    <string name="members_cancel">Utzi</string>
+    <string name="members_change_error">Ezin izan da aldaketa gorde. Saiatu berriro.</string>
+    <string name="members_remove_open_balance">%s pertsonak saldo irekia du</string>
+    <string name="members_balance_to_get_back">%s jasotzeko</string>
+    <string name="members_balance_owes">%s ordaintzeko</string>
+    <string name="members_balance_settled">Kitatuta</string>
+</resources>

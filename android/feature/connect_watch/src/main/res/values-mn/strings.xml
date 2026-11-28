@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Цаг холбох</string>
+    <string name="connect_watch_close">Хаах</string>
+    <string name="connect_watch_body">Цаг дээр харагдах кодыг бичнэ үү. Цаг таны бүртгэлд нэвтэрч, дараа нь өөрөө синхрончлогдоно.</string>
+    <string name="connect_watch_code_label">Цагийн код</string>
+    <string name="connect_watch_error_invalid">Код буруу эсвэл хугацаа нь дууссан. Цаг дээрээ шинэ код авна уу.</string>
+    <string name="connect_watch_error_too_many">Хэт олон буруу код. Хэдэн минут хүлээгээд дахин оролдоно уу.</string>
+    <string name="connect_watch_error_needs_account">Эхлээд бүртгэл холбоно уу: таны өгөгдөл зөвхөн энэ төхөөрөмж дээр байна.</string>
+    <string name="connect_watch_error_failed">Цагийг холбож чадсангүй. Дахин оролдоно уу.</string>
+    <string name="connect_watch_offline">Цаг холбоход интернэт хэрэгтэй.</string>
+    <string name="connect_watch_own_watch_only">Зөвхөн өөрийн цаг дээр харагдсан кодыг бичнэ үү: тэр цагийг эзэмшсэн хүн таны бүртгэлд нэвтэрнэ.</string>
+    <string name="connect_watch_validity">Код 5 минутын турш, нэг удаа хүчинтэй.</string>
+    <string name="connect_watch_button">Холбох</string>
+    <string name="connect_watch_connected_title">Цаг холбогдлоо</string>
+    <string name="connect_watch_connected_body">Энэ нь таны бүлгүүдийг харж, өөрөө синхрончлогдоно. Салгахын тулд цаг дээрээ гарна уу.</string>
+</resources>

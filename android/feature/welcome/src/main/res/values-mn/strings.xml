@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Тооцоог төвөггүй хуваах</string>
+    <string name="welcome_offline_title">Офлайн ажиллана</string>
+    <string name="welcome_offline_body">Бүх зүйл таны төхөөрөмжид хадгалагдаж, дараа нь синхрончлогдоно.</string>
+    <string name="welcome_optional_title">Бүртгэл заавал биш</string>
+    <string name="welcome_optional_body">Google эсвэл Apple нь зөвхөн төхөөрөмж солиход юу ч алдахгүй байхад тусална.</string>
+    <string name="welcome_invite_title">Холбоос эсвэл QR кодоор урих</string>
+    <string name="welcome_invite_body">Найзууд бүртгэл үүсгэхгүйгээр бүлэгт нэгдэнэ.</string>
+    <string name="welcome_no_connection_title">Холболт алга.</string>
+    <string name="welcome_no_connection_body">Бүртгэлээр нэвтрэхэд интернэт хэрэгтэй. Одоо бүртгэлгүй ашиглаад, дараа нь Профайл хэсэгт холбоно уу.</string>
+    <string name="welcome_or">эсвэл</string>
+    <string name="welcome_use_without_account">Бүртгэлгүй ашиглах</string>
+    <string name="welcome_used_on_another_device">Би өөр төхөөрөмж дээр ашиглаж байсан</string>
+    <string name="welcome_sign_in_failed">Одоогоор нэвтэрч чадсангүй. Дахин оролдоно уу.</string>
+    <string name="welcome_legal_notice">Үргэлжлүүлснээр та дараахыг зөвшөөрч байна: %1$s. Мөн дараахтай танилцсанаа хүлээн зөвшөөрч байна: %2$s.</string>
+    <string name="welcome_legal_terms">Үйлчилгээний нөхцөл</string>
+    <string name="welcome_legal_privacy">Нууцлалын бодлого</string>
+    <string name="welcome_no_account_note">Бүртгэлгүй бол 30 хоног ашиглаагүй тохиолдолд таны өгөгдөл устгагдана. Хадгалахын тулд Google эсвэл Apple бүртгэл холбоно уу.</string>
+    <string name="welcome_no_account_note_offline">Бүртгэлгүй бол 30 хоног ашиглаагүй тохиолдолд таны өгөгдөл устгагдана. Хадгалахын тулд дараа нь Профайл хэсэгт Google эсвэл Apple бүртгэл холбоно уу.</string>
+    <string name="welcome_expired_title">Таны өгөгдөл устгагдсан</string>
+    <string name="welcome_expired_body">Та аппыг бүртгэлгүй ашиглаж байгаад 30 хоног нээгээгүй тул таны өгөгдөл устгагдсан. Дараагийн удаа хадгалахын тулд Google эсвэл Apple бүртгэл холбоно уу.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

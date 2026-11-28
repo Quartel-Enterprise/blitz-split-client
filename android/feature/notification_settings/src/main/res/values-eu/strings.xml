@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Jakinarazpenak</string>
+    <string name="notification_settings_denied_title">Blitz Split aplikazioaren jakinarazpenak desaktibatuta daude Android sisteman.</string>
+    <string name="notification_settings_denied_body">Aktibatu itzazu sistemaren ezarpenetan beheko push jakinarazpenak jasotzeko. Kanpaiak funtzionatzen jarraitzen du.</string>
+    <string name="notification_settings_open_settings">Ireki ezarpenak</string>
+    <string name="notification_settings_refused_body">Android sistemak beste behin baimentzen uzten dizu, beheko push jakinarazpenak jasotzeko. Kanpaiak funtzionatzen jarraitzen du.</string>
+    <string name="notification_settings_turn_on">Aktibatu</string>
+    <string name="notification_settings_blocked_in_android">Blokeatuta Android sisteman</string>
+    <string name="notification_settings_open_channel_settings_description">Ireki Android ezarpenak: %1$s</string>
+    <string name="notification_settings_push_switch">Push jakinarazpenak</string>
+    <string name="notification_settings_push_switch_detail">Gailu honetan bakarrik</string>
+    <string name="notification_settings_section">Jakinarazi hauei buruz</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Aplikazioan</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push aukerak jakinarazpen bat bidaltzen du gailu honetara. Aplikazioan aukerak berri gisa markatzen du kanpaian eta Jarduera atalean; desaktibatuta, Jarduera atalean agertzen da hala ere, irakurrita.</string>
+    <string name="notification_settings_footer">Abisuak internet dagoenean iristen dira. Talde bat isilarazteko, erabili haren barruko menua.</string>
+</resources>

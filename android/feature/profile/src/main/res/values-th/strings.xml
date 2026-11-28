@@ -117,6 +117,13 @@
     <string name="profile_language_amharic">อัมฮารา</string>
     <string name="profile_language_sinhala">สิงหล</string>
     <string name="profile_language_kazakh">คาซัค</string>
+    <string name="profile_language_mongolian">มองโกเลีย</string>
+    <string name="profile_language_kyrgyz">คีร์กีซ</string>
+    <string name="profile_language_lao">ลาว</string>
+    <string name="profile_language_icelandic">ไอซ์แลนด์</string>
+    <string name="profile_language_basque">บาสก์</string>
+    <string name="profile_language_galician">กาลิเซีย</string>
+    <string name="profile_language_romansh">โรมานช์</string>
     <string name="profile_language_system_detail">ภาษาของอุปกรณ์</string>
     <string name="profile_notifications">การแจ้งเตือน</string>
     <plurals name="profile_notifications_active">

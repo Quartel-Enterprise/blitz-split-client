@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Саатты туташтыруу</string>
+    <string name="connect_watch_close">Жабуу</string>
+    <string name="connect_watch_body">Саатыңыз көрсөткөн кодду жазыңыз. Ал аккаунтуңузга кирип, андан кийин өзү шайкештирилет.</string>
+    <string name="connect_watch_code_label">Сааттын коду</string>
+    <string name="connect_watch_error_invalid">Код туура эмес же мөөнөтү бүткөн. Сааттан жаңысын алыңыз.</string>
+    <string name="connect_watch_error_too_many">Туура эмес коддор өтө көп. Бир нече мүнөт күтүп, кайра аракет кылыңыз.</string>
+    <string name="connect_watch_error_needs_account">Адегенде аккаунт туташтырыңыз: маалыматыңыз ушул түзмөктө гана.</string>
+    <string name="connect_watch_error_failed">Саатты туташтыра алган жокпуз. Кайра аракет кылыңыз.</string>
+    <string name="connect_watch_offline">Саатты туташтыруу үчүн интернет керек.</string>
+    <string name="connect_watch_own_watch_only">Өз саатыңызда көрсөтүлгөн кодду гана жазыңыз: ошол саат кимде болсо, ал аккаунтуңузга кирет.</string>
+    <string name="connect_watch_validity">Код 5 мүнөт ичинде бир жолу жарактуу.</string>
+    <string name="connect_watch_button">Туташтыруу</string>
+    <string name="connect_watch_connected_title">Саат туташты</string>
+    <string name="connect_watch_connected_body">Ал топторуңузду көрөт жана өзү шайкештирилет. Аны ажыратуу үчүн сааттан чыгыңыз.</string>
+</resources>

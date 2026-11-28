@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Banatu faktura, buruhausterik gabe</string>
+    <string name="welcome_offline_title">Lineaz kanpo dabil</string>
+    <string name="welcome_offline_body">Dena zure gailuan geratzen da eta geroago sinkronizatzen da.</string>
+    <string name="welcome_optional_title">Kontua aukerakoa da</string>
+    <string name="welcome_optional_body">Google edo Apple gailuz aldatzean ezer ez galtzeko bakarrik dira.</string>
+    <string name="welcome_invite_title">Gonbidatu esteka edo QR kode batekin</string>
+    <string name="welcome_invite_body">Lagunak taldean sartzen dira konturik sortu gabe.</string>
+    <string name="welcome_no_connection_title">Konexiorik ez.</string>
+    <string name="welcome_no_connection_body">Kontu batekin saioa hasteko internet behar da. Erabili konturik gabe orain eta konektatu geroago Profilean.</string>
+    <string name="welcome_or">edo</string>
+    <string name="welcome_use_without_account">Erabili konturik gabe</string>
+    <string name="welcome_used_on_another_device">Beste gailu batean erabili dut</string>
+    <string name="welcome_sign_in_failed">Ezin izan da saioa hasi orain. Saiatu berriro.</string>
+    <string name="welcome_legal_notice">Jarraituz gero, hau onartzen duzu: %1$s; eta hau ezagutzen duzu: %2$s.</string>
+    <string name="welcome_legal_terms">Zerbitzu-baldintzak</string>
+    <string name="welcome_legal_privacy">Pribatutasun-politika</string>
+    <string name="welcome_no_account_note">Konturik gabe, zure datuak ezabatu egiten dira 30 egunez erabili gabe egon ondoren. Konektatu Google edo Apple datuak gordetzeko.</string>
+    <string name="welcome_no_account_note_offline">Konturik gabe, zure datuak ezabatu egiten dira 30 egunez erabili gabe egon ondoren. Konektatu Google edo Apple geroago, Profilean, datuak gordetzeko.</string>
+    <string name="welcome_expired_title">Zure datuak ezabatu dira</string>
+    <string name="welcome_expired_body">Aplikazioa konturik gabe erabiltzen ari zinen eta 30 egunez ez zenuen ireki; beraz, zure datuak ezabatu dira. Konektatu Google edo Apple hurrengoan datuak gordetzeko.</string>
+    <string name="welcome_expired_ok">Ados</string>
+</resources>

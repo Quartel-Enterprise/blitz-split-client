@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Recupere os seus grupos</string>
+    <string name="restore_subtitle">Xa iniciou sesión cunha conta antes? Volva iniciar sesión. Se non, use o código de recuperación ou o código QR do seu dispositivo anterior.</string>
+    <string name="restore_no_connection_title">Sen conexión</string>
+    <string name="restore_no_connection_body">Para iniciar sesión cunha conta ou cun código precisa internet para descargar os seus grupos. O que escribiu consérvase.</string>
+    <string name="restore_code_label">Ou use o código de recuperación</string>
+    <string name="restore_code_hint">As 12 palabras en orde. Pégueas todas nun campo para encher todos os campos.</string>
+    <string name="restore_scan_qr_title">Escanee o código QR do seu dispositivo anterior</string>
+    <string name="restore_scan_qr_body">Alí: Perfil › Recuperación › Mostrar código QR</string>
+    <string name="restore_recover">Recuperar</string>
+    <string name="restore_try_again">Tentar de novo</string>
+    <string name="restore_start_fresh">Comezar de cero neste dispositivo</string>
+    <string name="restore_error_invalid_code">Non se atopou o código. Comprobe as palabras e a súa orde e ténteo de novo.</string>
+    <string name="restore_error_too_many_attempts">Demasiados intentos. Agarde uns minutos e ténteo de novo.</string>
+    <string name="restore_error_sign_in_failed">Non foi posible iniciar sesión agora. Ténteo de novo.</string>
+    <string name="restore_error_unknown">Algo fallou. Ténteo de novo.</string>
+</resources>

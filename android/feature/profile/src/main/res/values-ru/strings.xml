@@ -120,6 +120,13 @@
     <string name="profile_language_amharic">Амхарский</string>
     <string name="profile_language_sinhala">Сингальский</string>
     <string name="profile_language_kazakh">Казахский</string>
+    <string name="profile_language_mongolian">Монгольский</string>
+    <string name="profile_language_kyrgyz">Киргизский</string>
+    <string name="profile_language_lao">Лаосский</string>
+    <string name="profile_language_icelandic">Исландский</string>
+    <string name="profile_language_basque">Баскский</string>
+    <string name="profile_language_galician">Галисийский</string>
+    <string name="profile_language_romansh">Романшский</string>
     <string name="profile_language_system_detail">Язык устройства</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_notifications">Уведомления</string>

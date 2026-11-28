@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Eyða aðgangi</string>
+    <string name="delete_account_offline_title">Ekkert netsamband.</string>
+    <string name="delete_account_offline_body">Til að eyða aðganginum þínum þarf nettengingu. Tengstu og reyndu aftur.</string>
+    <string name="delete_account_heading">Eyða aðganginum þínum og gögnunum þínum?</string>
+    <string name="delete_account_deleted_title">Hverju er eytt</string>
+    <string name="delete_account_deleted_profile">Prófílnum þínum (nafni, mynd og lit)</string>
+    <string name="delete_account_deleted_keys">Pix- og Bitcoin-lyklunum þínum</string>
+    <string name="delete_account_deleted_provider">Tengingunni við aðganginn þinn: %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Endurheimtarkóðanum þínum</string>
+    <string name="delete_account_deleted_device">Afriti gagnanna þinna á þessu tæki</string>
+    <string name="delete_account_kept_title">Hvað verður eftir í hópunum þínum</string>
+    <string name="delete_account_kept_groups">Hóparnir, með kostnaði sínum og greiðslum, fyrir hina meðlimina</string>
+    <string name="delete_account_kept_member">Nafnið þitt í hverjum hópi, sem meðlimur án aðgangs</string>
+    <string name="delete_account_kept_comments">Athugasemdirnar þínar og myndirnar sem þú bættir við, undir nafninu þínu</string>
+    <string name="delete_account_export">Flytja út gögnin mín fyrst</string>
+    <string name="delete_account_confirm">Ég skil að ekki er hægt að afturkalla þetta</string>
+    <string name="delete_account_delete">Eyða aðgangi</string>
+    <string name="delete_account_cancel">Hætta við</string>
+    <string name="delete_account_failed">Ekki tókst að eyða aðganginum þínum. Reyndu aftur.</string>
+</resources>

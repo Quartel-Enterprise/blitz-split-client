@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Досторуңуз сизди эмне деп аташат?</string>
+    <string name="profile_setup_subtitle">Сиздин топторуңуз жана профиль шилтемеңиз бар адамдар атыңызды көрүшөт.</string>
+    <string name="profile_setup_avatar_color">Аватардын түсү</string>
+    <string name="profile_setup_add_photo">Сүрөт кошуу</string>
+    <string name="profile_setup_photo_error">Бул сүрөттү колдоно алган жокпуз. Башкасын тандап көрүңүз.</string>
+    <string name="profile_setup_name_label">Атыңыз</string>
+    <string name="profile_setup_name_placeholder">Асан Үсөнов</string>
+    <string name="profile_setup_name_too_short">Кеминде %d тамга жазыңыз.</string>
+    <string name="profile_setup_name_too_long">Эң көп %d белги колдонуңуз.</string>
+    <string name="profile_setup_name_hint">Аны кийин Профилден өзгөртсөңүз болот.</string>
+    <string name="profile_setup_saved_locally">Азырынча ушул түзмөктө гана сакталды.</string>
+    <string name="profile_setup_continue">Улантуу</string>
+</resources>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Boðshlekkur</string>
+    <string name="members_link_pending">Ekki búinn til enn</string>
+    <string name="members_share">Deila</string>
+    <string name="members_me">%s (þú)</string>
+    <string name="members_status_this_device">Þetta tæki</string>
+    <string name="members_status_joined">Í hópnum</string>
+    <string name="members_status_not_joined">Hefur ekki gengið í hópinn enn</string>
+    <string name="members_options">Valkostir: %s</string>
+    <string name="members_rename">Endurnefna</string>
+    <string name="members_personal_invite">Persónulegt boð: %s</string>
+    <string name="members_personal_message">Sá sem opnar þennan hlekk gengur beint í hópinn sem %s, án þess að velja af listanum. Hlekkurinn virkar einu sinni.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Sá sem opnar þennan hlekk gengur beint í hópinn sem %1$s, án þess að velja af listanum, og sér strax hlut sinn, %2$s, í %3$d kostnaðarlið sem bætt hefur verið við hingað til. Hlekkurinn virkar einu sinni.</item>
+        <item quantity="other">Sá sem opnar þennan hlekk gengur beint í hópinn sem %1$s, án þess að velja af listanum, og sér strax hlut sinn, %2$s, í %3$d kostnaðarliðum sem bætt hefur verið við hingað til. Hlekkurinn virkar einu sinni.</item>
+    </plurals>
+    <string name="members_personal_copy">Afrita hlekk</string>
+    <string name="members_personal_copied">Afritað</string>
+    <string name="members_personal_share">Deila með: %s</string>
+    <string name="members_personal_share_message">Gakktu í hópinn ‘%1$s’ sem %2$s í Blitz Split: %3$s</string>
+    <string name="members_remove">Fjarlægja úr hópi</string>
+    <string name="members_remove_joined">%s hefur þegar gengið í hópinn</string>
+    <string name="members_remove_title">Fjarlægja úr hópnum: %s?</string>
+    <string name="members_remove_message">%s hefur ekki gengið í hópinn enn. Þú getur bætt viðkomandi við aftur seinna.</string>
+    <string name="members_remove_confirm">Fjarlægja</string>
+    <string name="members_release">Losa nafn</string>
+    <string name="members_release_title">Losa nafnið: %s?</string>
+    <string name="members_release_message">Sá sem gekk í hópinn sem %1$s yfirgefur hópinn. Nafnið %1$s, liturinn og kostnaðurinn haldast, og %1$s verður aftur í boði í gegnum hlekk hópsins.</string>
+    <string name="members_release_confirm">Losa</string>
+    <string name="members_release_error">Ekki tókst að losa nafnið. Athugaðu tenginguna og reyndu aftur.</string>
+    <string name="members_add">Bæta við einstaklingi</string>
+    <string name="members_invite_instead">Með appið? Bjóddu með hlekknum</string>
+    <string name="members_name_label">Nafn</string>
+    <string name="members_save">Vista</string>
+    <string name="members_cancel">Hætta við</string>
+    <string name="members_change_error">Ekki tókst að vista breytinguna. Reyndu aftur.</string>
+    <string name="members_remove_open_balance">%s er með opna stöðu</string>
+    <string name="members_balance_to_get_back">á inni %s</string>
+    <string name="members_balance_owes">skuldar %s</string>
+    <string name="members_balance_settled">Uppgert</string>
+</resources>

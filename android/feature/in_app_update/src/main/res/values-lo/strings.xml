@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">ກຳລັງດາວໂຫຼດອັບເດດ…</string>
+    <string name="in_app_update_download_failed">ບໍ່ສາມາດດາວໂຫຼດອັບເດດໄດ້ ກະລຸນາລອງໃໝ່ພາຍຫຼັງ</string>
+</resources>

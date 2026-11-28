@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Hafa samband við aðstoð</string>
+    <string name="contact_support_description">Við opnum tölvupóstappið þitt með tilbúin skilaboð. Lýstu því sem gerðist og sendu: alvöru fólk les öll skilaboð.</string>
+    <string name="contact_support_to">Til</string>
+    <string name="contact_support_diagnostics">Fylgir með tölvupóstinum</string>
+    <string name="contact_support_app_version">Útgáfa apps</string>
+    <string name="contact_support_platform">Kerfi</string>
+    <string name="contact_support_language">Tungumál</string>
+    <string name="contact_support_account">Aðgangur</string>
+    <string name="contact_support_profile">Prófíll</string>
+    <string name="contact_support_language_system">Kerfi</string>
+    <string name="contact_support_account_local">Aðeins þetta tæki</string>
+    <string name="contact_support_account_anonymous">Ekki tengdur</string>
+    <string name="contact_support_open_email">Opna tölvupóst</string>
+    <string name="contact_support_copy_email">Afrita netfang</string>
+    <string name="contact_support_notice_copied">Netfangið var afritað.</string>
+    <string name="contact_support_notice_no_app">Ekkert tölvupóstapp fannst. Netfangið var afritað í staðinn.</string>
+    <string name="contact_support_close">Loka</string>
+</resources>

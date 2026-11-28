@@ -72,6 +72,13 @@ enum class AppLanguage(
     AMHARIC("am"),
     SINHALA("si"),
     KAZAKH("kk"),
+    MONGOLIAN("mn"),
+    KYRGYZ("ky"),
+    LAO("lo"),
+    ICELANDIC("is"),
+    BASQUE("eu"),
+    GALICIAN("gl"),
+    ROMANSH("rm"),
     ;
 
     /*
@@ -154,6 +161,18 @@ enum class AppLanguage(
 
         private const val PAKISTAN = "PK"
 
+        /*
+         * Why: the app has Mongolian and Kyrgyz in the Cyrillic script only, so a tag in another script (mn-Mong, the
+         * traditional Mongolian script, or ky-Arab) or China's with no script (mn-CN, ky-CN, written in those by
+         * default) finds no strings of its own: it reads as a language the app doesn't have. Any other (mn, mn-Cyrl,
+         * mn-MN, ky, ky-KG) is Cyrillic, its default script.
+         */
+        private const val MONGOLIAN_LANGUAGE = "mn"
+
+        private const val KYRGYZ_LANGUAGE = "ky"
+
+        private const val CYRILLIC_SCRIPT = "CYRL"
+
         private const val MAINLAND_CHINA = "CN"
 
         private const val TRADITIONAL_SCRIPT = "HANT"
@@ -167,9 +186,9 @@ enum class AppLanguage(
         /*
          * Why: any Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
          * Ukrainian, Korean, Hindi, Arabic, Chinese, Hebrew, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay,
-         * Greek, Croatian, Hungarian, Urdu, Filipino (or its legacy Tagalog "tl"), Serbian in the Latin script (sr-Latn, sr-Latn-RS), Slovak, Persian, Tamil, Norwegian (nb, or the macrolanguage's "no" and Nynorsk's "nn", all read as Bokmål), Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too, ca-ES-valencia), Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Kannada, Burmese, Khmer, Lithuanian, Punjabi in the Gurmukhi script (pa, pa-Guru, pa-IN, never pa-Arab or pa-PK), Malayalam, Odia, Nepali, Azerbaijani, Amharic, Sinhala, Kazakh or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE,
+         * Greek, Croatian, Hungarian, Urdu, Filipino (or its legacy Tagalog "tl"), Serbian in the Latin script (sr-Latn, sr-Latn-RS), Slovak, Persian, Tamil, Norwegian (nb, or the macrolanguage's "no" and Nynorsk's "nn", all read as Bokmål), Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too, ca-ES-valencia), Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Kannada, Burmese, Khmer, Lithuanian, Punjabi in the Gurmukhi script (pa, pa-Guru, pa-IN, never pa-Arab or pa-PK), Malayalam, Odia, Nepali, Azerbaijani, Amharic, Sinhala, Kazakh, Mongolian and Kyrgyz in the Cyrillic script (mn, mn-Cyrl, mn-MN, ky-KG, never mn-Mong, mn-CN, ky-Arab or ky-CN), Lao, Icelandic, Basque, Galician, Romansh or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE,
          * ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, zh-CN, he-IL or the legacy iw-IL, th-TH, vi-VN, sv-FI,
-         * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-HU, ur-PK, fil-PH, sr-Latn-RS, sk-SK, fa-IR or fa-AF, ta-LK, nb-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, da-DK, fi-FI, lv-LV, et-EE, gu-IN, sl-SI, kn-IN, my-MM, km-KH, lt-LT, pa-IN, ml-IN, or-IN, ne-NP, az-AZ, am-ET, si-LK, kk-KZ, en-NZ), SYSTEM for none or any other. English is four
+         * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-HU, ur-PK, fil-PH, sr-Latn-RS, sk-SK, fa-IR or fa-AF, ta-LK, nb-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, da-DK, fi-FI, lv-LV, et-EE, gu-IN, sl-SI, kn-IN, my-MM, km-KH, lt-LT, pa-IN, ml-IN, or-IN, ne-NP, az-AZ, am-ET, si-LK, kk-KZ, mn-MN, ky-KG, lo-LA, is-IS, eu-ES, gl-ES, rm-CH, en-NZ), SYSTEM for none or any other. English is four
          * entries: en-GB, en-AU and en-CA are their regions', a region that writes as Britain (en-NZ, en-IE, en-IN, en-DE…)
          * Britain's, en, en-US and every other region the American one. Portuguese is two
          * entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too: es-ES is Spain's, every
@@ -181,6 +200,7 @@ enum class AppLanguage(
             if (isTraditionalChinese(tag)) return CHINESE_TRADITIONAL
             if (languageOf(tag) == SERBIAN_LANGUAGE && scriptOf(tag) != LATIN_SCRIPT) return SYSTEM
             if (languageOf(tag) == PUNJABI_LANGUAGE && !isGurmukhi(tag)) return SYSTEM
+            if (isCyrillicOnly(languageOf(tag)) && !isCyrillic(tag)) return SYSTEM
             if (languageOf(tag) == ENGLISH_LANGUAGE) return englishOf(tag)
             val variants = variantsOf(languageOf(tag))
             val region = regionOf(tag)
@@ -218,6 +238,13 @@ enum class AppLanguage(
         // Why: a Punjabi tag written in Gurmukhi: its script says so when it has one, else any region but Pakistan.
         private fun isGurmukhi(tag: String?): Boolean =
             scriptOf(tag)?.let { it == GURMUKHI_SCRIPT } ?: (regionOf(tag) != PAKISTAN)
+
+        private fun isCyrillicOnly(language: String?): Boolean =
+            language == MONGOLIAN_LANGUAGE || language == KYRGYZ_LANGUAGE
+
+        // Why: a Mongolian or Kyrgyz tag written in Cyrillic: its script says so when it has one, else any region but China.
+        private fun isCyrillic(tag: String?): Boolean =
+            scriptOf(tag)?.let { it == CYRILLIC_SCRIPT } ?: (regionOf(tag) != MAINLAND_CHINA)
 
         // Why: a tag's script in upper case ("HANS" of zh-Hans-CN), before any extension, as regionOf reads its region.
         private fun scriptOf(tag: String?): String? = subtagsOf(tag)

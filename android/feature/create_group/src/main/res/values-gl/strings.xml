@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Novo grupo</string>
+    <string name="create_group_close">Pechar</string>
+    <string name="create_group_create">Crear</string>
+    <string name="create_group_change_color">Cambiar a cor do grupo</string>
+    <string name="create_group_name_label">Nome do grupo</string>
+    <string name="create_group_type_label">Tipo de grupo</string>
+    <string name="create_group_members_title">Quen participa</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d persoa</item>
+        <item quantity="other">%d persoas</item>
+    </plurals>
+    <string name="create_group_me">vostede</string>
+    <string name="create_group_remove_member">Quitar a %s</string>
+    <string name="create_group_add_placeholder">Engadir polo nome</string>
+    <string name="create_group_add">Engadir</string>
+    <string name="create_group_no_app_notice">Ninguén precisa a aplicación agora. Xa pode engadir gastos para todos e enviar a ligazón máis tarde.</string>
+    <string name="create_group_currency">Moeda predeterminada</string>
+    <string name="create_group_currency_caption">Os gastos novos comezan nesta moeda; cada gasto pode usar outra.</string>
+    <string name="create_group_save_error">Non foi posible gardar o grupo. Ténteo de novo.</string>
+    <string name="create_group_photo">Foto do grupo</string>
+    <string name="create_group_take_photo">Facer foto</string>
+    <string name="create_group_choose_photo">Escoller foto</string>
+    <string name="create_group_remove_photo">Quitar foto</string>
+    <string name="create_group_photo_error">Non foi posible usar esta foto. Probe con outra.</string>
+</resources>

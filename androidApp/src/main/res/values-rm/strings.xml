@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Vus n\'essas betg en questa gruppa</string>
+    <string name="bill_link_not_in_group_message">Quest commentari è en ina gruppa nua che Vus n\'essas betg. Dumandai la persuna che As ha tramess la colliaziun per l\'invitaziun.</string>
+    <string name="bill_link_offline_title">Nagin internet</string>
+    <string name="bill_link_offline_message">Avrì la colliaziun anc ina giada uschespert ch\'i dat puspè internet.</string>
+    <string name="bill_link_go_home">Ir a Start</string>
+    <string name="discard_changes_title">Rinunziar a las midadas?</string>
+    <string name="discard_changes_message">Midadas betg memorisadas van a perder.</string>
+    <string name="discard_changes_discard">Rinunziar</string>
+    <string name="discard_changes_keep_editing">Cuntinuar a modifitgar</string>
+    <string name="watch_channel_name">Ura</string>
+    <string name="watch_connected_title">Collià cun Voss conto: %1$s</string>
+    <string name="watch_connected_title_unnamed">Ura colliada cun Voss conto</string>
+    <string name="watch_connected_text">Ella vesa Vossas gruppas e sa sincronisescha da sasezza. Per la deconnectar, sortì sin l\'ura.</string>
+</resources>

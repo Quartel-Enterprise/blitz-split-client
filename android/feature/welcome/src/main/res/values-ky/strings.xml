@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Чыгымды оңой бөлүңүз</string>
+    <string name="welcome_offline_title">Офлайн иштейт</string>
+    <string name="welcome_offline_body">Баары түзмөгүңүздө сакталат жана кийин шайкештирилет.</string>
+    <string name="welcome_optional_title">Аккаунт милдеттүү эмес</string>
+    <string name="welcome_optional_body">Google же Apple түзмөк алмаштырганда эч нерсе жоготпошуңуз үчүн гана керек.</string>
+    <string name="welcome_invite_title">Шилтеме же QR код менен чакырыңыз</string>
+    <string name="welcome_invite_body">Досторуңуз аккаунт түзбөй эле топко кошулат.</string>
+    <string name="welcome_no_connection_title">Туташуу жок.</string>
+    <string name="welcome_no_connection_body">Аккаунт менен кирүү үчүн интернет керек. Азыр аккаунтсуз колдонуп, кийин Профилде туташтырыңыз.</string>
+    <string name="welcome_or">же</string>
+    <string name="welcome_use_without_account">Аккаунтсуз колдонуу</string>
+    <string name="welcome_used_on_another_device">Башка түзмөктө колдонгом</string>
+    <string name="welcome_sign_in_failed">Азыр кире алган жоксуз. Кайра аракет кылыңыз.</string>
+    <string name="welcome_legal_notice">Улантуу менен сиз кабыл аласыз: %1$s, жана таанышканыңызды ырастайсыз: %2$s.</string>
+    <string name="welcome_legal_terms">Колдонуу шарттары</string>
+    <string name="welcome_legal_privacy">Купуялык саясаты</string>
+    <string name="welcome_no_account_note">Аккаунт жок болсо, маалыматыңыз 30 күн колдонулбаса өчүрүлөт. Аны сактоо үчүн Google же Apple аккаунтун туташтырыңыз.</string>
+    <string name="welcome_no_account_note_offline">Аккаунт жок болсо, маалыматыңыз 30 күн колдонулбаса өчүрүлөт. Аны сактоо үчүн кийин Профилде Google же Apple аккаунтун туташтырыңыз.</string>
+    <string name="welcome_expired_title">Маалыматыңыз өчүрүлдү</string>
+    <string name="welcome_expired_body">Сиз колдонмону аккаунтсуз колдонуп, аны 30 күн ачкан жоксуз, ошондуктан маалыматыңыз өчүрүлдү. Кийинки жолу сактап калуу үчүн Google же Apple аккаунтун туташтырыңыз.</string>
+    <string name="welcome_expired_ok">Макул</string>
+</resources>

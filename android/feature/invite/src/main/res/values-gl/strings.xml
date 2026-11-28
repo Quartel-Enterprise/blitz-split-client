@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Pechar</string>
+    <string name="invite_group_created">Grupo creado</string>
+    <string name="invite_title">Convide a todos a %s</string>
+    <string name="invite_qr_description">Código QR da ligazón de convite do grupo</string>
+    <string name="invite_copy">Copiar</string>
+    <string name="invite_copied">Copiado</string>
+    <string name="invite_who_picks">Quen abra a ligazón escolle quen é na lista: %s. Non precisa conta.</string>
+    <string name="invite_names_or">%1$s ou %2$s</string>
+    <string name="invite_anyone_joins">Quen abra a ligazón entra no grupo. Non precisa conta.</string>
+    <string name="invite_pending_title">Ligazón pendente</string>
+    <string name="invite_pending_offline">Crearase en canto teña conexión.</string>
+    <string name="invite_pending_online">Creando a ligazón…</string>
+    <string name="invite_failed_title">Non foi posible crear a ligazón</string>
+    <string name="invite_failed_body">Algo fallou ao sincronizar o grupo.</string>
+    <string name="invite_retry">Tentar de novo</string>
+    <string name="invite_share">Compartir ligazón</string>
+    <string name="invite_see_who_joined">Ver quen entrou</string>
+    <string name="invite_add_person">Engadir alguén sen a aplicación</string>
+    <string name="invite_go_to_group">Ir ao grupo</string>
+    <string name="invite_change_link">Cambiar ligazón</string>
+    <string name="invite_change_link_title">Quere cambiar a ligazón de convite?</string>
+    <string name="invite_change_link_message">A ligazón e o código QR actuais deixan de funcionar, incluídos os convites persoais sen usar. Quen xa entrou segue no grupo.</string>
+    <string name="invite_change_link_failed">Non foi posible cambiar a ligazón. Ténteo de novo.</string>
+    <string name="invite_share_message">Imos dividir os gastos de %1$s en Blitz Split. Entre con esta ligazón: %2$s</string>
+</resources>

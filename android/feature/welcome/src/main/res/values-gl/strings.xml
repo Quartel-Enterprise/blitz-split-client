@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Divida os gastos sen complicacións</string>
+    <string name="welcome_offline_title">Funciona sen conexión</string>
+    <string name="welcome_offline_body">Todo queda no seu dispositivo e sincronízase despois.</string>
+    <string name="welcome_optional_title">A conta é opcional</string>
+    <string name="welcome_optional_body">Google ou Apple só serven para non perder nada ao cambiar de dispositivo.</string>
+    <string name="welcome_invite_title">Convide cunha ligazón ou un código QR</string>
+    <string name="welcome_invite_body">As amizades entran no grupo sen crear unha conta.</string>
+    <string name="welcome_no_connection_title">Sen conexión.</string>
+    <string name="welcome_no_connection_body">Para iniciar sesión cunha conta precisa internet. Úsea agora sen conta e conéctese máis tarde en Perfil.</string>
+    <string name="welcome_or">ou</string>
+    <string name="welcome_use_without_account">Usar sen conta</string>
+    <string name="welcome_used_on_another_device">Xa a usei noutro dispositivo</string>
+    <string name="welcome_sign_in_failed">Non foi posible iniciar sesión agora. Ténteo de novo.</string>
+    <string name="welcome_legal_notice">Ao continuar, acepta o documento %1$s e confirma que leu o documento %2$s.</string>
+    <string name="welcome_legal_terms">Condicións do servizo</string>
+    <string name="welcome_legal_privacy">Política de privacidade</string>
+    <string name="welcome_no_account_note">Sen conta, os seus datos elimínanse despois de 30 días sen uso. Conecte Google ou Apple para conservalos.</string>
+    <string name="welcome_no_account_note_offline">Sen conta, os seus datos elimínanse despois de 30 días sen uso. Conecte Google ou Apple máis tarde, en Perfil, para conservalos.</string>
+    <string name="welcome_expired_title">Os seus datos foron eliminados</string>
+    <string name="welcome_expired_body">Estaba a usar a aplicación sen conta e non a abriu durante 30 días, así que os seus datos foron eliminados. Conecte Google ou Apple para conservalos a próxima vez.</string>
+    <string name="welcome_expired_ok">Aceptar</string>
+</resources>

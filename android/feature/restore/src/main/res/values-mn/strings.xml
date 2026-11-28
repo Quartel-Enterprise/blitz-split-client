@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Бүлгүүдээ буцааж авах</string>
+    <string name="restore_subtitle">Өмнө нь бүртгэлээр нэвтэрч байсан уу? Дахин нэвтрэхэд л болно. Үгүй бол сэргээх код эсвэл хуучин төхөөрөмжийнхөө QR кодыг ашиглана уу.</string>
+    <string name="restore_no_connection_title">Холболт алга</string>
+    <string name="restore_no_connection_body">Бүртгэл эсвэл кодоор нэвтрэхэд бүлгүүдээ татахын тулд интернэт хэрэгтэй. Таны бичсэн зүйл хадгалагдсан.</string>
+    <string name="restore_code_label">Эсвэл сэргээх кодыг ашиглах</string>
+    <string name="restore_code_hint">12 үгийг дарааллаар нь. Бүх талбарыг бөглөхийн тулд бүгдийг нь нэг талбарт буулгана уу.</string>
+    <string name="restore_scan_qr_title">Хуучин төхөөрөмжийнхөө QR кодыг уншуулах</string>
+    <string name="restore_scan_qr_body">Тэнд: Профайл › Сэргээх › QR код харуулах</string>
+    <string name="restore_recover">Сэргээх</string>
+    <string name="restore_try_again">Дахин оролдох</string>
+    <string name="restore_start_fresh">Энэ төхөөрөмж дээр шинээр эхлэх</string>
+    <string name="restore_error_invalid_code">Код олдсонгүй. Үгс болон дарааллыг нь шалгаад дахин оролдоно уу.</string>
+    <string name="restore_error_too_many_attempts">Хэт олон оролдлого. Хэдэн минут хүлээгээд дахин оролдоно уу.</string>
+    <string name="restore_error_sign_in_failed">Одоогоор нэвтэрч чадсангүй. Дахин оролдоно уу.</string>
+    <string name="restore_error_unknown">Алдаа гарлаа. Дахин оролдоно уу.</string>
+</resources>

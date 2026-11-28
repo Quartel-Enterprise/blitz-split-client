@@ -117,6 +117,13 @@
     <string name="profile_language_amharic">អាំហារិក</string>
     <string name="profile_language_sinhala">ស្រីលង្កា</string>
     <string name="profile_language_kazakh">កាហ្សាក់</string>
+    <string name="profile_language_mongolian">ម៉ុងហ្គោលី</string>
+    <string name="profile_language_kyrgyz">កៀហ្ស៊ីស</string>
+    <string name="profile_language_lao">ឡាវ</string>
+    <string name="profile_language_icelandic">អ៊ីស្លង់</string>
+    <string name="profile_language_basque">បាស្គ</string>
+    <string name="profile_language_galician">ហ្គាលីស្យាន</string>
+    <string name="profile_language_romansh">រ៉ូម៉ង់</string>
     <string name="profile_language_system_detail">ភាសាឧបករណ៍</string>
     <string name="profile_notifications">ការជូនដំណឹង</string>
     <plurals name="profile_notifications_active">

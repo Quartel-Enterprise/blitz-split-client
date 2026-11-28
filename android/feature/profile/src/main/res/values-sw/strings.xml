@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">Kiamhari</string>
     <string name="profile_language_sinhala">Kisinhala</string>
     <string name="profile_language_kazakh">Kikazakh</string>
+    <string name="profile_language_mongolian">Kimongolia</string>
+    <string name="profile_language_kyrgyz">Kikirigizi</string>
+    <string name="profile_language_lao">Kilaosi</string>
+    <string name="profile_language_icelandic">Kiaisilandi</string>
+    <string name="profile_language_basque">Kibaski</string>
+    <string name="profile_language_galician">Kigalisia</string>
+    <string name="profile_language_romansh">Kiromanshi</string>
     <string name="profile_language_system_detail">Lugha ya kifaa</string>
     <string name="profile_notifications">Arifa</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">ທ່ານບໍ່ໄດ້ຢູ່ໃນກຸ່ມນີ້</string>
+    <string name="bill_link_not_in_group_message">ຄຳເຫັນນີ້ຢູ່ໃນກຸ່ມທີ່ທ່ານບໍ່ໄດ້ຢູ່ ກະລຸນາຂໍຄຳເຊີນຈາກຄົນທີ່ສົ່ງລິ້ງໃຫ້ທ່ານ</string>
+    <string name="bill_link_offline_title">ບໍ່ມີອິນເຕີເນັດ</string>
+    <string name="bill_link_offline_message">ເປີດລິ້ງອີກຄັ້ງເມື່ອທ່ານກັບມາອອນລາຍ</string>
+    <string name="bill_link_go_home">ໄປໜ້າຫຼັກ</string>
+    <string name="discard_changes_title">ຍົກເລີກການປ່ຽນແປງບໍ?</string>
+    <string name="discard_changes_message">ການປ່ຽນແປງທີ່ບໍ່ໄດ້ບັນທຶກຈະສູນຫາຍ</string>
+    <string name="discard_changes_discard">ຍົກເລີກການປ່ຽນແປງ</string>
+    <string name="discard_changes_keep_editing">ແກ້ໄຂຕໍ່</string>
+    <string name="watch_channel_name">ໂມງ</string>
+    <string name="watch_connected_title">%1$s ເຊື່ອມຕໍ່ກັບບັນຊີຂອງທ່ານແລ້ວ</string>
+    <string name="watch_connected_title_unnamed">ໂມງເຊື່ອມຕໍ່ກັບບັນຊີຂອງທ່ານແລ້ວ</string>
+    <string name="watch_connected_text">ມັນເຫັນກຸ່ມຂອງທ່ານ ແລະ ຊິງຂໍ້ມູນເອງ ເພື່ອຕັດການເຊື່ອມຕໍ່ ກະລຸນາອອກຈາກລະບົບໃນໂມງ</string>
+</resources>

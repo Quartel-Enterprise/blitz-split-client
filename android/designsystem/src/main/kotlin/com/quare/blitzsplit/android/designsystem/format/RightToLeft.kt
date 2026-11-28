@@ -12,7 +12,7 @@ import java.util.Locale
 
 /*
  * Why: the right to left languages (Hebrew under its current code and the legacy one Java still hands out, "iw"), and
- * the ones whose own digits the app writes as 0-9 (Arabic, Thai, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Punjabi, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala and Kazakh).
+ * the ones whose own digits the app writes as 0-9 (Arabic, Thai, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Punjabi, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala, Kazakh and Lao).
  */
 private val rightToLeftLanguages = setOf("ar", "fa", "he", "iw", "ur")
 private val latinDigitLanguages = setOf(
@@ -36,6 +36,7 @@ private val latinDigitLanguages = setOf(
     "am",
     "si",
     "kk",
+    "lo",
 )
 private val ownCalendarLanguages = setOf("th", "fa")
 private const val FIRST_STRONG_ISOLATE = '\u2068'

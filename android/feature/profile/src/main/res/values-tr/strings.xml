@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">Amharca</string>
     <string name="profile_language_sinhala">Sinhali dili</string>
     <string name="profile_language_kazakh">Kazakça</string>
+    <string name="profile_language_mongolian">Moğolca</string>
+    <string name="profile_language_kyrgyz">Kırgızca</string>
+    <string name="profile_language_lao">Laoca</string>
+    <string name="profile_language_icelandic">İzlandaca</string>
+    <string name="profile_language_basque">Baskça</string>
+    <string name="profile_language_galician">Galiçyaca</string>
+    <string name="profile_language_romansh">Romanşça</string>
     <string name="profile_language_system_detail">Cihaz dili</string>
     <string name="profile_notifications">Bildirimler</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">Купуялык саясаты</string>
+    <string name="legal_terms">Колдонуу шарттары</string>
+    <string name="legal_updated_privacy_policy">Жаңыртылды: %1$s</string>
+    <string name="legal_updated_terms">Жаңыртылды: %1$s</string>
+    <string name="legal_load_failed_title">Бул баракты жүктөй алган жокпуз</string>
+    <string name="legal_load_failed_body">Туташууну текшерип, кайра аракет кылыңыз.</string>
+    <string name="legal_retry">Кайра аракет кылуу</string>
+</resources>

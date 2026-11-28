@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Modifitgar il profil</string>
+    <string name="edit_profile_save">Memorisar</string>
+    <string name="edit_profile_change_photo">Midar la foto</string>
+    <string name="edit_profile_take_photo">Far ina foto</string>
+    <string name="edit_profile_choose_photo">Tscherner da la galaria</string>
+    <string name="edit_profile_use_account_photo">Duvrar la foto dal conto %1$s</string>
+    <string name="edit_profile_remove_photo">Allontanar la foto</string>
+    <string name="edit_profile_photo_error">Impussibel da duvrar questa foto. Empruvai in\'autra.</string>
+    <string name="edit_profile_avatar_color">Colur da l\'avatar</string>
+    <string name="edit_profile_avatar_color_hint">Vegn mussada cur che Vus n\'avais nagina foto.</string>
+    <string name="edit_profile_name_label">Voss num</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Endatai almain %d bustabs.</string>
+    <string name="edit_profile_name_too_long">Duvrai maximalmain %d caracters.</string>
+    <string name="edit_profile_account_notice">Num e foto derivan da Voss conto %1$s. Sche Vus als midais qua, vala quai mo per Blitz Split e Voss conto %1$s na sa mida betg.</string>
+    <string name="edit_profile_footer">Vossas gruppas e tuts che han la colliaziun da Voss profil vesan Voss num e Vossa foto.</string>
+    <string name="profile_photo_close">Serrar</string>
+    <string name="profile_photo_camera">Camera</string>
+    <string name="profile_photo_gallery">Galaria</string>
+    <string name="profile_photo_remove">Allontanar</string>
+    <string name="profile_photo_title">Foto da profil</string>
+</resources>

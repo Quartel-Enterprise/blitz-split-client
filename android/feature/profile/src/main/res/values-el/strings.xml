@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">Αμχαρικά</string>
     <string name="profile_language_sinhala">Σινχαλικά</string>
     <string name="profile_language_kazakh">Καζακικά</string>
+    <string name="profile_language_mongolian">Μογγολικά</string>
+    <string name="profile_language_kyrgyz">Κιργιζικά</string>
+    <string name="profile_language_lao">Λαοτινά</string>
+    <string name="profile_language_icelandic">Ισλανδικά</string>
+    <string name="profile_language_basque">Βασκικά</string>
+    <string name="profile_language_galician">Γαλικιακά</string>
+    <string name="profile_language_romansh">Ρομανικά</string>
     <string name="profile_language_system_detail">Γλώσσα συσκευής</string>
     <string name="profile_notifications">Ειδοποιήσεις</string>
     <plurals name="profile_notifications_active">

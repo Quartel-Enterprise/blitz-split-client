@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">Amhariska</string>
     <string name="profile_language_sinhala">Singalesiska</string>
     <string name="profile_language_kazakh">Kazakiska</string>
+    <string name="profile_language_mongolian">Mongoliska</string>
+    <string name="profile_language_kyrgyz">Kirgiziska</string>
+    <string name="profile_language_lao">Laotiska</string>
+    <string name="profile_language_icelandic">Isländska</string>
+    <string name="profile_language_basque">Baskiska</string>
+    <string name="profile_language_galician">Galiciska</string>
+    <string name="profile_language_romansh">Rätoromanska</string>
     <string name="profile_language_system_detail">Enhetens språk</string>
     <string name="profile_notifications">Aviseringar</string>
     <plurals name="profile_notifications_active">

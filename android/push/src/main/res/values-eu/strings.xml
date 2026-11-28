@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Kontuak kitatzeko gogorarazpena</string>
+    <string name="push_bill_created">%1$s · gastu berria zurekin: “%2$s”</string>
+    <string name="push_bill_edited">%1$s · gastuaren edizioa: “%2$s”</string>
+    <string name="push_bill_deleted">%1$s · gastuaren ezabaketa: “%2$s”</string>
+    <string name="push_comment_added">%1$s · iruzkina “%2$s” gastuan: %3$s</string>
+    <string name="push_payment_paid_you">%1$s · zuri egindako ordainketaren erregistroa</string>
+    <string name="push_payment_to_you">%1$s · zuri egindako ordainketaren erregistroa. Ordaintzailea: %2$s</string>
+    <string name="push_payment_received_yours">%1$s · zure ordainketaren harreraren erregistroa</string>
+    <string name="push_payment_from_you">%1$s · zure ordainketaren erregistroa. Hartzailea: %2$s</string>
+    <string name="push_payment_undone">%1$s · zurekiko ordainketa baten desegitea</string>
+    <string name="push_charge_sent">%1$s · kontuak kitatzeko gogorarazpena zuretzat</string>
+    <string name="push_settle_reminder">Saldo irekia duzu ‘%1$s’ taldean</string>
+    <string name="push_settle_reminders">Saldo irekiak dituzu %1$s taldetan</string>
+    <string name="push_added_to_group">%1$s · zu taldera gehitzea</string>
+    <string name="push_member_joined">%1$s · taldeko sarrera</string>
+    <string name="push_debts_simplified_to_you">%1$s · zorren sinplifikazioa. Orain %2$s pertsonak %3$s ordaintzen dizu.</string>
+    <string name="push_debts_simplified_from_you">%1$s · zorren sinplifikazioa. Orain %3$s ordaintzen diozu %2$s pertsonari.</string>
+    <string name="push_debts_simplified_other">%1$s · zorren sinplifikazioa. Ikusi nola geratzen zaren.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s · Sinplifikatu zorrak aukeraren desaktibazioa. Orain %2$s pertsonak %3$s ordaintzen dizu.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s · Sinplifikatu zorrak aukeraren desaktibazioa. Orain %3$s ordaintzen diozu %2$s pertsonari.</string>
+    <string name="push_debts_unsimplified_other">%1$s · Sinplifikatu zorrak aukeraren desaktibazioa. Ikusi nola geratzen zaren.</string>
+    <string name="notification_settings_bills">Gastuak</string>
+    <string name="notification_settings_bills_detail">Parte hartzen duzun gastu berriak, editatuak edo ezabatuak</string>
+    <string name="notification_settings_payments">Ordainketak eta kitatzeak</string>
+    <string name="notification_settings_payments_detail">Zuri edo zuk egindako ordainketak, eta zor sinplifikatuak</string>
+    <string name="notification_settings_comments">Iruzkinak</string>
+    <string name="notification_settings_comments_detail">Parte hartzen duzun gastuetan eta idatzi duzun harietan</string>
+    <string name="notification_settings_people_and_groups">Jendea eta taldeak</string>
+    <string name="notification_settings_people_and_groups_detail">Nor sartzen edo irteten den zure taldeetan, eta haietan zer aldatzen den</string>
+    <string name="notification_settings_payment_requests">Ordainketa-eskaerak</string>
+    <string name="notification_settings_payment_requests_detail">Norbaitek ordaintzeko eskatzen dizunean</string>
+    <string name="notification_settings_balance_reminder">Saldo irekiaren gogorarazpena</string>
+    <string name="notification_settings_balance_reminder_detail">Astean behin, saldo irekia badago</string>
+</resources>

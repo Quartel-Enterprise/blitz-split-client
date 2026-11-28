@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">అమ్హారిక్</string>
     <string name="profile_language_sinhala">సింహళం</string>
     <string name="profile_language_kazakh">కజఖ్</string>
+    <string name="profile_language_mongolian">మంగోలియన్</string>
+    <string name="profile_language_kyrgyz">కిర్గిజ్</string>
+    <string name="profile_language_lao">లావో</string>
+    <string name="profile_language_icelandic">ఐస్లాండిక్</string>
+    <string name="profile_language_basque">బాస్క్యూ</string>
+    <string name="profile_language_galician">గాలిషియన్</string>
+    <string name="profile_language_romansh">రోమన్ష్</string>
     <string name="profile_language_system_detail">పరికరం భాష</string>
     <string name="profile_notifications">నోటిఫికేషన్‌లు</string>
     <plurals name="profile_notifications_active">

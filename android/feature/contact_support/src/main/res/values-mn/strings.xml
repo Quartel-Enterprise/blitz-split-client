@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Тусламжтай холбогдох</string>
+    <string name="contact_support_description">Бид таны имэйл аппыг бэлэн мессежтэй нээнэ. Юу болсныг тайлбарлаад илгээнэ үү: мессеж бүрийг жинхэнэ хүмүүс уншдаг.</string>
+    <string name="contact_support_to">Хэнд</string>
+    <string name="contact_support_diagnostics">Имэйлд хавсаргагдана</string>
+    <string name="contact_support_app_version">Аппын хувилбар</string>
+    <string name="contact_support_platform">Платформ</string>
+    <string name="contact_support_language">Хэл</string>
+    <string name="contact_support_account">Бүртгэл</string>
+    <string name="contact_support_profile">Профайл</string>
+    <string name="contact_support_language_system">Систем</string>
+    <string name="contact_support_account_local">Зөвхөн энэ төхөөрөмж</string>
+    <string name="contact_support_account_anonymous">Холбогдоогүй</string>
+    <string name="contact_support_open_email">Имэйл нээх</string>
+    <string name="contact_support_copy_email">Имэйл хаяг хуулах</string>
+    <string name="contact_support_notice_copied">Имэйл хаяг хуулагдлаа.</string>
+    <string name="contact_support_notice_no_app">Имэйл апп олдсонгүй. Оронд нь хаягийг хуулсан.</string>
+    <string name="contact_support_close">Хаах</string>
+</resources>

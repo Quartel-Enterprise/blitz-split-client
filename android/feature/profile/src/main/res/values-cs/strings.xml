@@ -120,6 +120,13 @@
     <string name="profile_language_amharic">Amharština</string>
     <string name="profile_language_sinhala">Sinhálština</string>
     <string name="profile_language_kazakh">Kazaština</string>
+    <string name="profile_language_mongolian">Mongolština</string>
+    <string name="profile_language_kyrgyz">Kyrgyzština</string>
+    <string name="profile_language_lao">Laoština</string>
+    <string name="profile_language_icelandic">Islandština</string>
+    <string name="profile_language_basque">Baskičtina</string>
+    <string name="profile_language_galician">Galicijština</string>
+    <string name="profile_language_romansh">Rétorománština</string>
     <string name="profile_language_system_detail">Jazyk zařízení</string>
     <string name="profile_notifications">Oznámení</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">ການເຕືອນຊຳລະໜີ້</string>
+    <string name="push_bill_created">%1$s ເພີ່ມ “%2$s” ກັບທ່ານ</string>
+    <string name="push_bill_edited">%1$s ແກ້ໄຂ “%2$s”</string>
+    <string name="push_bill_deleted">%1$s ລຶບ “%2$s”</string>
+    <string name="push_comment_added">%1$s ສະແດງຄຳເຫັນໃນ “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s ໝາຍວ່າຈ່າຍໃຫ້ທ່ານແລ້ວ</string>
+    <string name="push_payment_to_you">%1$s ໝາຍວ່າ %2$s ຈ່າຍໃຫ້ທ່ານແລ້ວ</string>
+    <string name="push_payment_received_yours">%1$s ໝາຍວ່າໄດ້ຮັບການຈ່າຍເງິນຂອງທ່ານແລ້ວ</string>
+    <string name="push_payment_from_you">%1$s ໝາຍວ່າທ່ານຈ່າຍໃຫ້ %2$s ແລ້ວ</string>
+    <string name="push_payment_undone">%1$s ຍົກເລີກການຈ່າຍເງິນກັບທ່ານ</string>
+    <string name="push_charge_sent">%1$s ສົ່ງການເຕືອນໃຫ້ທ່ານຊຳລະໜີ້</string>
+    <string name="push_settle_reminder">ທ່ານມີຍອດຄົງເຫຼືອທີ່ຍັງຄ້າງໃນ %1$s</string>
+    <string name="push_settle_reminders">ທ່ານມີຍອດຄົງເຫຼືອທີ່ຍັງຄ້າງໃນ %1$s ກຸ່ມ</string>
+    <string name="push_added_to_group">%1$s ເພີ່ມທ່ານເຂົ້າກຸ່ມ</string>
+    <string name="push_member_joined">%1$s ເຂົ້າຮ່ວມກຸ່ມ</string>
+    <string name="push_debts_simplified_to_you">%1$s ຫຍໍ້ໜີ້ສິນ ຕອນນີ້ %2$s ຈ່າຍໃຫ້ທ່ານ %3$s</string>
+    <string name="push_debts_simplified_from_you">%1$s ຫຍໍ້ໜີ້ສິນ ຕອນນີ້ທ່ານຈ່າຍໃຫ້ %2$s %3$s</string>
+    <string name="push_debts_simplified_other">%1$s ຫຍໍ້ໜີ້ສິນ ເບິ່ງວ່າມີຜົນກັບທ່ານແນວໃດ</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ປິດ ຫຍໍ້ໜີ້ສິນ ຕອນນີ້ %2$s ຈ່າຍໃຫ້ທ່ານ %3$s</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ປິດ ຫຍໍ້ໜີ້ສິນ ຕອນນີ້ທ່ານຈ່າຍໃຫ້ %2$s %3$s</string>
+    <string name="push_debts_unsimplified_other">%1$s ປິດ ຫຍໍ້ໜີ້ສິນ ເບິ່ງວ່າມີຜົນກັບທ່ານແນວໃດ</string>
+    <string name="notification_settings_bills">ລາຍຈ່າຍ</string>
+    <string name="notification_settings_bills_detail">ລາຍຈ່າຍໃໝ່, ທີ່ແກ້ໄຂ ຫຼື ທີ່ລຶບ ທີ່ທ່ານມີສ່ວນຮ່ວມ</string>
+    <string name="notification_settings_payments">ການຈ່າຍເງິນ ແລະ ການຊຳລະໜີ້</string>
+    <string name="notification_settings_payments_detail">ການຈ່າຍເງິນຫາ ຫຼື ຈາກທ່ານ ແລະ ໜີ້ສິນທີ່ຫຍໍ້ແລ້ວ</string>
+    <string name="notification_settings_comments">ຄຳເຫັນ</string>
+    <string name="notification_settings_comments_detail">ໃນລາຍຈ່າຍທີ່ທ່ານມີສ່ວນຮ່ວມ ແລະ ກະທູ້ທີ່ທ່ານຂຽນ</string>
+    <string name="notification_settings_people_and_groups">ຄົນ ແລະ ກຸ່ມ</string>
+    <string name="notification_settings_people_and_groups_detail">ໃຜເຂົ້າຮ່ວມ ຫຼື ອອກຈາກກຸ່ມຂອງທ່ານ ແລະ ມີຫຍັງປ່ຽນແປງໃນກຸ່ມ</string>
+    <string name="notification_settings_payment_requests">ຄຳຂໍໃຫ້ຈ່າຍ</string>
+    <string name="notification_settings_payment_requests_detail">ເມື່ອມີຄົນຂໍໃຫ້ທ່ານຈ່າຍ</string>
+    <string name="notification_settings_balance_reminder">ການເຕືອນຍອດຄົງເຫຼືອທີ່ຍັງຄ້າງ</string>
+    <string name="notification_settings_balance_reminder_detail">ອາທິດລະຄັ້ງ ຖ້າມີຍອດຄົງເຫຼືອທີ່ຍັງຄ້າງ</string>
+</resources>

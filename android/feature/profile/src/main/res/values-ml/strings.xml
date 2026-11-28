@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">അംഹാരിക്</string>
     <string name="profile_language_sinhala">സിംഹള</string>
     <string name="profile_language_kazakh">കസാഖ്</string>
+    <string name="profile_language_mongolian">മംഗോളിയൻ</string>
+    <string name="profile_language_kyrgyz">കിർഗിസ്</string>
+    <string name="profile_language_lao">ലാവോ</string>
+    <string name="profile_language_icelandic">ഐസ്‌ലാൻഡിക്</string>
+    <string name="profile_language_basque">ബാസ്‌ക്</string>
+    <string name="profile_language_galician">ഗലീഷ്യൻ</string>
+    <string name="profile_language_romansh">റൊമാഞ്ച്</string>
     <string name="profile_language_system_detail">ഉപകരണത്തിന്റെ ഭാഷ</string>
     <string name="profile_notifications">അറിയിപ്പുകൾ</string>
     <plurals name="profile_notifications_active">

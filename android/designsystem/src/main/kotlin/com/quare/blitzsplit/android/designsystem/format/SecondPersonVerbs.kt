@@ -93,6 +93,7 @@ private val secondPersonAuxiliaries = mapOf(
     ESTONIAN to mapOf("on" to "oled"),
     SLOVENIAN to mapOf("je" to "si"),
     CATALAN to mapOf("ha" to "has", "l’ha" to "l’has", "l'ha" to "l'has"),
+    ROMANSH to mapOf("ha" to "avais"),
 )
 private val turkicPast = Regex("[dt][ıiuü]$")
 private val persianPast = Regex("[دت]$")
@@ -116,6 +117,15 @@ private const val SINHALA = "si"
 private const val KAZAKH = "kk"
 private val kazakhPast = Regex("[дт][ыі]$")
 private val kazakhSecondPersonEndings = mapOf('ы' to "ңыз", 'і' to "ңіз")
+private const val MONGOLIAN = "mn"
+private const val KYRGYZ = "ky"
+private val kyrgyzPast = Regex("[дт][ыиуү]$")
+private val kyrgyzSecondPersonEndings = mapOf('ы' to "ңыз", 'и' to "ңиз", 'у' to "ңуз", 'ү' to "ңүз")
+private val cyrillicOnlyLanguages = setOf(MONGOLIAN, KYRGYZ)
+private const val CYRILLIC_SCRIPT = "Cyrl"
+private const val CHINA = "CN"
+private const val ICELANDIC = "is"
+private const val ROMANSH = "rm"
 private const val TAMIL_THIRD_PERSON_PAST = "ார்"
 private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
 private const val SWAHILI = "sw"
@@ -175,6 +185,10 @@ private val youSubjectLanguages = setOf(
     AMHARIC,
     SINHALA,
     KAZAKH,
+    MONGOLIAN,
+    KYRGYZ,
+    ICELANDIC,
+    ROMANSH,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -253,8 +267,14 @@ private val irregularSecondPerson = mapOf(
  * böldü", "Siz xərci böldünüz"; "qoşuldu" → "qoşuldunuz", "etdi" → "etdiniz"), and Kazakh likewise "-ңыз" or "-ңіз"
  * ("Ana шығынды бөлді", "Сіз шығынды бөлдіңіз"; "шықты" → "шықтыңыз"). Amharic's respectful plural past is the same for
  * a name and for "እርስዎ", and Sinhala's colloquial past doesn't change with the person, so their verbs stay as they are
- * ("Ana ወጪ ከፋፈሉ", "እርስዎ ወጪ ከፋፈሉ"; "Ana වියදමක් බෙදුවා", "ඔබ වියදමක් බෙදුවා"). Same rules as the web's and the Apple
- * app's `verbForYou`.
+ * ("Ana ወጪ ከፋፈሉ", "እርስዎ ወጪ ከፋፈሉ"; "Ana වියදමක් බෙදුවා", "ඔබ වියදමක් බෙදුවා"). Kyrgyz puts its simple past last as Kazakh
+ * does, and the user's "Сиз" adds "-ңыз", "-ңиз", "-ңуз" or "-ңүз" to it after its last vowel ("Ana чыгымды бөлдү",
+ * "Сиз чыгымды бөлдүңүз"; "чыкты" → "чыктыңыз", "тиркеди" → "тиркедиңиз", "кошулду" → "кошулдуңуз"). Romansh swaps its
+ * perfect's auxiliary as Italian does, every verb phrase starting with "ha": "Ursina ha partì", "Vus avais partì".
+ * Mongolian's and Lao's verbs don't change with the person, Icelandic's perfect "hefur" is the same for "þú" and for a
+ * name, Galician's respectful "vostede" takes a name's verb, and Basque writes each activity as a noun phrase
+ * ("Ana · gastuaren banaketa"), so their verbs stay as they are. Same rules as the web's and the Apple app's
+ * `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -290,6 +310,8 @@ fun toSecondPerson(
     }
 
     KAZAKH -> toVerbLastSecondPerson(verb, kazakhPast) { clause -> kazakhSecondPersonEndings.getValue(clause.last()) }
+
+    KYRGYZ -> toVerbLastSecondPerson(verb, kyrgyzPast) { clause -> kyrgyzSecondPersonEndings.getValue(clause.last()) }
 
     KOREAN -> dropSubjectParticle(verb, KOREAN_HONORIFIC_SUBJECT)
 
@@ -361,7 +383,7 @@ private fun toVerbLastSecondPerson(
 ): String = toVerbLastSecondPerson(verb, past, dropped) { ending }
 
 /*
- * Why: Azerbaijani's and Kazakh's ending follows the last vowel of the past it goes after ("böldü" → "böldünüz",
+ * Why: Azerbaijani's, Kazakh's and Kyrgyz's ending follows the last vowel of the past it goes after ("böldü" → "böldünüz",
  * "etdi" → "etdiniz", "бөлді" → "бөлдіңіз", "шықты" → "шықтыңыз"), so `ending` picks it from the clause.
  */
 private fun toVerbLastSecondPerson(
@@ -434,7 +456,10 @@ private fun toSpanishSecondPerson(verb: String): String {
  * Swahili "Wewe ulifuta…", with its own, Gujarati "તમે … ડિલીટ કર્યો", with its rule, Punjabi "ਤੁਸੀਂ … ਮਿਟਾਇਆ",
  * with its own, Malayalam "നിങ്ങൾ ഡിലീറ്റ് ചെയ്തു: …", its verb not changing with the person, Kannada "ನೀವು ಅಳಿಸಿದಿರಿ: …", with its own, Odia "ଆପଣ ଡିଲିଟ୍ କଲେ: …", its verb not changing
  * with the person, Nepali "तपाईंले मेटाउनुभयो: …", Azerbaijani "Siz sildiniz: …" and Kazakh "Сіз жойдыңыз: …", with their
- * rules, and Amharic "እርስዎ ሰረዙ: …" and Sinhala "ඔබ මැකුවා: …", their verbs not changing with the person.
+ * rules, and Amharic "እርስዎ ሰረዙ: …" and Sinhala "ඔබ මැකුවා: …", their verbs not changing with the person. Kyrgyz says "Сиз
+ * өчүрдүңүз: …" and Romansh "Vus avais stizzà…", with their rules, and Mongolian "Та устгалаа: …" and Icelandic "Þú
+ * hefur eytt: …", their verbs not changing with the person. Lao, Basque and Galician name the deleter after the verb
+ * ("ຖືກລຶບໂດຍ ທ່ານ", "Ezabatzailea: zu", "eliminado por vostede"), so they keep the "by you" of the other languages.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages
@@ -457,7 +482,7 @@ private fun secondPersonLanguageUi(): String {
         resources.getBoolean(R.bool.designsystem_punjabi) -> PUNJABI
 
         // Why: Punjabi strings not drawn on a Punjabi device are English's: it is in Shahmukhi (pa-Arab, pa-PK).
-        isCyrillicSerbian(locale) || locale.language == PUNJABI -> ""
+        isCyrillicSerbian(locale) || locale.language == PUNJABI || isUncyrillicMongolianOrKyrgyz(locale) -> ""
 
         else -> locale.language
     }
@@ -465,6 +490,13 @@ private fun secondPersonLanguageUi(): String {
 
 // Why: a Serbian device in Cyrillic draws the English strings, the app having the Latin resources only.
 private fun isCyrillicSerbian(locale: Locale): Boolean = locale.language == SERBIAN && locale.script != LATIN_SCRIPT
+
+/*
+ * Why: a Mongolian or Kyrgyz device in another script (mn-Mong, ky-Arab) or China's with none (mn-CN, ky-CN, written
+ * in those by default) draws the English strings, the app having the Cyrillic resources only.
+ */
+private fun isUncyrillicMongolianOrKyrgyz(locale: Locale): Boolean = locale.language in cyrillicOnlyLanguages &&
+    if (locale.script.isEmpty()) locale.country == CHINA else locale.script != CYRILLIC_SCRIPT
 
 // Why: only the user is "Tú"; the verb of someone else stays in the third person.
 @Composable

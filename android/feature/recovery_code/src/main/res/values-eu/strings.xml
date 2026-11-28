@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Gorde zure berreskuratze-kodea</string>
+    <string name="recovery_code_body">Konturik gabe erabiltzen ari zara. 12 hitz hauek zure datuak berreskuratzen dituzte gailuz aldatzen baduzu edo gailua galtzen baduzu. Idatzi itzazu ordenan. 30 egunez erabili gabe egon ondoren, zure datuak ezabatu egiten dira eta hitzek funtzionatzeari uzten diote.</string>
+    <string name="recovery_code_copy">Kopiatu hitzak</string>
+    <string name="recovery_code_save_to_password_manager">Gorde pasahitz-kudeatzailean</string>
+    <string name="recovery_code_connect_instead">Konektatu Google edo Apple horren ordez</string>
+    <string name="recovery_code_connect_instead_body">Ez da koderik behar</string>
+    <string name="recovery_code_sign_in_failed">Ezin izan da orain konektatu. Saiatu berriro.</string>
+    <string name="recovery_code_also_in_profile">Profila › Berreskuratzea atalean ere badago.</string>
+    <string name="recovery_code_remind_later">Gogorarazi geroago</string>
+    <string name="recovery_code_saved">Gorde dut</string>
+    <string name="recovery_code_download">Deskargatu</string>
+    <string name="recovery_code_file_name">blitz-split-berreskuratze-kodea.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · berreskuratze-kodea\n\n%1$s\n\nErabili \"Beste gailu batean erabili dut\" aukera zure datuak berreskuratzeko.\n</string>
+</resources>

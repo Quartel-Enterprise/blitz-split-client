@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">L\'actualisaziun vegn telechargiada…</string>
+    <string name="in_app_update_download_failed">Impussibel da telechargiar l\'actualisaziun. Empruvai pli tard anc ina giada.</string>
+</resources>

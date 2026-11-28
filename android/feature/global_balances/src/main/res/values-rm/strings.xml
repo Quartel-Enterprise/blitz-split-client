@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Saldos</string>
+    <string name="global_balances_profile">Profil</string>
+    <string name="global_balances_offline">Offline · saldos da quest apparat</string>
+    <string name="global_balances_filter">Mussar</string>
+    <string name="global_balances_filter_all">Tuts</string>
+    <string name="global_balances_filter_you_owe">Vus stuais pajar</string>
+    <string name="global_balances_filter_owes_you">Vus survegnis</string>
+    <string name="global_balances_hint">Gia compensà tranter las gruppas: mintga persuna cumpara mo ina giada.</string>
+    <string name="global_balances_hint_empty">Sumar tut las gruppas sin quest apparat.</string>
+    <string name="global_balances_section_you_owe">Vus stuais pajar · %d</string>
+    <string name="global_balances_section_owes_you">Vus survegnis · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d gruppa</item>
+        <item quantity="other">%d gruppas</item>
+    </plurals>
+    <string name="global_balances_guest">%s · giast</string>
+    <string name="global_balances_you_owe">Vus stuais pajar</string>
+    <string name="global_balances_owes_you">Vus survegnis</string>
+    <string name="global_balances_by_group_show">Mussar %s tenor gruppa</string>
+    <string name="global_balances_by_group_hide">Zuppentar %s tenor gruppa</string>
+    <string name="global_balances_received">Retschavì</string>
+    <string name="global_balances_received_from">Retschavì da %s</string>
+    <string name="global_balances_settle">Pareggiar ils quints</string>
+    <string name="global_balances_settle_with">Pareggiar ils quints cun %s</string>
+    <string name="global_balances_charge">Dumandar daners</string>
+    <string name="global_balances_charge_person">Dumandar daners a %s</string>
+    <string name="global_balances_detail_pane">Saldo cun %s</string>
+    <string name="global_balances_detail_owes_you">%s As sto pajar</string>
+    <string name="global_balances_detail_you_owe">Vus stuais pajar a %s</string>
+    <string name="global_balances_detail_guest">%s · giast senza l\'app</string>
+    <string name="global_balances_detail_note_owed">Il net compensescha gia las gruppas: Dumandar daners e Retschavì duvran %s. L\'app registrescha in pajament en mintga gruppa.</string>
+    <string name="global_balances_detail_note_settle">Il net compensescha gia las gruppas: Pareggiar ils quints dovra %s. L\'app registrescha in pajament en mintga gruppa.</string>
+    <string name="global_balances_detail_note_single">Mo ina gruppa averta cun %s.</string>
+    <string name="global_balances_settled_title">Tut pareggià</string>
+    <string name="global_balances_settled_body">Nagin na As sto pajar e Vus na stuais pajar a nagin. Cur ch\'insatgi agiunta in\'expensa, cumpara il saldo qua.</string>
+    <string name="global_balances_settled_action">Mussar las gruppas</string>
+    <string name="global_balances_nothing_to_pay_title">Vus na stuais pajar nagut</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Vus avais pareggià ils quints cun tuts. Vus survegnis anc %2$s da %1$d persuna.</item>
+        <item quantity="other">Vus avais pareggià ils quints cun tuts. Vus survegnis anc %2$s da %1$d persunas.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Mussar tgi che As sto pajar</string>
+    <string name="global_balances_nothing_to_receive_title">Nagin na As sto pajar</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Vus stuais anc pajar %2$s a %1$d persuna.</item>
+        <item quantity="other">Vus stuais anc pajar %2$s a %1$d persunas.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Mussar a tgi che Vus stuais pajar</string>
+    <string name="global_balances_coming_soon">Prest disponibel</string>
+    <string name="global_balances_change_error">Impussibel da memorisar la midada. Empruvai anc ina giada.</string>
+    <string name="global_balances_copied">Copià</string>
+    <string name="global_balances_charge_title">Dumandar daners a %s</string>
+    <string name="global_balances_charge_owes">As sto pajar %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Serrar</string>
+    <string name="global_balances_charge_guest">%s è in giast senza l\'app. Questa persuna vegn a savair quai mo tras quest messadi, perquai di el gia tge che fa part da l\'expensa.</string>
+    <string name="global_balances_charge_message">Messadi</string>
+    <string name="global_balances_charge_pix">Includer mia clav Pix</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Copiar il messadi</string>
+    <string name="global_balances_charge_send">Trametter</string>
+    <string name="global_balances_message">Allegra %1$s! Tenor il quint da Blitz Split ma stos ti %2$s da %3$s.</string>
+    <string name="global_balances_message_guest">Allegra %1$s! Ti ma stos %2$s da %3$s: tia part da %4$s.</string>
+    <string name="global_balances_message_guest_paid">Allegra %1$s! Ti ma stos %2$s da %3$s: tia part da %4$s, main ils %5$s che ti has gia pajà.</string>
+    <string name="global_balances_message_group">la gruppa %s</string>
+    <string name="global_balances_message_groups">las gruppas %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telefon</string>
+    <string name="global_balances_key_email">E-mail</string>
+    <string name="global_balances_key_random">Clav casuala</string>
+    <string name="global_balances_message_reroute">%1$s ha simplifitgà ses debits, perquai pajas ti directamain a mai empè da pajar a %2$s; tes total n\'è betg sa midà.</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">Eguneratzea deskargatzen…</string>
+    <string name="in_app_update_download_failed">Ezin izan da eguneratzea deskargatu. Saiatu berriro geroago.</string>
+</resources>

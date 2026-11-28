@@ -186,6 +186,20 @@ The feed, unread state, real time and push notifications.
     ከፋፈሉ: …", "እርስዎ ወጪ ከፋፈሉ: …"), and Sinhala's colloquial past doesn't change with the person ("Ana වියදමක් බෙදුවා:
     …", "ඔබ වියදමක් බෙදුවා: …"). Their deleted-item notices start with who deleted it ("እርስዎ ሰረዙ: …", "ඔබ මැකුවා: …",
     `youSubjectLanguages`), and "You" is "እርስዎ" and "ඔබ" everywhere.
+    Kyrgyz puts the verb last as Kazakh does (`toVerbLastSecondPerson`, `SecondPerson`, the web's `verbForYou`): every
+    verb phrase ends, before the colon, with a simple past in "-ды/-ди/-ду/-дү/-ты/-ти/-ту/-тү", and the user's rows
+    add "-ңыз", "-ңиз", "-ңуз" or "-ңүз" by its last vowel ("Ana чыгымды бөлдү: …", "Сиз чыгымды бөлдүңүз: …"; "чыкты"
+    → "чыктыңыз"). Romansh swaps its perfect's auxiliary as Italian does (`secondPersonAuxiliaries`, `auxiliaries`):
+    every verb phrase starts with "ha", which the user's rows turn into "avais" ("Ursina ha partì l'expensa: …", "Vus
+    avais partì l'expensa: …"); it never uses "è", whose participle would agree with the actor. Mongolian, Lao,
+    Icelandic, Galician and Basque need no rule: Mongolian's and Lao's verbs don't change with the person, Icelandic
+    writes each verb phrase in the perfect with "hefur", the same for a name and for "Þú", Galician's respectful
+    "Vostede" takes a name's verb ("Ana dividiu…", "Vostede dividiu…"), and Basque writes each activity sentence as a
+    noun phrase ("Ana · gastuaren banaketa: …"), so no ergative or auxiliary depends on the actor. The deleted-item
+    notices of Mongolian, Kyrgyz, Icelandic and Romansh start with who deleted it ("Та устгалаа: …", "Сиз өчүрдүңүз: …",
+    "Þú hefur eytt: …", "Vus avais stizzà…", `youSubjectLanguages`); Lao's, Basque's and Galician's name the deleter
+    after the verb, so Android says it with their lowercase "you" ("ຖືກລຶບໂດຍ ທ່ານ", "Ezabatzailea: zu", "eliminado
+    por vostede"), and the web's `activity_deletedByMe` and the Apple notice start with the actor in all seven.
     Bulgarian needs no rule: every Bulgarian verb phrase starts with an aorist, whose second and third person singular
     are the same ("Ana раздели разхода…", "Ти раздели разхода…"), and which says nothing of the gender either. Its
     deleted-item notice starts with who deleted it too ("Ти изтри…", `youSubjectLanguages`).

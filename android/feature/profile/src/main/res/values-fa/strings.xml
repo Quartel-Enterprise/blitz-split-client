@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">امهری</string>
     <string name="profile_language_sinhala">سینهالی</string>
     <string name="profile_language_kazakh">قزاقی</string>
+    <string name="profile_language_mongolian">مغولی</string>
+    <string name="profile_language_kyrgyz">قرقیزی</string>
+    <string name="profile_language_lao">لائوسی</string>
+    <string name="profile_language_icelandic">ایسلندی</string>
+    <string name="profile_language_basque">باسکی</string>
+    <string name="profile_language_galician">گالیسیایی</string>
+    <string name="profile_language_romansh">رومانش</string>
     <string name="profile_language_system_detail">زبان دستگاه</string>
     <string name="profile_notifications">اعلان‌ها</string>
     <plurals name="profile_notifications_active">

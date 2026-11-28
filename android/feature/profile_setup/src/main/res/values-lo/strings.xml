@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">ໝູ່ຂອງທ່ານເອີ້ນທ່ານວ່າຫຍັງ?</string>
+    <string name="profile_setup_subtitle">ກຸ່ມຂອງທ່ານ ແລະ ທຸກຄົນທີ່ມີລິ້ງໂປຣໄຟລ໌ຂອງທ່ານຈະເຫັນຊື່ຂອງທ່ານ</string>
+    <string name="profile_setup_avatar_color">ສີຮູບແທນຕົວ</string>
+    <string name="profile_setup_add_photo">ເພີ່ມຮູບ</string>
+    <string name="profile_setup_photo_error">ບໍ່ສາມາດໃຊ້ຮູບນີ້ໄດ້ ກະລຸນາລອງຮູບອື່ນ</string>
+    <string name="profile_setup_name_label">ຊື່ຂອງທ່ານ</string>
+    <string name="profile_setup_name_placeholder">ສົມພອນ ແກ້ວມະນີ</string>
+    <string name="profile_setup_name_too_short">ກະລຸນາພິມຢ່າງໜ້ອຍ %d ຕົວອັກສອນ</string>
+    <string name="profile_setup_name_too_long">ກະລຸນາໃຊ້ບໍ່ເກີນ %d ຕົວອັກສອນ</string>
+    <string name="profile_setup_name_hint">ທ່ານສາມາດປ່ຽນໄດ້ພາຍຫຼັງໃນ ໂປຣໄຟລ໌</string>
+    <string name="profile_setup_saved_locally">ຕອນນີ້ບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ</string>
+    <string name="profile_setup_continue">ດຳເນີນການຕໍ່</string>
+</resources>

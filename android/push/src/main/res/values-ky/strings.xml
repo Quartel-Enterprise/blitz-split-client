@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Эсептешүү эскертмеси</string>
+    <string name="push_bill_created">%1$s сиз менен чыгымды бөлдү: “%2$s”</string>
+    <string name="push_bill_edited">%1$s чыгымды түзөттү: “%2$s”</string>
+    <string name="push_bill_deleted">%1$s чыгымды өчүрдү: “%2$s”</string>
+    <string name="push_comment_added">%1$s “%2$s” чыгымына пикир жазды: %3$s</string>
+    <string name="push_payment_paid_you">%1$s сизге төлөгөнүн белгиледи</string>
+    <string name="push_payment_to_you">%1$s белгиледи: %2$s сизге төлөдү</string>
+    <string name="push_payment_received_yours">%1$s сиздин төлөмүңүздү алынды деп белгиледи</string>
+    <string name="push_payment_from_you">%1$s белгиледи: сиз төлөдүңүз, алуучу: %2$s</string>
+    <string name="push_payment_undone">%1$s сиз менен болгон төлөмдү жокко чыгарды</string>
+    <string name="push_charge_sent">%1$s сизге эсептешүү тууралуу эскертме жөнөттү</string>
+    <string name="push_settle_reminder">‘%1$s’ тобунда ачык балансыңыз бар</string>
+    <string name="push_settle_reminders">%1$s топто ачык баланстарыңыз бар</string>
+    <string name="push_added_to_group">%1$s сизди топко кошту</string>
+    <string name="push_member_joined">%1$s топко кошулду</string>
+    <string name="push_debts_simplified_to_you">%1$s карыздарды жөнөкөйлөттү. Эми %2$s сизге %3$s төлөйт.</string>
+    <string name="push_debts_simplified_from_you">%1$s карыздарды жөнөкөйлөттү. Эми сиз %3$s төлөйсүз, алуучу: %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s карыздарды жөнөкөйлөттү. Сизге кандай таасир этээрин көрүңүз.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s карыздарды жөнөкөйлөтүүнү өчүрдү. Эми %2$s сизге %3$s төлөйт.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s карыздарды жөнөкөйлөтүүнү өчүрдү. Эми сиз %3$s төлөйсүз, алуучу: %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s карыздарды жөнөкөйлөтүүнү өчүрдү. Сизге кандай таасир этээрин көрүңүз.</string>
+    <string name="notification_settings_bills">Чыгымдар</string>
+    <string name="notification_settings_bills_detail">Сиз катышкан жаңы, түзөтүлгөн же өчүрүлгөн чыгымдар</string>
+    <string name="notification_settings_payments">Төлөмдөр жана эсептешүүлөр</string>
+    <string name="notification_settings_payments_detail">Сизге же сизден болгон төлөмдөр жана жөнөкөйлөтүлгөн карыздар</string>
+    <string name="notification_settings_comments">Пикирлер</string>
+    <string name="notification_settings_comments_detail">Сиз катышкан чыгымдарда жана сиз жазган талкууларда</string>
+    <string name="notification_settings_people_and_groups">Адамдар жана топтор</string>
+    <string name="notification_settings_people_and_groups_detail">Топторуңузга ким кошулат же чыгат жана аларда эмне өзгөрөт</string>
+    <string name="notification_settings_payment_requests">Төлөм суроолору</string>
+    <string name="notification_settings_payment_requests_detail">Бирөө сизден төлөөнү сураганда</string>
+    <string name="notification_settings_balance_reminder">Ачык баланс эскертмеси</string>
+    <string name="notification_settings_balance_reminder_detail">Ачык баланс болсо, жумасына бир жолу</string>
+</resources>

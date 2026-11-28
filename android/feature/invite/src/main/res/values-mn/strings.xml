@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Хаах</string>
+    <string name="invite_group_created">Бүлэг үүслээ</string>
+    <string name="invite_title">‘%s’ бүлэгт бүгдийг урих</string>
+    <string name="invite_qr_description">Бүлгийн урилгын холбоосын QR код</string>
+    <string name="invite_copy">Хуулах</string>
+    <string name="invite_copied">Хуулсан</string>
+    <string name="invite_who_picks">Холбоосыг нээсэн хүн жагсаалтаас өөрийгөө сонгоно: %s. Бүртгэл шаардлагагүй.</string>
+    <string name="invite_names_or">%1$s эсвэл %2$s</string>
+    <string name="invite_anyone_joins">Холбоосыг нээсэн хүн бүлэгт нэгдэнэ. Бүртгэл шаардлагагүй.</string>
+    <string name="invite_pending_title">Холбоос хүлээгдэж байна</string>
+    <string name="invite_pending_offline">Та онлайн болмогц үүснэ.</string>
+    <string name="invite_pending_online">Холбоос үүсгэж байна…</string>
+    <string name="invite_failed_title">Холбоос үүсгэж чадсангүй</string>
+    <string name="invite_failed_body">Бүлгийг синхрончлох үед алдаа гарлаа.</string>
+    <string name="invite_retry">Дахин оролдох</string>
+    <string name="invite_share">Холбоос хуваалцах</string>
+    <string name="invite_see_who_joined">Хэн нэгдсэнийг харах</string>
+    <string name="invite_add_person">Апп ашигладаггүй хүн нэмэх</string>
+    <string name="invite_go_to_group">Бүлэг рүү очих</string>
+    <string name="invite_change_link">Холбоос солих</string>
+    <string name="invite_change_link_title">Урилгын холбоосыг солих уу?</string>
+    <string name="invite_change_link_message">Одоогийн холбоос болон QR код ажиллахаа больно, ашиглаагүй хувийн урилгууд ч мөн адил. Аль хэдийн нэгдсэн хүмүүс бүлэгт үлдэнэ.</string>
+    <string name="invite_change_link_failed">Холбоосыг сольж чадсангүй. Дахин оролдоно уу.</string>
+    <string name="invite_share_message">‘%1$s’ бүлгийн зардлыг Blitz Split дээр хуваацгаая. Энэ холбоосоор нэгдээрэй: %2$s</string>
+</resources>

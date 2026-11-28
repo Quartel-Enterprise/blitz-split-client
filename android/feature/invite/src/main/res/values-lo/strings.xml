@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">ປິດ</string>
+    <string name="invite_group_created">ສ້າງກຸ່ມແລ້ວ</string>
+    <string name="invite_title">ເຊີນທຸກຄົນເຂົ້າ %s</string>
+    <string name="invite_qr_description">QR ໂຄດຂອງລິ້ງເຊີນຂອງກຸ່ມ</string>
+    <string name="invite_copy">ສຳເນົາ</string>
+    <string name="invite_copied">ສຳເນົາແລ້ວ</string>
+    <string name="invite_who_picks">ຄົນທີ່ເປີດລິ້ງຈະເລືອກວ່າຕົນແມ່ນໃຜໃນລາຍຊື່: %s ບໍ່ຕ້ອງມີບັນຊີ</string>
+    <string name="invite_names_or">%1$s ຫຼື %2$s</string>
+    <string name="invite_anyone_joins">ຄົນທີ່ເປີດລິ້ງຈະເຂົ້າຮ່ວມກຸ່ມ ບໍ່ຕ້ອງມີບັນຊີ</string>
+    <string name="invite_pending_title">ລິ້ງກຳລັງລໍຖ້າ</string>
+    <string name="invite_pending_offline">ຈະສ້າງທັນທີທີ່ທ່ານອອນລາຍ</string>
+    <string name="invite_pending_online">ກຳລັງສ້າງລິ້ງ…</string>
+    <string name="invite_failed_title">ບໍ່ສາມາດສ້າງລິ້ງໄດ້</string>
+    <string name="invite_failed_body">ມີບາງຢ່າງຜິດພາດໃນຂະນະຊິງຂໍ້ມູນກຸ່ມ</string>
+    <string name="invite_retry">ລອງໃໝ່</string>
+    <string name="invite_share">ແບ່ງປັນລິ້ງ</string>
+    <string name="invite_see_who_joined">ເບິ່ງວ່າໃຜເຂົ້າຮ່ວມ</string>
+    <string name="invite_add_person">ເພີ່ມຄົນທີ່ບໍ່ມີແອັບ</string>
+    <string name="invite_go_to_group">ໄປທີ່ກຸ່ມ</string>
+    <string name="invite_change_link">ປ່ຽນລິ້ງ</string>
+    <string name="invite_change_link_title">ປ່ຽນລິ້ງເຊີນບໍ?</string>
+    <string name="invite_change_link_message">ລິ້ງ ແລະ QR ໂຄດປັດຈຸບັນຈະໃຊ້ບໍ່ໄດ້ ລວມທັງຄຳເຊີນສ່ວນຕົວທີ່ຍັງບໍ່ໄດ້ໃຊ້ ຄົນທີ່ເຂົ້າຮ່ວມແລ້ວຍັງຢູ່ໃນກຸ່ມ</string>
+    <string name="invite_change_link_failed">ບໍ່ສາມາດປ່ຽນລິ້ງໄດ້ ກະລຸນາລອງໃໝ່</string>
+    <string name="invite_share_message">ມາແບ່ງລາຍຈ່າຍຂອງ %1$s ໃນ Blitz Split ກັນ ເຂົ້າຮ່ວມດ້ວຍລິ້ງນີ້: %2$s</string>
+</resources>

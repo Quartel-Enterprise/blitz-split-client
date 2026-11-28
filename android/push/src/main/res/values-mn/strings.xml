@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Тооцоо хаах сануулга</string>
+    <string name="push_bill_created">%1$s тантай хамт зардал нэмлээ: “%2$s”</string>
+    <string name="push_bill_edited">%1$s зардал заслаа: “%2$s”</string>
+    <string name="push_bill_deleted">%1$s зардал устгалаа: “%2$s”</string>
+    <string name="push_comment_added">%1$s сэтгэгдэл бичлээ (“%2$s”): %3$s</string>
+    <string name="push_payment_paid_you">%1$s танд төлснөө тэмдэглэлээ</string>
+    <string name="push_payment_to_you">%1$s тэмдэглэлээ: %2$s танд төлсөн</string>
+    <string name="push_payment_received_yours">%1$s таны төлбөрийг хүлээн авсан гэж тэмдэглэлээ</string>
+    <string name="push_payment_from_you">%1$s тэмдэглэлээ: та төлсөн, хүлээн авагч: %2$s</string>
+    <string name="push_payment_undone">%1$s тантай холбоотой төлбөрийг буцаалаа</string>
+    <string name="push_charge_sent">%1$s танд тооцоо хаах сануулга илгээлээ</string>
+    <string name="push_settle_reminder">‘%1$s’ бүлэгт танд нээлттэй баланс байна</string>
+    <string name="push_settle_reminders">%1$s бүлэгт танд нээлттэй баланс байна</string>
+    <string name="push_added_to_group">%1$s таныг бүлэгт нэмлээ</string>
+    <string name="push_member_joined">%1$s бүлэгт нэгдлээ</string>
+    <string name="push_debts_simplified_to_you">%1$s өрийг хялбарчиллаа. Одоо %2$s танд %3$s төлнө.</string>
+    <string name="push_debts_simplified_from_you">%1$s өрийг хялбарчиллаа. Одоо та %3$s төлнө, хүлээн авагч: %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s өрийг хялбарчиллаа. Танд хэрхэн нөлөөлснийг харна уу.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s Өрийг хялбарчлах тохиргоог унтраалаа. Одоо %2$s танд %3$s төлнө.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s Өрийг хялбарчлах тохиргоог унтраалаа. Одоо та %3$s төлнө, хүлээн авагч: %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s Өрийг хялбарчлах тохиргоог унтраалаа. Танд хэрхэн нөлөөлснийг харна уу.</string>
+    <string name="notification_settings_bills">Зардал</string>
+    <string name="notification_settings_bills_detail">Таны оролцсон шинэ, зассан эсвэл устгасан зардал</string>
+    <string name="notification_settings_payments">Төлбөр ба тооцоо хаалт</string>
+    <string name="notification_settings_payments_detail">Танд эсвэл танаас хийсэн төлбөр, хялбарчилсан өр</string>
+    <string name="notification_settings_comments">Сэтгэгдэл</string>
+    <string name="notification_settings_comments_detail">Таны оролцсон зардал болон таны бичсэн хэлэлцүүлэг дээр</string>
+    <string name="notification_settings_people_and_groups">Хүмүүс ба бүлгүүд</string>
+    <string name="notification_settings_people_and_groups_detail">Таны бүлгүүдэд хэн нэгдэж, гарч байгаа болон тэдгээрт юу өөрчлөгдөж байгаа</string>
+    <string name="notification_settings_payment_requests">Төлбөрийн хүсэлт</string>
+    <string name="notification_settings_payment_requests_detail">Хэн нэгэн танаас төлөхийг хүсэхэд</string>
+    <string name="notification_settings_balance_reminder">Нээлттэй балансын сануулга</string>
+    <string name="notification_settings_balance_reminder_detail">Нээлттэй баланс байвал долоо хоногт нэг удаа</string>
+</resources>

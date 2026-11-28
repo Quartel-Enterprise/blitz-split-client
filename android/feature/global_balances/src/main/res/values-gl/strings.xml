@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Saldos</string>
+    <string name="global_balances_profile">Perfil</string>
+    <string name="global_balances_offline">Sen conexión · saldos deste dispositivo</string>
+    <string name="global_balances_filter">Mostrar</string>
+    <string name="global_balances_filter_all">Todos</string>
+    <string name="global_balances_filter_you_owe">Ten que pagar</string>
+    <string name="global_balances_filter_owes_you">Vai recibir</string>
+    <string name="global_balances_hint">Xa compensado entre grupos: cada persoa aparece unha vez.</string>
+    <string name="global_balances_hint_empty">Sumando todos os grupos deste dispositivo.</string>
+    <string name="global_balances_section_you_owe">Ten que pagar · %d</string>
+    <string name="global_balances_section_owes_you">Vai recibir · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d grupo</item>
+        <item quantity="other">%d grupos</item>
+    </plurals>
+    <string name="global_balances_guest">%s · persoa convidada</string>
+    <string name="global_balances_you_owe">ten que pagar</string>
+    <string name="global_balances_owes_you">vai recibir</string>
+    <string name="global_balances_by_group_show">Mostrar %s por grupo</string>
+    <string name="global_balances_by_group_hide">Ocultar %s por grupo</string>
+    <string name="global_balances_received">Recibido</string>
+    <string name="global_balances_received_from">Recibido de %s</string>
+    <string name="global_balances_settle">Liquidar contas</string>
+    <string name="global_balances_settle_with">Liquidar contas con %s</string>
+    <string name="global_balances_charge">Solicitar</string>
+    <string name="global_balances_charge_person">Solicitar a %s</string>
+    <string name="global_balances_detail_pane">Saldo con %s</string>
+    <string name="global_balances_detail_owes_you">Vai recibir de %s</string>
+    <string name="global_balances_detail_you_owe">Ten que pagarlle a %s</string>
+    <string name="global_balances_detail_guest">%s · persoa convidada sen a aplicación</string>
+    <string name="global_balances_detail_note_owed">O neto xa compensa os grupos: Solicitar e Recibido usan %s. A aplicación rexistra un pagamento en cada grupo.</string>
+    <string name="global_balances_detail_note_settle">O neto xa compensa os grupos: Liquidar contas usa %s. A aplicación rexistra un pagamento en cada grupo.</string>
+    <string name="global_balances_detail_note_single">Só hai un grupo aberto con %s.</string>
+    <string name="global_balances_settled_title">Todo liquidado</string>
+    <string name="global_balances_settled_body">Ninguén lle debe nada e vostede non lle debe nada a ninguén. Cando alguén engada un gasto, o saldo aparecerá aquí.</string>
+    <string name="global_balances_settled_action">Ver grupos</string>
+    <string name="global_balances_nothing_to_pay_title">Non ten nada que pagar</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Liquidou contas con todo o mundo. Aínda vai recibir %2$s de %1$d persoa.</item>
+        <item quantity="other">Liquidou contas con todo o mundo. Aínda vai recibir %2$s de %1$d persoas.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Ver de quen vai recibir</string>
+    <string name="global_balances_nothing_to_receive_title">Non ten nada que recibir</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Aínda ten que pagarlle %2$s a %1$d persoa.</item>
+        <item quantity="other">Aínda ten que pagarlles %2$s a %1$d persoas.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Ver a quen ten que pagar</string>
+    <string name="global_balances_coming_soon">Proximamente</string>
+    <string name="global_balances_change_error">Non foi posible gardar o cambio. Ténteo de novo.</string>
+    <string name="global_balances_copied">Copiado</string>
+    <string name="global_balances_charge_title">Solicitar a %s</string>
+    <string name="global_balances_charge_owes">Vai recibir %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Pechar</string>
+    <string name="global_balances_charge_guest">%s é unha persoa convidada sen a aplicación. Só se entera por esta mensaxe, así que xa indica o que entrou no gasto.</string>
+    <string name="global_balances_charge_message">Mensaxe</string>
+    <string name="global_balances_charge_pix">Incluír a miña chave Pix</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Copiar mensaxe</string>
+    <string name="global_balances_charge_send">Enviar</string>
+    <string name="global_balances_message">Ola, %1$s! Segundo as contas de Blitz Split, a débeda comigo é de %2$s (%3$s).</string>
+    <string name="global_balances_message_guest">Ola, %1$s! A débeda comigo é de %2$s (%3$s): a parte correspondente de %4$s.</string>
+    <string name="global_balances_message_guest_paid">Ola, %1$s! A débeda comigo é de %2$s (%3$s): a parte correspondente de %4$s, descontando o xa pagado (%5$s).</string>
+    <string name="global_balances_message_group">grupo %s</string>
+    <string name="global_balances_message_groups">grupos %s</string>
+    <string name="global_balances_message_pix">Pix %1$s: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Teléfono</string>
+    <string name="global_balances_key_email">Correo electrónico</string>
+    <string name="global_balances_key_random">Chave aleatoria</string>
+    <string name="global_balances_message_reroute">%1$s simplificou as débedas, así que en vez de pagarlle a %2$s o pagamento faise directamente a min; o total non cambiou.</string>
+</resources>

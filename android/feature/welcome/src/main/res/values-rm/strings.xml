@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Partir il quint, senza stress</string>
+    <string name="welcome_offline_title">Funcziuna offline</string>
+    <string name="welcome_offline_body">Tut resta sin Voss apparat e vegn sincronisà pli tard.</string>
+    <string name="welcome_optional_title">In conto è facultativ</string>
+    <string name="welcome_optional_body">Google u Apple impedeschan mo che Vus perdias insatge cur che Vus midais l\'apparat.</string>
+    <string name="welcome_invite_title">Envidar cun ina colliaziun u in code QR</string>
+    <string name="welcome_invite_body">Amis aderan a la gruppa senza crear in conto.</string>
+    <string name="welcome_no_connection_title">Nagina connexiun.</string>
+    <string name="welcome_no_connection_body">Per s\'annunziar cun in conto dovri internet. Duvrai l\'app ussa senza conto e colliai pli tard en il profil.</string>
+    <string name="welcome_or">u</string>
+    <string name="welcome_use_without_account">Duvrar senza conto</string>
+    <string name="welcome_used_on_another_device">Jau hai gia duvrà l\'app sin in auter apparat</string>
+    <string name="welcome_sign_in_failed">Impussibel da s\'annunziar en quest mument. Empruvai anc ina giada.</string>
+    <string name="welcome_legal_notice">Cun cuntinuar acceptais Vus las %1$s e prendais Vus enconuschientscha da la %2$s.</string>
+    <string name="welcome_legal_terms">Cundiziuns d\'utilisaziun</string>
+    <string name="welcome_legal_privacy">Decleraziun da protecziun da datas</string>
+    <string name="welcome_no_account_note">Senza conto vegnan Vossas datas stizzadas suenter 30 dis senza utilisaziun. Colliai Google u Apple per las mantegnair.</string>
+    <string name="welcome_no_account_note_offline">Senza conto vegnan Vossas datas stizzadas suenter 30 dis senza utilisaziun. Colliai pli tard Google u Apple en il profil per las mantegnair.</string>
+    <string name="welcome_expired_title">Vossas datas èn vegnidas stizzadas</string>
+    <string name="welcome_expired_body">Vus avais duvrà l\'app senza conto e n\'avais betg avert ella durant 30 dis, perquai èn Vossas datas vegnidas stizzadas. Colliai Google u Apple per las mantegnair la proxima giada.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

@@ -119,6 +119,13 @@
     <string name="profile_language_amharic">Amharu</string>
     <string name="profile_language_sinhala">Singāļu</string>
     <string name="profile_language_kazakh">Kazahu</string>
+    <string name="profile_language_mongolian">Mongoļu</string>
+    <string name="profile_language_kyrgyz">Kirgīzu</string>
+    <string name="profile_language_lao">Laosiešu</string>
+    <string name="profile_language_icelandic">Islandiešu</string>
+    <string name="profile_language_basque">Basku</string>
+    <string name="profile_language_galician">Galisiešu</string>
+    <string name="profile_language_romansh">Retoromāņu</string>
     <string name="profile_language_system_detail">Ierīces valoda</string>
     <string name="profile_notifications">Paziņojumi</string>
     <plurals name="profile_notifications_active">

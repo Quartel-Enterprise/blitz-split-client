@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">ເຊື່ອມຕໍ່ໂມງ</string>
+    <string name="connect_watch_close">ປິດ</string>
+    <string name="connect_watch_body">ພິມລະຫັດທີ່ໂມງຂອງທ່ານສະແດງ ມັນຈະເຂົ້າສູ່ລະບົບບັນຊີຂອງທ່ານ ແລ້ວຊິງຂໍ້ມູນເອງ</string>
+    <string name="connect_watch_code_label">ລະຫັດໂມງ</string>
+    <string name="connect_watch_error_invalid">ລະຫັດຜິດ ຫຼື ໝົດອາຍຸ ກະລຸນາຮັບລະຫັດໃໝ່ໃນໂມງ</string>
+    <string name="connect_watch_error_too_many">ລະຫັດຜິດຫຼາຍເກີນໄປ ກະລຸນາລໍຖ້າສອງສາມນາທີ ແລ້ວລອງໃໝ່</string>
+    <string name="connect_watch_error_needs_account">ກະລຸນາເຊື່ອມຕໍ່ບັນຊີກ່ອນ: ຂໍ້ມູນຂອງທ່ານຢູ່ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ</string>
+    <string name="connect_watch_error_failed">ບໍ່ສາມາດເຊື່ອມຕໍ່ໂມງໄດ້ ກະລຸນາລອງໃໝ່</string>
+    <string name="connect_watch_offline">ການເຊື່ອມຕໍ່ໂມງຕ້ອງໃຊ້ອິນເຕີເນັດ</string>
+    <string name="connect_watch_own_watch_only">ພິມສະເພາະລະຫັດທີ່ສະແດງໃນໂມງຂອງທ່ານເອງ: ຄົນທີ່ມີໂມງນັ້ນຈະເຂົ້າບັນຊີຂອງທ່ານໄດ້</string>
+    <string name="connect_watch_validity">ລະຫັດໃຊ້ໄດ້ 5 ນາທີ ຄັ້ງດຽວ</string>
+    <string name="connect_watch_button">ເຊື່ອມຕໍ່</string>
+    <string name="connect_watch_connected_title">ເຊື່ອມຕໍ່ໂມງແລ້ວ</string>
+    <string name="connect_watch_connected_body">ມັນເຫັນກຸ່ມຂອງທ່ານ ແລະ ຊິງຂໍ້ມູນເອງ ເພື່ອຕັດການເຊື່ອມຕໍ່ ກະລຸນາອອກຈາກລະບົບໃນໂມງ</string>
+</resources>

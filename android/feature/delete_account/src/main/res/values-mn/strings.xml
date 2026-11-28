@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Бүртгэл устгах</string>
+    <string name="delete_account_offline_title">Интернэт алга.</string>
+    <string name="delete_account_offline_body">Бүртгэлээ устгахад интернэт холболт хэрэгтэй. Холбогдоод дахин оролдоно уу.</string>
+    <string name="delete_account_heading">Бүртгэл болон өгөгдлөө устгах уу?</string>
+    <string name="delete_account_deleted_title">Устгагдах зүйлс</string>
+    <string name="delete_account_deleted_profile">Таны профайл (нэр, зураг, өнгө)</string>
+    <string name="delete_account_deleted_keys">Таны Pix болон Bitcoin түлхүүрүүд</string>
+    <string name="delete_account_deleted_provider">Таны %1$s бүртгэлийн холболт</string>
+    <string name="delete_account_deleted_recovery_code">Таны сэргээх код</string>
+    <string name="delete_account_deleted_device">Энэ төхөөрөмж дээрх таны өгөгдлийн хуулбар</string>
+    <string name="delete_account_kept_title">Таны бүлгүүдэд үлдэх зүйлс</string>
+    <string name="delete_account_kept_groups">Бусад гишүүдэд зориулж зардал, төлбөрийн хамт бүлгүүд</string>
+    <string name="delete_account_kept_member">Бүлэг бүр дэх таны нэр, бүртгэлгүй гишүүн байдлаар</string>
+    <string name="delete_account_kept_comments">Таны нэр дор үлдэх сэтгэгдэл болон таны нэмсэн зургууд</string>
+    <string name="delete_account_export">Эхлээд өгөгдлөө экспортлох</string>
+    <string name="delete_account_confirm">Үүнийг буцаах боломжгүй гэдгийг ойлгож байна</string>
+    <string name="delete_account_delete">Бүртгэл устгах</string>
+    <string name="delete_account_cancel">Цуцлах</string>
+    <string name="delete_account_failed">Бүртгэлийг устгаж чадсангүй. Дахин оролдоно уу.</string>
+</resources>

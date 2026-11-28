@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Recuperar Vossas gruppas</string>
+    <string name="restore_subtitle">Avais Vus fatg l\'annunzia cun in conto pli baud? Faschai simplamain da nov l\'annunzia. Uschiglio duvrai il code da recuperaziun u il code QR da Voss vegl apparat.</string>
+    <string name="restore_no_connection_title">Nagina connexiun</string>
+    <string name="restore_no_connection_body">Per s\'annunziar cun in conto u in code dovri internet per telechargiar Vossas gruppas. Quai che Vus avais endatà vegn mantegnì.</string>
+    <string name="restore_code_label">U duvrai il code da recuperaziun</string>
+    <string name="restore_code_hint">Ils 12 pleds en urden. Encollai tuts en in champ per emplenir tut ils champs.</string>
+    <string name="restore_scan_qr_title">Scannai il code QR da Voss vegl apparat</string>
+    <string name="restore_scan_qr_body">Là: Profil › Recuperaziun › Mussar il code QR</string>
+    <string name="restore_recover">Recuperar</string>
+    <string name="restore_try_again">Empruvar anc ina giada</string>
+    <string name="restore_start_fresh">Cumenzar da nov sin quest apparat</string>
+    <string name="restore_error_invalid_code">Code betg chattà. Controllai ils pleds e lur urden ed empruvai lura anc ina giada.</string>
+    <string name="restore_error_too_many_attempts">Memia bleras emprovas. Spetgai in pèr minutas ed empruvai anc ina giada.</string>
+    <string name="restore_error_sign_in_failed">Impussibel da s\'annunziar en quest mument. Empruvai anc ina giada.</string>
+    <string name="restore_error_unknown">Insatge è ì mal. Empruvai anc ina giada.</string>
+</resources>

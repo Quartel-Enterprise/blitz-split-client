@@ -42,7 +42,11 @@ import SwiftUI
 /// respectful "Siz" adds "-nız", "-niz", "-nuz" or "-nüz" to it after its last vowel ("Ana xərci böldü", "Siz xərci
 /// böldünüz"), and Kazakh likewise "-ңыз" or "-ңіз" ("Ana шығынды бөлді", "Сіз шығынды бөлдіңіз"). Amharic's
 /// respectful plural past is the same for a name and for "እርስዎ", and Sinhala's colloquial past doesn't change with the
-/// person, so their verbs stay as they are.
+/// person, so their verbs stay as they are. Kyrgyz puts its simple past last as Kazakh does, and the user's "Сиз" adds
+/// "-ңыз", "-ңиз", "-ңуз" or "-ңүз" to it after its last vowel ("Ana чыгымды бөлдү", "Сиз чыгымды бөлдүңүз"). Romansh
+/// swaps its perfect's auxiliary as Italian does ("Ursina ha partì", "Vus avais partì"). Mongolian's and Lao's verbs
+/// don't change with the person, Icelandic's perfect "hefur" is the same for "þú" and for a name, Galician's respectful
+/// "vostede" takes a name's verb, and Basque writes each activity as a noun phrase, so their verbs stay as they are.
 ///
 /// Latvian starts each verb phrase with a simple past, which says the person but not the gender: its third person in
 /// "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji"; "Ana
@@ -99,10 +103,11 @@ enum SecondPerson {
         "et": ["on": "oled"],
         "sl": ["je": "si"],
         "ca": ["ha": "has", "l’ha": "l’has", "l'ha": "l'has"],
+        "rm": ["ha": "avais"],
     ]
 
     /// Spanish: "dividió" → "dividiste", "se unió a" → "te uniste a", "cambió la división de" → "cambiaste la división de".
-    /// French, German, Italian, Dutch, Romanian, Croatian, Catalan ("ha dividit" → "has dividit"), Finnish, Estonian and Slovenian: every verb phrase is a perfect that starts with its
+    /// French, German, Italian, Dutch, Romanian, Croatian, Catalan ("ha dividit" → "has dividit"), Romansh ("ha partì" → "avais partì"), Finnish, Estonian and Slovenian: every verb phrase is a perfect that starts with its
     /// auxiliary, so "a divisé" → "as divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten",
     /// "ha diviso" → "hai diviso", "heeft verdeeld" → "hebt verdeeld", "is lid geworden" → "bent lid geworden", "a
     /// împărțit" → "ai împărțit", "je podijelio/la" → "si podijelio/la", "on jakanut" → "olet jakanut", "on jaganud" → "oled jaganud", "je razdelil(a)" → "si razdelil(a)". Czech: the second person's past takes the
@@ -123,7 +128,8 @@ enum SecondPerson {
     /// "-ai" or "-ei" for "-o" or "-ė" ("-aisi", "-eisi" when reflexive), so "padalijo" → "padalijai", "ištrynė" →
     /// "ištrynei", "dalijosi" → "dalijaisi". Nepali: the same as Hindi with "ले", so "ले खर्च बाँड्नुभयो" → "खर्च
     /// बाँड्नुभयो". Azerbaijani and Kazakh: the simple past last takes the user's ending by its last vowel, so "böldü:" →
-    /// "böldünüz:", "бөлді:" → "бөлдіңіз:". Another language keeps the verb as it is.
+    /// "böldünüz:", "бөлді:" → "бөлдіңіз:"; Kyrgyz likewise, so "бөлдү:" → "бөлдүңүз:", "чыкты:" → "чыктыңыз:". Another
+    /// language keeps the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
@@ -135,6 +141,8 @@ enum SecondPerson {
         case "az":
             return harmonicVerbLastForYou(verb, consonants: "[dt]", endings: [("ı", "nız"), ("i", "niz"), ("u", "nuz"), ("ü", "nüz")])
         case "kk": return harmonicVerbLastForYou(verb, consonants: "[дт]", endings: [("ы", "ңыз"), ("і", "ңіз")])
+        case "ky":
+            return harmonicVerbLastForYou(verb, consonants: "[дт]", endings: [("ы", "ңыз"), ("и", "ңиз"), ("у", "ңуз"), ("ү", "ңүз")])
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
         case "mr": return verbWithoutSubjectParticle(verb, particle: "यांनी")
@@ -210,7 +218,7 @@ enum SecondPerson {
         verbLastForYou(verb, past: "[dt][ıiuü]$", ending: "n")
     }
 
-    /// Azerbaijani and Kazakh put the verb last as Turkish does, and the user's ending follows the last vowel of the
+    /// Azerbaijani, Kazakh and Kyrgyz put the verb last as Turkish does, and the user's ending follows the last vowel of the
     /// past: "böldü" → "böldünüz", "etdi" → "etdiniz", "qoşuldu" → "qoşuldunuz", "бөлді" → "бөлдіңіз", "шықты" →
     /// "шықтыңыз". `endings` pairs each vowel the past may end in with the user's ending after it.
     private static func harmonicVerbLastForYou(_ verb: String, consonants: String, endings: [(String, String)]) -> String {
