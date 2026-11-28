@@ -81,6 +81,6 @@
 
     <string name="payment_key_delete">କି ଡିଲିଟ୍ କରନ୍ତୁ</string>
     <string name="payment_key_delete_title">ଏହି କି ଡିଲିଟ୍ କରିବେ?</string>
-    <string name="payment_key_delete_body">ଯେଉଁମାନେ ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି, ସେମାନେ ହିସାବ ମେଣ୍ଟାଇବା ସମୟରେ ଆଉ ଏହା ଦେଖିବେ ନାହିଁ।</string>
+    <string name="payment_key_delete_body">ଯେଉଁମାନେ ଆପଣଙ୍କୁ ଦେବେ, ସେମାନେ ହିସାବ ମେଣ୍ଟାଇବା ସମୟରେ ଆଉ ଏହା ଦେଖିବେ ନାହିଁ।</string>
     <string name="payment_key_delete_confirm">ଡିଲିଟ୍ କରନ୍ତୁ</string>
 </resources>

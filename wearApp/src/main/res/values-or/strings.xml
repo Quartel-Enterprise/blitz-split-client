@@ -34,7 +34,7 @@
     </plurals>
     <string name="balances_overall">ମୋଟ ବ୍ୟାଲାନ୍ସ</string>
     <string name="balances_to_receive">ପାଇବାକୁ ଅଛି</string>
-    <string name="balances_you_owe">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</string>
+    <string name="balances_you_owe">ଆପଣ ଦେବେ</string>
     <string name="balances_group_to_receive">%1$s ପାଇବାକୁ ଅଛି</string>
     <string name="balances_group_you_owe">%1$s ଦେବାକୁ ଅଛି</string>
     <string name="balances_group_even">ମୋଟ ଉପରେ ସମାନ</string>

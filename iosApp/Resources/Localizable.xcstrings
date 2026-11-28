@@ -66727,13 +66727,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld ଟି ଗ୍ରୁପ୍ · ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି"
+                  "value" : "%lld ଟି ଗ୍ରୁପ୍ · ଆପଣ ଦେବେ"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld ଟି ଗ୍ରୁପ୍ · ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି"
+                  "value" : "%lld ଟି ଗ୍ରୁପ୍ · ଆପଣ ଦେବେ"
                 }
               }
             }
@@ -206038,7 +206038,7 @@
         "or" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ · ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି"
+            "value" : "%@ · ଆପଣ ଦେବେ"
           }
         },
         "pa" : {
@@ -234983,7 +234983,7 @@
         "or" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ ଆପଣଙ୍କୁ %@ ଦେବାକୁ ଅଛି।"
+            "value" : "%@ ଆପଣଙ୍କୁ %@ ଦେବେ।"
           }
         },
         "pa" : {
@@ -249446,7 +249446,7 @@
         "or" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "କିଏ ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି ଦେଖନ୍ତୁ"
+            "value" : "କିଏ ଆପଣ ଦେବେ ଦେଖନ୍ତୁ"
           }
         },
         "pa" : {
@@ -249768,7 +249768,7 @@
         "or" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ଆପଣ କାହାକୁ ଦେବାକୁ ଅଛି ଦେଖନ୍ତୁ"
+            "value" : "ଆପଣ କାହାକୁ ଦେବେ ଦେଖନ୍ତୁ"
           }
         },
         "pa" : {

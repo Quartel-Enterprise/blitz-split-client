@@ -3,8 +3,8 @@
     <string name="contacts_title">କଣ୍ଟାକ୍ଟ</string>
     <string name="contacts_profile">ପ୍ରୋଫାଇଲ୍</string>
     <string name="contacts_offline">ଅଫଲାଇନ୍ · ଏହି ଡିଭାଇସ୍‌ର କଣ୍ଟାକ୍ଟ</string>
-    <string name="contacts_summary_you_owe">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</string>
-    <string name="contacts_summary_owed_to_you">ଆପଣଙ୍କୁ ମିଳିବାକୁ ଅଛି</string>
+    <string name="contacts_summary_you_owe">ଆପଣ ଦେବେ</string>
+    <string name="contacts_summary_owed_to_you">ଆପଣ ପାଇବେ</string>
     <string name="contacts_summary_see_balances">ବ୍ୟାଲାନ୍ସ ଦେଖନ୍ତୁ</string>
     <string name="contacts_people_title">ଆପଣଙ୍କ ଗ୍ରୁପ୍‌ର ଲୋକ · %d</string>
     <string name="contacts_people_loading">ଆପଣଙ୍କ ଗ୍ରୁପ୍‌ର ଲୋକ</string>
@@ -13,8 +13,8 @@
         <item quantity="other">%d ସାଧାରଣ ଗ୍ରୁପ୍</item>
     </plurals>
     <string name="contacts_guest_meta">%s · ଆପ୍ ବିନା ଅତିଥି</string>
-    <string name="contacts_owes_you">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛନ୍ତି</string>
-    <string name="contacts_you_owe">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</string>
+    <string name="contacts_owes_you">ଆପଣ ପାଇବେ</string>
+    <string name="contacts_you_owe">ଆପଣ ଦେବେ</string>
     <string name="contacts_settled">ହିସାବ ମେଣ୍ଟିଗଲା</string>
     <string name="contacts_invite_more">ଆହୁରି ଲୋକଙ୍କୁ ଆଣନ୍ତୁ</string>
     <string name="contacts_agenda">କଣ୍ଟାକ୍ଟରୁ ନିମନ୍ତ୍ରଣ କରନ୍ତୁ</string>

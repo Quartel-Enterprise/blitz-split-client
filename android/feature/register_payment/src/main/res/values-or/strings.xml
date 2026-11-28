@@ -3,7 +3,7 @@
     <string name="register_payment_title_received">%s ଆପଣଙ୍କୁ ପେମେଣ୍ଟ କଲେ କି?</string>
     <string name="register_payment_title_paid">ଆପଣ → %s: ପେମେଣ୍ଟ କଲେ କି?</string>
     <string name="register_payment_title_between">%1$s → %2$s: ପେମେଣ୍ଟ ହେଲା କି?</string>
-    <string name="register_payment_debt_received">%1$s ଆପଣଙ୍କୁ %2$s ଦେବାକୁ ଅଛି</string>
+    <string name="register_payment_debt_received">%1$s ଆପଣଙ୍କୁ %2$s ଦେବେ</string>
     <string name="register_payment_debt_paid">ଆପଣ → %1$s: %2$s ଦେବାକୁ ଅଛି</string>
     <string name="register_payment_debt_between">%1$s → %2$s: %3$s ଦେବାକୁ ଅଛି</string>
     <string name="register_payment_over_debt">%s। ସେହି ରାଶି ପର୍ଯ୍ୟନ୍ତ ବ୍ୟବହାର କରନ୍ତୁ।</string>
@@ -31,10 +31,10 @@
     <string name="register_payment_pick_empty_title">ବର୍ତ୍ତମାନ କାହାରି କିଛି ଦେବାକୁ ନାହିଁ</string>
     <string name="register_payment_pick_empty_body">କାହାରି ଦେବାକୁ ଥିଲେ, ଏଠାରେ କିଏ ଦେଲେ ତାହା ବାଛନ୍ତୁ।</string>
     <string name="register_payment_pay_title">ପେମେଣ୍ଟ କରନ୍ତୁ: %s</string>
-    <string name="register_payment_pay_group">%s · ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</string>
+    <string name="register_payment_pay_group">%s · ଆପଣ ଦେବେ</string>
     <plurals name="register_payment_pay_groups">
-        <item quantity="one">%d ଟି ଗ୍ରୁପ୍ · ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</item>
-        <item quantity="other">%d ଟି ଗ୍ରୁପ୍ · ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</item>
+        <item quantity="one">%d ଟି ଗ୍ରୁପ୍ · ଆପଣ ଦେବେ</item>
+        <item quantity="other">%d ଟି ଗ୍ରୁପ୍ · ଆପଣ ଦେବେ</item>
     </plurals>
     <string name="register_payment_pay_method_pix">Pix</string>
     <string name="register_payment_pay_method_bitcoin">Bitcoin</string>

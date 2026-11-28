@@ -140,11 +140,11 @@
     <string name="activity_detail_simplify_and_you_owed">, ଏବଂ ଆପଣଙ୍କୁ ଆଉ ଦେବାକୁ ନାହିଁ: %s</string>
     <string name="activity_detail_simplify_owed_you">%s ଆଉ ଆପଣଙ୍କୁ ଦେବାକୁ ନାହାନ୍ତି</string>
     <string name="activity_detail_simplify_you_owed">ଆପଣଙ୍କୁ ଆଉ ଦେବାକୁ ନାହିଁ: %s</string>
-    <string name="activity_simplify_owed_you">ଆପଣଙ୍କୁ %s ଦେବାକୁ ଥିଲା</string>
-    <string name="activity_simplify_you_owed">ଆପଣଙ୍କୁ ଦେବାକୁ ଥିଲା: %s</string>
-    <string name="activity_simplify_did_not_owe">ଆପଣଙ୍କୁ କିଛି ଦେବାକୁ ନଥିଲା</string>
+    <string name="activity_simplify_owed_you">ଆପଣଙ୍କୁ %s ଦେବାକୁ ଥିଲେ</string>
+    <string name="activity_simplify_you_owed">ଆପଣ %s ଦେବାକୁ ଥିଲେ</string>
+    <string name="activity_simplify_did_not_owe">ଆପଣଙ୍କୁ କିଛି ଦେବାକୁ ନଥିଲେ</string>
     <string name="activity_simplify_owes_you">ଆପଣଙ୍କୁ %s ଦେବାକୁ ଅଛନ୍ତି</string>
-    <string name="activity_simplify_you_owe">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି: %s</string>
+    <string name="activity_simplify_you_owe">ଆପଣ %s ଦେବାକୁ ଅଛନ୍ତି</string>
     <string name="activity_simplify_owes_nothing">ଏବେ କିଛି ଦେବାକୁ ନାହିଁ</string>
     <string name="activity_open_group_balances">ଗ୍ରୁପ୍ ବ୍ୟାଲାନ୍ସ ଦେଖନ୍ତୁ</string>
     <string name="activity_notification_settings">ନୋଟିଫିକେସନ୍ ସେଟିଂସ୍</string>

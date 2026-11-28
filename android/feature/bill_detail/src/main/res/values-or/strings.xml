@@ -13,7 +13,7 @@
     <string name="bill_detail_pending">କ୍ୟୁରେ ଅଛି · ଆପଣ ଅନଲାଇନ୍ ଫେରିଲେ ସିଙ୍କ୍ ହେବ</string>
     <string name="bill_detail_unknown_currency">ଏହି ଖର୍ଚ୍ଚ ଏପରି ଏକ ମୁଦ୍ରା ବ୍ୟବହାର କରେ ଯାହା ଆପ୍‌ର ଏହି ସଂସ୍କରଣ ଜାଣେ ନାହିଁ। ଏହାକୁ ଏଡିଟ୍ କରିବାକୁ ଆପ୍ ଅପଡେଟ୍ କରନ୍ତୁ।</string>
     <string name="bill_detail_my_part">ଆପଣଙ୍କ ଅଂଶ</string>
-    <string name="bill_detail_you_owe">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</string>
+    <string name="bill_detail_you_owe">ଆପଣ ଦେବେ</string>
     <string name="bill_detail_to_get_back">ପାଇବାକୁ ଅଛି</string>
     <string name="bill_detail_nothing_to_settle">ମେଣ୍ଟାଇବାକୁ କିଛି ନାହିଁ</string>
     <string name="bill_detail_owes_payer">ବ୍ୟାଲାନ୍ସରେ ଏହା ଆପଣଙ୍କ ଦେୟରେ ଗଣାଯାଏ, ଯାହା %s ପାଇବାକୁ ଅଛନ୍ତି।</string>

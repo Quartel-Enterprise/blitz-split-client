@@ -67,7 +67,7 @@
     <string name="group_detail_balances_settle">ହିସାବ ମେଣ୍ଟାନ୍ତୁ</string>
     <string name="group_detail_balances_got_paid">ପେମେଣ୍ଟ ପାଇଲି</string>
     <string name="group_detail_balances_already_paid">ପୂର୍ବରୁ ଦେଇସାରିଛି</string>
-    <string name="group_detail_balances_note">ପ୍ରତି ଯୋଡ଼ିର ଋଣ ପୂର୍ବରୁ ମିଳାଇ ଦିଆଯାଇଛି: ଯଦି ଆନା ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି ଏବଂ ଆପଣ ତାଙ୍କୁ ଦେବାକୁ ଅଛି, କେବଳ ପାର୍ଥକ୍ୟ ଦେଖାଯାଏ। “ପେମେଣ୍ଟ ପାଇଲି” ଏବଂ “ପୂର୍ବରୁ ଦେଇସାରିଛି” ଆପ୍ ବାହାରେ ହୋଇଥିବା ପେମେଣ୍ଟ ରେକର୍ଡ କରେ (Pix, ନଗଦ, ଟ୍ରାନ୍ସଫର୍)।</string>
+    <string name="group_detail_balances_note">ପ୍ରତି ଯୋଡ଼ିର ଋଣ ପୂର୍ବରୁ ମିଳାଇ ଦିଆଯାଇଛି: ଯଦି ଆନା ଆପଣଙ୍କୁ ଦେବେ ଏବଂ ଆପଣ ତାଙ୍କୁ ଦେବେ, କେବଳ ପାର୍ଥକ୍ୟ ଦେଖାଯାଏ। “ପେମେଣ୍ଟ ପାଇଲି” ଏବଂ “ପୂର୍ବରୁ ଦେଇସାରିଛି” ଆପ୍ ବାହାରେ ହୋଇଥିବା ପେମେଣ୍ଟ ରେକର୍ଡ କରେ (Pix, ନଗଦ, ଟ୍ରାନ୍ସଫର୍)।</string>
     <string name="group_detail_balances_empty_title">ଏପର୍ଯ୍ୟନ୍ତ କାହାରି କିଛି ଦେବାକୁ ନାହିଁ</string>
     <string name="group_detail_balances_empty_message">ପ୍ରଥମ ଖର୍ଚ୍ଚ ଯୋଡିବା ପରେ ବ୍ୟାଲାନ୍ସ ଦେଖାଯିବ।</string>
     <string name="group_detail_balances_settled_title">ସବୁ ହିସାବ ମେଣ୍ଟିଗଲା</string>

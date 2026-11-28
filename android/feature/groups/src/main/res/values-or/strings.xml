@@ -50,7 +50,7 @@
     <string name="groups_summary_to_receive_description">ପାଇବାକୁ ଅଛି: %s। କିଏ ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛନ୍ତି ଦେଖନ୍ତୁ</string>
     <string name="groups_summary_to_pay_description">ଦେବାକୁ ଅଛି: %s। ଆପଣ କାହାକୁ ଦେବାକୁ ଅଛନ୍ତି ଦେଖନ୍ତୁ</string>
     <string name="groups_balance_to_receive">ପାଇବାକୁ ଅଛି</string>
-    <string name="groups_balance_you_owe">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</string>
+    <string name="groups_balance_you_owe">ଆପଣ ଦେବେ</string>
     <string name="groups_balance_you_are_settled">ଆପଣଙ୍କ ହିସାବ ମେଣ୍ଟିଗଲା</string>
     <string name="groups_balance_everyone_settled">ହିସାବ ମେଣ୍ଟିଗଲା</string>
     <string name="groups_meta_queued">କ୍ୟୁରେ ଅଛି</string>
@@ -130,8 +130,8 @@
     <string name="groups_home_people_title">ଲୋକଙ୍କ ସହ ବ୍ୟାଲାନ୍ସ</string>
     <string name="groups_home_people_title_count">ଲୋକଙ୍କ ସହ ବ୍ୟାଲାନ୍ସ · %d</string>
     <string name="groups_home_see_balances">ବ୍ୟାଲାନ୍ସ ଦେଖନ୍ତୁ</string>
-    <string name="groups_home_person_owes_you">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛନ୍ତି</string>
-    <string name="groups_home_person_you_owe">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</string>
+    <string name="groups_home_person_owes_you">ଆପଣ ପାଇବେ</string>
+    <string name="groups_home_person_you_owe">ଆପଣ ଦେବେ</string>
     <string name="groups_home_person_owes_you_description">%1$s ଆପଣଙ୍କୁ %2$s ଦେବାକୁ ଅଛନ୍ତି। ପେମେଣ୍ଟ ରେକର୍ଡ କରନ୍ତୁ</string>
     <string name="groups_home_guest_owes_you_description">%1$s ଆପଣଙ୍କୁ %2$s ଦେବାକୁ ଅଛନ୍ତି, ଆପ୍ ବିନା ଅତିଥି। ପେମେଣ୍ଟ ରେକର୍ଡ କରନ୍ତୁ</string>
     <string name="groups_home_person_you_owe_description">ଆପଣ %2$s ଦେବାକୁ ଅଛନ୍ତି, ପାଇବେ: %1$s। ହିସାବ ମେଣ୍ଟାନ୍ତୁ</string>
@@ -142,12 +142,12 @@
     <string name="groups_home_summary_to_pay_hint">ଦେବାକୁ ଅଛି, ପୂର୍ବରୁ ମିଳାଇ ହିସାବ କରାଯାଇଛି</string>
     <string name="groups_home_summary_settled_hint">ସବୁ ହିସାବ ମେଣ୍ଟିଗଲା</string>
     <string name="groups_home_summary_first_download">ଏପର୍ଯ୍ୟନ୍ତ · ବାକିତକ ଆସୁଛି</string>
-    <string name="groups_home_to_receive">ଆପଣଙ୍କୁ ମିଳିବାକୁ ଅଛି</string>
-    <string name="groups_home_to_pay">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</string>
+    <string name="groups_home_to_receive">ଆପଣ ପାଇବେ</string>
+    <string name="groups_home_to_pay">ଆପଣ ଦେବେ</string>
     <string name="groups_home_nothing_to_receive">ପାଇବାକୁ କିଛି ନାହିଁ</string>
     <string name="groups_home_nothing_to_pay">ଦେବାକୁ କିଛି ନାହିଁ</string>
-    <string name="groups_home_to_receive_description">ଆପଣଙ୍କୁ ମିଳିବାକୁ ଅଛି: %s। କିଏ ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛନ୍ତି ଦେଖନ୍ତୁ</string>
-    <string name="groups_home_to_pay_description">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି: %s। ଆପଣ କାହାକୁ ଦେବାକୁ ଅଛନ୍ତି ଦେଖନ୍ତୁ</string>
+    <string name="groups_home_to_receive_description">ଆପଣ ପାଇବେ: %s। କିଏ ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛନ୍ତି ଦେଖନ୍ତୁ</string>
+    <string name="groups_home_to_pay_description">ଆପଣ ଦେବେ: %s। ଆପଣ କାହାକୁ ଦେବାକୁ ଅଛନ୍ତି ଦେଖନ୍ତୁ</string>
     <string name="groups_home_scan_receipt">ରସିଦ ସ୍କାନ୍ କରନ୍ତୁ</string>
     <string name="groups_home_record_payment">ପେମେଣ୍ଟ ରେକର୍ଡ କରନ୍ତୁ</string>
     <string name="groups_home_recovery_title">ଆପଣଙ୍କ ରିକଭରି କୋଡ୍ ସାଇତି ରଖନ୍ତୁ</string>
@@ -173,7 +173,7 @@
     <string name="groups_home_yesterday">ଗତକାଲି</string>
     <string name="groups_home_first_use_body">ଆପଣଙ୍କ ପ୍ରଥମ ଖର୍ଚ୍ଚ ବାଣ୍ଟିବାକୁ ଏକ ଗ୍ରୁପ୍ ତିଆରି କରନ୍ତୁ, କିମ୍ବା କେହି ପଠାଇଥିବା ଲିଙ୍କ୍ ବା QR କୋଡ୍ ଦ୍ୱାରା ଗୋଟିଏରେ ଯୋଗ ଦିଅନ୍ତୁ। ଇଣ୍ଟରନେଟ୍ ବିନା ମଧ୍ୟ ସବୁକିଛି ଏହି ଡିଭାଇସ୍‌ରେ ସେଭ୍ ହୁଏ।</string>
     <string name="groups_home_cover_title">Blitz Split · ହୋମ୍</string>
-    <string name="groups_home_cover_totals">ଆପଣଙ୍କୁ ମିଳିବାକୁ ଅଛି %1$s · ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି %2$s</string>
+    <string name="groups_home_cover_totals">ଆପଣ ପାଇବେ %1$s · ଆପଣ ଦେବେ %2$s</string>
     <string name="groups_home_cover_hint">ସବୁକିଛି ଦେଖିବାକୁ ଫୋନ୍ ଖୋଲନ୍ତୁ</string>
     <string name="groups_waiting_for_internet">ଇଣ୍ଟରନେଟ୍ ନାହିଁ। ଆପଣ ଅନଲାଇନ୍ ଫେରିଲେ ଆପଣଙ୍କ ଗ୍ରୁପ୍ ଦେଖାଯିବ।</string>
     <string name="groups_all_expenses_title">ସବୁ ଖର୍ଚ୍ଚ</string>
@@ -185,7 +185,7 @@
     <string name="groups_all_expenses_share">ଆପଣଙ୍କ ଅଂଶ</string>
     <string name="groups_all_expenses_share_all">ଯେକୌଣସି ଅଂଶ</string>
     <string name="groups_all_expenses_share_receive">ଆପଣ ପାଇବେ</string>
-    <string name="groups_all_expenses_share_pay">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</string>
+    <string name="groups_all_expenses_share_pay">ଆପଣ ଦେବେ</string>
     <string name="groups_all_expenses_payer">କିଏ ଦେଲେ</string>
     <string name="groups_all_expenses_payer_all">ଯେକେହି</string>
     <string name="groups_all_expenses_payer_you">ଆପଣ ଦେଲେ</string>

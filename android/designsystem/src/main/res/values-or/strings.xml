@@ -49,7 +49,7 @@
     <string name="designsystem_method_other">ଅନ୍ୟ</string>
     <string name="designsystem_balance_title">ଏହି ଗ୍ରୁପ୍‌ରେ ଆପଣଙ୍କ ବ୍ୟାଲାନ୍ସ</string>
     <string name="designsystem_balance_to_get_back">ପାଇବାକୁ ଅଛି</string>
-    <string name="designsystem_balance_you_owe">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</string>
+    <string name="designsystem_balance_you_owe">ଆପଣ ଦେବେ</string>
     <string name="designsystem_balance_settled">%s · ଆପଣଙ୍କ ହିସାବ ମେଣ୍ଟିଗଲା</string>
     <string name="designsystem_balance_get_and_owe">ଆପଣ ପାଇବେ: %1$s · ଦେବେ: %2$s</string>
     <string name="designsystem_balance_everyone_settled">ଏଠାରେ କାହାକୁ କାହାର କିଛି ଦେବାକୁ ନାହିଁ।</string>
@@ -111,8 +111,8 @@
     <string name="designsystem_tab_balances">ବ୍ୟାଲାନ୍ସ</string>
     <string name="designsystem_tab_contacts">କଣ୍ଟାକ୍ଟ</string>
     <string name="designsystem_activity">କାର୍ଯ୍ୟକଳାପ</string>
-    <string name="designsystem_person_you_owe">ଆପଣଙ୍କୁ ଦେବାକୁ ଅଛି</string>
-    <string name="designsystem_person_owes_you">ଆପଣଙ୍କୁ ପାଇବାକୁ ଅଛି</string>
+    <string name="designsystem_person_you_owe">ଆପଣ ଦେବେ</string>
+    <string name="designsystem_person_owes_you">ଆପଣ ପାଇବେ</string>
     <string name="designsystem_person_net">ନିଟ୍, ପୂର୍ବରୁ ସମାୟୋଜିତ</string>
     <string name="designsystem_person_total">ମୋଟ</string>
     <string name="designsystem_person_by_group">ଗ୍ରୁପ୍ ଅନୁସାରେ</string>
