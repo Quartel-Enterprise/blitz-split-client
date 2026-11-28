@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Xərci rahatca bölün</string>
+    <string name="welcome_offline_title">Oflayn işləyir</string>
+    <string name="welcome_offline_body">Hər şey cihazınızda qalır və sonra sinxronizasiya olunur.</string>
+    <string name="welcome_optional_title">Hesab məcburi deyil</string>
+    <string name="welcome_optional_body">Google və ya Apple yalnız cihazı dəyişəndə heç nəyi itirməməyiniz üçündür.</string>
+    <string name="welcome_invite_title">Link və ya QR kodla dəvət edin</string>
+    <string name="welcome_invite_body">Dostlar hesab yaratmadan qrupa qoşulur.</string>
+    <string name="welcome_no_connection_title">Bağlantı yoxdur.</string>
+    <string name="welcome_no_connection_body">Hesabla daxil olmaq üçün internet lazımdır. İndi hesabsız istifadə edin, sonra Profildə qoşun.</string>
+    <string name="welcome_or">və ya</string>
+    <string name="welcome_use_without_account">Hesabsız istifadə edin</string>
+    <string name="welcome_used_on_another_device">Başqa cihazda istifadə etmişəm</string>
+    <string name="welcome_sign_in_failed">Hazırda daxil olmaq alınmadı. Yenidən cəhd edin.</string>
+    <string name="welcome_legal_notice">Davam etməklə %1$s sənədini qəbul edir və %2$s sənədi ilə tanış olduğunuzu təsdiqləyirsiniz.</string>
+    <string name="welcome_legal_terms">Xidmət Şərtləri</string>
+    <string name="welcome_legal_privacy">Məxfilik Siyasəti</string>
+    <string name="welcome_no_account_note">Hesab olmadan məlumatlarınız 30 gün istifadə edilmədikdə silinir. Onları saxlamaq üçün Google və ya Apple hesabını qoşun.</string>
+    <string name="welcome_no_account_note_offline">Hesab olmadan məlumatlarınız 30 gün istifadə edilmədikdə silinir. Onları saxlamaq üçün sonra Profildə Google və ya Apple hesabını qoşun.</string>
+    <string name="welcome_expired_title">Məlumatlarınız silindi</string>
+    <string name="welcome_expired_body">Tətbiqdən hesabsız istifadə edirdiniz və onu 30 gün açmadınız, ona görə məlumatlarınız silindi. Növbəti dəfə saxlamaq üçün Google və ya Apple hesabını qoşun.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

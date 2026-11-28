@@ -112,6 +112,11 @@
     <string name="profile_language_burmese">พม่า</string>
     <string name="profile_language_khmer">เขมร</string>
     <string name="profile_language_odia">โอดิยา</string>
+    <string name="profile_language_nepali">เนปาล</string>
+    <string name="profile_language_azerbaijani">อาเซอร์ไบจาน</string>
+    <string name="profile_language_amharic">อัมฮารา</string>
+    <string name="profile_language_sinhala">สิงหล</string>
+    <string name="profile_language_kazakh">คาซัค</string>
     <string name="profile_language_system_detail">ภาษาของอุปกรณ์</string>
     <string name="profile_notifications">การแจ้งเตือน</string>
     <plurals name="profile_notifications_active">

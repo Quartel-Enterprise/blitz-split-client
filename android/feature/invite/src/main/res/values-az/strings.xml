@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Bağlayın</string>
+    <string name="invite_group_created">Qrup yaradıldı</string>
+    <string name="invite_title">Hamını qrupa dəvət edin: %s</string>
+    <string name="invite_qr_description">Qrupun dəvət linkinin QR kodu</string>
+    <string name="invite_copy">Kopyalayın</string>
+    <string name="invite_copied">Kopyalandı</string>
+    <string name="invite_who_picks">Linki açan şəxs siyahıda kim olduğunu seçir: %s. Hesab lazım deyil.</string>
+    <string name="invite_names_or">%1$s və ya %2$s</string>
+    <string name="invite_anyone_joins">Linki açan hər kəs qrupa qoşulur. Hesab lazım deyil.</string>
+    <string name="invite_pending_title">Link gözləmədədir</string>
+    <string name="invite_pending_offline">İnternetə qoşulan kimi yaradılacaq.</string>
+    <string name="invite_pending_online">Link yaradılır…</string>
+    <string name="invite_failed_title">Linki yaratmaq alınmadı</string>
+    <string name="invite_failed_body">Qrup sinxronizasiya olunarkən xəta baş verdi.</string>
+    <string name="invite_retry">Yenidən cəhd edin</string>
+    <string name="invite_share">Linki paylaşın</string>
+    <string name="invite_see_who_joined">Kimin qoşulduğuna baxın</string>
+    <string name="invite_add_person">Tətbiqi olmayan birini əlavə edin</string>
+    <string name="invite_go_to_group">Qrupa keçin</string>
+    <string name="invite_change_link">Linki dəyişin</string>
+    <string name="invite_change_link_title">Dəvət linki dəyişdirilsin?</string>
+    <string name="invite_change_link_message">Hazırkı link və QR kod, istifadə edilməmiş şəxsi dəvətlər də daxil olmaqla, işləməyi dayandırır. Artıq qoşulanlar qrupda qalır.</string>
+    <string name="invite_change_link_failed">Linki dəyişmək alınmadı. Yenidən cəhd edin.</string>
+    <string name="invite_share_message">Gəlin, %1$s qrupunun xərclərini Blitz Split tətbiqində bölək. Bu linklə qoşulun: %2$s</string>
+</resources>

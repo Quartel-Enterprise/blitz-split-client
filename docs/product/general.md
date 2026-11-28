@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam, Kannada, Burmese, Khmer and Odia: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala and Kazakh: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -369,7 +369,52 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     "ଆପଣ", so, as Malayalam's, its activity sentences need no rule for the user
     ([activity-and-push.md](activity-and-push.md)). The picker names it "ଓଡ଼ିଆ", and its chip reads "OR". It uses
     INR, already supported. Its store listing is left for later (Pierre's call): the stores keep showing the default
-    language's for it. Lithuanian
+    language's for it.
+    Nepali (Pierre's calls, issue #600) is one variant for every `ne` tag, in Devanagari, and talks to the user with
+    the respectful "तपाईं" and its honorific verb forms, which a name the app fills in takes too ("-नुभयो"), in the
+    plain everyday Nepali of Nepali apps, English loanwords included where natural (ग्रुप, ब्यालेन्स, लिंक); it calls
+    the app Blitz Split, ends a sentence with the danda "।", as Hindi does (`fullStopUi`, `WordGap.fullStop`, the
+    web's `fullStop`), and its plurals have one and other. Its default digits are Devanagari (०-९), so the code writes
+    0-9 for it ("nu-latn": `latinDigitLanguages`, `AppNumbers`, the web's `formattingKeys`), with the Gregorian
+    calendar, never Bikram Sambat. Its postpositions join the word, so none is ever glued to a value the app fills in:
+    a name stands as the subject, after a colon or before a noun that carries the postposition ("‘%1$s’ ग्रुपमा"). Its
+    past puts the ergative "ले" apart after a name and as one word with the user's "तपाईंले", so its activity
+    sentences follow Hindi's rule ([activity-and-push.md](activity-and-push.md)). The picker names it "नेपाली", and
+    its chip reads "NE". The Nepalese rupee (NPR) comes with it (below). Azerbaijani (Pierre's calls, issue #600) is
+    one variant for every `az` tag, in the Latin script, and talks to the user with the respectful "siz" and its
+    plural verb forms, in the plain everyday Azerbaijani of Azerbaijani apps; it calls the app Blitz Split, ends a
+    sentence with ".", and its plurals have one and other. It writes 0-9, which the code keeps on any device
+    (`latinDigitLanguages`, `AppNumbers`, the web's `formattingKeys`), and the Gregorian calendar. Its suffixes follow
+    the vowels of the word, so, as Turkish's, none is ever glued to a value the app fills in. It puts its simple past
+    last, and the user's "Siz" adds "-nız", "-niz", "-nuz" or "-nüz" to it by its last vowel
+    ([activity-and-push.md](activity-and-push.md)). The picker names it "Azərbaycan dili", and its chip reads "AZ".
+    The Azerbaijani manat (AZN) comes with it (below). Amharic (Pierre's calls, issue #600) is one variant for every
+    `am` tag, in the Ethiopic script, and talks to the user with the respectful "እርስዎ" and its plural verb forms,
+    which a name the app fills in takes too, gender-free, in the plain everyday Amharic of Ethiopian apps; it calls
+    the app Blitz Split, ends a sentence with "።" (`fullStopUi`, `WordGap.fullStop`, the web's `fullStop`) and parts
+    two clauses with "፣" (the web's `clauseBreak`), and its plurals have one (0 and 1) and other. It writes 0-9, never
+    the Ethiopic numerals, and the Gregorian calendar, never the Ethiopian one, even on a device set to them
+    (`latinDigitLanguages`, `AppNumbers`, the web's `formattingKeys`). Its prepositions join the front of a word and
+    its object marker and articles its end, so none is ever glued to a value the app fills in. Its respectful past is
+    the same for a name and for "እርስዎ", so its activity sentences need no rule for the user
+    ([activity-and-push.md](activity-and-push.md)). The picker names it "አማርኛ", and its chip reads "AM". The Ethiopian
+    birr (ETB) comes with it (below). Sinhala (Pierre's calls, issue #600) is one variant for every `si` tag, in the
+    Sinhala script, and talks to the user with the respectful "ඔබ", in the colloquial-polite written Sinhala of Sri
+    Lankan apps, not the literary one; it calls the app Blitz Split, ends a sentence with ".", and its plurals have
+    one (0 and 1) and other. It writes 0-9, which the code keeps on any device (`latinDigitLanguages`, `AppNumbers`,
+    the web's `formattingKeys`), and the Gregorian calendar. Its case endings join the word, so none is ever glued to
+    a value the app fills in. Its colloquial past doesn't change with the person, so its activity sentences need no
+    rule for the user ([activity-and-push.md](activity-and-push.md)). The picker names it "සිංහල", and its chip reads
+    "SI". The Sri Lankan rupee (LKR) comes with it (below). Kazakh (Pierre's calls, issue #600) is one variant for
+    every `kk` tag, in the Cyrillic script, and talks to the user with the respectful "сіз" and its polite verb forms
+    (a button names its action with the verbal noun, "Сақтау", as Kazakhstani apps do), in plain everyday Kazakh, not
+    Russian syntax; it calls the app Blitz Split, ends a sentence with ".", and its plurals have one and other. It
+    writes 0-9, which the code keeps on any device (`latinDigitLanguages`, `AppNumbers`, the web's `formattingKeys`),
+    and the Gregorian calendar. Its suffixes follow the sounds of the word, so none is ever glued to a value the app
+    fills in. It puts its simple past last, and the user's "Сіз" adds "-ңыз" or "-ңіз" to it by its last vowel
+    ([activity-and-push.md](activity-and-push.md)). The picker names it "Қазақ тілі", and its chip reads "KK". The
+    Kazakhstani tenge (KZT) comes with it (below). The store listings of these five are left for later too (Pierre's
+    call): the stores keep showing the default language's for them. Lithuanian
     (Pierre's calls, issue #581) is one variant for every `lt` tag, talks to the user in the informal "tu" and calls
     the app Blitz Split. A name the app fills in is never declined: it stands as the subject or after a noun that
     carries the case ("narys Ana"). Its simple past says no gender, and every activity verb phrase starts with it,
@@ -647,6 +692,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     won's, but still far above a bill among friends. An app version from before them reads MMK and KHR as unknown codes
     with two decimals and shows their amounts 100 times smaller until it updates, as with HUF and TZS. The store
     screenshots' sample trips for Burmese and Khmer are priced in them.
+  - The Nepalese rupee (NPR), the Azerbaijani manat (AZN), the Ethiopian birr (ETB), the Sri Lankan rupee (LKR) and
+    the Kazakhstani tenge (KZT) come with Nepali, Azerbaijani, Amharic, Sinhala and Kazakh (Pierre's calls), in that
+    order after the riel, and start a new group in Nepal, Azerbaijan, Ethiopia, Sri Lanka and Kazakhstan. The first four
+    keep ISO's 2 decimals; the tenge has none, as the kyat (Pierre's call): ISO gives it 2, but no price or receipt in
+    Kazakhstan shows tiyn. Their cap is the usual 100 million, about US$ 200,000 at 500 tenge a dollar, far above a bill
+    among friends, and more for the other four. An app version from before them reads them as unknown codes with two
+    decimals: it shows the rupees', the manat's and the birr's amounts right, by the raw code, and the tenge's 100 times
+    smaller until it updates, as with the kyat. No store screenshots are priced in them, since their languages have no
+    store listing yet.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

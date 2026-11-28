@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">Құпиялық саясаты</string>
+    <string name="legal_terms">Қызмет көрсету шарттары</string>
+    <string name="legal_updated_privacy_policy">Жаңартылған күні: %1$s</string>
+    <string name="legal_updated_terms">Жаңартылған күні: %1$s</string>
+    <string name="legal_load_failed_title">Бұл бетті жүктеу мүмкін болмады</string>
+    <string name="legal_load_failed_body">Байланысты тексеріп, қайталап көріңіз.</string>
+    <string name="legal_retry">Қайталау</string>
+</resources>

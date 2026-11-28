@@ -114,6 +114,11 @@
     <string name="profile_language_burmese">Birmà</string>
     <string name="profile_language_khmer">Khmer</string>
     <string name="profile_language_odia">Oriya</string>
+    <string name="profile_language_nepali">Nepalès</string>
+    <string name="profile_language_azerbaijani">Azerbaidjanès</string>
+    <string name="profile_language_amharic">Amhàric</string>
+    <string name="profile_language_sinhala">Singalès</string>
+    <string name="profile_language_kazakh">Kazakh</string>
     <string name="profile_language_system_detail">Idioma del dispositiu</string>
     <string name="profile_notifications">Notificacions</string>
     <plurals name="profile_notifications_active">

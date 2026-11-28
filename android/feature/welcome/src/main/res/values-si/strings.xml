@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">වියදම බෙදන්න, කරදරයක් නැතිව</string>
+    <string name="welcome_offline_title">නොබැඳිව ක්‍රියා කරනවා</string>
+    <string name="welcome_offline_body">සියල්ල ඔබේ උපාංගයේ තිබෙන අතර පසුව සමමුහුර්ත වෙනවා.</string>
+    <string name="welcome_optional_title">ගිණුමක් අත්‍යවශ්‍ය නැහැ</string>
+    <string name="welcome_optional_body">Google හෝ Apple ඔබට උදව් වෙන්නේ උපාංග මාරු කරන විට කිසිවක් නැති නොවී තබාගන්න පමණයි.</string>
+    <string name="welcome_invite_title">සබැඳියකින් හෝ QR කේතයකින් ආරාධනා කරන්න</string>
+    <string name="welcome_invite_body">යාළුවන් ගිණුමක් සාදන්නේ නැතිව සමූහයට එක්වෙනවා.</string>
+    <string name="welcome_no_connection_title">සම්බන්ධතාවයක් නැහැ.</string>
+    <string name="welcome_no_connection_body">ගිණුමකින් පුරනය වීමට අන්තර්ජාලය අවශ්‍යයි. දැන් ගිණුමක් නැතිව භාවිත කර, පසුව පැතිකඩේදී සම්බන්ධ කරන්න.</string>
+    <string name="welcome_or">හෝ</string>
+    <string name="welcome_use_without_account">ගිණුමක් නැතිව භාවිත කරන්න</string>
+    <string name="welcome_used_on_another_device">මම මෙය වෙනත් උපාංගයක භාවිත කළා</string>
+    <string name="welcome_sign_in_failed">දැන් පුරනය වෙන්න බැරි වුණා. නැවත උත්සාහ කරන්න.</string>
+    <string name="welcome_legal_notice">ඉදිරියට යාමෙන්, ඔබ මෙය පිළිගන්නවා: %1$s. ඔබ මෙයද දැනුවත් බව පිළිගන්නවා: %2$s.</string>
+    <string name="welcome_legal_terms">සේවා නියමයන්</string>
+    <string name="welcome_legal_privacy">රහස්‍යතා ප්‍රතිපත්තිය</string>
+    <string name="welcome_no_account_note">ගිණුමක් නැතිව, දින 30ක් භාවිත නොකළොත් ඔබේ දත්ත මැකෙනවා. ඒවා තබාගන්න Google හෝ Apple සම්බන්ධ කරන්න.</string>
+    <string name="welcome_no_account_note_offline">ගිණුමක් නැතිව, දින 30ක් භාවිත නොකළොත් ඔබේ දත්ත මැකෙනවා. ඒවා තබාගන්න පසුව, පැතිකඩේදී, Google හෝ Apple සම්බන්ධ කරන්න.</string>
+    <string name="welcome_expired_title">ඔබේ දත්ත මකා දැමුණා</string>
+    <string name="welcome_expired_body">ඔබ ගිණුමක් නැතිව ඇප් එක භාවිත කළ අතර දින 30ක් එය විවෘත නොකළ නිසා, ඔබේ දත්ත මකා දැමුණා. ඊළඟ වතාවේ ඒවා තබාගන්න Google හෝ Apple සම්බන්ධ කරන්න.</string>
+    <string name="welcome_expired_ok">හරි</string>
+</resources>

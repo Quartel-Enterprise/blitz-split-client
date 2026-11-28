@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Hesabı silin</string>
+    <string name="delete_account_offline_title">İnternet yoxdur.</string>
+    <string name="delete_account_offline_body">Hesabınızı silmək üçün internet bağlantısı lazımdır. Qoşulun və yenidən cəhd edin.</string>
+    <string name="delete_account_heading">Hesabınız və məlumatlarınız silinsin?</string>
+    <string name="delete_account_deleted_title">Nələr silinir</string>
+    <string name="delete_account_deleted_profile">Profiliniz (ad, foto və rəng)</string>
+    <string name="delete_account_deleted_keys">Pix və Bitcoin açarlarınız</string>
+    <string name="delete_account_deleted_provider">%1$s hesabınızla əlaqə</string>
+    <string name="delete_account_deleted_recovery_code">Bərpa kodunuz</string>
+    <string name="delete_account_deleted_device">Məlumatlarınızın bu cihazdakı nüsxəsi</string>
+    <string name="delete_account_kept_title">Qruplarınızda nələr qalır</string>
+    <string name="delete_account_kept_groups">Qruplar, xərcləri və ödənişləri ilə birgə, digər üzvlər üçün</string>
+    <string name="delete_account_kept_member">Hər qrupda adınız, hesabsız üzv kimi</string>
+    <string name="delete_account_kept_comments">Şərhləriniz və əlavə etdiyiniz fotolar, adınız altında</string>
+    <string name="delete_account_export">Əvvəlcə məlumatlarımı ixrac edin</string>
+    <string name="delete_account_confirm">Bunun geri qaytarıla bilməyəcəyini başa düşürəm</string>
+    <string name="delete_account_delete">Hesabı silin</string>
+    <string name="delete_account_cancel">Ləğv edin</string>
+    <string name="delete_account_failed">Hesabınızı silmək alınmadı. Yenidən cəhd edin.</string>
+</resources>

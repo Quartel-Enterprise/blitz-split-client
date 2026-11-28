@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">නව සමූහය</string>
+    <string name="create_group_close">වසන්න</string>
+    <string name="create_group_create">සාදන්න</string>
+    <string name="create_group_change_color">සමූහයේ පාට වෙනස් කරන්න</string>
+    <string name="create_group_name_label">සමූහයේ නම</string>
+    <string name="create_group_type_label">සමූහයේ වර්ගය</string>
+    <string name="create_group_members_title">ඇතුළත් අය</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">පුද්ගලයින් %d</item>
+        <item quantity="other">පුද්ගලයින් %d</item>
+    </plurals>
+    <string name="create_group_me">ඔබ</string>
+    <string name="create_group_remove_member">ඉවත් කරන්න: %s</string>
+    <string name="create_group_add_placeholder">නමෙන් එක් කරන්න</string>
+    <string name="create_group_add">එක් කරන්න</string>
+    <string name="create_group_no_app_notice">දැන් කිසිවෙකුට ඇප් එක අවශ්‍ය නැහැ. ඔබට දැනටමත් සියලු දෙනා වෙනුවෙන් වියදම් එක් කර පසුව සබැඳිය යවන්න පුළුවන්.</string>
+    <string name="create_group_currency">පෙරනිමි මුදල් වර්ගය</string>
+    <string name="create_group_currency_caption">නව වියදම් මෙම මුදල් වර්ගයෙන් පටන් ගන්නවා; එක් එක් වියදමට වෙනත් එකක් භාවිත කළ හැකියි.</string>
+    <string name="create_group_save_error">සමූහය සුරකින්න බැරි වුණා. නැවත උත්සාහ කරන්න.</string>
+    <string name="create_group_photo">සමූහයේ ඡායාරූපය</string>
+    <string name="create_group_take_photo">ඡායාරූපයක් ගන්න</string>
+    <string name="create_group_choose_photo">ඡායාරූපයක් තෝරන්න</string>
+    <string name="create_group_remove_photo">ඡායාරූපය ඉවත් කරන්න</string>
+    <string name="create_group_photo_error">මෙම ඡායාරූපය භාවිත කරන්න බැරි වුණා. වෙනත් එකක් උත්සාහ කරන්න.</string>
+</resources>

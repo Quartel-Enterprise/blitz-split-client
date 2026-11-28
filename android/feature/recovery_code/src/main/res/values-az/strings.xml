@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Bərpa kodunuzu yadda saxlayın</string>
+    <string name="recovery_code_body">Tətbiqdən hesabsız istifadə edirsiniz. Cihazı dəyişsəniz və ya itirsəniz, bu 12 söz məlumatlarınızı geri qaytarır. Onları ardıcıllıqla yazın. 30 gün istifadə edilmədikdə məlumatlarınız silinir və sözlər işləməyi dayandırır.</string>
+    <string name="recovery_code_copy">Sözləri kopyalayın</string>
+    <string name="recovery_code_save_to_password_manager">Parol menecerində saxlayın</string>
+    <string name="recovery_code_connect_instead">Əvəzində Google və ya Apple hesabını qoşun</string>
+    <string name="recovery_code_connect_instead_body">Kod lazım deyil</string>
+    <string name="recovery_code_sign_in_failed">Hazırda qoşulmaq alınmadı. Yenidən cəhd edin.</string>
+    <string name="recovery_code_also_in_profile">O, həmçinin Profil › Bərpa bölməsindədir.</string>
+    <string name="recovery_code_remind_later">Sonra xatırladın</string>
+    <string name="recovery_code_saved">Yadda saxladım</string>
+    <string name="recovery_code_download">Endirin</string>
+    <string name="recovery_code_file_name">blitz-split-berpa-kodu.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · bərpa kodu\n\n%1$s\n\nMəlumatlarınızı geri qaytarmaq üçün onu \"Başqa cihazda istifadə etmişəm\" seçimində istifadə edin.\n</string>
+</resources>

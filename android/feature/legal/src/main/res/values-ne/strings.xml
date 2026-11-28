@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">गोपनीयता नीति</string>
+    <string name="legal_terms">सेवाका सर्तहरू</string>
+    <string name="legal_updated_privacy_policy">अपडेट गरिएको: %1$s</string>
+    <string name="legal_updated_terms">अपडेट गरिएको: %1$s</string>
+    <string name="legal_load_failed_title">यो पेज लोड गर्न सकिएन</string>
+    <string name="legal_load_failed_body">आफ्नो कनेक्सन जाँचेर फेरि प्रयास गर्नुहोस्।</string>
+    <string name="legal_retry">फेरि प्रयास गर्नुहोस्</string>
+</resources>

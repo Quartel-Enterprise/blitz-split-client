@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">सूचनाहरू</string>
+    <string name="notification_settings_denied_title">Android मा Blitz Split का सूचनाहरू बन्द छन्।</string>
+    <string name="notification_settings_denied_body">तलका पुश सूचना पाउन सिस्टम सेटिङमा तिनलाई अन गर्नुहोस्। घण्टीले काम गरिरहन्छ।</string>
+    <string name="notification_settings_open_settings">सेटिङ खोल्नुहोस्</string>
+    <string name="notification_settings_refused_body">तलका पुश सूचना पाउन Android ले तपाईंलाई अर्को एक पटक अनुमति दिने मौका दिन्छ। घण्टीले काम गरिरहन्छ।</string>
+    <string name="notification_settings_turn_on">अन गर्नुहोस्</string>
+    <string name="notification_settings_blocked_in_android">Android मा ब्लक गरिएको</string>
+    <string name="notification_settings_open_channel_settings_description">Android सेटिङ खोल्नुहोस्: %1$s</string>
+    <string name="notification_settings_push_switch">पुश सूचनाहरू</string>
+    <string name="notification_settings_push_switch_detail">यो डिभाइसमा मात्र</string>
+    <string name="notification_settings_section">मलाई यी कुराबारे सूचित गर्नुहोस्</string>
+    <string name="notification_settings_push">पुश</string>
+    <string name="notification_settings_in_app">एपभित्र</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">पुशले यो डिभाइसमा सूचना पठाउँछ। एपभित्रले यसलाई घण्टी र गतिविधिमा नयाँ चिन्ह लगाउँछ; बन्द गर्दा, यो गतिविधिमा पढिसकेको रूपमा देखिइरहन्छ।</string>
+    <string name="notification_settings_footer">इन्टरनेट हुँदा सूचनाहरू आउँछन्। कुनै ग्रुपलाई म्युट गर्न, त्यसभित्रको मेनु प्रयोग गर्नुहोस्।</string>
+</resources>

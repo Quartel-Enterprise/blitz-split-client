@@ -112,6 +112,11 @@
     <string name="profile_language_burmese">缅甸语</string>
     <string name="profile_language_khmer">高棉语</string>
     <string name="profile_language_odia">奥里亚语</string>
+    <string name="profile_language_nepali">尼泊尔语</string>
+    <string name="profile_language_azerbaijani">阿塞拜疆语</string>
+    <string name="profile_language_amharic">阿姆哈拉语</string>
+    <string name="profile_language_sinhala">僧伽罗语</string>
+    <string name="profile_language_kazakh">哈萨克语</string>
     <string name="profile_language_system_detail">设备语言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

@@ -176,7 +176,7 @@ and orange, the accent):
 The figures are Home's, from the same rules (`findMain`, `findToReceive`, `findToPay`): the overall balance is the
 "Overall balance" of the first currency with a net (the global Balances' totals), "Owe you" and "You owe" each in the
 first currency with something that way, and every amount is written by the app's own formatter (decimals dropped when
-zero, bitcoin in sats when Profile says so, Latin digits in Arabic, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Kannada, Burmese, Khmer and Odia), in the app's language (Profile ›
+zero, bitcoin in sats when Profile says so, Latin digits in Arabic, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala and Kazakh), in the app's language (Profile ›
 Language) whatever the device's, offline too. With nobody owing anyone in any currency and no group open, or no group
 yet, every size says "All settled" (the circle a check mark); an overall balance of zero whose two ways offset each
 other shows "R$ 0" with no word, "Owe you" and "You owe" under it and the open groups saying what is still open.

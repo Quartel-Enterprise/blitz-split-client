@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Сіз бұл топта емессіз</string>
+    <string name="bill_link_not_in_group_message">Бұл пікір сіз қатыспайтын топта. Сілтемені жіберген адамнан шақыру сұраңыз.</string>
+    <string name="bill_link_offline_title">Интернет жоқ</string>
+    <string name="bill_link_offline_message">Желіге қайта қосылғанда сілтемені қайта ашыңыз.</string>
+    <string name="bill_link_go_home">Басты бетке өту</string>
+    <string name="discard_changes_title">Өзгерістерден бас тартасыз ба?</string>
+    <string name="discard_changes_message">Сақталмаған өзгерістер жоғалады.</string>
+    <string name="discard_changes_discard">Бас тарту</string>
+    <string name="discard_changes_keep_editing">Өңдеуді жалғастыру</string>
+    <string name="watch_channel_name">Сағат</string>
+    <string name="watch_connected_title">%1$s аккаунтыңызға қосылды</string>
+    <string name="watch_connected_title_unnamed">Сағат аккаунтыңызға қосылды</string>
+    <string name="watch_connected_text">Ол топтарыңызды көріп, өзі синхрондалады. Ажырату үшін сағатта шығыңыз.</string>
+</resources>

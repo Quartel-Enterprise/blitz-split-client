@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">የሂሳብ ማወራረጃ አስታዋሽ</string>
+    <string name="push_bill_created">%1$s ከእርስዎ ጋር ወጪ ጨመሩ: “%2$s”</string>
+    <string name="push_bill_edited">%1$s ወጪ አስተካከሉ: “%2$s”</string>
+    <string name="push_bill_deleted">%1$s ወጪ ሰረዙ: “%2$s”</string>
+    <string name="push_comment_added">%1$s አስተያየት ሰጡ (“%2$s”): %3$s</string>
+    <string name="push_payment_paid_you">%1$s ለእርስዎ እንደከፈሉ ምልክት አደረጉ</string>
+    <string name="push_payment_to_you">%1$s ምልክት አደረጉ: %2$s ለእርስዎ ከፍለዋል</string>
+    <string name="push_payment_received_yours">%1$s ክፍያዎን እንደተቀበሉ ምልክት አደረጉ</string>
+    <string name="push_payment_from_you">%1$s ምልክት አደረጉ: %2$s ከእርስዎ ክፍያ ተቀብለዋል</string>
+    <string name="push_payment_undone">%1$s ከእርስዎ ጋር የነበረን ክፍያ ቀለበሱ</string>
+    <string name="push_charge_sent">%1$s ሂሳብ እንዲያወራርዱ አስታዋሽ ላኩልዎ</string>
+    <string name="push_settle_reminder">በቡድኑ ‘%1$s’ ውስጥ ያልተወራረደ ቀሪ ሂሳብ አለዎት</string>
+    <string name="push_settle_reminders">ያልተወራረደ ቀሪ ሂሳብ ያለዎት ቡድኖች: %1$s</string>
+    <string name="push_added_to_group">%1$s ወደ ቡድኑ አከሉዎት</string>
+    <string name="push_member_joined">%1$s ቡድኑን ተቀላቀሉ</string>
+    <string name="push_debts_simplified_to_you">%1$s ዕዳዎቹን አቃለሉ። አሁን %2$s ለእርስዎ %3$s ይከፍላሉ።</string>
+    <string name="push_debts_simplified_from_you">%1$s ዕዳዎቹን አቃለሉ። አሁን %2$s ከእርስዎ %3$s ይቀበላሉ።</string>
+    <string name="push_debts_simplified_other">%1$s ዕዳዎቹን አቃለሉ። ለእርስዎ ምን እንደሆነ ይመልከቱ።</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ዕዳ ማቃለልን አጠፉ። አሁን %2$s ለእርስዎ %3$s ይከፍላሉ።</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ዕዳ ማቃለልን አጠፉ። አሁን %2$s ከእርስዎ %3$s ይቀበላሉ።</string>
+    <string name="push_debts_unsimplified_other">%1$s ዕዳ ማቃለልን አጠፉ። ለእርስዎ ምን እንደሆነ ይመልከቱ።</string>
+    <string name="notification_settings_bills">ወጪዎች</string>
+    <string name="notification_settings_bills_detail">እርስዎ ያሉባቸው አዲስ፣ የተስተካከሉ ወይም የተሰረዙ ወጪዎች</string>
+    <string name="notification_settings_payments">ክፍያዎችና የሂሳብ ማወራረጃዎች</string>
+    <string name="notification_settings_payments_detail">ለእርስዎ ወይም ከእርስዎ የሚደረጉ ክፍያዎች፣ እና የተቃለሉ ዕዳዎች</string>
+    <string name="notification_settings_comments">አስተያየቶች</string>
+    <string name="notification_settings_comments_detail">እርስዎ ባሉባቸው ወጪዎችና በጻፉባቸው ውይይቶች ላይ</string>
+    <string name="notification_settings_people_and_groups">ሰዎችና ቡድኖች</string>
+    <string name="notification_settings_people_and_groups_detail">ቡድኖችዎን ማን እንደሚቀላቀሉ ወይም እንደሚለቁ፣ በውስጣቸውም ምን እንደሚለወጥ</string>
+    <string name="notification_settings_payment_requests">የክፍያ ጥያቄዎች</string>
+    <string name="notification_settings_payment_requests_detail">አንድ ሰው እንዲከፍሉ ሲጠይቁዎት</string>
+    <string name="notification_settings_balance_reminder">ያልተወራረደ ቀሪ ሂሳብ አስታዋሽ</string>
+    <string name="notification_settings_balance_reminder_detail">ያልተወራረደ ቀሪ ሂሳብ ካለ፣ በሳምንት አንድ ጊዜ</string>
+</resources>

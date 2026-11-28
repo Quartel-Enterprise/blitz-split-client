@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">घडी जोड्नुहोस्</string>
+    <string name="connect_watch_close">बन्द गर्नुहोस्</string>
+    <string name="connect_watch_body">तपाईंको घडीले देखाएको कोड टाइप गर्नुहोस्। यसले तपाईंको खातामा साइन इन गर्छ र त्यसपछि आफैं सिंक हुन्छ।</string>
+    <string name="connect_watch_code_label">घडीको कोड</string>
+    <string name="connect_watch_error_invalid">कोड गलत छ वा म्याद सकियो। घडीमा नयाँ कोड लिनुहोस्।</string>
+    <string name="connect_watch_error_too_many">धेरै गलत कोड। केही मिनेट पर्खेर फेरि प्रयास गर्नुहोस्।</string>
+    <string name="connect_watch_error_needs_account">पहिले खाता जोड्नुहोस्: तपाईंको डेटा यो डिभाइसमा मात्र छ।</string>
+    <string name="connect_watch_error_failed">घडी जोड्न सकिएन। फेरि प्रयास गर्नुहोस्।</string>
+    <string name="connect_watch_offline">घडी जोड्न इन्टरनेट चाहिन्छ।</string>
+    <string name="connect_watch_own_watch_only">आफ्नै घडीमा देखिएको कोड मात्र टाइप गर्नुहोस्: त्यो घडी भएको जो कोही तपाईंको खातामा पस्न सक्छ।</string>
+    <string name="connect_watch_validity">कोड 5 मिनेटसम्म, एक पटक मात्र मान्य हुन्छ।</string>
+    <string name="connect_watch_button">जोड्नुहोस्</string>
+    <string name="connect_watch_connected_title">घडी जोडियो</string>
+    <string name="connect_watch_connected_body">यसले तपाईंका ग्रुपहरू देख्छ र आफैं सिंक हुन्छ। यसलाई छुटाउन, घडीमा साइन आउट गर्नुहोस्।</string>
+</resources>

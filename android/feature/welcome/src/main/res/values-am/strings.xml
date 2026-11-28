@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">ወጪን ያለ ጭንቀት ይከፋፍሉ</string>
+    <string name="welcome_offline_title">ከመስመር ውጭ ይሠራል</string>
+    <string name="welcome_offline_body">ሁሉም ነገር በመሣሪያዎ ላይ ይቆያል፣ በኋላም ይመሳሰላል።</string>
+    <string name="welcome_optional_title">መለያ አማራጭ ነው</string>
+    <string name="welcome_optional_body">Google ወይም Apple የሚጠቅሙት መሣሪያ ሲቀይሩ ምንም እንዳያጡ ብቻ ነው።</string>
+    <string name="welcome_invite_title">በሊንክ ወይም በQR ኮድ ይጋብዙ</string>
+    <string name="welcome_invite_body">ጓደኞች መለያ ሳይፈጥሩ ቡድኑን ይቀላቀላሉ።</string>
+    <string name="welcome_no_connection_title">ግንኙነት የለም።</string>
+    <string name="welcome_no_connection_body">በመለያ ለመግባት ኢንተርኔት ያስፈልጋል። አሁን ያለ መለያ ይጠቀሙ፣ በኋላም በመገለጫ ውስጥ ያገናኙ።</string>
+    <string name="welcome_or">ወይም</string>
+    <string name="welcome_use_without_account">ያለ መለያ ይጠቀሙ</string>
+    <string name="welcome_used_on_another_device">በሌላ መሣሪያ ላይ ተጠቅሜበታለሁ</string>
+    <string name="welcome_sign_in_failed">አሁን መግባት አልተቻለም። እንደገና ይሞክሩ።</string>
+    <string name="welcome_legal_notice">በመቀጠል እነዚህን ይቀበላሉ: %1$s፣ እንዲሁም ይህን እንዳነበቡ ያረጋግጣሉ: %2$s።</string>
+    <string name="welcome_legal_terms">የአገልግሎት ውሎች</string>
+    <string name="welcome_legal_privacy">የግላዊነት ፖሊሲ</string>
+    <string name="welcome_no_account_note">ያለ መለያ፣ ውሂብዎ ለ30 ቀናት ጥቅም ላይ ካልዋለ ይሰረዛል። ለማቆየት Google ወይም Apple ያገናኙ።</string>
+    <string name="welcome_no_account_note_offline">ያለ መለያ፣ ውሂብዎ ለ30 ቀናት ጥቅም ላይ ካልዋለ ይሰረዛል። ለማቆየት በኋላ በመገለጫ ውስጥ Google ወይም Apple ያገናኙ።</string>
+    <string name="welcome_expired_title">ውሂብዎ ተሰርዟል</string>
+    <string name="welcome_expired_body">መተግበሪያውን ያለ መለያ ይጠቀሙ ነበር፣ ለ30 ቀናትም አልከፈቱትም፣ ስለዚህ ውሂብዎ ተሰርዟል። በሚቀጥለው ጊዜ ለማቆየት Google ወይም Apple ያገናኙ።</string>
+    <string name="welcome_expired_ok">እሺ</string>
+</resources>

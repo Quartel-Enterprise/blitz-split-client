@@ -113,6 +113,11 @@
     <string name="profile_language_burmese">Burma</string>
     <string name="profile_language_khmer">Khmer</string>
     <string name="profile_language_odia">Orija</string>
+    <string name="profile_language_nepali">Nepali</string>
+    <string name="profile_language_azerbaijani">Azeri</string>
+    <string name="profile_language_amharic">Amhara</string>
+    <string name="profile_language_sinhala">Sinhala</string>
+    <string name="profile_language_kazakh">Kazakki</string>
     <string name="profile_language_system_detail">Laitteen kieli</string>
     <string name="profile_notifications">Ilmoitukset</string>
     <plurals name="profile_notifications_active">

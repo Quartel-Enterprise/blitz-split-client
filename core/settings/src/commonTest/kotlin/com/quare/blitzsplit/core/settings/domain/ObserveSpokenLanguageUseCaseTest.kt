@@ -162,6 +162,11 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.BURMESE,
                 AppLanguage.KHMER,
                 AppLanguage.ODIA,
+                AppLanguage.NEPALI,
+                AppLanguage.AZERBAIJANI,
+                AppLanguage.AMHARIC,
+                AppLanguage.SINHALA,
+                AppLanguage.KAZAKH,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
 
@@ -226,6 +231,11 @@ class ObserveSpokenLanguageUseCaseTest {
                     "my",
                     "km",
                     "or",
+                    "ne",
+                    "az",
+                    "am",
+                    "si",
+                    "kk",
                     "zh-Hant",
                 ),
                 spoken,
@@ -305,6 +315,11 @@ class ObserveSpokenLanguageUseCaseTest {
             "my",
             "km",
             "or",
+            "ne",
+            "az",
+            "am",
+            "si",
+            "kk",
             "zh-Hant",
         )
 
@@ -378,6 +393,11 @@ class ObserveSpokenLanguageUseCaseTest {
                 "my-MM",
                 "km-KH",
                 "or-IN",
+                "ne-NP",
+                "az-AZ",
+                "am-ET",
+                "si-LK",
+                "kk-KZ",
                 "zh-TW",
             )
 
@@ -444,6 +464,11 @@ class ObserveSpokenLanguageUseCaseTest {
                     "my",
                     "km",
                     "or",
+                    "ne",
+                    "az",
+                    "am",
+                    "si",
+                    "kk",
                     "zh-Hant",
                 ),
                 spoken,
@@ -495,7 +520,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System WHEN the device is in a language the app does not have THEN it is en`() = runTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
-        val devices = listOf("eu", "eu-ES", "zu", "zu-ZA", "am", "am-ET", "ceb", "ceb-PH", "yo-NG")
+        val devices = listOf("eu", "eu-ES", "zu", "zu-ZA", "ha", "ha-NG", "ceb", "ceb-PH", "yo-NG")
 
         // When
         val spoken = devices.map { spokenOn(it) }

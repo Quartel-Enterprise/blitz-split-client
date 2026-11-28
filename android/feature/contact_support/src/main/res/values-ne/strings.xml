@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">सपोर्टलाई सम्पर्क गर्नुहोस्</string>
+    <string name="contact_support_description">हामी तयार म्यासेजसहित तपाईंको इमेल एप खोल्छौं। के भयो लेख्नुहोस् र पठाउनुहोस्: हरेक म्यासेज वास्तविक मान्छेले पढ्छन्।</string>
+    <string name="contact_support_to">प्रापक</string>
+    <string name="contact_support_diagnostics">इमेलमा समावेश हुनेछ</string>
+    <string name="contact_support_app_version">एपको संस्करण</string>
+    <string name="contact_support_platform">प्लेटफर्म</string>
+    <string name="contact_support_language">भाषा</string>
+    <string name="contact_support_account">खाता</string>
+    <string name="contact_support_profile">प्रोफाइल</string>
+    <string name="contact_support_language_system">सिस्टम</string>
+    <string name="contact_support_account_local">यो डिभाइसमा मात्र</string>
+    <string name="contact_support_account_anonymous">जोडिएको छैन</string>
+    <string name="contact_support_open_email">इमेल खोल्नुहोस्</string>
+    <string name="contact_support_copy_email">इमेल ठेगाना कपी गर्नुहोस्</string>
+    <string name="contact_support_notice_copied">इमेल ठेगाना कपी भयो।</string>
+    <string name="contact_support_notice_no_app">कुनै इमेल एप भेटिएन। बरु ठेगाना कपी गरियो।</string>
+    <string name="contact_support_close">बन्द गर्नुहोस्</string>
+</resources>

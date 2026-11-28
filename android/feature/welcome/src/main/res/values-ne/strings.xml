@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">झन्झटबिना खर्च बाँड्नुहोस्</string>
+    <string name="welcome_offline_title">अफलाइन पनि चल्छ</string>
+    <string name="welcome_offline_body">सबै कुरा तपाईंको डिभाइसमा रहन्छ र पछि सिंक हुन्छ।</string>
+    <string name="welcome_optional_title">खाता ऐच्छिक हो</string>
+    <string name="welcome_optional_body">Google वा Apple ले डिभाइस बदल्दा तपाईंको केही नहराओस् भनेर मात्र मद्दत गर्छ।</string>
+    <string name="welcome_invite_title">लिंक वा QR कोडबाट निमन्त्रणा गर्नुहोस्</string>
+    <string name="welcome_invite_body">साथीहरूले खाता नबनाई ग्रुप जोइन गर्न सक्नुहुन्छ।</string>
+    <string name="welcome_no_connection_title">कनेक्सन छैन।</string>
+    <string name="welcome_no_connection_body">खाताबाट साइन इन गर्न इन्टरनेट चाहिन्छ। अहिले खाताबिना प्रयोग गर्नुहोस् र पछि प्रोफाइलमा जोड्नुहोस्।</string>
+    <string name="welcome_or">वा</string>
+    <string name="welcome_use_without_account">खाताबिना प्रयोग गर्नुहोस्</string>
+    <string name="welcome_used_on_another_device">मैले यो अर्को डिभाइसमा प्रयोग गरेको छु</string>
+    <string name="welcome_sign_in_failed">अहिले साइन इन गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</string>
+    <string name="welcome_legal_notice">जारी राखेर, तपाईं %1$s स्वीकार गर्नुहुन्छ र %2$s पढेको मान्नुहुन्छ।</string>
+    <string name="welcome_legal_terms">सेवाका सर्तहरू</string>
+    <string name="welcome_legal_privacy">गोपनीयता नीति</string>
+    <string name="welcome_no_account_note">खाताबिना, 30 दिनसम्म प्रयोग नगरेमा तपाईंको डेटा मेटाइन्छ। यसलाई राख्न Google वा Apple जोड्नुहोस्।</string>
+    <string name="welcome_no_account_note_offline">खाताबिना, 30 दिनसम्म प्रयोग नगरेमा तपाईंको डेटा मेटाइन्छ। यसलाई राख्न पछि प्रोफाइलमा Google वा Apple जोड्नुहोस्।</string>
+    <string name="welcome_expired_title">तपाईंको डेटा मेटाइयो</string>
+    <string name="welcome_expired_body">तपाईं खाताबिना एप प्रयोग गर्दै हुनुहुन्थ्यो र 30 दिनसम्म खोल्नुभएन, त्यसैले तपाईंको डेटा मेटाइयो। अर्को पटक डेटा राख्न Google वा Apple जोड्नुहोस्।</string>
+    <string name="welcome_expired_ok">ठीक छ</string>
+</resources>

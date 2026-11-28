@@ -114,6 +114,11 @@
     <string name="profile_language_burmese">בורמזית</string>
     <string name="profile_language_khmer">חמרית</string>
     <string name="profile_language_odia">אודיה</string>
+    <string name="profile_language_nepali">נפאלית</string>
+    <string name="profile_language_azerbaijani">אזרית</string>
+    <string name="profile_language_amharic">אמהרית</string>
+    <string name="profile_language_sinhala">סינהלה</string>
+    <string name="profile_language_kazakh">קזחית</string>
     <string name="profile_language_system_detail">שפת המכשיר</string>
     <string name="profile_notifications">התראות</string>
     <plurals name="profile_notifications_active">

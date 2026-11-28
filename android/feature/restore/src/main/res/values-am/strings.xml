@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">ቡድኖችዎን ይመልሱ</string>
+    <string name="restore_subtitle">ከዚህ በፊት በመለያ ገብተው ነበር? እንደገና ብቻ ይግቡ። ካልሆነ፣ የመልሶ ማግኛ ኮዱን ወይም ከቀድሞው መሣሪያዎ ያለውን QR ኮድ ይጠቀሙ።</string>
+    <string name="restore_no_connection_title">ግንኙነት የለም</string>
+    <string name="restore_no_connection_body">በመለያ ወይም በኮድ መግባት ቡድኖችዎን ለማውረድ ኢንተርኔት ያስፈልገዋል። የጻፉት ተቀምጧል።</string>
+    <string name="restore_code_label">ወይም የመልሶ ማግኛ ኮዱን ይጠቀሙ</string>
+    <string name="restore_code_hint">12ቱ ቃላት በቅደም ተከተል። ሁሉንም መስኮች ለመሙላት ሁሉንም በአንድ መስክ ውስጥ ይለጥፉ።</string>
+    <string name="restore_scan_qr_title">ከቀድሞው መሣሪያዎ QR ኮዱን ይቃኙ</string>
+    <string name="restore_scan_qr_body">እዚያ: መገለጫ › መልሶ ማግኛ › QR ኮድ አሳይ</string>
+    <string name="restore_recover">መልሰው ያግኙ</string>
+    <string name="restore_try_again">እንደገና ይሞክሩ</string>
+    <string name="restore_start_fresh">በዚህ መሣሪያ ላይ እንደ አዲስ ይጀምሩ</string>
+    <string name="restore_error_invalid_code">ኮዱ አልተገኘም። ቃላቱንና ቅደም ተከተላቸውን ያረጋግጡ፣ ከዚያ እንደገና ይሞክሩ።</string>
+    <string name="restore_error_too_many_attempts">በጣም ብዙ ሙከራዎች። ጥቂት ደቂቃዎች ይጠብቁና እንደገና ይሞክሩ።</string>
+    <string name="restore_error_sign_in_failed">አሁን መግባት አልተቻለም። እንደገና ይሞክሩ።</string>
+    <string name="restore_error_unknown">የሆነ ችግር ተፈጥሯል። እንደገና ይሞክሩ።</string>
+</resources>

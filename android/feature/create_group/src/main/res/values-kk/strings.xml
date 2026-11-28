@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Жаңа топ</string>
+    <string name="create_group_close">Жабу</string>
+    <string name="create_group_create">Құру</string>
+    <string name="create_group_change_color">Топтың түсін өзгерту</string>
+    <string name="create_group_name_label">Топ атауы</string>
+    <string name="create_group_type_label">Топ түрі</string>
+    <string name="create_group_members_title">Кім қатысады</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d адам</item>
+        <item quantity="other">%d адам</item>
+    </plurals>
+    <string name="create_group_me">сіз</string>
+    <string name="create_group_remove_member">Жою: %s</string>
+    <string name="create_group_add_placeholder">Аты бойынша қосу</string>
+    <string name="create_group_add">Қосу</string>
+    <string name="create_group_no_app_notice">Қазір ешкімге қолданба қажет емес. Барлығына шығын қоса бере аласыз, ал сілтемені кейін жіберуге болады.</string>
+    <string name="create_group_currency">Әдепкі валюта</string>
+    <string name="create_group_currency_caption">Жаңа шығындар осы валютадан басталады; әр шығын басқа валютаны пайдалана алады.</string>
+    <string name="create_group_save_error">Топты сақтау мүмкін болмады. Қайталап көріңіз.</string>
+    <string name="create_group_photo">Топ фотосы</string>
+    <string name="create_group_take_photo">Суретке түсіру</string>
+    <string name="create_group_choose_photo">Фото таңдау</string>
+    <string name="create_group_remove_photo">Фотоны жою</string>
+    <string name="create_group_photo_error">Бұл фотоны пайдалану мүмкін болмады. Басқасын көріңіз.</string>
+</resources>

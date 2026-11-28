@@ -593,6 +593,11 @@ private struct LanguageName: View {
         case .burmese: "မြန်မာ"
         case .khmer: "ខ្មែរ"
         case .odia: "ଓଡ଼ିଆ"
+        case .nepali: "नेपाली"
+        case .azerbaijani: "Azərbaycan dili"
+        case .amharic: "አማርኛ"
+        case .sinhala: "සිංහල"
+        case .kazakh: "Қазақ тілі"
         default: nil
         }
     }
@@ -891,6 +896,31 @@ private struct LanguageName: View {
         )
         case .odia: String(
             localized: "Odia",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .nepali: String(
+            localized: "Nepali",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .azerbaijani: String(
+            localized: "Azerbaijani",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .amharic: String(
+            localized: "Amharic",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .sinhala: String(
+            localized: "Sinhala",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .kazakh: String(
+            localized: "Kazakh",
             bundle: .appLanguage,
             comment: "A language of Profile › Language, in the app's language",
         )

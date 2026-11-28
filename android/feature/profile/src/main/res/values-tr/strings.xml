@@ -113,6 +113,11 @@
     <string name="profile_language_burmese">Birmanca</string>
     <string name="profile_language_khmer">Kmerce</string>
     <string name="profile_language_odia">Oriya dili</string>
+    <string name="profile_language_nepali">Nepalce</string>
+    <string name="profile_language_azerbaijani">Azerbaycan Türkçesi</string>
+    <string name="profile_language_amharic">Amharca</string>
+    <string name="profile_language_sinhala">Sinhali dili</string>
+    <string name="profile_language_kazakh">Kazakça</string>
     <string name="profile_language_system_detail">Cihaz dili</string>
     <string name="profile_notifications">Bildirimler</string>
     <plurals name="profile_notifications_active">

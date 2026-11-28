@@ -105,6 +105,11 @@ const nativeLanguageNames: Record<string, string> = {
   my: 'မြန်မာ',
   km: 'ខ្មែរ',
   or: 'ଓଡ଼ିଆ',
+  ne: 'नेपाली',
+  az: 'Azərbaycan dili',
+  am: 'አማርኛ',
+  si: 'සිංහල',
+  kk: 'Қазақ тілі',
 }
 
 /** The same language in the app's language, "Portuguese (Brazil)", under its own name. */
@@ -168,6 +173,11 @@ const languageNames: Record<string, MessageKey> = {
   my: 'profile_languageBurmese',
   km: 'profile_languageKhmer',
   or: 'profile_languageOdia',
+  ne: 'profile_languageNepali',
+  az: 'profile_languageAzerbaijani',
+  am: 'profile_languageAmharic',
+  si: 'profile_languageSinhala',
+  kk: 'profile_languageKazakh',
 }
 
 /**

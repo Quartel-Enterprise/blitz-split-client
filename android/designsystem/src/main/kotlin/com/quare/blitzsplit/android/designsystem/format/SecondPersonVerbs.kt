@@ -94,7 +94,7 @@ private val secondPersonAuxiliaries = mapOf(
     SLOVENIAN to mapOf("je" to "si"),
     CATALAN to mapOf("ha" to "has", "l’ha" to "l’has", "l'ha" to "l'has"),
 )
-private val turkishPast = Regex("[dt][ıiuü]$")
+private val turkicPast = Regex("[dt][ıiuü]$")
 private val persianPast = Regex("[دت]$")
 private const val PERSIAN_SECOND_PERSON_ENDING = "ید"
 private const val TAMIL = "ta"
@@ -107,6 +107,15 @@ private const val PUNJABI = "pa"
 private const val PUNJABI_ERGATIVE = "ਨੇ"
 private const val MALAYALAM = "ml"
 private const val ODIA = "or"
+private const val NEPALI = "ne"
+private const val NEPALI_ERGATIVE = "ले"
+private const val AZERBAIJANI = "az"
+private val azerbaijaniSecondPersonEndings = mapOf('ı' to "nız", 'i' to "niz", 'u' to "nuz", 'ü' to "nüz")
+private const val AMHARIC = "am"
+private const val SINHALA = "si"
+private const val KAZAKH = "kk"
+private val kazakhPast = Regex("[дт][ыі]$")
+private val kazakhSecondPersonEndings = mapOf('ы' to "ңыз", 'і' to "ңіз")
 private const val TAMIL_THIRD_PERSON_PAST = "ார்"
 private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
 private const val SWAHILI = "sw"
@@ -161,6 +170,11 @@ private val youSubjectLanguages = setOf(
     MALAYALAM,
     KANNADA,
     ODIA,
+    NEPALI,
+    AZERBAIJANI,
+    AMHARIC,
+    SINHALA,
+    KAZAKH,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -232,7 +246,14 @@ private val irregularSecondPerson = mapOf(
  * doesn't take ("Ana ਨੇ ਖਰਚਾ ਵੰਡਿਆ", "ਤੁਸੀਂ ਖਰਚਾ ਵੰਡਿਆ").
  * Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb stays as it is ("Ana ചെലവ് വിഭജിച്ചു",
  * "നിങ്ങൾ ചെലവ് വിഭജിച്ചു"). Odia's respectful past "-ଲେ" is the same for a name and for "ଆପଣ", so its verb
- * stays as it is too ("Ana ଏକ ଖର୍ଚ୍ଚ ବାଣ୍ଟିଲେ", "ଆପଣ ଏକ ଖର୍ଚ୍ଚ ବାଣ୍ଟିଲେ"). Same rules as the web's and the Apple
+ * stays as it is too ("Ana ଏକ ଖର୍ଚ୍ଚ ବାଣ୍ଟିଲେ", "ଆପଣ ଏକ ଖର୍ଚ୍ଚ ବାଣ୍ଟିଲେ"). Nepali does as Hindi with its ergative "ले",
+ * written apart after a name and as one word with the user's "तपाईंले": every Nepali verb phrase starts with "ले", which
+ * the user's drops ("Ana ले खर्च बाँड्नुभयो", "तपाईंले खर्च बाँड्नुभयो"). Azerbaijani puts its simple past last as Turkish
+ * does, and the user's respectful "Siz" adds "-nız", "-niz", "-nuz" or "-nüz" to it after its last vowel ("Ana xərci
+ * böldü", "Siz xərci böldünüz"; "qoşuldu" → "qoşuldunuz", "etdi" → "etdiniz"), and Kazakh likewise "-ңыз" or "-ңіз"
+ * ("Ana шығынды бөлді", "Сіз шығынды бөлдіңіз"; "шықты" → "шықтыңыз"). Amharic's respectful plural past is the same for
+ * a name and for "እርስዎ", and Sinhala's colloquial past doesn't change with the person, so their verbs stay as they are
+ * ("Ana ወጪ ከፋፈሉ", "እርስዎ ወጪ ከፋፈሉ"; "Ana වියදමක් බෙදුවා", "ඔබ වියදමක් බෙදුවා"). Same rules as the web's and the Apple
  * app's `verbForYou`.
  */
 fun toSecondPerson(
@@ -251,7 +272,7 @@ fun toSecondPerson(
         }
     }
 
-    TURKISH -> toVerbLastSecondPerson(verb, turkishPast, "n")
+    TURKISH -> toVerbLastSecondPerson(verb, turkicPast, "n")
 
     PERSIAN -> toVerbLastSecondPerson(verb, persianPast, PERSIAN_SECOND_PERSON_ENDING)
 
@@ -264,6 +285,12 @@ fun toSecondPerson(
         dropped = KANNADA_THIRD_PERSON_PAST,
     )
 
+    AZERBAIJANI -> toVerbLastSecondPerson(verb, turkicPast) { clause ->
+        azerbaijaniSecondPersonEndings.getValue(clause.last())
+    }
+
+    KAZAKH -> toVerbLastSecondPerson(verb, kazakhPast) { clause -> kazakhSecondPersonEndings.getValue(clause.last()) }
+
     KOREAN -> dropSubjectParticle(verb, KOREAN_HONORIFIC_SUBJECT)
 
     HINDI -> dropSubjectParticle(verb, HINDI_ERGATIVE)
@@ -273,6 +300,8 @@ fun toSecondPerson(
     GUJARATI -> dropSubjectParticle(verb, GUJARATI_AGENT)
 
     PUNJABI -> dropSubjectParticle(verb, PUNJABI_ERGATIVE)
+
+    NEPALI -> dropSubjectParticle(verb, NEPALI_ERGATIVE)
 
     CZECH -> if (czechPast.containsMatchIn(verb)) "$CZECH_SECOND_PERSON_AUXILIARY $verb" else verb
 
@@ -329,10 +358,21 @@ private fun toVerbLastSecondPerson(
     past: Regex,
     ending: String,
     dropped: String = "",
+): String = toVerbLastSecondPerson(verb, past, dropped) { ending }
+
+/*
+ * Why: Azerbaijani's and Kazakh's ending follows the last vowel of the past it goes after ("böldü" → "böldünüz",
+ * "etdi" → "etdiniz", "бөлді" → "бөлдіңіз", "шықты" → "шықтыңыз"), so `ending` picks it from the clause.
+ */
+private fun toVerbLastSecondPerson(
+    verb: String,
+    past: Regex,
+    dropped: String = "",
+    ending: (clause: String) -> String,
 ): String {
     val clause = verb.substringBefore(':').trimEnd()
     if (!past.containsMatchIn(clause)) return verb
-    return clause.removeSuffix(dropped) + ending + verb.substring(clause.length)
+    return clause.removeSuffix(dropped) + ending(clause) + verb.substring(clause.length)
 }
 
 /*
@@ -392,8 +432,9 @@ private fun toSpanishSecondPerson(verb: String): String {
  * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule, and
  * Telugu "మీరు తొలగించారు: …", its verb not changing with the person, Marathi "तुम्ही … हटवला", with its rule,
  * Swahili "Wewe ulifuta…", with its own, Gujarati "તમે … ડિલીટ કર્યો", with its rule, Punjabi "ਤੁਸੀਂ … ਮਿਟਾਇਆ",
- * with its own, Malayalam "നിങ്ങൾ ഡിലീറ്റ് ചെയ്തു: …", its verb not changing with the person, Kannada "ನೀವು ಅಳಿಸಿದಿರಿ: …", with its own, and Odia "ଆପଣ ଡିଲିଟ୍ କଲେ: …", its verb not changing
- * with the person.
+ * with its own, Malayalam "നിങ്ങൾ ഡിലീറ്റ് ചെയ്തു: …", its verb not changing with the person, Kannada "ನೀವು ಅಳಿಸಿದಿರಿ: …", with its own, Odia "ଆପଣ ଡିଲିଟ୍ କଲେ: …", its verb not changing
+ * with the person, Nepali "तपाईंले मेटाउनुभयो: …", Azerbaijani "Siz sildiniz: …" and Kazakh "Сіз жойдыңыз: …", with their
+ * rules, and Amharic "እርስዎ ሰረዙ: …" and Sinhala "ඔබ මැකුවා: …", their verbs not changing with the person.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

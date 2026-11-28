@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">සහාය අමතන්න</string>
+    <string name="contact_support_description">අපි යවන්න සූදානම් පණිවිඩයක් සමඟ ඔබේ ඊමේල් ඇප් එක විවෘත කරන්නම්. සිදු වූ දේ විස්තර කර එය යවන්න: සෑම පණිවිඩයක්ම සැබෑ මිනිසුන් කියවනවා.</string>
+    <string name="contact_support_to">ලබන්නා</string>
+    <string name="contact_support_diagnostics">ඊමේල් එකට ඇතුළත් වෙනවා</string>
+    <string name="contact_support_app_version">ඇප් අනුවාදය</string>
+    <string name="contact_support_platform">වේදිකාව</string>
+    <string name="contact_support_language">භාෂාව</string>
+    <string name="contact_support_account">ගිණුම</string>
+    <string name="contact_support_profile">පැතිකඩ</string>
+    <string name="contact_support_language_system">පද්ධතිය</string>
+    <string name="contact_support_account_local">මෙම උපාංගය පමණයි</string>
+    <string name="contact_support_account_anonymous">සම්බන්ධ කර නැහැ</string>
+    <string name="contact_support_open_email">ඊමේල් විවෘත කරන්න</string>
+    <string name="contact_support_copy_email">ඊමේල් ලිපිනය පිටපත් කරන්න</string>
+    <string name="contact_support_notice_copied">ඊමේල් ලිපිනය පිටපත් කළා.</string>
+    <string name="contact_support_notice_no_app">ඊමේල් ඇප් එකක් හමු වුණේ නැහැ. ඒ වෙනුවට ලිපිනය පිටපත් කළා.</string>
+    <string name="contact_support_close">වසන්න</string>
+</resources>

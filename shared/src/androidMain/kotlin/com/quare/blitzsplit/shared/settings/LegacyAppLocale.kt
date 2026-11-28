@@ -14,8 +14,27 @@ object LegacyAppLocale {
     private const val PREFERENCES = "app_language"
     private const val KEY_TAG = "tag"
 
-    private val latinDigitLanguages =
-        setOf("ar", "bn", "ur", "fa", "ta", "te", "mr", "gu", "kn", "my", "km", "pa", "ml", "or")
+    private val latinDigitLanguages = setOf(
+        "ar",
+        "bn",
+        "ur",
+        "fa",
+        "ta",
+        "te",
+        "mr",
+        "gu",
+        "kn",
+        "my",
+        "km",
+        "pa",
+        "ml",
+        "or",
+        "ne",
+        "az",
+        "am",
+        "si",
+        "kk",
+    )
     private val gregorianLanguages = setOf("th", "fa")
     private const val NUMBERING_SYSTEM = "nu"
     private const val LATIN_DIGITS = "latn"
@@ -32,9 +51,9 @@ object LegacyAppLocale {
     fun wrapApplication(base: Context): Context = wrapLegacy(base)
 
     /*
-     * Why: Arabic, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Punjabi, Malayalam, Kannada, Burmese, Khmer and Odia write their numbers, amounts and dates with Latin digits (docs/product/general.md), so the
+     * Why: Arabic, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Punjabi, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala and Kazakh write their numbers, amounts and dates with Latin digits (docs/product/general.md), so the
      * amount fields read what the number keyboard types. Every "%d" of a string resource, a date and a count follow the
-     * context's locale, so an Arabic, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Punjabi, Malayalam, Kannada, Burmese, Khmer or Odia one, picked or the device's, gets the "nu-latn" extension once here.
+     * context's locale, so an Arabic, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Punjabi, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala or Kazakh one, picked or the device's, gets the "nu-latn" extension once here.
      * Thai and Persian also get "ca-gregory": ICU dates a Thai locale (DateUtils' ranges) in the Buddhist era and a
      * Persian one in Iran's Solar Hijri calendar, where every other date of the app says the Gregorian year.
      */

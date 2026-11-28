@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Dəvət linki</string>
+    <string name="members_link_pending">Hələ yaradılmayıb</string>
+    <string name="members_share">Paylaşın</string>
+    <string name="members_me">%s (siz)</string>
+    <string name="members_status_this_device">Bu cihaz</string>
+    <string name="members_status_joined">Qoşulub</string>
+    <string name="members_status_not_joined">Hələ qoşulmayıb</string>
+    <string name="members_options">Seçimlər: %s</string>
+    <string name="members_rename">Adını dəyişin</string>
+    <string name="members_personal_invite">Şəxsi dəvət: %s</string>
+    <string name="members_personal_message">Bu linki açan şəxs siyahıdan seçmədən birbaşa bu adla qoşulur: %s. Link bir dəfə işləyir.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Bu linki açan şəxs siyahıdan seçmədən birbaşa bu adla qoşulur: %1$s. İndiyədək əlavə edilmiş xərcdəki payını da görür: %2$s. Link bir dəfə işləyir.</item>
+        <item quantity="other">Bu linki açan şəxs siyahıdan seçmədən birbaşa bu adla qoşulur: %1$s. İndiyədək əlavə edilmiş %3$d xərcdəki payını da görür: %2$s. Link bir dəfə işləyir.</item>
+    </plurals>
+    <string name="members_personal_copy">Linki kopyalayın</string>
+    <string name="members_personal_copied">Kopyalandı</string>
+    <string name="members_personal_share">Paylaşın: %s</string>
+    <string name="members_personal_share_message">Blitz Split tətbiqində %1$s qrupuna bu adla qoşulun: %2$s. Link: %3$s</string>
+    <string name="members_remove">Qrupdan çıxarın</string>
+    <string name="members_remove_joined">%s artıq qrupa qoşulub</string>
+    <string name="members_remove_title">%s qrupdan çıxarılsın?</string>
+    <string name="members_remove_message">%s hələ qoşulmayıb. Onu sonra yenidən əlavə edə bilərsiniz.</string>
+    <string name="members_remove_confirm">Çıxarın</string>
+    <string name="members_release">Adı azad edin</string>
+    <string name="members_release_title">Bu ad azad edilsin: %s?</string>
+    <string name="members_release_message">%1$s adı ilə qoşulan şəxs qrupdan çıxır. Bu adın rəngi və xərcləri qalır, ad isə qrupun linki ilə yenidən seçilə bilər.</string>
+    <string name="members_release_confirm">Azad edin</string>
+    <string name="members_release_error">Adı azad etmək alınmadı. Bağlantınızı yoxlayın və yenidən cəhd edin.</string>
+    <string name="members_add">İnsan əlavə edin</string>
+    <string name="members_invite_instead">Tətbiqi var? Linklə dəvət edin</string>
+    <string name="members_name_label">Ad</string>
+    <string name="members_save">Yadda saxlayın</string>
+    <string name="members_cancel">Ləğv edin</string>
+    <string name="members_change_error">Dəyişikliyi yadda saxlamaq alınmadı. Yenidən cəhd edin.</string>
+    <string name="members_remove_open_balance">%s hələ hesablaşmayıb</string>
+    <string name="members_balance_to_get_back">geri alınacaq: %s</string>
+    <string name="members_balance_owes">borcludur: %s</string>
+    <string name="members_balance_settled">Hesablaşıb</string>
+</resources>

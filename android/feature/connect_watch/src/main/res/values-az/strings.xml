@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Saatı qoşun</string>
+    <string name="connect_watch_close">Bağlayın</string>
+    <string name="connect_watch_body">Saatınızın göstərdiyi kodu yazın. Saat hesabınıza daxil olur və sonra özü sinxronizasiya olunur.</string>
+    <string name="connect_watch_code_label">Saat kodu</string>
+    <string name="connect_watch_error_invalid">Kod yanlışdır və ya müddəti bitib. Saatda yenisini alın.</string>
+    <string name="connect_watch_error_too_many">Çox sayda yanlış kod. Bir neçə dəqiqə gözləyin və yenidən cəhd edin.</string>
+    <string name="connect_watch_error_needs_account">Əvvəlcə hesab qoşun: məlumatlarınız yalnız bu cihazdadır.</string>
+    <string name="connect_watch_error_failed">Saatı qoşmaq alınmadı. Yenidən cəhd edin.</string>
+    <string name="connect_watch_offline">Saatı qoşmaq üçün internet lazımdır.</string>
+    <string name="connect_watch_own_watch_only">Yalnız öz saatınızda göstərilən kodu yazın: o saat kimdədirsə, hesabınıza daxil olur.</string>
+    <string name="connect_watch_validity">Kod 5 dəqiqə ərzində bir dəfə etibarlıdır.</string>
+    <string name="connect_watch_button">Qoşun</string>
+    <string name="connect_watch_connected_title">Saat qoşuldu</string>
+    <string name="connect_watch_connected_body">Saat qruplarınızı görür və özü sinxronizasiya olunur. Onu ayırmaq üçün saatda çıxış edin.</string>
+</resources>

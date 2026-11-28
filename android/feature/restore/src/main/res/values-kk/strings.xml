@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Топтарыңызды қайтарыңыз</string>
+    <string name="restore_subtitle">Бұрын аккаунтпен кірдіңіз бе? Қайта кіріңіз. Олай болмаса, қалпына келтіру кодын немесе ескі құрылғыңыздағы QR кодты пайдаланыңыз.</string>
+    <string name="restore_no_connection_title">Байланыс жоқ</string>
+    <string name="restore_no_connection_body">Аккаунтпен немесе кодпен кіргенде топтарыңызды жүктеу үшін интернет керек. Енгізгеніңіз сақталады.</string>
+    <string name="restore_code_label">Немесе қалпына келтіру кодын пайдаланыңыз</string>
+    <string name="restore_code_hint">12 сөз ретімен. Барлық өрісті толтыру үшін оларды бір өріске бірден қойыңыз.</string>
+    <string name="restore_scan_qr_title">Ескі құрылғыңыздағы QR кодты сканерлеңіз</string>
+    <string name="restore_scan_qr_body">Ол жерде: Профиль › Қалпына келтіру › QR кодты көрсету</string>
+    <string name="restore_recover">Қалпына келтіру</string>
+    <string name="restore_try_again">Қайталау</string>
+    <string name="restore_start_fresh">Осы құрылғыда жаңадан бастау</string>
+    <string name="restore_error_invalid_code">Код табылмады. Сөздерді және олардың ретін тексеріп, қайталап көріңіз.</string>
+    <string name="restore_error_too_many_attempts">Әрекет тым көп. Бірнеше минут күтіп, қайталап көріңіз.</string>
+    <string name="restore_error_sign_in_failed">Қазір кіру мүмкін болмады. Қайталап көріңіз.</string>
+    <string name="restore_error_unknown">Қате шықты. Қайталап көріңіз.</string>
+</resources>

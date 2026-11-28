@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Сағатты қосу</string>
+    <string name="connect_watch_close">Жабу</string>
+    <string name="connect_watch_body">Сағатыңыз көрсеткен кодты енгізіңіз. Ол аккаунтыңызға кіріп, кейін өзі синхрондалады.</string>
+    <string name="connect_watch_code_label">Сағат коды</string>
+    <string name="connect_watch_error_invalid">Код қате немесе мерзімі өткен. Сағаттан жаңасын алыңыз.</string>
+    <string name="connect_watch_error_too_many">Қате код тым көп енгізілді. Бірнеше минут күтіп, қайталап көріңіз.</string>
+    <string name="connect_watch_error_needs_account">Алдымен аккаунтты қосыңыз: деректеріңіз тек осы құрылғыда.</string>
+    <string name="connect_watch_error_failed">Сағатты қосу мүмкін болмады. Қайталап көріңіз.</string>
+    <string name="connect_watch_offline">Сағатты қосу үшін интернет керек.</string>
+    <string name="connect_watch_own_watch_only">Тек өз сағатыңызда көрсетілген кодты енгізіңіз: сол сағат кімде болса, сол аккаунтыңызға кіреді.</string>
+    <string name="connect_watch_validity">Код 5 минут ішінде бір рет жарамды.</string>
+    <string name="connect_watch_button">Қосу</string>
+    <string name="connect_watch_connected_title">Сағат қосылды</string>
+    <string name="connect_watch_connected_body">Ол топтарыңызды көріп, өзі синхрондалады. Ажырату үшін сағатта шығыңыз.</string>
+</resources>

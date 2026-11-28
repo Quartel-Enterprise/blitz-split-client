@@ -113,6 +113,11 @@
     <string name="profile_language_burmese">Βιρμανικά</string>
     <string name="profile_language_khmer">Χμερ</string>
     <string name="profile_language_odia">Όντια</string>
+    <string name="profile_language_nepali">Νεπαλικά</string>
+    <string name="profile_language_azerbaijani">Αζερμπαϊτζανικά</string>
+    <string name="profile_language_amharic">Αμχαρικά</string>
+    <string name="profile_language_sinhala">Σινχαλικά</string>
+    <string name="profile_language_kazakh">Καζακικά</string>
     <string name="profile_language_system_detail">Γλώσσα συσκευής</string>
     <string name="profile_notifications">Ειδοποιήσεις</string>
     <plurals name="profile_notifications_active">

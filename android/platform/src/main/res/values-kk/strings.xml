@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · қалпына келтіру коды</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Суретке түсіру үшін Баптауларда камераға рұқсат беріңіз.</string>
+    <string name="platform_camera_settings">Баптаулар</string>
+    <string name="platform_receipt_source_camera">Суретке түсіру</string>
+    <string name="platform_receipt_source_gallery">Галереядан таңдау</string>
+    <string name="platform_receipt_source_file">Файл таңдау</string>
+    <string name="platform_receipt_camera_title">Чекті сканерлеу</string>
+    <string name="platform_receipt_camera_close">Жабу</string>
+    <string name="platform_receipt_camera_flash_on">Жарқылды қосу</string>
+    <string name="platform_receipt_camera_flash_off">Жарқылды өшіру</string>
+    <string name="platform_receipt_camera_hint">Бүкіл чекті жақтауға сыйғызыңыз. Соманы, күнді және сипаттаманы біз толтырамыз, ал сіз сақтамас бұрын тексересіз.</string>
+    <string name="platform_receipt_camera_gallery">Галереядан таңдау</string>
+    <string name="platform_receipt_camera_shutter">Суретке түсіру</string>
+    <string name="platform_receipt_camera_unavailable">Камера қолжетімсіз. Галереядан чектің фотосын таңдаңыз.</string>
+    <string name="platform_receipt_camera_permission">Чекті сканерлеу үшін камераға рұқсат беріңіз немесе галереядан фото таңдаңыз.</string>
+    <string name="platform_receipt_camera_allow">Камераға рұқсат беру</string>
+    <string name="platform_receipt_camera_settings">Баптауларды ашу</string>
+</resources>

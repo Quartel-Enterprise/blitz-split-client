@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Siz bu qrupda deyilsiniz</string>
+    <string name="bill_link_not_in_group_message">Bu şərh olmadığınız bir qrupdadır. Linki sizə göndərən şəxsdən dəvət istəyin.</string>
+    <string name="bill_link_offline_title">İnternet yoxdur</string>
+    <string name="bill_link_offline_message">İnternet qayıdanda linki yenidən açın.</string>
+    <string name="bill_link_go_home">Əsas səhifəyə keçin</string>
+    <string name="discard_changes_title">Dəyişikliklər ləğv edilsin?</string>
+    <string name="discard_changes_message">Yadda saxlanmamış dəyişikliklər itəcək.</string>
+    <string name="discard_changes_discard">Ləğv edin</string>
+    <string name="discard_changes_keep_editing">Redaktəyə davam edin</string>
+    <string name="watch_channel_name">Saat</string>
+    <string name="watch_connected_title">%1$s hesabınıza qoşuldu</string>
+    <string name="watch_connected_title_unnamed">Saat hesabınıza qoşuldu</string>
+    <string name="watch_connected_text">Saat qruplarınızı görür və özü sinxronizasiya olunur. Onu ayırmaq üçün saatda çıxış edin.</string>
+</resources>

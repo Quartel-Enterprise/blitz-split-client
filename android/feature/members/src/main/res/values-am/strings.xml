@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">የግብዣ ሊንክ</string>
+    <string name="members_link_pending">ገና አልተፈጠረም</string>
+    <string name="members_share">ያጋሩ</string>
+    <string name="members_me">%s (እርስዎ)</string>
+    <string name="members_status_this_device">ይህ መሣሪያ</string>
+    <string name="members_status_joined">ተቀላቅለዋል</string>
+    <string name="members_status_not_joined">ገና አልተቀላቀሉም</string>
+    <string name="members_options">አማራጮች: %s</string>
+    <string name="members_rename">ስም ይቀይሩ</string>
+    <string name="members_personal_invite">የግል ግብዣ: %s</string>
+    <string name="members_personal_message">ይህን ሊንክ የሚከፍቱት ሰው ከዝርዝሩ ሳይመርጡ በቀጥታ በዚህ ስም ይቀላቀላሉ: %s። አንድ ጊዜ ብቻ ይሠራል።</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">ይህን ሊንክ የሚከፍቱት ሰው ከዝርዝሩ ሳይመርጡ በቀጥታ በዚህ ስም ይቀላቀላሉ: %1$s፣ እስካሁን በተጨመረው ወጪ ውስጥ ያላቸውንም ድርሻ ወዲያውኑ ያያሉ: %2$s። አንድ ጊዜ ብቻ ይሠራል።</item>
+        <item quantity="other">ይህን ሊንክ የሚከፍቱት ሰው ከዝርዝሩ ሳይመርጡ በቀጥታ በዚህ ስም ይቀላቀላሉ: %1$s፣ እስካሁን በተጨመሩት %3$d ወጪዎች ውስጥ ያላቸውንም ድርሻ ወዲያውኑ ያያሉ: %2$s። አንድ ጊዜ ብቻ ይሠራል።</item>
+    </plurals>
+    <string name="members_personal_copy">ሊንኩን ይቅዱ</string>
+    <string name="members_personal_copied">ተቀድቷል</string>
+    <string name="members_personal_share">ያጋሩ: %s</string>
+    <string name="members_personal_share_message">በBlitz Split ቡድኑን ‘%1$s’ በስም ‘%2$s’ ይቀላቀሉ: %3$s</string>
+    <string name="members_remove">ከቡድኑ ያስወግዱ</string>
+    <string name="members_remove_joined">%s አስቀድመው ቡድኑን ተቀላቅለዋል</string>
+    <string name="members_remove_title">%s ከቡድኑ ይወገዱ?</string>
+    <string name="members_remove_message">%s ገና አልተቀላቀሉም። በኋላ እንደገና ሊያክሏቸው ይችላሉ።</string>
+    <string name="members_remove_confirm">ያስወግዱ</string>
+    <string name="members_release">ስሙን ይልቀቁ</string>
+    <string name="members_release_title">ስሙን ይልቀቁ: %s?</string>
+    <string name="members_release_message">በዚህ ስም የተቀላቀሉት ሰው ከቡድኑ ይወጣሉ: %1$s። ስሙ (%1$s)፣ ቀለሙና ወጪዎቹ ይቆያሉ፣ %1$s በቡድኑ ሊንክ በኩል እንደገና ሊመረጡ ይችላሉ።</string>
+    <string name="members_release_confirm">ይልቀቁ</string>
+    <string name="members_release_error">ስሙን መልቀቅ አልተቻለም። ግንኙነትዎን ያረጋግጡና እንደገና ይሞክሩ።</string>
+    <string name="members_add">ሰው ያክሉ</string>
+    <string name="members_invite_instead">መተግበሪያው አላቸው? በሊንኩ ይጋብዙ</string>
+    <string name="members_name_label">ስም</string>
+    <string name="members_save">ያስቀምጡ</string>
+    <string name="members_cancel">ይቅር</string>
+    <string name="members_change_error">ለውጡን ማስቀመጥ አልተቻለም። እንደገና ይሞክሩ።</string>
+    <string name="members_remove_open_balance">%s ያልተወራረደ ቀሪ ሂሳብ አላቸው</string>
+    <string name="members_balance_to_get_back">የሚመለስላቸው: %s</string>
+    <string name="members_balance_owes">ዕዳ: %s</string>
+    <string name="members_balance_settled">ተወራርዷል</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">යාවත්කාලීනය බාගනිමින්…</string>
+    <string name="in_app_update_download_failed">යාවත්කාලීනය බාගන්න බැරි වුණා. පසුව නැවත උත්සාහ කරන්න.</string>
+</resources>

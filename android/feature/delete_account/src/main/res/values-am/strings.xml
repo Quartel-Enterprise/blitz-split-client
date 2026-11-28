@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">መለያ ይሰርዙ</string>
+    <string name="delete_account_offline_title">ኢንተርኔት የለም።</string>
+    <string name="delete_account_offline_body">መለያዎን መሰረዝ የኢንተርኔት ግንኙነት ይፈልጋል። ይገናኙና እንደገና ይሞክሩ።</string>
+    <string name="delete_account_heading">መለያዎንና ውሂብዎን ይሰርዙ?</string>
+    <string name="delete_account_deleted_title">የሚሰረዘው</string>
+    <string name="delete_account_deleted_profile">መገለጫዎ (ስም፣ ፎቶ እና ቀለም)</string>
+    <string name="delete_account_deleted_keys">የPix እና Bitcoin መለያ ቁጥሮችዎ</string>
+    <string name="delete_account_deleted_provider">ከመለያዎ ጋር ያለው ትስስር: %1$s</string>
+    <string name="delete_account_deleted_recovery_code">የመልሶ ማግኛ ኮድዎ</string>
+    <string name="delete_account_deleted_device">በዚህ መሣሪያ ላይ ያለው የውሂብዎ ቅጂ</string>
+    <string name="delete_account_kept_title">በቡድኖችዎ ውስጥ የሚቆየው</string>
+    <string name="delete_account_kept_groups">ቡድኖቹ፣ ከወጪዎቻቸውና ከክፍያዎቻቸው ጋር፣ ለሌሎቹ አባላት</string>
+    <string name="delete_account_kept_member">በእያንዳንዱ ቡድን ውስጥ ስምዎ፣ መለያ እንደሌለው አባል</string>
+    <string name="delete_account_kept_comments">አስተያየቶችዎና ያከሏቸው ፎቶዎች፣ በስምዎ</string>
+    <string name="delete_account_export">መጀመሪያ ውሂቤን ኤክስፖርት ያድርጉ</string>
+    <string name="delete_account_confirm">ይህ ሊቀለበስ እንደማይችል ተረድቻለሁ</string>
+    <string name="delete_account_delete">መለያ ይሰርዙ</string>
+    <string name="delete_account_cancel">ይቅር</string>
+    <string name="delete_account_failed">መለያዎን መሰረዝ አልተቻለም። እንደገና ይሞክሩ።</string>
+</resources>

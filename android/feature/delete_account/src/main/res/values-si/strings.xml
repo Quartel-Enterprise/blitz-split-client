@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">ගිණුම මකන්න</string>
+    <string name="delete_account_offline_title">අන්තර්ජාලය නැහැ.</string>
+    <string name="delete_account_offline_body">ඔබේ ගිණුම මකන්න අන්තර්ජාල සම්බන්ධතාවයක් අවශ්‍යයි. සම්බන්ධ වී නැවත උත්සාහ කරන්න.</string>
+    <string name="delete_account_heading">ඔබේ ගිණුම සහ ඔබේ දත්ත මකන්නද?</string>
+    <string name="delete_account_deleted_title">මැකෙන දේ</string>
+    <string name="delete_account_deleted_profile">ඔබේ පැතිකඩ (නම, ඡායාරූපය සහ පාට)</string>
+    <string name="delete_account_deleted_keys">ඔබේ Pix සහ Bitcoin යතුරු</string>
+    <string name="delete_account_deleted_provider">ඔබේ %1$s ගිණුමට ඇති සම්බන්ධය</string>
+    <string name="delete_account_deleted_recovery_code">ඔබේ ප්‍රතිසාධන කේතය</string>
+    <string name="delete_account_deleted_device">මෙම උපාංගයේ ඇති ඔබේ දත්තවල පිටපත</string>
+    <string name="delete_account_kept_title">ඔබේ සමූහවල රැඳෙන දේ</string>
+    <string name="delete_account_kept_groups">අනිත් සාමාජිකයින් සඳහා, සමූහ, ඒවායේ වියදම් සහ ගෙවීම් සමඟ</string>
+    <string name="delete_account_kept_member">එක් එක් සමූහයේ ඔබේ නම, ගිණුමක් නැති සාමාජිකයෙකු ලෙස</string>
+    <string name="delete_account_kept_comments">ඔබේ අදහස් සහ ඔබ එක් කළ ඡායාරූප, ඔබේ නම යටතේ</string>
+    <string name="delete_account_export">මුලින්ම මගේ දත්ත අපනයනය කරන්න</string>
+    <string name="delete_account_confirm">මෙය අහෝසි කළ නොහැකි බව මට තේරෙනවා</string>
+    <string name="delete_account_delete">ගිණුම මකන්න</string>
+    <string name="delete_account_cancel">අවලංගු කරන්න</string>
+    <string name="delete_account_failed">ඔබේ ගිණුම මකන්න බැරි වුණා. නැවත උත්සාහ කරන්න.</string>
+</resources>

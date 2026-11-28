@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">የግላዊነት ፖሊሲ</string>
+    <string name="legal_terms">የአገልግሎት ውሎች</string>
+    <string name="legal_updated_privacy_policy">የተሻሻለው: %1$s</string>
+    <string name="legal_updated_terms">የተሻሻለው: %1$s</string>
+    <string name="legal_load_failed_title">ይህን ገጽ መጫን አልተቻለም</string>
+    <string name="legal_load_failed_body">ግንኙነትዎን ያረጋግጡና እንደገና ይሞክሩ።</string>
+    <string name="legal_retry">እንደገና ይሞክሩ</string>
+</resources>

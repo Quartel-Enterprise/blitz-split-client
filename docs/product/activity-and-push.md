@@ -170,6 +170,22 @@ The feed, unread state, real time and push notifications.
     ବାଣ୍ଟିଲେ: ଡିନର୍", "ଆପଣ ଏକ ଖର୍ଚ୍ଚ ବାଣ୍ଟିଲେ: ଡିନର୍"), and an object that can be the user ("ଆପଣଙ୍କୁ") stands after a
     colon, which keeps every name free of case endings too. Its deleted-item notice starts with who deleted it ("ଆପଣ
     ଡିଲିଟ୍ କଲେ: …", `youSubjectLanguages`), and "You" is "ଆପଣ" everywhere.
+    Nepali does as Hindi with its ergative "ले" (`dropSubjectParticle`, `SecondPerson`, the web's `verbForYou`): every
+    Nepali verb phrase starts with "ले", written apart after a name, which the user's subject word "तपाईंले" already
+    holds, so the user's rows drop it ("Ana ले खर्च बाँड्नुभयो: डिनर", "तपाईंले खर्च बाँड्नुभयो: डिनर"); the honorific
+    "-नुभयो" is the same for both. Its deleted-item notice starts with who deleted it ("तपाईंले मेटाउनुभयो: …",
+    `youSubjectLanguages`); "You" as a subject is "तपाईंले", every other "You" "तपाईं".
+    Azerbaijani and Kazakh put the verb last, as Turkish does (`toVerbLastSecondPerson`, `SecondPerson`, the web's
+    `verbForYou`): every verb phrase ends, before the colon that leads to the object, with a simple past in
+    "-dı/-di/-du/-dü" (Kazakh "-ды/-ді/-ты/-ті"), and the user's rows add the respectful ending its last vowel calls
+    for, "-nız", "-niz", "-nuz" or "-nüz" (Kazakh "-ңыз" or "-ңіз"): "Ana xərci böldü: …", "Siz xərci böldünüz: …";
+    "Ana шығынды бөлді: …", "Сіз шығынды бөлдіңіз: …". A phrase must end in that past, nothing after it. Their
+    deleted-item notices start with who deleted it ("Siz sildiniz: …", "Сіз жойдыңыз: …", `youSubjectLanguages`), and
+    "You" is "Siz" and "Сіз" everywhere.
+    Amharic and Sinhala need no rule: Amharic's respectful plural past is the same for a name and for "እርስዎ" ("Ana ወጪ
+    ከፋፈሉ: …", "እርስዎ ወጪ ከፋፈሉ: …"), and Sinhala's colloquial past doesn't change with the person ("Ana වියදමක් බෙදුවා:
+    …", "ඔබ වියදමක් බෙදුවා: …"). Their deleted-item notices start with who deleted it ("እርስዎ ሰረዙ: …", "ඔබ මැකුවා: …",
+    `youSubjectLanguages`), and "You" is "እርስዎ" and "ඔබ" everywhere.
     Bulgarian needs no rule: every Bulgarian verb phrase starts with an aorist, whose second and third person singular
     are the same ("Ana раздели разхода…", "Ти раздели разхода…"), and which says nothing of the gender either. Its
     deleted-item notice starts with who deleted it too ("Ти изтри…", `youSubjectLanguages`).

@@ -112,6 +112,11 @@
     <string name="profile_language_burmese">Burma</string>
     <string name="profile_language_khmer">Khmer</string>
     <string name="profile_language_odia">Odia</string>
+    <string name="profile_language_nepali">Nepali</string>
+    <string name="profile_language_azerbaijani">Azerbaijani</string>
+    <string name="profile_language_amharic">Amharik</string>
+    <string name="profile_language_sinhala">Sinhala</string>
+    <string name="profile_language_kazakh">Kazakh</string>
     <string name="profile_language_system_detail">Bahasa perangkat</string>
     <string name="profile_notifications">Notifikasi</string>
     <plurals name="profile_notifications_active">

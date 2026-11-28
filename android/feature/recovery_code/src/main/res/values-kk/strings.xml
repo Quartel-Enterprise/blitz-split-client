@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Қалпына келтіру кодын сақтаңыз</string>
+    <string name="recovery_code_body">Сіз қолданбаны аккаунтсыз пайдаланып жатырсыз. Құрылғыны ауыстырсаңыз немесе жоғалтсаңыз, осы 12 сөз деректеріңізді қайтарады. Оларды ретімен жазып алыңыз. 30 күн пайдаланылмаса, деректеріңіз жойылып, сөздер жұмысын тоқтатады.</string>
+    <string name="recovery_code_copy">Сөздерді көшіру</string>
+    <string name="recovery_code_save_to_password_manager">Құпиясөз менеджеріне сақтау</string>
+    <string name="recovery_code_connect_instead">Оның орнына Google немесе Apple аккаунтын қосу</string>
+    <string name="recovery_code_connect_instead_body">Код қажет емес</string>
+    <string name="recovery_code_sign_in_failed">Қазір қосу мүмкін болмады. Қайталап көріңіз.</string>
+    <string name="recovery_code_also_in_profile">Ол Профиль › Қалпына келтіру бөлімінде де бар.</string>
+    <string name="recovery_code_remind_later">Кейінірек еске салу</string>
+    <string name="recovery_code_saved">Сақтап алдым</string>
+    <string name="recovery_code_download">Жүктеп алу</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · қалпына келтіру коды\n\n%1$s\n\nДеректеріңізді қайтару үшін оны \"Басқа құрылғыда пайдаланғанмын\" бөлімінде пайдаланыңыз.\n</string>
+</resources>

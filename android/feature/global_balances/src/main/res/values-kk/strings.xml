@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Баланстар</string>
+    <string name="global_balances_profile">Профиль</string>
+    <string name="global_balances_offline">Офлайн · осы құрылғыдағы баланстар</string>
+    <string name="global_balances_filter">Көрсету</string>
+    <string name="global_balances_filter_all">Барлығы</string>
+    <string name="global_balances_filter_you_owe">Төлейсіз</string>
+    <string name="global_balances_filter_owes_you">Аласыз</string>
+    <string name="global_balances_hint">Топтар арасында өзара есептелген: әр адам бір рет көрсетіледі.</string>
+    <string name="global_balances_hint_empty">Осы құрылғыдағы барлық топ қосылып есептелуде.</string>
+    <string name="global_balances_section_you_owe">Төлейсіз · %d</string>
+    <string name="global_balances_section_owes_you">Аласыз · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d топ</item>
+        <item quantity="other">%d топ</item>
+    </plurals>
+    <string name="global_balances_guest">%s · қонақ</string>
+    <string name="global_balances_you_owe">төлейсіз</string>
+    <string name="global_balances_owes_you">аласыз</string>
+    <string name="global_balances_by_group_show">Топтар бойынша көрсету: %s</string>
+    <string name="global_balances_by_group_hide">Топтар бойынша жасыру: %s</string>
+    <string name="global_balances_received">Алынды</string>
+    <string name="global_balances_received_from">Алынды: %s</string>
+    <string name="global_balances_settle">Есеп айырысу</string>
+    <string name="global_balances_settle_with">Есеп айырысу: %s</string>
+    <string name="global_balances_charge">Ақша сұрау</string>
+    <string name="global_balances_charge_person">Ақша сұрау: %s</string>
+    <string name="global_balances_detail_pane">Баланс: %s</string>
+    <string name="global_balances_detail_owes_you">%s сізге төлеуі керек</string>
+    <string name="global_balances_detail_you_owe">Сіз төлеуіңіз керек: %s</string>
+    <string name="global_balances_detail_guest">%s · қолданбасы жоқ қонақ</string>
+    <string name="global_balances_detail_note_owed">Таза сома топтарды өзара есептеп қойған. Ақша сұрау және Алынды үшін сома: %s. Қолданба әр топқа бір төлем тіркейді.</string>
+    <string name="global_balances_detail_note_settle">Таза сома топтарды өзара есептеп қойған. Есеп айырысу үшін сома: %s. Қолданба әр топқа бір төлем тіркейді.</string>
+    <string name="global_balances_detail_note_single">Тек бір топта ашық баланс бар: %s.</string>
+    <string name="global_balances_settled_title">Барлық есеп айырысылды</string>
+    <string name="global_balances_settled_body">Ешкім сізге қарыз емес, сіз де ешкімге қарыз емессіз. Біреу шығын қосқанда, баланс осында пайда болады.</string>
+    <string name="global_balances_settled_action">Топтарды көру</string>
+    <string name="global_balances_nothing_to_pay_title">Сіз ешкімге қарыз емессіз</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Сіз барлығымен есеп айырысып болдыңыз. Әлі %1$d адамнан %2$s аласыз.</item>
+        <item quantity="other">Сіз барлығымен есеп айырысып болдыңыз. Әлі %1$d адамнан %2$s аласыз.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Кім төлеуі керек екенін көру</string>
+    <string name="global_balances_nothing_to_receive_title">Ешкім сізге қарыз емес</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Сіз әлі %1$d адамға %2$s төлеуіңіз керек.</item>
+        <item quantity="other">Сіз әлі %1$d адамға %2$s төлеуіңіз керек.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Кімге төлеу керек екенін көру</string>
+    <string name="global_balances_coming_soon">Жақында</string>
+    <string name="global_balances_change_error">Өзгерісті сақтау мүмкін болмады. Қайталап көріңіз.</string>
+    <string name="global_balances_copied">Көшірілді</string>
+    <string name="global_balances_charge_title">Ақша сұрау: %s</string>
+    <string name="global_balances_charge_owes">Сізге %1$s қарыз · %2$s</string>
+    <string name="global_balances_charge_close">Жабу</string>
+    <string name="global_balances_charge_guest">%s — қолданбасы жоқ қонақ. Ол бұл туралы тек осы хабарламадан біледі, сондықтан хабарламада шығынға не кіргені жазылған.</string>
+    <string name="global_balances_charge_message">Хабарлама</string>
+    <string name="global_balances_charge_pix">Pix кілтімді қосу</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Хабарламаны көшіру</string>
+    <string name="global_balances_charge_send">Жіберу</string>
+    <string name="global_balances_message">Сәлем, %1$s! Blitz Split есебі бойынша сіз маған %2$s қарызсыз. Қайдан: %3$s.</string>
+    <string name="global_balances_message_guest">Сәлем, %1$s! Сіз маған %2$s қарызсыз. Қайдан: %3$s. Бұл — сіздің үлесіңіз: %4$s.</string>
+    <string name="global_balances_message_guest_paid">Сәлем, %1$s! Сіз маған %2$s қарызсыз. Қайдан: %3$s. Бұл — сіздің үлесіңіз: %4$s, төлеп қойған %5$s сомасы шегерілді.</string>
+    <string name="global_balances_message_group">%s тобы</string>
+    <string name="global_balances_message_groups">%s топтары</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Телефон</string>
+    <string name="global_balances_key_email">Email</string>
+    <string name="global_balances_key_random">Кездейсоқ кілт</string>
+    <string name="global_balances_message_reroute">%1$s: қарыздар оңайлатылды, сондықтан сіз %2$s деген адамға емес, тікелей маған төлейсіз; жалпы сомаңыз өзгерген жоқ.</string>
+</resources>

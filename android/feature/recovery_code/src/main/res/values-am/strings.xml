@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">የመልሶ ማግኛ ኮድዎን ያስቀምጡ</string>
+    <string name="recovery_code_body">ያለ መለያ እየተጠቀሙ ነው። መሣሪያዎን ከቀየሩ ወይም ካጡ እነዚህ 12 ቃላት ውሂብዎን ይመልሳሉ። በቅደም ተከተል ይጻፏቸው። ለ30 ቀናት ጥቅም ላይ ካልዋለ፣ ውሂብዎ ይሰረዛል፣ ቃላቱም መሥራት ያቆማሉ።</string>
+    <string name="recovery_code_copy">ቃላቱን ይቅዱ</string>
+    <string name="recovery_code_save_to_password_manager">በይለፍ ቃል አቀናባሪ ውስጥ ያስቀምጡ</string>
+    <string name="recovery_code_connect_instead">በምትኩ Google ወይም Apple ያገናኙ</string>
+    <string name="recovery_code_connect_instead_body">ኮድ አያስፈልግም</string>
+    <string name="recovery_code_sign_in_failed">አሁን መገናኘት አልተቻለም። እንደገና ይሞክሩ።</string>
+    <string name="recovery_code_also_in_profile">በመገለጫ › መልሶ ማግኛ ውስጥም አለ።</string>
+    <string name="recovery_code_remind_later">በኋላ አስታውሱኝ</string>
+    <string name="recovery_code_saved">አስቀምጬዋለሁ</string>
+    <string name="recovery_code_download">ያውርዱ</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · የመልሶ ማግኛ ኮድ\n\n%1$s\n\nውሂብዎን ለመመለስ “በሌላ መሣሪያ ላይ ተጠቅሜበታለሁ” በሚለው ውስጥ ይጠቀሙት።\n</string>
+</resources>

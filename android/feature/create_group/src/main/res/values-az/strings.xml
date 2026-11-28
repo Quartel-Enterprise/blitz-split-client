@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Yeni qrup</string>
+    <string name="create_group_close">Bağlayın</string>
+    <string name="create_group_create">Yaradın</string>
+    <string name="create_group_change_color">Qrupun rəngini dəyişin</string>
+    <string name="create_group_name_label">Qrupun adı</string>
+    <string name="create_group_type_label">Qrupun növü</string>
+    <string name="create_group_members_title">Kimlər var</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d nəfər</item>
+        <item quantity="other">%d nəfər</item>
+    </plurals>
+    <string name="create_group_me">siz</string>
+    <string name="create_group_remove_member">Çıxarın: %s</string>
+    <string name="create_group_add_placeholder">Adla əlavə edin</string>
+    <string name="create_group_add">Əlavə edin</string>
+    <string name="create_group_no_app_notice">Hazırda heç kimə tətbiq lazım deyil. Artıq hamı üçün xərc əlavə edə və linki sonra göndərə bilərsiniz.</string>
+    <string name="create_group_currency">Standart valyuta</string>
+    <string name="create_group_currency_caption">Yeni xərclər bu valyuta ilə başlayır; hər xərc başqa valyutadan istifadə edə bilər.</string>
+    <string name="create_group_save_error">Qrupu yadda saxlamaq alınmadı. Yenidən cəhd edin.</string>
+    <string name="create_group_photo">Qrup fotosu</string>
+    <string name="create_group_take_photo">Foto çəkin</string>
+    <string name="create_group_choose_photo">Foto seçin</string>
+    <string name="create_group_remove_photo">Fotonu silin</string>
+    <string name="create_group_photo_error">Bu fotodan istifadə etmək alınmadı. Başqasını sınayın.</string>
+</resources>

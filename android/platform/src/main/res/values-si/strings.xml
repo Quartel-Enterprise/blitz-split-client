@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · ප්‍රතිසාධන කේතය</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">ඡායාරූපයක් ගන්න, සැකසීම් තුළ කැමරාවට ඉඩ දෙන්න.</string>
+    <string name="platform_camera_settings">සැකසීම්</string>
+    <string name="platform_receipt_source_camera">ඡායාරූපයක් ගන්න</string>
+    <string name="platform_receipt_source_gallery">ගැලරියෙන් තෝරන්න</string>
+    <string name="platform_receipt_source_file">ගොනුවක් තෝරන්න</string>
+    <string name="platform_receipt_camera_title">රිසිට්පත ස්කෑන් කරන්න</string>
+    <string name="platform_receipt_camera_close">වසන්න</string>
+    <string name="platform_receipt_camera_flash_on">ෆ්ලෑෂ් එක දල්වන්න</string>
+    <string name="platform_receipt_camera_flash_off">ෆ්ලෑෂ් එක නිවන්න</string>
+    <string name="platform_receipt_camera_hint">මුළු රිසිට්පතම රාමුව තුළට ගන්න. අපි මුදල, දිනය සහ විස්තරය පුරවනවා; සුරැකීමට පෙර ඔබ පරීක්ෂා කරන්න.</string>
+    <string name="platform_receipt_camera_gallery">ගැලරියෙන් තෝරන්න</string>
+    <string name="platform_receipt_camera_shutter">ඡායාරූපයක් ගන්න</string>
+    <string name="platform_receipt_camera_unavailable">කැමරාව ලබාගත නොහැකියි. ගැලරියෙන් රිසිට්පතේ ඡායාරූපයක් තෝරන්න.</string>
+    <string name="platform_receipt_camera_permission">රිසිට්පත ස්කෑන් කරන්න කැමරාවට ඉඩ දෙන්න, නැත්නම් ගැලරියෙන් ඡායාරූපයක් තෝරන්න.</string>
+    <string name="platform_receipt_camera_allow">කැමරාවට ඉඩ දෙන්න</string>
+    <string name="platform_receipt_camera_settings">සැකසීම් විවෘත කරන්න</string>
+</resources>

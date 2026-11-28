@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">ගිණුම් පියවීමේ සිහිකැඳවීම</string>
+    <string name="push_bill_created">%1$s ඔබ සමඟ වියදමක් එක් කළා: “%2$s”</string>
+    <string name="push_bill_edited">%1$s වියදමක් සංස්කරණය කළා: “%2$s”</string>
+    <string name="push_bill_deleted">%1$s මැකුවා: “%2$s”</string>
+    <string name="push_comment_added">%1$s “%2$s” වියදමට අදහසක් දැක්වුවා: %3$s</string>
+    <string name="push_payment_paid_you">%1$s ඔබට ගෙවූ බව සලකුණු කළා</string>
+    <string name="push_payment_to_you">%1$s සලකුණු කළා: %2$s ඔබට ගෙව්වා</string>
+    <string name="push_payment_received_yours">%1$s ඔබේ ගෙවීම ලැබුණු බව සලකුණු කළා</string>
+    <string name="push_payment_from_you">%1$s සලකුණු කළා: ඔබ %2$s වෙත ගෙව්වා</string>
+    <string name="push_payment_undone">%1$s ඔබ සමඟ කළ ගෙවීමක් අහෝසි කළා</string>
+    <string name="push_charge_sent">%1$s ගිණුම් පියවන්න ඔබට සිහිකැඳවීමක් එව්වා</string>
+    <string name="push_settle_reminder">%1$s සමූහයේ ඔබට විවෘත ශේෂයක් තිබෙනවා</string>
+    <string name="push_settle_reminders">ඔබට විවෘත ශේෂ තිබෙන සමූහ: %1$s</string>
+    <string name="push_added_to_group">%1$s ඔබව සමූහයට එක් කළා</string>
+    <string name="push_member_joined">%1$s සමූහයට එක්වුණා</string>
+    <string name="push_debts_simplified_to_you">%1$s ණය සරල කළා. දැන් %2$s ඔබට %3$s ගෙවනවා.</string>
+    <string name="push_debts_simplified_from_you">%1$s ණය සරල කළා. දැන් ඔබ %2$s වෙත %3$s ගෙවනවා.</string>
+    <string name="push_debts_simplified_other">%1$s ණය සරල කළා. ඔබට එය බලපාන හැටි බලන්න.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ණය සරල කිරීම නැවැත්තුවා. දැන් %2$s ඔබට %3$s ගෙවනවා.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ණය සරල කිරීම නැවැත්තුවා. දැන් ඔබ %2$s වෙත %3$s ගෙවනවා.</string>
+    <string name="push_debts_unsimplified_other">%1$s ණය සරල කිරීම නැවැත්තුවා. ඔබට එය බලපාන හැටි බලන්න.</string>
+    <string name="notification_settings_bills">වියදම්</string>
+    <string name="notification_settings_bills_detail">ඔබ ඇතුළත් නව, සංස්කරණය කළ හෝ මකා දැමූ වියදම්</string>
+    <string name="notification_settings_payments">ගෙවීම් සහ ගිණුම් පියවීම්</string>
+    <string name="notification_settings_payments_detail">ඔබට හෝ ඔබෙන් කෙරෙන ගෙවීම්, සහ සරල කළ ණය</string>
+    <string name="notification_settings_comments">අදහස්</string>
+    <string name="notification_settings_comments_detail">ඔබ ඇතුළත් වියදම්වල සහ ඔබ ලියූ සංවාදවල</string>
+    <string name="notification_settings_people_and_groups">පුද්ගලයින් සහ සමූහ</string>
+    <string name="notification_settings_people_and_groups_detail">ඔබේ සමූහවලට එක්වන හෝ ඉවත් වන අය, සහ ඒවායේ වෙනස් වන දේ</string>
+    <string name="notification_settings_payment_requests">ගෙවීම් ඉල්ලීම්</string>
+    <string name="notification_settings_payment_requests_detail">කෙනෙකු ඔබෙන් ගෙවන්න ඉල්ලන විට</string>
+    <string name="notification_settings_balance_reminder">විවෘත ශේෂ සිහිකැඳවීම</string>
+    <string name="notification_settings_balance_reminder_detail">සතියකට වරක්, විවෘත ශේෂයක් තිබේ නම්</string>
+</resources>

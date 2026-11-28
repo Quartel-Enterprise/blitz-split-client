@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">መገለጫን ያርትዑ</string>
+    <string name="edit_profile_save">ያስቀምጡ</string>
+    <string name="edit_profile_change_photo">ፎቶ ይቀይሩ</string>
+    <string name="edit_profile_take_photo">ፎቶ ያንሱ</string>
+    <string name="edit_profile_choose_photo">ከጋለሪ ይምረጡ</string>
+    <string name="edit_profile_use_account_photo">የመለያ ፎቶውን ይጠቀሙ: %1$s</string>
+    <string name="edit_profile_remove_photo">ፎቶውን ያስወግዱ</string>
+    <string name="edit_profile_photo_error">ይህን ፎቶ መጠቀም አልተቻለም። ሌላ ይሞክሩ።</string>
+    <string name="edit_profile_avatar_color">የአቫታር ቀለም</string>
+    <string name="edit_profile_avatar_color_hint">ፎቶ ከሌለዎት ይታያል።</string>
+    <string name="edit_profile_name_label">ስምዎ</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">ቢያንስ %d ፊደላት ይጻፉ።</string>
+    <string name="edit_profile_name_too_long">እስከ %d ቁምፊዎች ይጠቀሙ።</string>
+    <string name="edit_profile_account_notice">ስሙና ፎቶው ከመለያዎ የመጡ ናቸው: %1$s። እዚህ መቀየራቸው በBlitz Split ላይ ብቻ ይተገበራል፣ መለያዎንም (%1$s) አይቀይርም።</string>
+    <string name="edit_profile_footer">ቡድኖችዎና የመገለጫ ሊንክዎ ያላቸው ሁሉ ስምዎንና ፎቶዎን ያያሉ።</string>
+    <string name="profile_photo_close">ይዝጉ</string>
+    <string name="profile_photo_camera">ካሜራ</string>
+    <string name="profile_photo_gallery">ጋለሪ</string>
+    <string name="profile_photo_remove">ያስወግዱ</string>
+    <string name="profile_photo_title">የመገለጫ ፎቶ</string>
+</resources>

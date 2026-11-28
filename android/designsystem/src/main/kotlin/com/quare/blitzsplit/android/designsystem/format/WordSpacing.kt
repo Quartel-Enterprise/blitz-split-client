@@ -9,6 +9,8 @@ import com.quare.blitzsplit.core.model.AppLanguage
 private const val HINDI = "hi"
 private const val BENGALI = "bn"
 private const val ODIA = "or"
+private const val NEPALI = "ne"
+private const val AMHARIC = "am"
 private const val URDU = "ur"
 private const val THAI = "th"
 private const val BURMESE = "my"
@@ -22,8 +24,8 @@ private val unspacedLanguages = setOf(
 /*
  * Why: a sentence the code joins from pieces ("Ana" + "changed the category", two sentences of a detail) puts a space
  * between them, but Japanese and Chinese write them with none ("Anaがカテゴリを変更しました") and end a sentence with
- * "。", not ".". Hindi, Bengali, Odia and Punjabi end it with their danda, "।" (Punjabi told by the strings drawn,
- * `designsystem_punjabi`, since a Shahmukhi device draws English's), Urdu with "۔", Burmese with "။", Khmer with "។", and Thai with nothing, the
+ * "。", not ".". Hindi, Bengali, Odia, Nepali and Punjabi end it with their danda, "।" (Punjabi told by the strings drawn,
+ * `designsystem_punjabi`, since a Shahmukhi device draws English's), Urdu with "۔", Burmese with "။", Khmer with "។", Amharic with "።", and Thai with nothing, the
  * space between two being its stop. Read through `AppLanguage`, so both Chinese are unspaced whichever tag the device names them by
  * (zh-TW, zh-Hant-HK, zh-CN…). Same rule as the web's `wordGap` and `fullStop`.
  */
@@ -35,10 +37,11 @@ fun fullStopUi(): String {
     if (isUnspacedUi()) return "。"
     if (LocalContext.current.resources.getBoolean(R.bool.designsystem_punjabi)) return "।"
     return when (LocalLocale.current.platformLocale.language) {
-        HINDI, BENGALI, ODIA -> "।"
+        HINDI, BENGALI, ODIA, NEPALI -> "।"
         URDU -> "۔"
         BURMESE -> "။"
         KHMER -> "។"
+        AMHARIC -> "።"
         THAI -> ""
         else -> "."
     }

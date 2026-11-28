@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Hesablaşma xatırlatması</string>
+    <string name="push_bill_created">%1$s sizinlə “%2$s” xərcini əlavə etdi</string>
+    <string name="push_bill_edited">%1$s “%2$s” xərcini redaktə etdi</string>
+    <string name="push_bill_deleted">%1$s “%2$s” xərcini sildi</string>
+    <string name="push_comment_added">%1$s “%2$s” xərcinə şərh yazdı: %3$s</string>
+    <string name="push_payment_paid_you">%1$s sizə ödədiyini qeyd etdi</string>
+    <string name="push_payment_to_you">%1$s qeyd etdi ki, %2$s sizə ödədi</string>
+    <string name="push_payment_received_yours">%1$s ödənişinizi alınmış kimi qeyd etdi</string>
+    <string name="push_payment_from_you">%1$s qeyd etdi ki, siz bu şəxsə ödədiniz: %2$s</string>
+    <string name="push_payment_undone">%1$s sizinlə olan bir ödənişi ləğv etdi</string>
+    <string name="push_charge_sent">%1$s sizə hesablaşma xatırlatması göndərdi</string>
+    <string name="push_settle_reminder">%1$s qrupunda açıq balansınız var</string>
+    <string name="push_settle_reminders">%1$s qrupda açıq balanslarınız var</string>
+    <string name="push_added_to_group">%1$s sizi qrupa əlavə etdi</string>
+    <string name="push_member_joined">%1$s qrupa qoşuldu</string>
+    <string name="push_debts_simplified_to_you">%1$s borcları sadələşdirdi. İndi %2$s sizə ödəyir: %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s borcları sadələşdirdi. İndi siz ödəyirsiniz: %3$s · alan: %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s borcları sadələşdirdi. Sizin üçün necə olduğuna baxın.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s Borcları sadələşdirin seçimini söndürdü. İndi %2$s sizə ödəyir: %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s Borcları sadələşdirin seçimini söndürdü. İndi siz ödəyirsiniz: %3$s · alan: %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s Borcları sadələşdirin seçimini söndürdü. Sizin üçün necə olduğuna baxın.</string>
+    <string name="notification_settings_bills">Xərclər</string>
+    <string name="notification_settings_bills_detail">İştirak etdiyiniz yeni, redaktə edilmiş və ya silinmiş xərclər</string>
+    <string name="notification_settings_payments">Ödənişlər və hesablaşmalar</string>
+    <string name="notification_settings_payments_detail">Sizə və ya sizdən ödənişlər, sadələşdirilmiş borclar</string>
+    <string name="notification_settings_comments">Şərhlər</string>
+    <string name="notification_settings_comments_detail">İştirak etdiyiniz xərclərdə və yazdığınız müzakirələrdə</string>
+    <string name="notification_settings_people_and_groups">İnsanlar və qruplar</string>
+    <string name="notification_settings_people_and_groups_detail">Qruplarınıza kimin qoşulduğu və ya çıxdığı, onlarda nəyin dəyişdiyi</string>
+    <string name="notification_settings_payment_requests">Ödəniş sorğuları</string>
+    <string name="notification_settings_payment_requests_detail">Kimsə sizdən ödəməyi istəyəndə</string>
+    <string name="notification_settings_balance_reminder">Açıq balans xatırlatması</string>
+    <string name="notification_settings_balance_reminder_detail">Həftədə bir dəfə, açıq balans olarsa</string>
+</resources>

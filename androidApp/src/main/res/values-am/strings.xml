@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">በዚህ ቡድን ውስጥ የለዎትም</string>
+    <string name="bill_link_not_in_group_message">ይህ አስተያየት እርስዎ በሌሉበት ቡድን ውስጥ ነው። ሊንኩን የላኩልዎትን ሰው ግብዣውን ይጠይቁ።</string>
+    <string name="bill_link_offline_title">ኢንተርኔት የለም</string>
+    <string name="bill_link_offline_message">መስመር ላይ ሲመለሱ ሊንኩን እንደገና ይክፈቱ።</string>
+    <string name="bill_link_go_home">ወደ መነሻ ይሂዱ</string>
+    <string name="discard_changes_title">ለውጦቹን ይተዉ?</string>
+    <string name="discard_changes_message">ያልተቀመጡ ለውጦች ይጠፋሉ።</string>
+    <string name="discard_changes_discard">ይተዉ</string>
+    <string name="discard_changes_keep_editing">ማርትዕን ይቀጥሉ</string>
+    <string name="watch_channel_name">ሰዓት</string>
+    <string name="watch_connected_title">%1$s ከመለያዎ ጋር ተገናኝቷል</string>
+    <string name="watch_connected_title_unnamed">ሰዓቱ ከመለያዎ ጋር ተገናኝቷል</string>
+    <string name="watch_connected_text">ቡድኖችዎን ያያል፣ በራሱም ይመሳሰላል። ግንኙነቱን ለማቋረጥ፣ በሰዓቱ ላይ ይውጡ።</string>
+</resources>

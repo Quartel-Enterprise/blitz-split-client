@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">አዲስ የክፍያ ዘዴ</string>
+    <string name="paying_method_edit_title">የክፍያ ዘዴውን ያርትዑ</string>
+    <string name="paying_method_type">ዓይነት</string>
+    <string name="paying_method_name">ስም</string>
+    <string name="paying_method_name_optional">ስም (አማራጭ)</string>
+    <string name="paying_method_color">ቀለም</string>
+    <string name="paying_method_default">ነባሪ ዘዴ</string>
+    <string name="paying_method_default_hint">የሚከፍሏቸው አዳዲስ ወጪዎች በዚህ ዘዴ ይጀምራሉ።</string>
+    <string name="paying_method_delete">የክፍያ ዘዴውን ይሰርዙ</string>
+    <string name="paying_method_delete_title">ይህን የክፍያ ዘዴ ይሰርዙ?</string>
+    <string name="paying_method_delete_body">በዚህ ዘዴ ምልክት ያደረጉባቸው ወጪዎች ከእንግዲህ አያሳዩትም።</string>
+    <string name="paying_method_delete_confirm">ይሰርዙ</string>
+    <string name="paying_method_save">ያስቀምጡ</string>
+</resources>

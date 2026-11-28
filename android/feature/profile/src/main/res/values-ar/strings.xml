@@ -117,6 +117,11 @@
     <string name="profile_language_burmese">البورمية</string>
     <string name="profile_language_khmer">الخميرية</string>
     <string name="profile_language_odia">الأوديا</string>
+    <string name="profile_language_nepali">النيبالية</string>
+    <string name="profile_language_azerbaijani">الأذربيجانية</string>
+    <string name="profile_language_amharic">الأمهرية</string>
+    <string name="profile_language_sinhala">السنهالية</string>
+    <string name="profile_language_kazakh">الكازاخية</string>
     <string name="profile_language_system_detail">لغة الجهاز</string>
     <string name="profile_notifications">الإشعارات</string>
     <plurals name="profile_notifications_active">

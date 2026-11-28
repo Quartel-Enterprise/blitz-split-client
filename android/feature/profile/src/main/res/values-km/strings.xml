@@ -112,6 +112,11 @@
     <string name="profile_language_burmese">ភូមា</string>
     <string name="profile_language_khmer">ខ្មែរ</string>
     <string name="profile_language_odia">អូឌៀ</string>
+    <string name="profile_language_nepali">នេប៉ាល់</string>
+    <string name="profile_language_azerbaijani">អាស៊ែបៃហ្សង់</string>
+    <string name="profile_language_amharic">អាំហារិក</string>
+    <string name="profile_language_sinhala">ស្រីលង្កា</string>
+    <string name="profile_language_kazakh">កាហ្សាក់</string>
     <string name="profile_language_system_detail">ភាសាឧបករណ៍</string>
     <string name="profile_notifications">ការជូនដំណឹង</string>
     <plurals name="profile_notifications_active">

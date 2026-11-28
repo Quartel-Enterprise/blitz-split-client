@@ -113,6 +113,11 @@
     <string name="profile_language_burmese">બર્મીઝ</string>
     <string name="profile_language_khmer">ખ્મેર</string>
     <string name="profile_language_odia">ઓડિયા</string>
+    <string name="profile_language_nepali">નેપાળી</string>
+    <string name="profile_language_azerbaijani">અઝરબૈજાની</string>
+    <string name="profile_language_amharic">અમ્હારિક</string>
+    <string name="profile_language_sinhala">સિંહાલી</string>
+    <string name="profile_language_kazakh">કઝાખ</string>
     <string name="profile_language_system_detail">ડિવાઇસની ભાષા</string>
     <string name="profile_notifications">નોટિફિકેશન</string>
     <plurals name="profile_notifications_active">

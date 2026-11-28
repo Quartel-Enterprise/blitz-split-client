@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">बन्द गर्नुहोस्</string>
+    <string name="invite_group_created">ग्रुप बनाइयो</string>
+    <string name="invite_title">सबैलाई निमन्त्रणा गर्नुहोस्: %s</string>
+    <string name="invite_qr_description">ग्रुपको निमन्त्रणा लिंकको QR कोड</string>
+    <string name="invite_copy">कपी गर्नुहोस्</string>
+    <string name="invite_copied">कपी भयो</string>
+    <string name="invite_who_picks">लिंक खोल्ने व्यक्तिले सूचीमा आफू को हो छान्नुहुन्छ: %s। खाता चाहिँदैन।</string>
+    <string name="invite_names_or">%1$s वा %2$s</string>
+    <string name="invite_anyone_joins">लिंक खोल्ने व्यक्तिले ग्रुप जोइन गर्नुहुन्छ। खाता चाहिँदैन।</string>
+    <string name="invite_pending_title">लिंक बाँकी छ</string>
+    <string name="invite_pending_offline">तपाईं अनलाइन हुनेबित्तिकै यो बनाइन्छ।</string>
+    <string name="invite_pending_online">लिंक बनाउँदै…</string>
+    <string name="invite_failed_title">लिंक बनाउन सकिएन</string>
+    <string name="invite_failed_body">ग्रुप सिंक गर्दा केही गडबड भयो।</string>
+    <string name="invite_retry">फेरि प्रयास गर्नुहोस्</string>
+    <string name="invite_share">लिंक सेयर गर्नुहोस्</string>
+    <string name="invite_see_who_joined">कसले जोइन गर्नुभयो हेर्नुहोस्</string>
+    <string name="invite_add_person">एप नभएको व्यक्ति थप्नुहोस्</string>
+    <string name="invite_go_to_group">ग्रुपमा जानुहोस्</string>
+    <string name="invite_change_link">लिंक बदल्नुहोस्</string>
+    <string name="invite_change_link_title">निमन्त्रणा लिंक बदल्ने?</string>
+    <string name="invite_change_link_message">हालको लिंक र QR कोडले काम गर्न छोड्छन्, प्रयोग नभएका व्यक्तिगत निमन्त्रणा पनि। पहिल्यै जोइन गरिसकेका व्यक्ति ग्रुपमै रहनुहुन्छ।</string>
+    <string name="invite_change_link_failed">लिंक बदल्न सकिएन। फेरि प्रयास गर्नुहोस्।</string>
+    <string name="invite_share_message">Blitz Split मा यो ग्रुपको खर्च बाँडौं: %1$s। यो लिंकबाट जोइन गर्नुहोस्: %2$s</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">ማሳወቂያዎች</string>
+    <string name="notification_settings_denied_title">የBlitz Split ማሳወቂያዎች በAndroid ላይ ጠፍተዋል።</string>
+    <string name="notification_settings_denied_body">ከታች ያሉትን ፑሽ ማሳወቂያዎች ለማግኘት በሥርዓቱ ቅንብሮች ውስጥ ያብሯቸው። ደወሉ መሥራቱን ይቀጥላል።</string>
+    <string name="notification_settings_open_settings">ቅንብሮችን ይክፈቱ</string>
+    <string name="notification_settings_refused_body">ከታች ያሉትን ፑሽ ማሳወቂያዎች ለማግኘት Android አንድ ጊዜ ተጨማሪ እንዲፈቅዱ ያስችልዎታል። ደወሉ መሥራቱን ይቀጥላል።</string>
+    <string name="notification_settings_turn_on">ያብሩ</string>
+    <string name="notification_settings_blocked_in_android">በAndroid ውስጥ ታግዷል</string>
+    <string name="notification_settings_open_channel_settings_description">የAndroid ቅንብሮችን ይክፈቱ: %1$s</string>
+    <string name="notification_settings_push_switch">ፑሽ ማሳወቂያዎች</string>
+    <string name="notification_settings_push_switch_detail">በዚህ መሣሪያ ላይ ብቻ</string>
+    <string name="notification_settings_section">ስለሚከተሉት ያሳውቁኝ</string>
+    <string name="notification_settings_push">ፑሽ</string>
+    <string name="notification_settings_in_app">በመተግበሪያ ውስጥ</string>
+    <string name="notification_settings_toggle_description">%1$s፣ %2$s</string>
+    <string name="notification_settings_legend">ፑሽ ወደዚህ መሣሪያ ማሳወቂያ ይልካል። በመተግበሪያ ውስጥ በደወሉና በእንቅስቃሴ ውስጥ አዲስ እንደሆነ ምልክት ያደርጋል፤ ሲጠፋ፣ አሁንም በእንቅስቃሴ ውስጥ እንደተነበበ ይታያል።</string>
+    <string name="notification_settings_footer">ማሳወቂያዎች ኢንተርኔት ሲኖር ይደርሳሉ። አንድን ቡድን ድምፅ ለማጥፋት፣ በውስጡ ያለውን ምናሌ ይጠቀሙ።</string>
+</resources>
