@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Çfarë ka të re</string>
+    <string name="release_notes_show_beta">Shfaq versionet beta</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Ky version</string>
+    <string name="release_notes_empty">Ende asgjë të re.</string>
+    <string name="release_notes_empty_only_betas">Ende nuk ka version të qëndrueshëm. Aktivizoni versionet beta për të parë çfarë po testohet.</string>
+    <string name="release_notes_load_failed_title">Risitë nuk u ngarkuan</string>
+    <string name="release_notes_load_failed_body">Kontrolloni lidhjen dhe provoni përsëri.</string>
+    <string name="release_notes_retry">Provo përsëri</string>
+    <string name="release_notes_open_on_github">Hap në GitHub</string>
+</resources>

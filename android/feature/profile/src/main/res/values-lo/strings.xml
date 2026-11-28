@@ -124,6 +124,13 @@
     <string name="profile_language_basque">ພາສາບັສກ໌</string>
     <string name="profile_language_galician">ພາສາກາລີຊຽນ</string>
     <string name="profile_language_romansh">ພາສາໂຣແມນຊ໌</string>
+    <string name="profile_language_zulu">ພາສາຊູລູ</string>
+    <string name="profile_language_afrikaans">ພາສາອາຟຣິການ</string>
+    <string name="profile_language_georgian">ພາສາຈໍເຈຍ</string>
+    <string name="profile_language_armenian">ພາສາອາເມເນຍ</string>
+    <string name="profile_language_albanian">ພາສາແອວເບເນຍ</string>
+    <string name="profile_language_macedonian">ພາສາມາເຊໂດເນຍ</string>
+    <string name="profile_language_belarusian">ພາສາເບລາຣຸສ</string>
     <string name="profile_language_system_detail">ພາສາຂອງອຸປະກອນ</string>
     <string name="profile_notifications">ການແຈ້ງເຕືອນ</string>
     <plurals name="profile_notifications_active">

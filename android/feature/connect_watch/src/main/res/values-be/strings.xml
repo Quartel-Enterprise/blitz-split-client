@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Падключыць гадзіннік</string>
+    <string name="connect_watch_close">Закрыць</string>
+    <string name="connect_watch_body">Увядзіце код, які паказвае гадзіннік. Ён увойдзе ў Ваш уліковы запіс і далей будзе сінхранізавацца сам.</string>
+    <string name="connect_watch_code_label">Код гадзінніка</string>
+    <string name="connect_watch_error_invalid">Няправільны або пратэрмінаваны код. Атрымайце новы на гадзінніку.</string>
+    <string name="connect_watch_error_too_many">Занадта шмат няправільных кодаў. Пачакайце некалькі хвілін і паспрабуйце яшчэ раз.</string>
+    <string name="connect_watch_error_needs_account">Спачатку падключыце ўліковы запіс: Вашы даныя ёсць толькі на гэтай прыладзе.</string>
+    <string name="connect_watch_error_failed">Не ўдалося падключыць гадзіннік. Паспрабуйце яшчэ раз.</string>
+    <string name="connect_watch_offline">Каб падключыць гадзіннік, патрэбны інтэрнэт.</string>
+    <string name="connect_watch_own_watch_only">Уводзьце толькі код з Вашага ўласнага гадзінніка: той, у каго гэты гадзіннік, атрымае доступ да Вашага ўліковага запісу.</string>
+    <string name="connect_watch_validity">Код дзейнічае 5 хвілін, адзін раз.</string>
+    <string name="connect_watch_button">Падключыць</string>
+    <string name="connect_watch_connected_title">Гадзіннік падключаны</string>
+    <string name="connect_watch_connected_body">Ён бачыць Вашы групы і сінхранізуецца сам. Каб адключыць яго, выйдзіце з уліковага запісу на гадзінніку.</string>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">დახურვა</string>
+    <string name="invite_group_created">ჯგუფი შეიქმნა</string>
+    <string name="invite_title">მოიწვიეთ ყველა ჯგუფში %s</string>
+    <string name="invite_qr_description">ჯგუფის მოწვევის ბმულის QR კოდი</string>
+    <string name="invite_copy">კოპირება</string>
+    <string name="invite_copied">დაკოპირდა</string>
+    <string name="invite_who_picks">ვინც ბმულს გახსნის, სიიდან აირჩევს, ვინ არის: %s. ანგარიში საჭირო არ არის.</string>
+    <string name="invite_names_or">%1$s ან %2$s</string>
+    <string name="invite_anyone_joins">ვინც ბმულს გახსნის, ჯგუფში გაწევრიანდება. ანგარიში საჭირო არ არის.</string>
+    <string name="invite_pending_title">ბმული მზადდება</string>
+    <string name="invite_pending_offline">შეიქმნება, როგორც კი ინტერნეტს დაუკავშირდებით.</string>
+    <string name="invite_pending_online">ბმული იქმნება…</string>
+    <string name="invite_failed_title">ბმულის შექმნა ვერ მოხერხდა</string>
+    <string name="invite_failed_body">ჯგუფის სინქრონიზაციისას რაღაც შეფერხდა.</string>
+    <string name="invite_retry">ხელახლა ცდა</string>
+    <string name="invite_share">ბმულის გაზიარება</string>
+    <string name="invite_see_who_joined">ნახეთ, ვინ გაწევრიანდა</string>
+    <string name="invite_add_person">აპის არმქონე ადამიანის დამატება</string>
+    <string name="invite_go_to_group">ჯგუფზე გადასვლა</string>
+    <string name="invite_change_link">ბმულის შეცვლა</string>
+    <string name="invite_change_link_title">შევცვალოთ მოწვევის ბმული?</string>
+    <string name="invite_change_link_message">მიმდინარე ბმული და QR კოდი აღარ იმუშავებს, გამოუყენებელი პირადი მოწვევების ჩათვლით. ვინც უკვე გაწევრიანდა, ჯგუფში დარჩება.</string>
+    <string name="invite_change_link_failed">ბმულის შეცვლა ვერ მოხერხდა. სცადეთ ხელახლა.</string>
+    <string name="invite_share_message">მოდით, ხარჯები Blitz Split-ში გავყოთ, ჯგუფი: %1$s. შემოგვიერთდით ამ ბმულით: %2$s</string>
+</resources>

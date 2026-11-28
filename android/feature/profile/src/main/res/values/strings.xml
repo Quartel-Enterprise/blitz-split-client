@@ -128,6 +128,13 @@
     <string name="profile_language_basque">Basque</string>
     <string name="profile_language_galician">Galician</string>
     <string name="profile_language_romansh">Romansh</string>
+    <string name="profile_language_zulu">Zulu</string>
+    <string name="profile_language_afrikaans">Afrikaans</string>
+    <string name="profile_language_georgian">Georgian</string>
+    <string name="profile_language_armenian">Armenian</string>
+    <string name="profile_language_albanian">Albanian</string>
+    <string name="profile_language_macedonian">Macedonian</string>
+    <string name="profile_language_belarusian">Belarusian</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_language_native_english" translatable="false">English (US)</string>
@@ -201,6 +208,13 @@
     <string name="profile_language_native_basque" translatable="false">Euskara</string>
     <string name="profile_language_native_galician" translatable="false">Galego</string>
     <string name="profile_language_native_romansh" translatable="false">Rumantsch</string>
+    <string name="profile_language_native_zulu" translatable="false">isiZulu</string>
+    <string name="profile_language_native_afrikaans" translatable="false">Afrikaans</string>
+    <string name="profile_language_native_georgian" translatable="false">ქართული</string>
+    <string name="profile_language_native_armenian" translatable="false">Հայերեն</string>
+    <string name="profile_language_native_albanian" translatable="false">Shqip</string>
+    <string name="profile_language_native_macedonian" translatable="false">Македонски</string>
+    <string name="profile_language_native_belarusian" translatable="false">Беларуская</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">
         <item quantity="one">%d active</item>

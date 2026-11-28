@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">ანგარიშსწორების შეხსენება</string>
+    <string name="push_bill_created">%1$s · ხარჯის დამატება თქვენი მონაწილეობით: “%2$s”</string>
+    <string name="push_bill_edited">%1$s · ხარჯის რედაქტირება: “%2$s”</string>
+    <string name="push_bill_deleted">%1$s · ხარჯის წაშლა: “%2$s”</string>
+    <string name="push_comment_added">%1$s · კომენტარი ხარჯზე “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s · გადახდის მონიშვნა თქვენთვის</string>
+    <string name="push_payment_to_you">%1$s · გადახდის მონიშვნა: %2$s → თქვენ</string>
+    <string name="push_payment_received_yours">%1$s · თქვენი გადახდის მიღების დადასტურება</string>
+    <string name="push_payment_from_you">%1$s · გადახდის მონიშვნა: თქვენ → %2$s</string>
+    <string name="push_payment_undone">%1$s · თქვენთან გადახდის გაუქმება</string>
+    <string name="push_charge_sent">%1$s · ანგარიშსწორების შეხსენება თქვენთვის</string>
+    <string name="push_settle_reminder">ღია ბალანსი გაქვთ ჯგუფში %1$s</string>
+    <string name="push_settle_reminders">ღია ბალანსები გაქვთ %1$s ჯგუფში</string>
+    <string name="push_added_to_group">%1$s · თქვენი დამატება ჯგუფში</string>
+    <string name="push_member_joined">%1$s · ჯგუფში გაწევრიანება</string>
+    <string name="push_debts_simplified_to_you">%1$s · ვალების გამარტივება. ახლა: %2$s → თქვენ, %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s · ვალების გამარტივება. ახლა: თქვენ → %2$s, %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s · ვალების გამარტივება. ნახეთ, რა შეიცვალა თქვენთვის.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s · ვალების გამარტივების გამორთვა. ახლა: %2$s → თქვენ, %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s · ვალების გამარტივების გამორთვა. ახლა: თქვენ → %2$s, %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s · ვალების გამარტივების გამორთვა. ნახეთ, რა შეიცვალა თქვენთვის.</string>
+    <string name="notification_settings_bills">ხარჯები</string>
+    <string name="notification_settings_bills_detail">ახალი, შეცვლილი ან წაშლილი ხარჯები, რომლებშიც მონაწილეობთ</string>
+    <string name="notification_settings_payments">გადახდები და ანგარიშსწორება</string>
+    <string name="notification_settings_payments_detail">გადახდები თქვენთვის ან თქვენგან და გამარტივებული ვალები</string>
+    <string name="notification_settings_comments">კომენტარები</string>
+    <string name="notification_settings_comments_detail">ხარჯებზე, რომლებშიც მონაწილეობთ, და მიმოწერებზე, სადაც დაწერეთ</string>
+    <string name="notification_settings_people_and_groups">ადამიანები და ჯგუფები</string>
+    <string name="notification_settings_people_and_groups_detail">ვინ უერთდება ან ტოვებს თქვენს ჯგუფებს და რა იცვლება მათში</string>
+    <string name="notification_settings_payment_requests">გადახდის მოთხოვნები</string>
+    <string name="notification_settings_payment_requests_detail">როცა ვინმე გადახდას გთხოვთ</string>
+    <string name="notification_settings_balance_reminder">ღია ბალანსის შეხსენება</string>
+    <string name="notification_settings_balance_reminder_detail">კვირაში ერთხელ, თუ ღია ბალანსი გაქვთ</string>
+</resources>

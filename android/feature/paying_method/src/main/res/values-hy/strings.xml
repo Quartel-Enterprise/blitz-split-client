@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Նոր վճարման եղանակ</string>
+    <string name="paying_method_edit_title">Խմբագրել վճարման եղանակը</string>
+    <string name="paying_method_type">Տեսակ</string>
+    <string name="paying_method_name">Անուն</string>
+    <string name="paying_method_name_optional">Անուն (ըստ ցանկության)</string>
+    <string name="paying_method_color">Գույն</string>
+    <string name="paying_method_default">Լռելյայն եղանակ</string>
+    <string name="paying_method_default_hint">Ձեր վճարած նոր ծախսերը սկսվում են դրանով։</string>
+    <string name="paying_method_delete">Ջնջել վճարման եղանակը</string>
+    <string name="paying_method_delete_title">Ջնջե՞լ այս վճարման եղանակը</string>
+    <string name="paying_method_delete_body">Այն ծախսերը, որոնք նշել եք դրանով, այլևս այն ցույց չեն տա։</string>
+    <string name="paying_method_delete_confirm">Ջնջել</string>
+    <string name="paying_method_save">Պահել</string>
+</resources>

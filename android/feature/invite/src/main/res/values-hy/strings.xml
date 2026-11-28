@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Փակել</string>
+    <string name="invite_group_created">Խումբը ստեղծվեց</string>
+    <string name="invite_title">Հրավիրեք բոլորին %s խումբ</string>
+    <string name="invite_qr_description">Խմբի հրավերի հղման QR կոդը</string>
+    <string name="invite_copy">Պատճենել</string>
+    <string name="invite_copied">Պատճենվեց</string>
+    <string name="invite_who_picks">Ով բացի հղումը, ցուցակից կընտրի, թե ով է՝ %s։ Հաշիվ պետք չէ։</string>
+    <string name="invite_names_or">%1$s կամ %2$s</string>
+    <string name="invite_anyone_joins">Ով բացի հղումը, կմիանա խմբին։ Հաշիվ պետք չէ։</string>
+    <string name="invite_pending_title">Հղումը սպասման մեջ է</string>
+    <string name="invite_pending_offline">Այն կստեղծվի, հենց առցանց լինեք։</string>
+    <string name="invite_pending_online">Հղումը ստեղծվում է…</string>
+    <string name="invite_failed_title">Չհաջողվեց ստեղծել հղումը</string>
+    <string name="invite_failed_body">Խումբը համաժամացնելիս ինչ-որ բան սխալ գնաց։</string>
+    <string name="invite_retry">Կրկին փորձել</string>
+    <string name="invite_share">Կիսվել հղումով</string>
+    <string name="invite_see_who_joined">Տեսնել, թե ով միացավ</string>
+    <string name="invite_add_person">Ավելացնել մեկին առանց հավելվածի</string>
+    <string name="invite_go_to_group">Գնալ խումբ</string>
+    <string name="invite_change_link">Փոխել հղումը</string>
+    <string name="invite_change_link_title">Փոխե՞լ հրավերի հղումը</string>
+    <string name="invite_change_link_message">Ընթացիկ հղումը և QR կոդը կդադարեն աշխատել, ներառյալ չօգտագործված անձնական հրավերները։ Ովքեր արդեն միացել են, կմնան խմբում։</string>
+    <string name="invite_change_link_failed">Չհաջողվեց փոխել հղումը։ Փորձեք կրկին։</string>
+    <string name="invite_share_message">Եկեք բաժանենք %1$s խմբի ծախսերը Blitz Split հավելվածում։ Միացեք այս հղումով՝ %2$s</string>
+</resources>

@@ -34,11 +34,11 @@ const REGIONAL_LISTINGS = { en: ["en", "en-GB", "en-AU", "en-CA"], es: ["es", "e
 
 /**
  * The release notes' languages the stores don't list yet (Pierre's call): Odia, Nepali, Azerbaijani, Amharic, Sinhala,
- * Kazakh, Mongolian, Kyrgyz, Lao, Icelandic, Basque, Galician and Romansh, which the apps speak while their store
- * listings wait (blitz-split-client#600 and #602), so no release uploads a listing or screenshots for them and their
- * store pages show the default language's.
+ * Kazakh, Mongolian, Kyrgyz, Lao, Icelandic, Basque, Galician, Romansh, Zulu, Afrikaans, Georgian, Armenian, Albanian,
+ * Macedonian and Belarusian, which the apps speak while their store listings wait (blitz-split-client#600 and #602), so
+ * no release uploads a listing or screenshots for them and their store pages show the default language's.
  */
-export const UNLISTED_LANGS = ["or", "ne", "az", "am", "si", "kk", "mn", "ky", "lo", "is", "eu", "gl", "rm"];
+export const UNLISTED_LANGS = ["or", "ne", "az", "am", "si", "kk", "mn", "ky", "lo", "is", "eu", "gl", "rm", "zu", "af", "ka", "hy", "sq", "mk", "be"];
 
 /** The languages a listing is written in: the release notes' (but UNLISTED_LANGS) and the regional ones of REGIONAL_LISTINGS. */
 export const LISTING_LANGS = LANGS.filter((lang) => !UNLISTED_LANGS.includes(lang)).flatMap((lang) => REGIONAL_LISTINGS[lang] ?? [lang]);

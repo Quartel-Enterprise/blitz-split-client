@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Ծանուցումներ</string>
+    <string name="notification_settings_denied_title">Blitz Split հավելվածի ծանուցումներն անջատված են Android-ում։</string>
+    <string name="notification_settings_denied_body">Միացրեք դրանք համակարգի կարգավորումներում՝ ստորև նշված push ծանուցումները ստանալու համար։ Զանգակը շարունակում է աշխատել։</string>
+    <string name="notification_settings_open_settings">Բացել կարգավորումները</string>
+    <string name="notification_settings_refused_body">Android-ը թույլ է տալիս ևս մեկ անգամ թույլատրել դրանք՝ ստորև նշված push ծանուցումները ստանալու համար։ Զանգակը շարունակում է աշխատել։</string>
+    <string name="notification_settings_turn_on">Միացնել</string>
+    <string name="notification_settings_blocked_in_android">Արգելափակված է Android-ում</string>
+    <string name="notification_settings_open_channel_settings_description">Բացել Android-ի կարգավորումները՝ %1$s</string>
+    <string name="notification_settings_push_switch">Push ծանուցումներ</string>
+    <string name="notification_settings_push_switch_detail">Միայն այս սարքում</string>
+    <string name="notification_settings_section">Ծանուցել ինձ</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Հավելվածում</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push-ը ծանուցում է ուղարկում այս սարքին։ Հավելվածում տարբերակը այն նշում է որպես նոր զանգակում և Գործողություններում. անջատված լինելու դեպքում այն դեռ երևում է Գործողություններում՝ արդեն կարդացված։</string>
+    <string name="notification_settings_footer">Ծանուցումները գալիս են, երբ ինտերնետ կա։ Խումբը լռեցնելու համար օգտագործեք դրա ներսի ընտրացանկը։</string>
+</resources>

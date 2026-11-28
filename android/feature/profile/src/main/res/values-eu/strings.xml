@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Euskara</string>
     <string name="profile_language_galician">Galiziera</string>
     <string name="profile_language_romansh">Erretorromaniera</string>
+    <string name="profile_language_zulu">Zuluera</string>
+    <string name="profile_language_afrikaans">Afrikaansa</string>
+    <string name="profile_language_georgian">Georgiera</string>
+    <string name="profile_language_armenian">Armeniera</string>
+    <string name="profile_language_albanian">Albaniera</string>
+    <string name="profile_language_macedonian">Mazedoniera</string>
+    <string name="profile_language_belarusian">Bielorrusiera</string>
     <string name="profile_language_system_detail">Gailuaren hizkuntza</string>
     <string name="profile_notifications">Jakinarazpenak</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Կապվել աջակցման ծառայության հետ</string>
+    <string name="contact_support_description">Մենք կբացենք Ձեր էլ. փոստի հավելվածը՝ պատրաստի հաղորդագրությամբ։ Նկարագրեք, թե ինչ է պատահել, և ուղարկեք. յուրաքանչյուր հաղորդագրություն կարդում են իրական մարդիկ։</string>
+    <string name="contact_support_to">Ում</string>
+    <string name="contact_support_diagnostics">Կներառվի նամակում</string>
+    <string name="contact_support_app_version">Հավելվածի տարբերակ</string>
+    <string name="contact_support_platform">Հարթակ</string>
+    <string name="contact_support_language">Լեզու</string>
+    <string name="contact_support_account">Հաշիվ</string>
+    <string name="contact_support_profile">Պրոֆիլ</string>
+    <string name="contact_support_language_system">Համակարգի</string>
+    <string name="contact_support_account_local">Միայն այս սարքը</string>
+    <string name="contact_support_account_anonymous">Կապված չէ</string>
+    <string name="contact_support_open_email">Բացել էլ. փոստը</string>
+    <string name="contact_support_copy_email">Պատճենել էլ. փոստի հասցեն</string>
+    <string name="contact_support_notice_copied">Էլ. փոստի հասցեն պատճենվեց։</string>
+    <string name="contact_support_notice_no_app">Էլ. փոստի հավելված չգտնվեց։ Փոխարենը հասցեն պատճենվեց։</string>
+    <string name="contact_support_close">Փակել</string>
+</resources>

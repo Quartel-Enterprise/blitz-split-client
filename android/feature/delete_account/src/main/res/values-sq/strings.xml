@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Fshi llogarinë</string>
+    <string name="delete_account_offline_title">Pa internet.</string>
+    <string name="delete_account_offline_body">Fshirja e llogarisë kërkon lidhje interneti. Lidhuni dhe provoni përsëri.</string>
+    <string name="delete_account_heading">Të fshihen llogaria dhe të dhënat tuaja?</string>
+    <string name="delete_account_deleted_title">Çfarë fshihet</string>
+    <string name="delete_account_deleted_profile">Profili juaj (emri, fotoja dhe ngjyra)</string>
+    <string name="delete_account_deleted_keys">Çelësat tuaj Pix dhe Bitcoin</string>
+    <string name="delete_account_deleted_provider">Lidhja me llogarinë tuaj %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Kodi juaj i rikuperimit</string>
+    <string name="delete_account_deleted_device">Kopja e të dhënave tuaja në këtë pajisje</string>
+    <string name="delete_account_kept_title">Çfarë mbetet në grupet tuaja</string>
+    <string name="delete_account_kept_groups">Grupet, me shpenzimet dhe pagesat e tyre, për anëtarët e tjerë</string>
+    <string name="delete_account_kept_member">Emri juaj në çdo grup, si anëtar pa llogari</string>
+    <string name="delete_account_kept_comments">Komentet tuaja dhe fotot që shtuat, me emrin tuaj</string>
+    <string name="delete_account_export">Eksporto më parë të dhënat e mia</string>
+    <string name="delete_account_confirm">E kuptoj që kjo nuk mund të zhbëhet</string>
+    <string name="delete_account_delete">Fshi llogarinë</string>
+    <string name="delete_account_cancel">Anulo</string>
+    <string name="delete_account_failed">Llogaria juaj nuk u fshi. Provoni përsëri.</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Londoloza ikhodi yakho yokubuyisela</string>
+    <string name="recovery_code_body">Uyisebenzisa ngaphandle kwe-akhawunti. La magama angu-12 abuyisa idatha yakho uma ushintsha noma ulahlekelwa idivayisi yakho. Wabhale phansi ngokulandelana. Ngemuva kwezinsuku ezingu-30 ingasetshenziswa, idatha yakho iyasuswa futhi amagama ayeka ukusebenza.</string>
+    <string name="recovery_code_copy">Kopisha amagama</string>
+    <string name="recovery_code_save_to_password_manager">Londoloza kumphathi wamaphasiwedi</string>
+    <string name="recovery_code_connect_instead">Xhuma i-Google noma i-Apple esikhundleni salokho</string>
+    <string name="recovery_code_connect_instead_body">Akudingeki ikhodi</string>
+    <string name="recovery_code_sign_in_failed">Akukwazekanga ukuxhuma manje. Zama futhi.</string>
+    <string name="recovery_code_also_in_profile">Iyatholakala futhi lapha: Iphrofayela › Ukubuyisela.</string>
+    <string name="recovery_code_remind_later">Ngikhumbuze kamuva</string>
+    <string name="recovery_code_saved">Ngiyilondolozile</string>
+    <string name="recovery_code_download">Landa</string>
+    <string name="recovery_code_file_name">blitz-split-ikhodi-yokubuyisela.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · ikhodi yokubuyisela\n\n%1$s\n\nYisebenzise kokuthi \"Ngike ngayisebenzisa kwenye idivayisi\" ukuze ubuyisele idatha yakho.\n</string>
+</resources>

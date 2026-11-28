@@ -146,7 +146,7 @@ an empty list there (`fil: []`, `sr: []`, `fa: []`, `bg: []`, `sw: []`, `et: []`
 passes, and the next `upload_listing` creates the listing in that locale. The `add-language` skill lists the rest.
 
 A language the apps speak before the stores list it, as Odia, Nepali, Azerbaijani, Amharic, Sinhala, Kazakh,
-Mongolian, Kyrgyz, Lao, Icelandic, Basque, Galician and Romansh (Pierre's calls, issues #600 and #602), goes in
+Mongolian, Kyrgyz, Lao, Icelandic, Basque, Galician, Romansh, Zulu, Afrikaans, Georgian, Armenian, Albanian, Macedonian and Belarusian (Pierre's calls, issues #600 and #602), goes in
 `UNLISTED_LANGS`:
 it stays in `LANGS` for the release notes but has no listing file and no locales, so no release uploads a listing or
 screenshots for it and its store pages show the default language's. Its listing is added later by taking it out of

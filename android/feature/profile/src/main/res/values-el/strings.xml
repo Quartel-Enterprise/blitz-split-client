@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Βασκικά</string>
     <string name="profile_language_galician">Γαλικιακά</string>
     <string name="profile_language_romansh">Ρομανικά</string>
+    <string name="profile_language_zulu">Ζουλού</string>
+    <string name="profile_language_afrikaans">Αφρικάανς</string>
+    <string name="profile_language_georgian">Γεωργιανά</string>
+    <string name="profile_language_armenian">Αρμενικά</string>
+    <string name="profile_language_albanian">Αλβανικά</string>
+    <string name="profile_language_macedonian">Μακεδονικά</string>
+    <string name="profile_language_belarusian">Λευκορωσικά</string>
     <string name="profile_language_system_detail">Γλώσσα συσκευής</string>
     <string name="profile_notifications">Ειδοποιήσεις</string>
     <plurals name="profile_notifications_active">

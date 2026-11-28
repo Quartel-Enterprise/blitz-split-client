@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Vee rekening uit</string>
+    <string name="delete_account_offline_title">Geen internet nie.</string>
+    <string name="delete_account_offline_body">Om jou rekening uit te vee, is \'n internetverbinding nodig. Koppel en probeer weer.</string>
+    <string name="delete_account_heading">Vee jou rekening en jou data uit?</string>
+    <string name="delete_account_deleted_title">Wat uitgevee word</string>
+    <string name="delete_account_deleted_profile">Jou profiel (naam, foto en kleur)</string>
+    <string name="delete_account_deleted_keys">Jou Pix- en Bitcoin-sleutels</string>
+    <string name="delete_account_deleted_provider">Die koppeling met jou rekening by %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Jou herstelkode</string>
+    <string name="delete_account_deleted_device">Die kopie van jou data op hierdie toestel</string>
+    <string name="delete_account_kept_title">Wat in jou groepe bly</string>
+    <string name="delete_account_kept_groups">Die groepe, met hul uitgawes en betalings, vir die ander lede</string>
+    <string name="delete_account_kept_member">Jou naam in elke groep, as \'n lid sonder \'n rekening</string>
+    <string name="delete_account_kept_comments">Jou opmerkings en die foto\'s wat jy bygevoeg het, onder jou naam</string>
+    <string name="delete_account_export">Voer eers my data uit</string>
+    <string name="delete_account_confirm">Ek verstaan dit kan nie ontdoen word nie</string>
+    <string name="delete_account_delete">Vee rekening uit</string>
+    <string name="delete_account_cancel">Kanselleer</string>
+    <string name="delete_account_failed">Kon nie jou rekening uitvee nie. Probeer weer.</string>
+</resources>

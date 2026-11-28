@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Bilancet</string>
+    <string name="global_balances_profile">Profili</string>
+    <string name="global_balances_offline">Jashtë linje · bilancet e kësaj pajisjeje</string>
+    <string name="global_balances_filter">Shfaq</string>
+    <string name="global_balances_filter_all">Të gjitha</string>
+    <string name="global_balances_filter_you_owe">Do të paguani</string>
+    <string name="global_balances_filter_owes_you">Do të merrni</string>
+    <string name="global_balances_hint">Të kompensuara tashmë mes grupeve: çdo person shfaqet një herë.</string>
+    <string name="global_balances_hint_empty">Po mblidhen të gjitha grupet në këtë pajisje.</string>
+    <string name="global_balances_section_you_owe">Do të paguani · %d</string>
+    <string name="global_balances_section_owes_you">Do të merrni · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d grup</item>
+        <item quantity="other">%d grupe</item>
+    </plurals>
+    <string name="global_balances_guest">%s · mysafir</string>
+    <string name="global_balances_you_owe">do të paguani</string>
+    <string name="global_balances_owes_you">do të merrni</string>
+    <string name="global_balances_by_group_show">Shfaq sipas grupit: %s</string>
+    <string name="global_balances_by_group_hide">Fshih sipas grupit: %s</string>
+    <string name="global_balances_received">E mora</string>
+    <string name="global_balances_received_from">E mora nga %s</string>
+    <string name="global_balances_settle">Shlyej llogaritë</string>
+    <string name="global_balances_settle_with">Shlyej llogaritë: %s</string>
+    <string name="global_balances_charge">Kërko</string>
+    <string name="global_balances_charge_person">Kërko nga %s</string>
+    <string name="global_balances_detail_pane">Bilanci: %s</string>
+    <string name="global_balances_detail_owes_you">%s duhet t\'ju paguajë</string>
+    <string name="global_balances_detail_you_owe">Ju duhet t\'i paguani personit %s</string>
+    <string name="global_balances_detail_guest">%s · mysafir pa aplikacion</string>
+    <string name="global_balances_detail_note_owed">Shuma neto i kompenson tashmë grupet: “Kërko” dhe “E mora” përdorin shumën %s. Aplikacioni regjistron një pagesë në çdo grup.</string>
+    <string name="global_balances_detail_note_settle">Shuma neto i kompenson tashmë grupet: “Shlyej llogaritë” përdor shumën %s. Aplikacioni regjistron një pagesë në çdo grup.</string>
+    <string name="global_balances_detail_note_single">Vetëm një grup i hapur me personin %s.</string>
+    <string name="global_balances_settled_title">Gjithçka është shlyer</string>
+    <string name="global_balances_settled_body">Askush nuk ju ka borxh dhe ju nuk i keni borxh askujt. Kur dikush shton një shpenzim, bilanci shfaqet këtu.</string>
+    <string name="global_balances_settled_action">Shiko grupet</string>
+    <string name="global_balances_nothing_to_pay_title">Nuk keni asgjë për të paguar</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Keni shlyer llogaritë me të gjithë. Ende do të merrni %2$s nga %1$d person.</item>
+        <item quantity="other">Keni shlyer llogaritë me të gjithë. Ende do të merrni %2$s nga %1$d persona.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Shiko kush ju ka borxh</string>
+    <string name="global_balances_nothing_to_receive_title">Askush nuk ju ka borxh</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Ende do të paguani %2$s te %1$d person.</item>
+        <item quantity="other">Ende do të paguani %2$s te %1$d persona.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Shiko kujt i keni borxh</string>
+    <string name="global_balances_coming_soon">Së shpejti</string>
+    <string name="global_balances_change_error">Ndryshimi nuk u ruajt. Provoni përsëri.</string>
+    <string name="global_balances_copied">U kopjua</string>
+    <string name="global_balances_charge_title">Kërko nga %s</string>
+    <string name="global_balances_charge_owes">Ju ka borxh %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Mbyll</string>
+    <string name="global_balances_charge_guest">%s është mysafir pa aplikacion. Mëson për këtë vetëm nga ky mesazh, ndaj ai tregon tashmë çfarë hyri në shpenzim.</string>
+    <string name="global_balances_charge_message">Mesazhi</string>
+    <string name="global_balances_charge_pix">Përfshi çelësin tim Pix</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Kopjo mesazhin</string>
+    <string name="global_balances_charge_send">Dërgo</string>
+    <string name="global_balances_message">Përshëndetje %1$s! Sipas llogarive të Blitz Split, më ke borxh %2$s nga %3$s.</string>
+    <string name="global_balances_message_guest">Përshëndetje %1$s! Më ke borxh %2$s nga %3$s: pjesa jote nga: %4$s.</string>
+    <string name="global_balances_message_guest_paid">Përshëndetje %1$s! Më ke borxh %2$s nga %3$s: pjesa jote nga: %4$s, minus %5$s që ke paguar tashmë.</string>
+    <string name="global_balances_message_group">grupi %s</string>
+    <string name="global_balances_message_groups">grupet %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telefon</string>
+    <string name="global_balances_key_email">Email</string>
+    <string name="global_balances_key_random">Çelës i rastësishëm</string>
+    <string name="global_balances_message_reroute">Grupi %1$s i thjeshtoi borxhet, ndaj në vend që t\'i paguash personit %2$s, më paguan mua direkt; totali yt nuk ndryshoi.</string>
+</resources>

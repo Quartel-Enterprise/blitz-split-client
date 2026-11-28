@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Վերադարձրեք Ձեր խմբերը</string>
+    <string name="restore_subtitle">Նախկինում մուտք գործե՞լ եք հաշվով։ Պարզապես նորից մուտք գործեք։ Եթե ոչ, օգտագործեք վերականգնման կոդը կամ Ձեր հին սարքի QR կոդը։</string>
+    <string name="restore_no_connection_title">Կապ չկա</string>
+    <string name="restore_no_connection_body">Հաշվով կամ կոդով մուտք գործելու համար ինտերնետ է պետք՝ Ձեր խմբերը ներբեռնելու համար։ Ձեր մուտքագրածը պահպանվում է։</string>
+    <string name="restore_code_label">Կամ օգտագործեք վերականգնման կոդը</string>
+    <string name="restore_code_hint">12 բառը՝ հերթականությամբ։ Տեղադրեք բոլորը մեկ դաշտում՝ բոլոր դաշտերը լրացնելու համար։</string>
+    <string name="restore_scan_qr_title">Սկանավորեք Ձեր հին սարքի QR կոդը</string>
+    <string name="restore_scan_qr_body">Այնտեղ՝ Պրոֆիլ › Վերականգնում › Ցույց տալ QR կոդը</string>
+    <string name="restore_recover">Վերականգնել</string>
+    <string name="restore_try_again">Կրկին փորձել</string>
+    <string name="restore_start_fresh">Սկսել նորից այս սարքում</string>
+    <string name="restore_error_invalid_code">Կոդը չգտնվեց։ Ստուգեք բառերը և դրանց հերթականությունը, ապա փորձեք կրկին։</string>
+    <string name="restore_error_too_many_attempts">Չափազանց շատ փորձեր։ Սպասեք մի քանի րոպե և փորձեք կրկին։</string>
+    <string name="restore_error_sign_in_failed">Այս պահին չհաջողվեց մուտք գործել։ Փորձեք կրկին։</string>
+    <string name="restore_error_unknown">Ինչ-որ բան սխալ գնաց։ Փորձեք կրկին։</string>
+</resources>

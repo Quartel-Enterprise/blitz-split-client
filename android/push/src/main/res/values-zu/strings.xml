@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Isikhumbuzi sokuxazulula izikweletu</string>
+    <string name="push_bill_created">%1$s wengeze isindleko esithi “%2$s” esibandakanya nawe</string>
+    <string name="push_bill_edited">%1$s uhlele isindleko esithi “%2$s”</string>
+    <string name="push_bill_deleted">%1$s ususe isindleko esithi “%2$s”</string>
+    <string name="push_comment_added">%1$s uphawule esindlekweni esithi “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s umake ukuthi ukukhokhele</string>
+    <string name="push_payment_to_you">%1$s umake ukuthi %2$s ukukhokhele</string>
+    <string name="push_payment_received_yours">%1$s umake inkokhelo yakho njengetholakele</string>
+    <string name="push_payment_from_you">%1$s umake ukuthi wena ukhokhele: %2$s</string>
+    <string name="push_payment_undone">%1$s uhlehlise inkokhelo ehlobene nawe</string>
+    <string name="push_charge_sent">%1$s ukuthumelele isikhumbuzi sokuxazulula izikweletu</string>
+    <string name="push_settle_reminder">Unebhalansi evulekile eqenjini elithi %1$s</string>
+    <string name="push_settle_reminders">Unamabhalansi avulekile emaqenjini: %1$s</string>
+    <string name="push_added_to_group">%1$s ukwengeze eqenjini</string>
+    <string name="push_member_joined">%1$s ujoyine iqembu</string>
+    <string name="push_debts_simplified_to_you">%1$s wenze izikweletu zaba lula. Manje %2$s uzokukhokhela inani elithi %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s wenze izikweletu zaba lula. Manje uzokhokha inani elithi %3$s. Uzokhokhela: %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s wenze izikweletu zaba lula. Bona ukuthi kunjani kuwe.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ucishe okuthi Yenza izikweletu zibe lula. Manje %2$s uzokukhokhela inani elithi %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ucishe okuthi Yenza izikweletu zibe lula. Manje uzokhokha inani elithi %3$s. Uzokhokhela: %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s ucishe okuthi Yenza izikweletu zibe lula. Bona ukuthi kunjani kuwe.</string>
+    <string name="notification_settings_bills">Izindleko</string>
+    <string name="notification_settings_bills_detail">Izindleko ezintsha, ezihleliwe noma ezisusiwe ezibandakanya wena</string>
+    <string name="notification_settings_payments">Izinkokhelo nokuxazulula izikweletu</string>
+    <string name="notification_settings_payments_detail">Izinkokhelo eziya kuwe noma ezivela kuwe, nezikweletu ezenziwe lula</string>
+    <string name="notification_settings_comments">Amazwana</string>
+    <string name="notification_settings_comments_detail">Ezindlekweni ezibandakanya wena nasezingxoxweni obhale kuzo</string>
+    <string name="notification_settings_people_and_groups">Abantu namaqembu</string>
+    <string name="notification_settings_people_and_groups_detail">Abajoyina noma abashiya amaqembu akho, nokushintshayo kuwo</string>
+    <string name="notification_settings_payment_requests">Izicelo zenkokhelo</string>
+    <string name="notification_settings_payment_requests_detail">Uma othile ekucela ukuthi ukhokhe</string>
+    <string name="notification_settings_balance_reminder">Isikhumbuzi sebhalansi evulekile</string>
+    <string name="notification_settings_balance_reminder_detail">Kanye ngesonto, uma kunebhalansi evulekile</string>
+</resources>

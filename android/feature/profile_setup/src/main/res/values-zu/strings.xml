@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Abangane bakho bakubiza ngokuthini?</string>
+    <string name="profile_setup_subtitle">Amaqembu akho nanoma ubani onelinki yephrofayela yakho babona igama lakho.</string>
+    <string name="profile_setup_avatar_color">Umbala we-avatar</string>
+    <string name="profile_setup_add_photo">Engeza isithombe</string>
+    <string name="profile_setup_photo_error">Akukwazekanga ukusebenzisa lesi sithombe. Zama esinye.</string>
+    <string name="profile_setup_name_label">Igama lakho</string>
+    <string name="profile_setup_name_placeholder">Sipho Dlamini</string>
+    <string name="profile_setup_name_too_short">Bhala okungenani izinhlamvu ezingu-%d.</string>
+    <string name="profile_setup_name_too_long">Sebenzisa izinhlamvu ezingeqi kwezingu-%d.</string>
+    <string name="profile_setup_name_hint">Ungalishintsha kamuva kuphrofayela.</string>
+    <string name="profile_setup_saved_locally">Kulondolozwe kule divayisi kuphela okwamanje.</string>
+    <string name="profile_setup_continue">Qhubeka</string>
+</resources>

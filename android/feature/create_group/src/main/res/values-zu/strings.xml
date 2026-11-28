@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Iqembu elisha</string>
+    <string name="create_group_close">Vala</string>
+    <string name="create_group_create">Dala</string>
+    <string name="create_group_change_color">Shintsha umbala weqembu</string>
+    <string name="create_group_name_label">Igama leqembu</string>
+    <string name="create_group_type_label">Uhlobo lweqembu</string>
+    <string name="create_group_members_title">Abakhona</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">umuntu ongu-%d</item>
+        <item quantity="other">abantu abangu-%d</item>
+    </plurals>
+    <string name="create_group_me">wena</string>
+    <string name="create_group_remove_member">Susa: %s</string>
+    <string name="create_group_add_placeholder">Engeza ngegama</string>
+    <string name="create_group_add">Engeza</string>
+    <string name="create_group_no_app_notice">Akekho odinga uhlelo lokusebenza manje. Ungavele wengeze izindleko zabo bonke bese uthumela ilinki kamuva.</string>
+    <string name="create_group_currency">Uhlobo lwemali oluzenzakalelayo</string>
+    <string name="create_group_currency_caption">Izindleko ezintsha ziqala ngalolu hlobo lwemali; isindleko ngasinye singasebenzisa olunye.</string>
+    <string name="create_group_save_error">Akukwazekanga ukulondoloza iqembu. Zama futhi.</string>
+    <string name="create_group_photo">Isithombe seqembu</string>
+    <string name="create_group_take_photo">Thatha isithombe</string>
+    <string name="create_group_choose_photo">Khetha isithombe</string>
+    <string name="create_group_remove_photo">Susa isithombe</string>
+    <string name="create_group_photo_error">Akukwazekanga ukusebenzisa lesi sithombe. Zama esinye.</string>
+</resources>

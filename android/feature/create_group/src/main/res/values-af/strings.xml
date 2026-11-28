@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Nuwe groep</string>
+    <string name="create_group_close">Maak toe</string>
+    <string name="create_group_create">Skep</string>
+    <string name="create_group_change_color">Verander die groep se kleur</string>
+    <string name="create_group_name_label">Groepnaam</string>
+    <string name="create_group_type_label">Groepsoort</string>
+    <string name="create_group_members_title">Wie is in</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d persoon</item>
+        <item quantity="other">%d mense</item>
+    </plurals>
+    <string name="create_group_me">jy</string>
+    <string name="create_group_remove_member">Verwyder %s</string>
+    <string name="create_group_add_placeholder">Voeg by naam by</string>
+    <string name="create_group_add">Voeg by</string>
+    <string name="create_group_no_app_notice">Niemand het die app nou nodig nie. Jy kan reeds uitgawes vir almal byvoeg en die skakel later stuur.</string>
+    <string name="create_group_currency">Verstekgeldeenheid</string>
+    <string name="create_group_currency_caption">Nuwe uitgawes begin in hierdie geldeenheid; elke uitgawe kan \'n ander een gebruik.</string>
+    <string name="create_group_save_error">Kon nie die groep stoor nie. Probeer weer.</string>
+    <string name="create_group_photo">Groepfoto</string>
+    <string name="create_group_take_photo">Neem foto</string>
+    <string name="create_group_choose_photo">Kies foto</string>
+    <string name="create_group_remove_photo">Verwyder foto</string>
+    <string name="create_group_photo_error">Kon nie hierdie foto gebruik nie. Probeer \'n ander een.</string>
+</resources>

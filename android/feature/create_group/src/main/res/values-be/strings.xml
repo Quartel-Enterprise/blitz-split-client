@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Новая група</string>
+    <string name="create_group_close">Закрыць</string>
+    <string name="create_group_create">Стварыць</string>
+    <string name="create_group_change_color">Змяніць колер групы</string>
+    <string name="create_group_name_label">Назва групы</string>
+    <string name="create_group_type_label">Тып групы</string>
+    <string name="create_group_members_title">Хто ўдзельнічае</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d чалавек</item>
+        <item quantity="few">%d чалавекі</item>
+        <item quantity="many">%d чалавек</item>
+        <item quantity="other">%d чалавека</item>
+    </plurals>
+    <string name="create_group_me">Вы</string>
+    <string name="create_group_remove_member">Выдаліць: %s</string>
+    <string name="create_group_add_placeholder">Дадаць па імені</string>
+    <string name="create_group_add">Дадаць</string>
+    <string name="create_group_no_app_notice">Зараз праграма нікому не патрэбна. Вы ўжо можаце дадаваць выдаткі для ўсіх і адправіць спасылку пазней.</string>
+    <string name="create_group_currency">Стандартная валюта</string>
+    <string name="create_group_currency_caption">Новыя выдаткі пачынаюцца ў гэтай валюце; для кожнага выдатку можна выбраць іншую.</string>
+    <string name="create_group_save_error">Не ўдалося захаваць групу. Паспрабуйце яшчэ раз.</string>
+    <string name="create_group_photo">Фота групы</string>
+    <string name="create_group_take_photo">Зрабіць фота</string>
+    <string name="create_group_choose_photo">Выбраць фота</string>
+    <string name="create_group_remove_photo">Выдаліць фота</string>
+    <string name="create_group_photo_error">Не ўдалося выкарыстаць гэта фота. Паспрабуйце іншае.</string>
+</resources>

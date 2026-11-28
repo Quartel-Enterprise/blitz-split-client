@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Kontakto mbështetjen</string>
+    <string name="contact_support_description">Do të hapim aplikacionin tuaj të email-it me një mesazh gati. Përshkruani çfarë ndodhi dhe dërgojeni: çdo mesazh e lexojnë njerëz të vërtetë.</string>
+    <string name="contact_support_to">Për</string>
+    <string name="contact_support_diagnostics">Do të përfshihet në email</string>
+    <string name="contact_support_app_version">Versioni i aplikacionit</string>
+    <string name="contact_support_platform">Platforma</string>
+    <string name="contact_support_language">Gjuha</string>
+    <string name="contact_support_account">Llogaria</string>
+    <string name="contact_support_profile">Profili</string>
+    <string name="contact_support_language_system">Sistemi</string>
+    <string name="contact_support_account_local">Vetëm kjo pajisje</string>
+    <string name="contact_support_account_anonymous">E palidhur</string>
+    <string name="contact_support_open_email">Hap email-in</string>
+    <string name="contact_support_copy_email">Kopjo adresën e email-it</string>
+    <string name="contact_support_notice_copied">Adresa e email-it u kopjua.</string>
+    <string name="contact_support_notice_no_app">Nuk u gjet asnjë aplikacion email-i. Në vend të kësaj, adresa u kopjua.</string>
+    <string name="contact_support_close">Mbyll</string>
+</resources>

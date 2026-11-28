@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Линк за покана</string>
+    <string name="members_link_pending">Сè уште не е создаден</string>
+    <string name="members_share">Сподели</string>
+    <string name="members_me">%s (Вие)</string>
+    <string name="members_status_this_device">Овој уред</string>
+    <string name="members_status_joined">Приклучено</string>
+    <string name="members_status_not_joined">Сè уште не се приклучи</string>
+    <string name="members_options">Опции за %s</string>
+    <string name="members_rename">Преименувај</string>
+    <string name="members_personal_invite">Лична покана за %s</string>
+    <string name="members_personal_message">Кој ќе го отвори овој линк, се приклучува директно како %s, без да избира од списокот. Работи еднаш.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Кој ќе го отвори овој линк, се приклучува директно како %1$s, без да избира од списокот, и веднаш го гледа својот удел од %2$s во досега додадениот трошок. Работи еднаш.</item>
+        <item quantity="other">Кој ќе го отвори овој линк, се приклучува директно како %1$s, без да избира од списокот, и веднаш го гледа својот удел од %2$s во трошоците додадени досега (%3$d). Работи еднаш.</item>
+    </plurals>
+    <string name="members_personal_copy">Копирај линк</string>
+    <string name="members_personal_copied">Копирано</string>
+    <string name="members_personal_share">Сподели со %s</string>
+    <string name="members_personal_share_message">Приклучете се во групата %1$s како %2$s на Blitz Split: %3$s</string>
+    <string name="members_remove">Отстрани од групата</string>
+    <string name="members_remove_joined">%s веќе се приклучи кон групата</string>
+    <string name="members_remove_title">Да се отстрани %s од групата?</string>
+    <string name="members_remove_message">%s сè уште не се приклучи. Ова лице можете повторно да го додадете подоцна.</string>
+    <string name="members_remove_confirm">Отстрани</string>
+    <string name="members_release">Ослободи го името</string>
+    <string name="members_release_title">Да се ослободи името на %s?</string>
+    <string name="members_release_message">Тој што се приклучи како %1$s ја напушта групата. Името, бојата и трошоците на %1$s остануваат, а %1$s може повторно да се избере преку линкот на групата.</string>
+    <string name="members_release_confirm">Ослободи</string>
+    <string name="members_release_error">Името не можеше да се ослободи. Проверете ја врската и обидете се повторно.</string>
+    <string name="members_add">Додај лице</string>
+    <string name="members_invite_instead">Има апликација? Поканете со линкот</string>
+    <string name="members_name_label">Име</string>
+    <string name="members_save">Зачувај</string>
+    <string name="members_cancel">Откажи</string>
+    <string name="members_change_error">Промената не можеше да се зачува. Обидете се повторно.</string>
+    <string name="members_remove_open_balance">%s има отворено салдо</string>
+    <string name="members_balance_to_get_back">треба да добие %s</string>
+    <string name="members_balance_owes">треба да плати %s</string>
+    <string name="members_balance_settled">Порамнето</string>
+</resources>

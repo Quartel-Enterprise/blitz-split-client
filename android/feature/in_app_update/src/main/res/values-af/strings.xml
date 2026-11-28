@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">Laai tans opdatering af…</string>
+    <string name="in_app_update_download_failed">Kon nie die opdatering aflaai nie. Probeer later weer.</string>
+</resources>

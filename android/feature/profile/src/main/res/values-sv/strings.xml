@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Baskiska</string>
     <string name="profile_language_galician">Galiciska</string>
     <string name="profile_language_romansh">Rätoromanska</string>
+    <string name="profile_language_zulu">Zulu</string>
+    <string name="profile_language_afrikaans">Afrikaans</string>
+    <string name="profile_language_georgian">Georgiska</string>
+    <string name="profile_language_armenian">Armeniska</string>
+    <string name="profile_language_albanian">Albanska</string>
+    <string name="profile_language_macedonian">Makedonska</string>
+    <string name="profile_language_belarusian">Belarusiska</string>
     <string name="profile_language_system_detail">Enhetens språk</string>
     <string name="profile_notifications">Aviseringar</string>
     <plurals name="profile_notifications_active">

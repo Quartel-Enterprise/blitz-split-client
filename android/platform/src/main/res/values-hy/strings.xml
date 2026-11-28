@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · վերականգնման կոդ</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Լուսանկարելու համար թույլատրեք տեսախցիկը Կարգավորումներում։</string>
+    <string name="platform_camera_settings">Կարգավորումներ</string>
+    <string name="platform_receipt_source_camera">Լուսանկարել</string>
+    <string name="platform_receipt_source_gallery">Ընտրել պատկերասրահից</string>
+    <string name="platform_receipt_source_file">Ընտրել ֆայլ</string>
+    <string name="platform_receipt_camera_title">Սկանավորել կտրոնը</string>
+    <string name="platform_receipt_camera_close">Փակել</string>
+    <string name="platform_receipt_camera_flash_on">Միացնել լուսաթարթիչը</string>
+    <string name="platform_receipt_camera_flash_off">Անջատել լուսաթարթիչը</string>
+    <string name="platform_receipt_camera_hint">Տեղավորեք ամբողջ կտրոնը շրջանակում։ Մենք կլրացնենք գումարը, ամսաթիվը և նկարագրությունը, իսկ Դուք կստուգեք պահելուց առաջ։</string>
+    <string name="platform_receipt_camera_gallery">Ընտրել պատկերասրահից</string>
+    <string name="platform_receipt_camera_shutter">Լուսանկարել</string>
+    <string name="platform_receipt_camera_unavailable">Տեսախցիկը հասանելի չէ։ Ընտրեք կտրոնի լուսանկարը պատկերասրահից։</string>
+    <string name="platform_receipt_camera_permission">Թույլատրեք տեսախցիկը՝ կտրոնը սկանավորելու համար, կամ ընտրեք լուսանկար պատկերասրահից։</string>
+    <string name="platform_receipt_camera_allow">Թույլատրել տեսախցիկը</string>
+    <string name="platform_receipt_camera_settings">Բացել կարգավորումները</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Поделете ја сметката, без мака</string>
+    <string name="welcome_offline_title">Работи офлајн</string>
+    <string name="welcome_offline_body">Сè останува на Вашиот уред и се синхронизира подоцна.</string>
+    <string name="welcome_optional_title">Корисничката сметка не е задолжителна</string>
+    <string name="welcome_optional_body">Google или Apple само Ве штитат да не изгубите ништо кога ќе смените уред.</string>
+    <string name="welcome_invite_title">Поканете со линк или QR код</string>
+    <string name="welcome_invite_body">Пријателите се приклучуваат кон групата без да создаваат корисничка сметка.</string>
+    <string name="welcome_no_connection_title">Нема врска.</string>
+    <string name="welcome_no_connection_body">За најава со корисничка сметка потребен е интернет. Користете ја сега без корисничка сметка и поврзете се подоцна во Профил.</string>
+    <string name="welcome_or">или</string>
+    <string name="welcome_use_without_account">Користи без корисничка сметка</string>
+    <string name="welcome_used_on_another_device">Веќе ја користев на друг уред</string>
+    <string name="welcome_sign_in_failed">Најавата моментално не успеа. Обидете се повторно.</string>
+    <string name="welcome_legal_notice">Со продолжување, ги прифаќате %1$s и потврдувате дека сте запознаени со %2$s.</string>
+    <string name="welcome_legal_terms">Условите за користење</string>
+    <string name="welcome_legal_privacy">Политиката за приватност</string>
+    <string name="welcome_no_account_note">Без корисничка сметка, Вашите податоци се бришат по 30 дена некористење. Поврзете Google или Apple за да ги зачувате.</string>
+    <string name="welcome_no_account_note_offline">Без корисничка сметка, Вашите податоци се бришат по 30 дена некористење. Поврзете Google или Apple подоцна, во Профил, за да ги зачувате.</string>
+    <string name="welcome_expired_title">Вашите податоци се избришани</string>
+    <string name="welcome_expired_body">Ја користевте апликацијата без корисничка сметка и не ја отворивте 30 дена, па Вашите податоци се избришани. Поврзете Google или Apple за да ги зачувате следниот пат.</string>
+    <string name="welcome_expired_ok">Во ред</string>
+</resources>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Выкарыстоўвайце тут той самы ўліковы запіс, што і на тэлефоне. Пасля гэтага гадзіннік будзе працаваць самастойна.</string>
+    <string name="pair_connect">Падключыць</string>
+    <string name="pair_connecting">Атрымліваем Ваш уліковы запіс з тэлефона…</string>
+    <string name="pair_connected_title">Гатова, %1$s</string>
+    <string name="pair_connected_title_unnamed">Гатова</string>
+    <string name="pair_connected_body">Гадзіннік сінхранізуецца сам, нават удалечыні ад тэлефона.</string>
+    <string name="pair_continue">Працягнуць</string>
+    <string name="pair_local_only_title">Вашы даныя ёсць толькі на тэлефоне</string>
+    <string name="pair_local_only_body">На тэлефоне падключыце ўліковы запіс у Профілі і зноў націсніце тут Падключыць.</string>
+    <string name="pair_ok">ОК</string>
+    <string name="pair_far_title">Тэлефон па-за зонай дасяжнасці</string>
+    <string name="pair_far_body">Паднясіце тэлефон бліжэй або падключыцеся з дапамогай кода.</string>
+    <string name="pair_try_again">Паспрабаваць яшчэ раз</string>
+    <string name="pair_use_code">Выкарыстаць код</string>
+    <string name="pair_code_label">Ваш код</string>
+    <string name="pair_code_description">Код %1$s</string>
+    <string name="pair_code_where">На тэлефоне: Профіль › Падключыць гадзіннік</string>
+    <string name="pair_code_validity">Дзейнічае 5 хвілін</string>
+    <string name="pair_cancel">Скасаваць</string>
+    <string name="pair_signed_out_title">Вы выйшлі на тэлефоне</string>
+    <string name="pair_signed_out_body">Даныя таксама выдалены з гэтага гадзінніка.</string>
+    <string name="pair_connect_again">Падключыць зноў</string>
+    <string name="pair_error_offline">Для падключэння гадзінніка патрэбны інтэрнэт.</string>
+    <string name="pair_error_too_many">Занадта шмат спроб. Пачакайце некалькі хвілін і падключыцеся зноў.</string>
+    <string name="pair_error_failed">Не ўдалося падключыць гадзіннік. Паспрабуйце яшчэ раз.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Балансы</string>
+    <string name="balances_offline">Афлайн</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Афлайн · %d змена ў чарзе</item>
+        <item quantity="few">Афлайн · %d змены ў чарзе</item>
+        <item quantity="many">Афлайн · %d змен у чарзе</item>
+        <item quantity="other">Афлайн · %d змены ў чарзе</item>
+    </plurals>
+    <string name="balances_overall">Агульны баланс</string>
+    <string name="balances_to_receive">Вы атрымліваеце</string>
+    <string name="balances_you_owe">Вы плаціце</string>
+    <string name="balances_group_to_receive">Вы атрымліваеце %1$s</string>
+    <string name="balances_group_you_owe">Вы плаціце %1$s</string>
+    <string name="balances_group_even">Разлічана цалкам</string>
+    <string name="balances_waiting">чакае адпраўкі</string>
+    <string name="balances_updated_at">Абноўлена: %1$s</string>
+    <string name="balances_sign_out">Выйсці</string>
+    <string name="balances_sign_out_title">Выйсці на гэтым гадзінніку?</string>
+    <string name="balances_sign_out_body">Яго даныя будуць сцёрты пасля адпраўкі таго, што стаіць у чарзе. На тэлефоне Вы застаняцеся ў сістэме.</string>
+    <string name="balances_sign_out_scheduled">Выхад запланаваны</string>
+    <string name="balances_sign_out_scheduled_detail">Выхад адбудзецца, як толькі ўсё будзе адпраўлена</string>
+    <string name="balances_settled_title">Нічога незакрытага</string>
+    <string name="balances_settled_body">Вы нікому не плаціце, і Вам ніхто не плаціць. Новыя групы і выдаткі з’явяцца тут самі.</string>
+    <string name="group_you_owe_person">Вы плаціце: %1$s</string>
+    <string name="group_owes_you">%1$s мае заплаціць Вам</string>
+    <string name="group_former_member">Былы ўдзельнік</string>
+    <string name="group_i_paid">Заплачана</string>
+    <string name="group_confirm_title">Вы заплацілі %1$s удзельніку %2$s?</string>
+    <string name="group_confirm_body">%1$s. Група ўбачыць гэта адразу або калі вернецца інтэрнэт.</string>
+    <string name="group_payment_recorded">Плацёж запісаны</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Балансы</string>
+    <string name="tile_to_receive_total">Вы атрымліваеце ўсяго</string>
+    <string name="tile_to_pay_total">Вы плаціце ўсяго</string>
+    <string name="tile_owed_to_you">Вы атрымліваеце %1$s</string>
+    <string name="tile_you_owe">Вы плаціце %1$s</string>
+    <string name="tile_settled_title">Усе разлікі завершаны</string>
+    <string name="tile_settled_body">Нічога не трэба плаціць ці атрымліваць</string>
+    <string name="tile_open">Адкрыць</string>
+    <string name="complication_name">Агульны баланс</string>
+    <string name="complication_you_owe">Вы плаціце %1$s</string>
+    <string name="complication_owed_to_you">Вы атрымліваеце %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Атрымана</string>
+    <string name="push_view_group">Паглядзець групу</string>
+</resources>

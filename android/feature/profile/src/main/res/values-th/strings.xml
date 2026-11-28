@@ -124,6 +124,13 @@
     <string name="profile_language_basque">บาสก์</string>
     <string name="profile_language_galician">กาลิเซีย</string>
     <string name="profile_language_romansh">โรมานช์</string>
+    <string name="profile_language_zulu">ซูลู</string>
+    <string name="profile_language_afrikaans">แอฟริกานส์</string>
+    <string name="profile_language_georgian">จอร์เจีย</string>
+    <string name="profile_language_armenian">อาร์เมเนีย</string>
+    <string name="profile_language_albanian">แอลเบเนีย</string>
+    <string name="profile_language_macedonian">มาซิโดเนีย</string>
+    <string name="profile_language_belarusian">เบลารุส</string>
     <string name="profile_language_system_detail">ภาษาของอุปกรณ์</string>
     <string name="profile_notifications">การแจ้งเตือน</string>
     <plurals name="profile_notifications_active">

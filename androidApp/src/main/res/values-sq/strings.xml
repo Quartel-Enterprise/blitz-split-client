@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Nuk jeni në këtë grup</string>
+    <string name="bill_link_not_in_group_message">Ky koment është në një grup ku nuk jeni. Kërkojini ftesën atij që ju dërgoi lidhjen.</string>
+    <string name="bill_link_offline_title">Pa internet</string>
+    <string name="bill_link_offline_message">Hapeni sërish lidhjen sapo të jeni në linjë.</string>
+    <string name="bill_link_go_home">Shko te Kreu</string>
+    <string name="discard_changes_title">Të hidhen poshtë ndryshimet?</string>
+    <string name="discard_changes_message">Ndryshimet e paruajtura do të humbasin.</string>
+    <string name="discard_changes_discard">Hidh poshtë</string>
+    <string name="discard_changes_keep_editing">Vazhdo modifikimin</string>
+    <string name="watch_channel_name">Ora</string>
+    <string name="watch_connected_title">%1$s u lidh me llogarinë tuaj</string>
+    <string name="watch_connected_title_unnamed">Ora u lidh me llogarinë tuaj</string>
+    <string name="watch_connected_text">Sheh grupet tuaja dhe sinkronizohet vetë. Për ta shkëputur, dilni nga llogaria në orë.</string>
+</resources>

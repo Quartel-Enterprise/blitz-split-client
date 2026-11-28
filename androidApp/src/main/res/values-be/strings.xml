@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Вас няма ў гэтай групе</string>
+    <string name="bill_link_not_in_group_message">Гэты каментарый у групе, дзе Вас няма. Папрасіце запрашэнне ў таго, хто адправіў Вам спасылку.</string>
+    <string name="bill_link_offline_title">Няма інтэрнэту</string>
+    <string name="bill_link_offline_message">Адкрыйце спасылку зноў, калі з’явіцца інтэрнэт.</string>
+    <string name="bill_link_go_home">На Галоўную</string>
+    <string name="discard_changes_title">Адхіліць змены?</string>
+    <string name="discard_changes_message">Незахаваныя змены будуць страчаны.</string>
+    <string name="discard_changes_discard">Адхіліць</string>
+    <string name="discard_changes_keep_editing">Працягнуць рэдагаванне</string>
+    <string name="watch_channel_name">Гадзіннік</string>
+    <string name="watch_connected_title">Падключана да Вашага ўліковага запісу: %1$s</string>
+    <string name="watch_connected_title_unnamed">Гадзіннік падключаны да Вашага ўліковага запісу</string>
+    <string name="watch_connected_text">Ён бачыць Вашы групы і сінхранізуецца сам. Каб адключыць яго, выйдзіце з уліковага запісу на гадзінніку.</string>
+</resources>

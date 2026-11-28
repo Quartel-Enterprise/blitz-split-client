@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Не сте во оваа група</string>
+    <string name="bill_link_not_in_group_message">Овој коментар е во група во која не сте. Побарајте ја поканата од тој што Ви го испратил линкот.</string>
+    <string name="bill_link_offline_title">Нема интернет</string>
+    <string name="bill_link_offline_message">Отворете го линкот повторно кога ќе се вратите онлајн.</string>
+    <string name="bill_link_go_home">Оди на Почетна</string>
+    <string name="discard_changes_title">Да се отфрлат промените?</string>
+    <string name="discard_changes_message">Незачуваните промени ќе се изгубат.</string>
+    <string name="discard_changes_discard">Отфрли</string>
+    <string name="discard_changes_keep_editing">Продолжи со уредување</string>
+    <string name="watch_channel_name">Часовник</string>
+    <string name="watch_connected_title">%1$s: поврзано со Вашата корисничка сметка</string>
+    <string name="watch_connected_title_unnamed">Часовникот е поврзан со Вашата корисничка сметка</string>
+    <string name="watch_connected_text">Ги гледа Вашите групи и се синхронизира сам. За да го исклучите, одјавете се на часовникот.</string>
+</resources>

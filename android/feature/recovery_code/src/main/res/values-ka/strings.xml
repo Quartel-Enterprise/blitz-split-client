@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">შეინახეთ თქვენი აღდგენის კოდი</string>
+    <string name="recovery_code_body">აპს ანგარიშის გარეშე იყენებთ. ეს 12 სიტყვა თქვენს მონაცემებს დააბრუნებს, თუ მოწყობილობას შეცვლით ან დაკარგავთ. ჩაიწერეთ ისინი თანმიმდევრობით. 30-დღიანი უმოქმედობის შემდეგ თქვენი მონაცემები წაიშლება და სიტყვები აღარ იმუშავებს.</string>
+    <string name="recovery_code_copy">სიტყვების კოპირება</string>
+    <string name="recovery_code_save_to_password_manager">პაროლების მენეჯერში შენახვა</string>
+    <string name="recovery_code_connect_instead">სანაცვლოდ Google-ის ან Apple-ის დაკავშირება</string>
+    <string name="recovery_code_connect_instead_body">კოდი საჭირო არ არის</string>
+    <string name="recovery_code_sign_in_failed">ამჟამად დაკავშირება ვერ მოხერხდა. სცადეთ ხელახლა.</string>
+    <string name="recovery_code_also_in_profile">ის ასევე არის აქ: პროფილი › აღდგენა.</string>
+    <string name="recovery_code_remind_later">მოგვიანებით შემახსენეთ</string>
+    <string name="recovery_code_saved">შევინახე</string>
+    <string name="recovery_code_download">ჩამოტვირთვა</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · აღდგენის კოდი\n\n%1$s\n\nგამოიყენეთ ის ღილაკით \"სხვა მოწყობილობაზე უკვე ვიყენებდი\", რომ თქვენი მონაცემები დააბრუნოთ.\n</string>
+</resources>

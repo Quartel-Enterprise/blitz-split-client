@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · ikhodi yokubuyisela</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Vumela ikhamera ezilungiselelweni ukuze uthathe isithombe.</string>
+    <string name="platform_camera_settings">Izilungiselelo</string>
+    <string name="platform_receipt_source_camera">Thatha isithombe</string>
+    <string name="platform_receipt_source_gallery">Khetha kugalari</string>
+    <string name="platform_receipt_source_file">Khetha ifayela</string>
+    <string name="platform_receipt_camera_title">Skena irisidi</string>
+    <string name="platform_receipt_camera_close">Vala</string>
+    <string name="platform_receipt_camera_flash_on">Vula ifulashi</string>
+    <string name="platform_receipt_camera_flash_off">Cisha ifulashi</string>
+    <string name="platform_receipt_camera_hint">Faka irisidi yonke ohlakeni. Sigcwalisa inani, usuku nencazelo; wena uhlola ngaphambi kokulondoloza.</string>
+    <string name="platform_receipt_camera_gallery">Khetha kugalari</string>
+    <string name="platform_receipt_camera_shutter">Thatha isithombe</string>
+    <string name="platform_receipt_camera_unavailable">Ikhamera ayitholakali. Khetha isithombe serisidi kugalari.</string>
+    <string name="platform_receipt_camera_permission">Vumela ikhamera ukuze iskene irisidi, noma ukhethe isithombe kugalari.</string>
+    <string name="platform_receipt_camera_allow">Vumela ikhamera</string>
+    <string name="platform_receipt_camera_settings">Vula izilungiselelo</string>
+</resources>

@@ -72,7 +72,14 @@
         "is": "“Staða við fólk” á Heim teygist ekki lengur yfir breiðan glugga: fólk birtist sem spjöld með fastri breidd.",
         "eu": "Hasierako “Saldoak pertsonekin” ez da gehiago leiho zabal batean zehar luzatzen: pertsonak zabalera finkoko txartel gisa ageri dira.",
         "gl": "“Saldos con persoas” en Inicio xa non se estira ao longo dunha xanela ancha: as persoas móstranse como tarxetas de largura fixa.",
-        "rm": "“Saldos cun persunas” sin Start na sa stenda betg pli sur ina fanestra largia: las persunas cumparan sco cartas cun ina largezza fixa."
+        "rm": "“Saldos cun persunas” sin Start na sa stenda betg pli sur ina fanestra largia: las persunas cumparan sco cartas cun ina largezza fixa.",
+        "zu": "“Amabhalansi nabantu” ku-Ikhaya awasaluleki kulo lonke iwindi elibanzi: abantu baboniswa njengamakhadi anobubanzi obungashintshi.",
+        "af": "“Saldo's met mense” op Tuis rek nie meer oor 'n breë venster nie: mense verskyn as kaarte met 'n vaste breedte.",
+        "ka": "“ბალანსები ადამიანებთან” ჩანართზე მთავარი აღარ იჭიმება ფართო ფანჯარაში: ადამიანები ფიქსირებული სიგანის ბარათებად ჩანან.",
+        "hy": "“Հաշվեկշիռներ մարդկանց հետ” բաժինը Գլխավոր էջում այլևս չի ձգվում լայն պատուհանի ամբողջ լայնությամբ: մարդիկ ցուցադրվում են ֆիքսված լայնությամբ քարտերով։",
+        "sq": "“Bilancet me njerëzit” te Kreu nuk shtrihet më në të gjithë një dritare të gjerë: njerëzit shfaqen si karta me gjerësi fikse.",
+        "mk": "“Салда со луѓе” на Почетна повеќе не се растегнува низ широк прозорец: луѓето се прикажуваат како картички со фиксна ширина.",
+        "be": "“Балансы з людзьмі” на Галоўнай больш не расцягваецца на ўсё шырокае акно: людзі паказваюцца як карткі фіксаванай шырыні."
       }
     },
     {
@@ -148,7 +155,14 @@
         "is": "Í “Staða við fólk” á Heim birtist fólk sem kemst ekki fyrir sem andlit og “+N”, sem opnar skjáinn Staða.",
         "eu": "Hasierako “Saldoak pertsonekin” atalean, sartzen ez diren pertsonak aurpegiekin eta “+N” batekin ageri dira, eta horrek Saldoak irekitzen du.",
         "gl": "En “Saldos con persoas” en Inicio, as persoas que non caben móstranse coas súas caras e “+N”, que abre Saldos.",
-        "rm": "En “Saldos cun persunas” sin Start cumparan las persunas che na han betg plaz sco lur fatschas e “+N”, che avra Saldos."
+        "rm": "En “Saldos cun persunas” sin Start cumparan las persunas che na han betg plaz sco lur fatschas e “+N”, che avra Saldos.",
+        "zu": "Ku-“Amabhalansi nabantu” ku-Ikhaya, abantu abangangeni baboniswa ngobuso babo kanye no-“+N”, okuvula Amabhalansi.",
+        "af": "In “Saldo's met mense” op Tuis wys die mense wat nie inpas nie as hul gesiggies en “+N”, wat Saldo's oopmaak.",
+        "ka": "ჩანართზე მთავარი, განყოფილებაში “ბალანსები ადამიანებთან”, ადამიანები, რომლებიც არ ეტევა, ჩანან სახეებით და ნიშნით “+N”, რომელიც ბალანსებს ხსნის.",
+        "hy": "Գլխավոր էջի “Հաշվեկշիռներ մարդկանց հետ” բաժնում չտեղավորվող մարդիկ ցուցադրվում են իրենց դեմքերով և “+N” նշանով, որը բացում է Հաշվեկշիռներ բաժինը։",
+        "sq": "Te “Bilancet me njerëzit” në Kreu, njerëzit që nuk nxënë shfaqen me fytyrat e tyre dhe “+N”, që hap Bilancet.",
+        "mk": "Во “Салда со луѓе” на Почетна, луѓето што не собираат се прикажуваат со своите лица и “+N”, што отвора Салда.",
+        "be": "У “Балансы з людзьмі” на Галоўнай людзі, якія не змяшчаюцца, паказваюцца сваімі тварамі і “+N”, што адкрывае Балансы."
       }
     }
   ]

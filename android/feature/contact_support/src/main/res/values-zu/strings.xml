@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Xhumana nosizo</string>
+    <string name="contact_support_description">Sizovula uhlelo lwakho lwe-imeyili nomlayezo osulungile. Chaza okwenzekile bese uwuthumela: abantu bangempela bafunda yonke imilayezo.</string>
+    <string name="contact_support_to">Kuya</string>
+    <string name="contact_support_diagnostics">Kuzofakwa ku-imeyili</string>
+    <string name="contact_support_app_version">Inguqulo yohlelo lokusebenza</string>
+    <string name="contact_support_platform">Iplatifomu</string>
+    <string name="contact_support_language">Ulimi</string>
+    <string name="contact_support_account">I-akhawunti</string>
+    <string name="contact_support_profile">Iphrofayela</string>
+    <string name="contact_support_language_system">Isistimu</string>
+    <string name="contact_support_account_local">Le divayisi kuphela</string>
+    <string name="contact_support_account_anonymous">Akuxhunyiwe</string>
+    <string name="contact_support_open_email">Vula i-imeyili</string>
+    <string name="contact_support_copy_email">Kopisha ikheli le-imeyili</string>
+    <string name="contact_support_notice_copied">Ikheli le-imeyili likopishiwe.</string>
+    <string name="contact_support_notice_no_app">Alutholakalanga uhlelo lwe-imeyili. Ikheli likopishiwe esikhundleni salokho.</string>
+    <string name="contact_support_close">Vala</string>
+</resources>

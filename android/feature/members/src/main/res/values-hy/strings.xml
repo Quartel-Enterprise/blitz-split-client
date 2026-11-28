@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Հրավերի հղում</string>
+    <string name="members_link_pending">Դեռ ստեղծված չէ</string>
+    <string name="members_share">Կիսվել</string>
+    <string name="members_me">%s (Դուք)</string>
+    <string name="members_status_this_device">Այս սարքը</string>
+    <string name="members_status_joined">Միացել է</string>
+    <string name="members_status_not_joined">Դեռ չի միացել</string>
+    <string name="members_options">Ընտրանքներ՝ %s</string>
+    <string name="members_rename">Վերանվանել</string>
+    <string name="members_personal_invite">Անձնական հրավեր՝ %s</string>
+    <string name="members_personal_message">Ով բացի այս հղումը, անմիջապես կմիանա որպես %s՝ առանց ցուցակից ընտրելու։ Այն աշխատում է մեկ անգամ։</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Ով բացի այս հղումը, անմիջապես կմիանա որպես %1$s՝ առանց ցուցակից ընտրելու, և արդեն կտեսնի իր %2$s բաժինը մինչ այժմ ավելացված ծախսում։ Այն աշխատում է մեկ անգամ։</item>
+        <item quantity="other">Ով բացի այս հղումը, անմիջապես կմիանա որպես %1$s՝ առանց ցուցակից ընտրելու, և արդեն կտեսնի իր %2$s բաժինը մինչ այժմ ավելացված %3$d ծախսում։ Այն աշխատում է մեկ անգամ։</item>
+    </plurals>
+    <string name="members_personal_copy">Պատճենել հղումը</string>
+    <string name="members_personal_copied">Պատճենվեց</string>
+    <string name="members_personal_share">Կիսվել՝ %s</string>
+    <string name="members_personal_share_message">Միացեք %1$s խմբին որպես %2$s Blitz Split հավելվածում՝ %3$s</string>
+    <string name="members_remove">Հեռացնել խմբից</string>
+    <string name="members_remove_joined">%s արդեն միացել է խմբին</string>
+    <string name="members_remove_title">Հեռացնե՞լ խմբից՝ %s</string>
+    <string name="members_remove_message">%s դեռ չի միացել։ Հետագայում կարող եք նորից ավելացնել։</string>
+    <string name="members_remove_confirm">Հեռացնել</string>
+    <string name="members_release">Ազատել անունը</string>
+    <string name="members_release_title">Ազատե՞լ անունը՝ %s</string>
+    <string name="members_release_message">Ով միացել է որպես %1$s, դուրս կգա խմբից։ Անունը (%1$s), գույնը և ծախսերը կմնան, և %1$s անունը կրկին կարելի է ընտրել խմբի հղումով։</string>
+    <string name="members_release_confirm">Ազատել</string>
+    <string name="members_release_error">Չհաջողվեց ազատել անունը։ Ստուգեք կապը և փորձեք կրկին։</string>
+    <string name="members_add">Ավելացնել անձ</string>
+    <string name="members_invite_instead">Ունի՞ հավելվածը։ Հրավիրեք հղումով</string>
+    <string name="members_name_label">Անուն</string>
+    <string name="members_save">Պահել</string>
+    <string name="members_cancel">Չեղարկել</string>
+    <string name="members_change_error">Չհաջողվեց պահել փոփոխությունը։ Փորձեք կրկին։</string>
+    <string name="members_remove_open_balance">%s ունի բաց հաշվեկշիռ</string>
+    <string name="members_balance_to_get_back">ստանալու է %s</string>
+    <string name="members_balance_owes">պետք է վճարի %s</string>
+    <string name="members_balance_settled">Հաշիվները մաքրված են</string>
+</resources>

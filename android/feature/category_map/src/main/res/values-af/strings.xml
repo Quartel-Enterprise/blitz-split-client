@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Geen woorde nie</string>
+    <string name="category_map_title">Kategoriekaart</string>
+    <string name="category_map_search">Soek woorde</string>
+    <string name="category_map_add">Voeg woord by</string>
+    <string name="category_map_more">Meer opsies</string>
+    <string name="category_map_restore">Herstel verstek</string>
+    <string name="category_map_back">Terug</string>
+    <string name="category_map_intro">Wanneer \'n uitgawe se titel een van hierdie woorde bevat, kom die kategorie vanself. “Uber huis toe” word Vervoer.</string>
+    <string name="category_map_intro_offline">Die kaart werk vanlyn: veranderinge tel dadelik op hierdie toestel en bereik jou ander toestelle sodra jy weer aanlyn is.</string>
+    <string name="category_map_device_only">Jou kaart bly net op hierdie toestel. Om dit na jou ander toestelle te neem, meld aan met Google of Apple in jou Profiel.</string>
+    <string name="category_map_open_profile">Maak Profiel oop</string>
+    <string name="category_map_longest_wins">Wanneer twee woorde by \'n titel pas, wen die langste een.</string>
+    <string name="category_map_no_result">Geen woord met “%1$s” nie</string>
+    <string name="category_map_no_result_body">Voeg dit by, en uitgawes met hierdie woord in hul titel kom met die regte kategorie aan.</string>
+    <string name="category_map_add_query">Voeg “%1$s” by</string>
+    <string name="category_map_empty_title">Jou kaart is leeg</string>
+    <string name="category_map_empty_body">Sonder woorde kom die kategorie nie uit die titel nie: jy kies dit by elke uitgawe.</string>
+    <string name="category_map_group_category"> · kategorie van %1$s</string>
+    <string name="category_map_only_main">Net %1$s</string>
+    <string name="category_map_only_in_group">net in %1$s</string>
+    <string name="category_map_no_terms_yet">Nog geen woorde nie.</string>
+    <string name="category_map_add_in">Voeg woord by in %1$s</string>
+    <string name="category_map_tip">Tik op \'n woord om sy kategorie te verander of dit te verwyder. Dit pas by die hele woord, ongeag aksente en hoofletters.</string>
+    <string name="category_map_queued">in die tou</string>
+    <string name="category_map_term_action">%1$s, %2$s. Wysig</string>
+    <string name="category_map_new_term">Nuwe woord</string>
+    <string name="category_map_edit_term">Wysig woord</string>
+    <string name="category_map_term_label">Woord of frase</string>
+    <string name="category_map_term_help">Pas by die hele woord, ongeag aksente en hoofletters.</string>
+    <string name="category_map_term_help_app">\'n Woord van die app. Herstel verstek bring dit terug soos dit gekom het.</string>
+    <string name="category_map_term_duplicate">“%1$s” kies reeds %2$s. Elke woord het een kategorie.</string>
+    <string name="category_map_term_too_short">Gebruik ten minste 2 letters.</string>
+    <string name="category_map_term_too_long">Gebruik hoogstens 30 letters.</string>
+    <string name="category_map_term_invalid">Gebruik net letters, syfers en spasies.</string>
+    <string name="category_map_category">Kategorie</string>
+    <string name="category_map_category_help">Dit kan die kategorie of \'n subkategorie wees.</string>
+    <string name="category_map_category_help_edit">As jy dit hier verander, skuif die woord na \'n ander kategorie.</string>
+    <string name="category_map_category_help_move">Skuif haal die woord uit %1$s.</string>
+    <string name="category_map_example">Voorbeeld</string>
+    <string name="category_map_example_move">As dit geskuif word</string>
+    <string name="category_map_remove">Verwyder</string>
+    <string name="category_map_cancel">Kanselleer</string>
+    <string name="category_map_save">Stoor</string>
+    <string name="category_map_move_to">Skuif na %1$s</string>
+    <string name="category_map_removed">“%1$s” is uit die kaart verwyder</string>
+    <string name="category_map_undo">Ontdoen</string>
+    <string name="category_map_restore_title">Herstel die verstekkaart?</string>
+    <string name="category_map_restore_body">Die app se 60 woorde kom terug soos hulle gekom het, ook dié wat jy verwyder of geskuif het.</string>
+    <string name="category_map_restore_own_one">Die woord wat jy geskep het, “%1$s”, bly.</string>
+    <string name="category_map_restore_confirm">Herstel</string>
+    <string name="category_map_save_error">Kon nie die kaart stoor nie. Probeer weer.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d woord</item>
+        <item quantity="other">%d woorde</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d subkategorie</item>
+        <item quantity="other">%d subkategorieë</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d woord met “%2$s”</item>
+        <item quantity="other">%1$d woorde met “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Vanlyn · %d verandering in die tou</item>
+        <item quantity="other">Vanlyn · %d veranderinge in die tou</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Die %d woord wat jy geskep het, bly.</item>
+        <item quantity="other">Die %d woorde wat jy geskep het, bly.</item>
+    </plurals>
+    <string name="category_map_new_category">Nuwe kategorie</string>
+    <string name="category_map_new_subcategory_in">Nuwe subkategorie in %s</string>
+    <string name="category_map_edit_category">Wysig %s</string>
+    <string name="category_map_category_group">Groep</string>
+    <string name="category_map_change_color">Verander kleur van %1$s</string>
+    <string name="category_map_restore_color">Herstel kleur</string>
+    <string name="category_map_color_done">Klaar</string>
+</resources>

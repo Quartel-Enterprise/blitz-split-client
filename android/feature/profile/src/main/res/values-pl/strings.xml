@@ -127,6 +127,13 @@
     <string name="profile_language_basque">Baskijski</string>
     <string name="profile_language_galician">Galicyjski</string>
     <string name="profile_language_romansh">Retoromański</string>
+    <string name="profile_language_zulu">Zulu</string>
+    <string name="profile_language_afrikaans">Afrikaans</string>
+    <string name="profile_language_georgian">Gruziński</string>
+    <string name="profile_language_armenian">Ormiański</string>
+    <string name="profile_language_albanian">Albański</string>
+    <string name="profile_language_macedonian">Macedoński</string>
+    <string name="profile_language_belarusian">Białoruski</string>
     <string name="profile_language_system_detail">Język urządzenia</string>
     <string name="profile_notifications">Powiadomienia</string>
     <plurals name="profile_notifications_active">

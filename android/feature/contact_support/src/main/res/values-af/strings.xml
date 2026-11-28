@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Kontak ondersteuning</string>
+    <string name="contact_support_description">Ons maak jou e-posapp oop met \'n boodskap wat gereed is. Beskryf wat gebeur het en stuur dit: regte mense lees elke boodskap.</string>
+    <string name="contact_support_to">Aan</string>
+    <string name="contact_support_diagnostics">Word by die e-pos ingesluit</string>
+    <string name="contact_support_app_version">Appweergawe</string>
+    <string name="contact_support_platform">Platform</string>
+    <string name="contact_support_language">Taal</string>
+    <string name="contact_support_account">Rekening</string>
+    <string name="contact_support_profile">Profiel</string>
+    <string name="contact_support_language_system">Stelsel</string>
+    <string name="contact_support_account_local">Net hierdie toestel</string>
+    <string name="contact_support_account_anonymous">Nie gekoppel nie</string>
+    <string name="contact_support_open_email">Maak e-pos oop</string>
+    <string name="contact_support_copy_email">Kopieer e-posadres</string>
+    <string name="contact_support_notice_copied">E-posadres gekopieer.</string>
+    <string name="contact_support_notice_no_app">Geen e-posapp gevind nie. Die adres is eerder gekopieer.</string>
+    <string name="contact_support_close">Maak toe</string>
+</resources>

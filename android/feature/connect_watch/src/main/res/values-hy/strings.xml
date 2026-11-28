@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Կապել ժամացույցը</string>
+    <string name="connect_watch_close">Փակել</string>
+    <string name="connect_watch_body">Մուտքագրեք այն կոդը, որը ցույց է տալիս Ձեր ժամացույցը։ Այն մուտք կգործի Ձեր հաշիվ և հետո ինքնուրույն կհամաժամացվի։</string>
+    <string name="connect_watch_code_label">Ժամացույցի կոդ</string>
+    <string name="connect_watch_error_invalid">Սխալ կամ ժամկետանց կոդ։ Ստացեք նորը ժամացույցում։</string>
+    <string name="connect_watch_error_too_many">Չափազանց շատ սխալ կոդեր։ Սպասեք մի քանի րոպե և փորձեք կրկին։</string>
+    <string name="connect_watch_error_needs_account">Նախ կապեք հաշիվ. Ձեր տվյալները միայն այս սարքում են։</string>
+    <string name="connect_watch_error_failed">Չհաջողվեց կապել ժամացույցը։ Փորձեք կրկին։</string>
+    <string name="connect_watch_offline">Ժամացույցը կապելու համար ինտերնետ է պետք։</string>
+    <string name="connect_watch_own_watch_only">Մուտքագրեք միայն Ձեր սեփական ժամացույցում ցուցադրված կոդը. ով ունի այդ ժամացույցը, մուտք է գործում Ձեր հաշիվ։</string>
+    <string name="connect_watch_validity">Կոդը վավեր է 5 րոպե՝ մեկ անգամ։</string>
+    <string name="connect_watch_button">Կապել</string>
+    <string name="connect_watch_connected_title">Ժամացույցը կապված է</string>
+    <string name="connect_watch_connected_body">Այն տեսնում է Ձեր խմբերը և ինքնուրույն համաժամացվում է։ Այն անջատելու համար դուրս եկեք ժամացույցում։</string>
+</resources>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Awekho amagama</string>
+    <string name="category_map_title">Imephu yezigaba</string>
+    <string name="category_map_search">Sesha amagama</string>
+    <string name="category_map_add">Engeza igama</string>
+    <string name="category_map_more">Ezinye izinketho</string>
+    <string name="category_map_restore">Buyisela okuzenzakalelayo</string>
+    <string name="category_map_back">Emuva</string>
+    <string name="category_map_intro">Uma isihloko sesindleko sinelinye lala magama, isigaba saso sizifikela. “Uber ekhaya” iba Ezokuthutha.</string>
+    <string name="category_map_intro_offline">Imephu iyasebenza ungaxhunyiwe: izinguquko ziyabalwa ngokushesha kule divayisi futhi zifinyelela kwezinye izidivayisi zakho uma usuxhunyiwe futhi.</string>
+    <string name="category_map_device_only">Imephu yakho ihlala kule divayisi kuphela. Ukuze uyise kwezinye izidivayisi zakho, ngena ngemvume nge-Google noma nge-Apple kuphrofayela yakho.</string>
+    <string name="category_map_open_profile">Vula iphrofayela</string>
+    <string name="category_map_longest_wins">Uma amagama amabili efana nesihloko, kuwina elide kakhulu.</string>
+    <string name="category_map_no_result">Alikho igama elinokuthi “%1$s”</string>
+    <string name="category_map_no_result_body">Lingeze futhi izindleko ezinaleli gama esihlokweni sazo zizofika nesigaba esifanele.</string>
+    <string name="category_map_add_query">Engeza “%1$s”</string>
+    <string name="category_map_empty_title">Imephu yakho ayinalutho</string>
+    <string name="category_map_empty_body">Ngaphandle kwamagama, isigaba asiveli esihlokweni: usikhetha esindlekweni ngasinye.</string>
+    <string name="category_map_group_category"> · isigaba seqembu elithi ‘%1$s’</string>
+    <string name="category_map_only_main">Kuphela: %1$s</string>
+    <string name="category_map_only_in_group">kuphela: %1$s</string>
+    <string name="category_map_no_terms_yet">Awekho amagama okwamanje.</string>
+    <string name="category_map_add_in">Engeza igama esigabeni esithi %1$s</string>
+    <string name="category_map_tip">Thepha igama ukuze ushintshe isigaba salo noma ulisuse. Lifana negama lonke, linganaki izimpawu zokuphimisa noma osonhlamvukazi.</string>
+    <string name="category_map_queued">kulayini</string>
+    <string name="category_map_term_action">%1$s, %2$s. Hlela</string>
+    <string name="category_map_new_term">Igama elisha</string>
+    <string name="category_map_edit_term">Hlela igama</string>
+    <string name="category_map_term_label">Igama noma umusho</string>
+    <string name="category_map_term_help">Lifana negama lonke, linganaki izimpawu zokuphimisa noma osonhlamvukazi.</string>
+    <string name="category_map_term_help_app">Igama lohlelo lokusebenza. Ukubuyisela okuzenzakalelayo kulibuyisa njengoba lalinjalo.</string>
+    <string name="category_map_term_duplicate">“%1$s” selivele likhetha isigaba esithi %2$s. Igama ngalinye linesigaba esisodwa.</string>
+    <string name="category_map_term_too_short">Sebenzisa okungenani izinhlamvu ezingu-2.</string>
+    <string name="category_map_term_too_long">Sebenzisa izinhlamvu ezingeqi kwezingu-30.</string>
+    <string name="category_map_term_invalid">Sebenzisa izinhlamvu, izinombolo nezikhala kuphela.</string>
+    <string name="category_map_category">Isigaba</string>
+    <string name="category_map_category_help">Kungaba yisigaba noma isigatshana.</string>
+    <string name="category_map_category_help_edit">Ukukushintsha lapha kuthuthela igama kwesinye isigaba.</string>
+    <string name="category_map_category_help_move">Ukuthutha kukhipha igama esigabeni esithi %1$s.</string>
+    <string name="category_map_example">Isibonelo</string>
+    <string name="category_map_example_move">Uma lithuthiwe</string>
+    <string name="category_map_remove">Susa</string>
+    <string name="category_map_cancel">Khansela</string>
+    <string name="category_map_save">Londoloza</string>
+    <string name="category_map_move_to">Thuthela esigabeni esithi %1$s</string>
+    <string name="category_map_removed">“%1$s” liphumile emephini</string>
+    <string name="category_map_undo">Hlehlisa</string>
+    <string name="category_map_restore_title">Buyisela imephu ezenzakalelayo?</string>
+    <string name="category_map_restore_body">Amagama angu-60 ohlelo lokusebenza abuya njengoba ayenjalo, kuhlanganise nalawo owawasusa noma owawathutha.</string>
+    <string name="category_map_restore_own_one">Igama owalidala, elithi “%1$s”, liyahlala.</string>
+    <string name="category_map_restore_confirm">Buyisela</string>
+    <string name="category_map_save_error">Akukwazekanga ukulondoloza imephu. Zama futhi.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">igama elingu-%d</item>
+        <item quantity="other">amagama angu-%d</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">isigatshana esingu-%d</item>
+        <item quantity="other">izigatshana ezingu-%d</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">igama elingu-%1$d elinokuthi “%2$s”</item>
+        <item quantity="other">amagama angu-%1$d anokuthi “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Ungaxhunyiwe · ushintsho olungu-%d lukulayini</item>
+        <item quantity="other">Ungaxhunyiwe · izinguquko ezingu-%d zikulayini</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Amagama angu-%d owawadala ayahlala.</item>
+        <item quantity="other">Amagama angu-%d owawadala ayahlala.</item>
+    </plurals>
+    <string name="category_map_new_category">Isigaba esisha</string>
+    <string name="category_map_new_subcategory_in">Isigatshana esisha esigabeni esithi %s</string>
+    <string name="category_map_edit_category">Hlela: %s</string>
+    <string name="category_map_category_group">Iqembu</string>
+    <string name="category_map_change_color">Shintsha umbala: %1$s</string>
+    <string name="category_map_restore_color">Buyisela umbala</string>
+    <string name="category_map_color_done">Kwenziwe</string>
+</resources>

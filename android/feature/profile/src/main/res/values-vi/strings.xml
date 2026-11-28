@@ -124,6 +124,13 @@
     <string name="profile_language_basque">Tiếng Basque</string>
     <string name="profile_language_galician">Tiếng Galicia</string>
     <string name="profile_language_romansh">Tiếng Romansh</string>
+    <string name="profile_language_zulu">Tiếng Zulu</string>
+    <string name="profile_language_afrikaans">Tiếng Afrikaans</string>
+    <string name="profile_language_georgian">Tiếng Gruzia</string>
+    <string name="profile_language_armenian">Tiếng Armenia</string>
+    <string name="profile_language_albanian">Tiếng Albania</string>
+    <string name="profile_language_macedonian">Tiếng Macedonia</string>
+    <string name="profile_language_belarusian">Tiếng Belarus</string>
     <string name="profile_language_system_detail">Ngôn ngữ của thiết bị</string>
     <string name="profile_notifications">Thông báo</string>
     <plurals name="profile_notifications_active">

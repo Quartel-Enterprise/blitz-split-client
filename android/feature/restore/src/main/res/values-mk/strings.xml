@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Вратете ги Вашите групи</string>
+    <string name="restore_subtitle">Претходно сте се најавиле со корисничка сметка? Само најавете се повторно. Ако не, користете го кодот за враќање или QR кодот од Вашиот стар уред.</string>
+    <string name="restore_no_connection_title">Нема врска</string>
+    <string name="restore_no_connection_body">За најава со корисничка сметка или код потребен е интернет за да се преземат Вашите групи. Она што го внесовте е зачувано.</string>
+    <string name="restore_code_label">Или користете го кодот за враќање</string>
+    <string name="restore_code_hint">12-те зборови по ред. Залепете ги сите во едно поле за да се пополнат сите полиња.</string>
+    <string name="restore_scan_qr_title">Скенирајте го QR кодот од Вашиот стар уред</string>
+    <string name="restore_scan_qr_body">Таму: Профил › Враќање › Прикажи QR код</string>
+    <string name="restore_recover">Врати</string>
+    <string name="restore_try_again">Обиди се повторно</string>
+    <string name="restore_start_fresh">Почни одново на овој уред</string>
+    <string name="restore_error_invalid_code">Кодот не е пронајден. Проверете ги зборовите и нивниот редослед, па обидете се повторно.</string>
+    <string name="restore_error_too_many_attempts">Премногу обиди. Почекајте неколку минути и обидете се повторно.</string>
+    <string name="restore_error_sign_in_failed">Најавата моментално не успеа. Обидете се повторно.</string>
+    <string name="restore_error_unknown">Нешто тргна наопаку. Обидете се повторно.</string>
+</resources>

@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Баски</string>
     <string name="profile_language_galician">Галисийски</string>
     <string name="profile_language_romansh">Реторомански</string>
+    <string name="profile_language_zulu">Зулу</string>
+    <string name="profile_language_afrikaans">Африканс</string>
+    <string name="profile_language_georgian">Грузински</string>
+    <string name="profile_language_armenian">Арменски</string>
+    <string name="profile_language_albanian">Албански</string>
+    <string name="profile_language_macedonian">Македонски</string>
+    <string name="profile_language_belarusian">Беларуски</string>
     <string name="profile_language_system_detail">Език на устройството</string>
     <string name="profile_notifications">Известия</string>
     <plurals name="profile_notifications_active">

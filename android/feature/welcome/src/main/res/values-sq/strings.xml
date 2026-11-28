@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Ndani shpenzimin, pa mundim</string>
+    <string name="welcome_offline_title">Funksionon jashtë linje</string>
+    <string name="welcome_offline_body">Gjithçka qëndron në pajisjen tuaj dhe sinkronizohet më vonë.</string>
+    <string name="welcome_optional_title">Llogaria është opsionale</string>
+    <string name="welcome_optional_body">Google ose Apple thjesht ju mbrojnë nga humbja e të dhënave kur ndërroni pajisje.</string>
+    <string name="welcome_invite_title">Ftoni me lidhje ose kod QR</string>
+    <string name="welcome_invite_body">Miqtë bashkohen me grupin pa krijuar llogari.</string>
+    <string name="welcome_no_connection_title">Pa lidhje.</string>
+    <string name="welcome_no_connection_body">Identifikimi me llogari kërkon internet. Përdoreni tani pa llogari dhe lidheni më vonë te Profili.</string>
+    <string name="welcome_or">ose</string>
+    <string name="welcome_use_without_account">Përdor pa llogari</string>
+    <string name="welcome_used_on_another_device">E kam përdorur në një pajisje tjetër</string>
+    <string name="welcome_sign_in_failed">Identifikimi nuk u krye tani. Provoni përsëri.</string>
+    <string name="welcome_legal_notice">Duke vazhduar, pranoni %1$s dhe keni marrë dijeni për: %2$s.</string>
+    <string name="welcome_legal_terms">Kushtet e shërbimit</string>
+    <string name="welcome_legal_privacy">Politika e privatësisë</string>
+    <string name="welcome_no_account_note">Pa llogari, të dhënat tuaja fshihen pas 30 ditësh pa përdorim. Lidhni Google ose Apple për t\'i ruajtur.</string>
+    <string name="welcome_no_account_note_offline">Pa llogari, të dhënat tuaja fshihen pas 30 ditësh pa përdorim. Lidhni Google ose Apple më vonë, te Profili, për t\'i ruajtur.</string>
+    <string name="welcome_expired_title">Të dhënat tuaja u fshinë</string>
+    <string name="welcome_expired_body">E përdornit aplikacionin pa llogari dhe nuk e hapët për 30 ditë, ndaj të dhënat tuaja u fshinë. Lidhni Google ose Apple për t\'i ruajtur herën tjetër.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

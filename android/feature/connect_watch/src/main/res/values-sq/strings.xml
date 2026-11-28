@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Lidh orën</string>
+    <string name="connect_watch_close">Mbyll</string>
+    <string name="connect_watch_body">Shkruani kodin që shfaq ora juaj. Ajo identifikohet në llogarinë tuaj dhe pastaj sinkronizohet vetë.</string>
+    <string name="connect_watch_code_label">Kodi i orës</string>
+    <string name="connect_watch_error_invalid">Kod i gabuar ose i skaduar. Merrni një të ri në orë.</string>
+    <string name="connect_watch_error_too_many">Shumë kode të gabuara. Prisni disa minuta dhe provoni përsëri.</string>
+    <string name="connect_watch_error_needs_account">Lidhni më parë një llogari: të dhënat tuaja janë vetëm në këtë pajisje.</string>
+    <string name="connect_watch_error_failed">Ora nuk u lidh. Provoni përsëri.</string>
+    <string name="connect_watch_offline">Lidhja e orës kërkon internet.</string>
+    <string name="connect_watch_own_watch_only">Shkruani vetëm një kod të shfaqur në orën tuaj: kushdo që ka atë orë hyn në llogarinë tuaj.</string>
+    <string name="connect_watch_validity">Kodi është i vlefshëm për 5 minuta, një herë.</string>
+    <string name="connect_watch_button">Lidh</string>
+    <string name="connect_watch_connected_title">Ora u lidh</string>
+    <string name="connect_watch_connected_body">Sheh grupet tuaja dhe sinkronizohet vetë. Për ta shkëputur, dilni nga llogaria në orë.</string>
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">ანგარიშის წაშლა</string>
+    <string name="delete_account_offline_title">ინტერნეტი არ არის.</string>
+    <string name="delete_account_offline_body">ანგარიშის წასაშლელად ინტერნეტთან კავშირია საჭირო. დაუკავშირდით და სცადეთ ხელახლა.</string>
+    <string name="delete_account_heading">წავშალოთ თქვენი ანგარიში და მონაცემები?</string>
+    <string name="delete_account_deleted_title">რა წაიშლება</string>
+    <string name="delete_account_deleted_profile">თქვენი პროფილი (სახელი, ფოტო და ფერი)</string>
+    <string name="delete_account_deleted_keys">თქვენი Pix და Bitcoin გასაღებები</string>
+    <string name="delete_account_deleted_provider">კავშირი თქვენს %1$s ანგარიშთან</string>
+    <string name="delete_account_deleted_recovery_code">თქვენი აღდგენის კოდი</string>
+    <string name="delete_account_deleted_device">თქვენი მონაცემების ასლი ამ მოწყობილობაზე</string>
+    <string name="delete_account_kept_title">რა რჩება თქვენს ჯგუფებში</string>
+    <string name="delete_account_kept_groups">ჯგუფები, მათი ხარჯებითა და გადახდებით, დანარჩენი წევრებისთვის</string>
+    <string name="delete_account_kept_member">თქვენი სახელი თითოეულ ჯგუფში, როგორც ანგარიშის არმქონე წევრი</string>
+    <string name="delete_account_kept_comments">თქვენი კომენტარები და დამატებული ფოტოები, თქვენი სახელით</string>
+    <string name="delete_account_export">ჯერ ჩემი მონაცემების ექსპორტი</string>
+    <string name="delete_account_confirm">მესმის, რომ ამის გაუქმება შეუძლებელია</string>
+    <string name="delete_account_delete">ანგარიშის წაშლა</string>
+    <string name="delete_account_cancel">გაუქმება</string>
+    <string name="delete_account_failed">ანგარიშის წაშლა ვერ მოხერხდა. სცადეთ ხელახლა.</string>
+</resources>

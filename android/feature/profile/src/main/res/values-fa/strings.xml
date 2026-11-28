@@ -125,6 +125,13 @@
     <string name="profile_language_basque">باسکی</string>
     <string name="profile_language_galician">گالیسیایی</string>
     <string name="profile_language_romansh">رومانش</string>
+    <string name="profile_language_zulu">زولو</string>
+    <string name="profile_language_afrikaans">آفریکانس</string>
+    <string name="profile_language_georgian">گرجی</string>
+    <string name="profile_language_armenian">ارمنی</string>
+    <string name="profile_language_albanian">آلبانیایی</string>
+    <string name="profile_language_macedonian">مقدونی</string>
+    <string name="profile_language_belarusian">بلاروسی</string>
     <string name="profile_language_system_detail">زبان دستگاه</string>
     <string name="profile_notifications">اعلان‌ها</string>
     <plurals name="profile_notifications_active">

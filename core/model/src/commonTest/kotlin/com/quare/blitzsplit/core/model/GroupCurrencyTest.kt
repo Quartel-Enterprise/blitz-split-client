@@ -370,6 +370,78 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN South Africa WHEN picking its currency THEN it is the rand with its 2 decimals`() {
+        // Given
+        val region = "ZA"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.ZAR to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Georgia WHEN picking its currency THEN it is the lari with its 2 decimals`() {
+        // Given
+        val region = "GE"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.GEL to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Armenia WHEN picking its currency THEN it is the dram typed without decimals`() {
+        // Given
+        val region = "AM"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.AMD to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Albania WHEN picking its currency THEN it is the lek typed without decimals`() {
+        // Given
+        val region = "AL"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.ALL to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN North Macedonia WHEN picking its currency THEN it is the denar typed without decimals`() {
+        // Given
+        val region = "MK"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.MKD to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Belarus WHEN picking its currency THEN it is the Belarusian ruble with its 2 decimals`() {
+        // Given
+        val region = "BY"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.BYN to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
     fun `GIVEN India WHEN picking its currency THEN it is the rupee with its 2 decimals`() {
         // Given
         val region = "IN"

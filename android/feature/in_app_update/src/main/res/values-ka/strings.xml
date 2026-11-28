@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">განახლება იტვირთება…</string>
+    <string name="in_app_update_download_failed">განახლების ჩამოტვირთვა ვერ მოხერხდა. სცადეთ მოგვიანებით.</string>
+</resources>

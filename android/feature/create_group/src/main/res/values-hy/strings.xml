@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Նոր խումբ</string>
+    <string name="create_group_close">Փակել</string>
+    <string name="create_group_create">Ստեղծել</string>
+    <string name="create_group_change_color">Փոխել խմբի գույնը</string>
+    <string name="create_group_name_label">Խմբի անուն</string>
+    <string name="create_group_type_label">Խմբի տեսակ</string>
+    <string name="create_group_members_title">Ովքեր են մասնակցում</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d հոգի</item>
+        <item quantity="other">%d հոգի</item>
+    </plurals>
+    <string name="create_group_me">Դուք</string>
+    <string name="create_group_remove_member">Հեռացնել՝ %s</string>
+    <string name="create_group_add_placeholder">Ավելացնել անունով</string>
+    <string name="create_group_add">Ավելացնել</string>
+    <string name="create_group_no_app_notice">Այս պահին ոչ ոքի հավելվածը պետք չէ։ Արդեն կարող եք ծախսեր ավելացնել բոլորի համար և հղումն ուղարկել ավելի ուշ։</string>
+    <string name="create_group_currency">Լռելյայն արժույթ</string>
+    <string name="create_group_currency_caption">Նոր ծախսերը սկսվում են այս արժույթով. յուրաքանչյուր ծախս կարող է օգտագործել այլ արժույթ։</string>
+    <string name="create_group_save_error">Չհաջողվեց պահել խումբը։ Փորձեք կրկին։</string>
+    <string name="create_group_photo">Խմբի լուսանկար</string>
+    <string name="create_group_take_photo">Լուսանկարել</string>
+    <string name="create_group_choose_photo">Ընտրել լուսանկար</string>
+    <string name="create_group_remove_photo">Հեռացնել լուսանկարը</string>
+    <string name="create_group_photo_error">Չհաջողվեց օգտագործել այս լուսանկարը։ Փորձեք մեկ այլը։</string>
+</resources>

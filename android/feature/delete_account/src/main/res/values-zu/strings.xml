@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Susa i-akhawunti</string>
+    <string name="delete_account_offline_title">Ayikho i-inthanethi.</string>
+    <string name="delete_account_offline_body">Ukususa i-akhawunti yakho kudinga uxhumano lwe-inthanethi. Xhuma bese uzama futhi.</string>
+    <string name="delete_account_heading">Susa i-akhawunti yakho nedatha yakho?</string>
+    <string name="delete_account_deleted_title">Okuzosuswa</string>
+    <string name="delete_account_deleted_profile">Iphrofayela yakho (igama, isithombe nombala)</string>
+    <string name="delete_account_deleted_keys">Okhiye bakho be-Pix ne-Bitcoin</string>
+    <string name="delete_account_deleted_provider">Ukuxhuma ku-akhawunti yakho ethi %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Ikhodi yakho yokubuyisela</string>
+    <string name="delete_account_deleted_device">Ikhophi yedatha yakho kule divayisi</string>
+    <string name="delete_account_kept_title">Okuhlala emaqenjini akho</string>
+    <string name="delete_account_kept_groups">Amaqembu, nezindleko nezinkokhelo zawo, kwamanye amalungu</string>
+    <string name="delete_account_kept_member">Igama lakho eqenjini ngalinye, njengelungu elingenayo i-akhawunti</string>
+    <string name="delete_account_kept_comments">Amazwana akho nezithombe owazengeza, ngaphansi kwegama lakho</string>
+    <string name="delete_account_export">Khipha idatha yami kuqala</string>
+    <string name="delete_account_confirm">Ngiyaqonda ukuthi lokhu ngeke kuhlehliswe</string>
+    <string name="delete_account_delete">Susa i-akhawunti</string>
+    <string name="delete_account_cancel">Khansela</string>
+    <string name="delete_account_failed">Akukwazekanga ukususa i-akhawunti yakho. Zama futhi.</string>
+</resources>

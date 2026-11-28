@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Потсетник за порамнување</string>
+    <string name="push_bill_created">%1$s го додаде трошокот “%2$s” со Вас</string>
+    <string name="push_bill_edited">%1$s го уреди трошокот “%2$s”</string>
+    <string name="push_bill_deleted">%1$s го избриша трошокот “%2$s”</string>
+    <string name="push_comment_added">%1$s коментираше на “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s означи дека Ви плати</string>
+    <string name="push_payment_to_you">%1$s означи дека %2$s Ви плати</string>
+    <string name="push_payment_received_yours">%1$s го означи Вашето плаќање како примено</string>
+    <string name="push_payment_from_you">%1$s означи дека плативте на %2$s</string>
+    <string name="push_payment_undone">%1$s поништи плаќање со Вас</string>
+    <string name="push_charge_sent">%1$s Ви испрати потсетник за порамнување</string>
+    <string name="push_settle_reminder">Имате отворено салдо во групата %1$s</string>
+    <string name="push_settle_reminders">Имате отворени салда во %1$s групи</string>
+    <string name="push_added_to_group">%1$s Ве додаде во групата</string>
+    <string name="push_member_joined">%1$s се приклучи кон групата</string>
+    <string name="push_debts_simplified_to_you">%1$s ги поедностави долговите. Сега %2$s Ви плаќа %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s ги поедностави долговите. Сега Вие плаќате %3$s на %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s ги поедностави долговите. Видете како е за Вас.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s го исклучи Поедностави ги долговите. Сега %2$s Ви плаќа %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s го исклучи Поедностави ги долговите. Сега Вие плаќате %3$s на %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s го исклучи Поедностави ги долговите. Видете како е за Вас.</string>
+    <string name="notification_settings_bills">Трошоци</string>
+    <string name="notification_settings_bills_detail">Нови, уредени или избришани трошоци во кои учествувате</string>
+    <string name="notification_settings_payments">Плаќања и порамнувања</string>
+    <string name="notification_settings_payments_detail">Плаќања до Вас или од Вас и поедноставени долгови</string>
+    <string name="notification_settings_comments">Коментари</string>
+    <string name="notification_settings_comments_detail">На трошоци во кои учествувате и разговори во кои сте пишувале</string>
+    <string name="notification_settings_people_and_groups">Луѓе и групи</string>
+    <string name="notification_settings_people_and_groups_detail">Кој се приклучува или ги напушта Вашите групи и што се менува во нив</string>
+    <string name="notification_settings_payment_requests">Барања за плаќање</string>
+    <string name="notification_settings_payment_requests_detail">Кога некој ќе побара да платите</string>
+    <string name="notification_settings_balance_reminder">Потсетник за отворено салдо</string>
+    <string name="notification_settings_balance_reminder_detail">Еднаш неделно, ако има отворено салдо</string>
+</resources>

@@ -127,6 +127,13 @@
     <string name="profile_language_basque">Баскська</string>
     <string name="profile_language_galician">Галісійська</string>
     <string name="profile_language_romansh">Ретороманська</string>
+    <string name="profile_language_zulu">Зулу</string>
+    <string name="profile_language_afrikaans">Африкаанс</string>
+    <string name="profile_language_georgian">Грузинська</string>
+    <string name="profile_language_armenian">Вірменська</string>
+    <string name="profile_language_albanian">Албанська</string>
+    <string name="profile_language_macedonian">Македонська</string>
+    <string name="profile_language_belarusian">Білоруська</string>
     <string name="profile_language_system_detail">Мова пристрою</string>
     <string name="profile_notifications">Сповіщення</string>
     <plurals name="profile_notifications_active">

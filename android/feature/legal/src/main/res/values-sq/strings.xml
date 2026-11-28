@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">Politika e privatësisë</string>
+    <string name="legal_terms">Kushtet e shërbimit</string>
+    <string name="legal_updated_privacy_policy">Përditësuar më: %1$s</string>
+    <string name="legal_updated_terms">Përditësuar më: %1$s</string>
+    <string name="legal_load_failed_title">Kjo faqe nuk u ngarkua</string>
+    <string name="legal_load_failed_body">Kontrolloni lidhjen dhe provoni përsëri.</string>
+    <string name="legal_retry">Provo përsëri</string>
+</resources>

@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Baski</string>
     <string name="profile_language_galician">Galeegi</string>
     <string name="profile_language_romansh">Romanši</string>
+    <string name="profile_language_zulu">Suulu</string>
+    <string name="profile_language_afrikaans">Afrikaani</string>
+    <string name="profile_language_georgian">Gruusia</string>
+    <string name="profile_language_armenian">Armeenia</string>
+    <string name="profile_language_albanian">Albaania</string>
+    <string name="profile_language_macedonian">Makedoonia</string>
+    <string name="profile_language_belarusian">Valgevene</string>
     <string name="profile_language_system_detail">Seadme keel</string>
     <string name="profile_notifications">Teavitused</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Grup i ri</string>
+    <string name="create_group_close">Mbyll</string>
+    <string name="create_group_create">Krijo</string>
+    <string name="create_group_change_color">Ndrysho ngjyrën e grupit</string>
+    <string name="create_group_name_label">Emri i grupit</string>
+    <string name="create_group_type_label">Lloji i grupit</string>
+    <string name="create_group_members_title">Kush është brenda</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d person</item>
+        <item quantity="other">%d persona</item>
+    </plurals>
+    <string name="create_group_me">ju</string>
+    <string name="create_group_remove_member">Hiq: %s</string>
+    <string name="create_group_add_placeholder">Shto me emër</string>
+    <string name="create_group_add">Shto</string>
+    <string name="create_group_no_app_notice">Askush nuk ka nevojë për aplikacionin tani. Mund të shtoni që tani shpenzime për të gjithë dhe ta dërgoni lidhjen më vonë.</string>
+    <string name="create_group_currency">Monedha e parazgjedhur</string>
+    <string name="create_group_currency_caption">Shpenzimet e reja fillojnë në këtë monedhë; çdo shpenzim mund të përdorë një tjetër.</string>
+    <string name="create_group_save_error">Grupi nuk u ruajt. Provoni përsëri.</string>
+    <string name="create_group_photo">Foto e grupit</string>
+    <string name="create_group_take_photo">Bëj foto</string>
+    <string name="create_group_choose_photo">Zgjidh foton</string>
+    <string name="create_group_remove_photo">Hiq foton</string>
+    <string name="create_group_photo_error">Kjo foto nuk mund të përdorej. Provoni një tjetër.</string>
+</resources>

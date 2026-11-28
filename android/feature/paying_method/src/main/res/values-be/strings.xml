@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Новы спосаб аплаты</string>
+    <string name="paying_method_edit_title">Рэдагаваць спосаб аплаты</string>
+    <string name="paying_method_type">Тып</string>
+    <string name="paying_method_name">Назва</string>
+    <string name="paying_method_name_optional">Назва (неабавязкова)</string>
+    <string name="paying_method_color">Колер</string>
+    <string name="paying_method_default">Асноўны спосаб</string>
+    <string name="paying_method_default_hint">З ім пачынаюцца новыя выдаткі, за якія плаціце Вы.</string>
+    <string name="paying_method_delete">Выдаліць спосаб аплаты</string>
+    <string name="paying_method_delete_title">Выдаліць гэты спосаб аплаты?</string>
+    <string name="paying_method_delete_body">Выдаткі, пазначаныя ім, больш не будуць яго паказваць.</string>
+    <string name="paying_method_delete_confirm">Выдаліць</string>
+    <string name="paying_method_save">Захаваць</string>
+</resources>

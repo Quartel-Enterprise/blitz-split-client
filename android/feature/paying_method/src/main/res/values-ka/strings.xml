@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">ახალი გადახდის მეთოდი</string>
+    <string name="paying_method_edit_title">გადახდის მეთოდის რედაქტირება</string>
+    <string name="paying_method_type">ტიპი</string>
+    <string name="paying_method_name">სახელი</string>
+    <string name="paying_method_name_optional">სახელი (არასავალდებულო)</string>
+    <string name="paying_method_color">ფერი</string>
+    <string name="paying_method_default">ნაგულისხმევი მეთოდი</string>
+    <string name="paying_method_default_hint">თქვენ მიერ გადახდილი ახალი ხარჯები ამით იწყება.</string>
+    <string name="paying_method_delete">გადახდის მეთოდის წაშლა</string>
+    <string name="paying_method_delete_title">წავშალოთ ეს გადახდის მეთოდი?</string>
+    <string name="paying_method_delete_body">ხარჯებზე, რომლებიც ამით მონიშნეთ, ის აღარ გამოჩნდება.</string>
+    <string name="paying_method_delete_confirm">წაშლა</string>
+    <string name="paying_method_save">შენახვა</string>
+</resources>

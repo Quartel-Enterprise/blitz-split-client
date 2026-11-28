@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Нема зборови</string>
+    <string name="category_map_title">Мапа на категории</string>
+    <string name="category_map_search">Пребарај зборови</string>
+    <string name="category_map_add">Додај збор</string>
+    <string name="category_map_more">Повеќе опции</string>
+    <string name="category_map_restore">Врати стандардно</string>
+    <string name="category_map_back">Назад</string>
+    <string name="category_map_intro">Кога насловот на трошокот содржи еден од овие зборови, категоријата доаѓа сама. “Uber дома” станува Превоз.</string>
+    <string name="category_map_intro_offline">Мапата работи офлајн: промените важат веднаш на овој уред и стигнуваат до другите кога ќе се вратите онлајн.</string>
+    <string name="category_map_device_only">Вашата мапа останува само на овој уред. За да ја пренесете на другите уреди, најавете се со Google или Apple во Вашиот Профил.</string>
+    <string name="category_map_open_profile">Отвори Профил</string>
+    <string name="category_map_longest_wins">Кога два збора се совпаѓаат со насловот, победува подолгиот.</string>
+    <string name="category_map_no_result">Нема збор со “%1$s”</string>
+    <string name="category_map_no_result_body">Додајте го и трошоците со овој збор во насловот ќе пристигнуваат со точната категорија.</string>
+    <string name="category_map_add_query">Додај “%1$s”</string>
+    <string name="category_map_empty_title">Вашата мапа е празна</string>
+    <string name="category_map_empty_body">Без зборови, категоријата не доаѓа од насловот: ја избирате за секој трошок.</string>
+    <string name="category_map_group_category"> · категорија на %1$s</string>
+    <string name="category_map_only_main">Само %1$s</string>
+    <string name="category_map_only_in_group">само во %1$s</string>
+    <string name="category_map_no_terms_yet">Сè уште нема зборови.</string>
+    <string name="category_map_add_in">Додај збор во %1$s</string>
+    <string name="category_map_tip">Допрете збор за да му ја промените категоријата или да го отстраните. Се совпаѓа целиот збор, без разлика на акценти и големи букви.</string>
+    <string name="category_map_queued">во редица</string>
+    <string name="category_map_term_action">%1$s, %2$s. Уреди</string>
+    <string name="category_map_new_term">Нов збор</string>
+    <string name="category_map_edit_term">Уреди збор</string>
+    <string name="category_map_term_label">Збор или фраза</string>
+    <string name="category_map_term_help">Се совпаѓа целиот збор, без разлика на акценти и големи букви.</string>
+    <string name="category_map_term_help_app">Збор од апликацијата. Врати стандардно го враќа онаков каков што беше.</string>
+    <string name="category_map_term_duplicate">“%1$s” веќе ја избира категоријата %2$s. Секој збор има една категорија.</string>
+    <string name="category_map_term_too_short">Внесете најмалку 2 букви.</string>
+    <string name="category_map_term_too_long">Внесете најмногу 30 букви.</string>
+    <string name="category_map_term_invalid">Користете само букви, цифри и празни места.</string>
+    <string name="category_map_category">Категорија</string>
+    <string name="category_map_category_help">Може да биде категорија или поткатегорија.</string>
+    <string name="category_map_category_help_edit">Ако ја промените тука, зборот се преместува во друга категорија.</string>
+    <string name="category_map_category_help_move">Преместувањето го вади зборот од категоријата %1$s.</string>
+    <string name="category_map_example">Пример</string>
+    <string name="category_map_example_move">Ако се премести</string>
+    <string name="category_map_remove">Отстрани</string>
+    <string name="category_map_cancel">Откажи</string>
+    <string name="category_map_save">Зачувај</string>
+    <string name="category_map_move_to">Премести во %1$s</string>
+    <string name="category_map_removed">“%1$s” излезе од мапата</string>
+    <string name="category_map_undo">Врати</string>
+    <string name="category_map_restore_title">Да се врати стандардната мапа?</string>
+    <string name="category_map_restore_body">Сите 60 зборови од апликацијата се враќаат онакви какви што беа, вклучително и оние што ги отстранивте или преместивте.</string>
+    <string name="category_map_restore_own_one">Зборот што го создадовте, “%1$s”, останува.</string>
+    <string name="category_map_restore_confirm">Врати</string>
+    <string name="category_map_save_error">Мапата не можеше да се зачува. Обидете се повторно.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d збор</item>
+        <item quantity="other">%d зборови</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d поткатегорија</item>
+        <item quantity="other">%d поткатегории</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d збор со “%2$s”</item>
+        <item quantity="other">%1$d зборови со “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Офлајн · %d промена во редица</item>
+        <item quantity="other">Офлајн · %d промени во редица</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">%d збор што го создадовте останува.</item>
+        <item quantity="other">%d зборови што ги создадовте остануваат.</item>
+    </plurals>
+    <string name="category_map_new_category">Нова категорија</string>
+    <string name="category_map_new_subcategory_in">Нова поткатегорија во %s</string>
+    <string name="category_map_edit_category">Уреди %s</string>
+    <string name="category_map_category_group">Група</string>
+    <string name="category_map_change_color">Промени ја бојата на %1$s</string>
+    <string name="category_map_restore_color">Врати ја бојата</string>
+    <string name="category_map_color_done">Готово</string>
+</resources>

@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Baskisk</string>
     <string name="profile_language_galician">Galicisk</string>
     <string name="profile_language_romansh">Rætoromansk</string>
+    <string name="profile_language_zulu">Zulu</string>
+    <string name="profile_language_afrikaans">Afrikaans</string>
+    <string name="profile_language_georgian">Georgisk</string>
+    <string name="profile_language_armenian">Armensk</string>
+    <string name="profile_language_albanian">Albansk</string>
+    <string name="profile_language_macedonian">Makedonsk</string>
+    <string name="profile_language_belarusian">Hviderussisk</string>
     <string name="profile_language_system_detail">Enhedens sprog</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_notifications">Notifikationer</string>

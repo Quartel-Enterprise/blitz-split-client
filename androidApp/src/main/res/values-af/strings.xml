@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Jy is nie in hierdie groep nie</string>
+    <string name="bill_link_not_in_group_message">Hierdie opmerking is in \'n groep waarin jy nie is nie. Vra wie jou die skakel gestuur het vir die uitnodiging.</string>
+    <string name="bill_link_offline_title">Geen internet nie</string>
+    <string name="bill_link_offline_message">Maak die skakel weer oop sodra jy weer aanlyn is.</string>
+    <string name="bill_link_go_home">Gaan na Tuis</string>
+    <string name="discard_changes_title">Gooi veranderinge weg?</string>
+    <string name="discard_changes_message">Ongestoorde veranderinge sal verlore gaan.</string>
+    <string name="discard_changes_discard">Gooi weg</string>
+    <string name="discard_changes_keep_editing">Hou aan wysig</string>
+    <string name="watch_channel_name">Horlosie</string>
+    <string name="watch_connected_title">%1$s is aan jou rekening gekoppel</string>
+    <string name="watch_connected_title_unnamed">Horlosie is aan jou rekening gekoppel</string>
+    <string name="watch_connected_text">Dit sien jou groepe en sinkroniseer vanself. Om dit te ontkoppel, meld op die horlosie af.</string>
+</resources>

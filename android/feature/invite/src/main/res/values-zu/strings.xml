@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Vala</string>
+    <string name="invite_group_created">Iqembu lidaliwe</string>
+    <string name="invite_title">Mema wonke umuntu eqenjini elithi %s</string>
+    <string name="invite_qr_description">Ikhodi ye-QR yelinki yesimemo seqembu</string>
+    <string name="invite_copy">Kopisha</string>
+    <string name="invite_copied">Kukopishiwe</string>
+    <string name="invite_who_picks">Noma ubani ovula ilinki ukhetha ukuthi ungubani ohlwini: %s. Akudingeki i-akhawunti.</string>
+    <string name="invite_names_or">%1$s noma %2$s</string>
+    <string name="invite_anyone_joins">Noma ubani ovula ilinki ujoyina iqembu. Akudingeki i-akhawunti.</string>
+    <string name="invite_pending_title">Ilinki isalindile</string>
+    <string name="invite_pending_offline">Izodalwa uma nje usuxhunyiwe ku-inthanethi.</string>
+    <string name="invite_pending_online">Kudalwa ilinki…</string>
+    <string name="invite_failed_title">Akukwazekanga ukudala ilinki</string>
+    <string name="invite_failed_body">Kukhona okungahambanga kahle ngesikhathi kuvumelaniswa iqembu.</string>
+    <string name="invite_retry">Zama futhi</string>
+    <string name="invite_share">Yabelana ngelinki</string>
+    <string name="invite_see_who_joined">Bona abajoyinile</string>
+    <string name="invite_add_person">Engeza umuntu ongenalo uhlelo lokusebenza</string>
+    <string name="invite_go_to_group">Iya eqenjini</string>
+    <string name="invite_change_link">Shintsha ilinki</string>
+    <string name="invite_change_link_title">Shintsha ilinki yesimemo?</string>
+    <string name="invite_change_link_message">Ilinki yamanje nekhodi ye-QR kuyayeka ukusebenza, kuhlanganise nezimemo zomuntu siqu ezingasetshenziswanga. Abasevele bejoyinile bahlala eqenjini.</string>
+    <string name="invite_change_link_failed">Akukwazekanga ukushintsha ilinki. Zama futhi.</string>
+    <string name="invite_share_message">Asihlukanise izindleko zeqembu elithi %1$s ku-Blitz Split. Joyina ngale linki: %2$s</string>
+</resources>

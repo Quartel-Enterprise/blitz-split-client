@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">ბალანსები</string>
+    <string name="global_balances_profile">პროფილი</string>
+    <string name="global_balances_offline">ოფლაინ · ამ მოწყობილობის ბალანსები</string>
+    <string name="global_balances_filter">ჩვენება</string>
+    <string name="global_balances_filter_all">ყველა</string>
+    <string name="global_balances_filter_you_owe">გადასახდელი გაქვთ</string>
+    <string name="global_balances_filter_owes_you">მისაღები გაქვთ</string>
+    <string name="global_balances_hint">ჯგუფებს შორის უკვე გაქვითულია: თითოეული ადამიანი ერთხელ ჩანს.</string>
+    <string name="global_balances_hint_empty">ამ მოწყობილობის ყველა ჯგუფის შეჯამება.</string>
+    <string name="global_balances_section_you_owe">გადასახდელი გაქვთ · %d</string>
+    <string name="global_balances_section_owes_you">მისაღები გაქვთ · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d ჯგუფი</item>
+        <item quantity="other">%d ჯგუფი</item>
+    </plurals>
+    <string name="global_balances_guest">%s · სტუმარი</string>
+    <string name="global_balances_you_owe">გადასახდელი გაქვთ</string>
+    <string name="global_balances_owes_you">მისაღები გაქვთ</string>
+    <string name="global_balances_by_group_show">ჯგუფების მიხედვით ჩვენება: %s</string>
+    <string name="global_balances_by_group_hide">ჯგუფების მიხედვით დამალვა: %s</string>
+    <string name="global_balances_received">მიღებულია</string>
+    <string name="global_balances_received_from">მიღებულია, გამგზავნი: %s</string>
+    <string name="global_balances_settle">ანგარიშსწორება</string>
+    <string name="global_balances_settle_with">ანგარიშსწორება: %s</string>
+    <string name="global_balances_charge">მოთხოვნა</string>
+    <string name="global_balances_charge_person">მოთხოვნა: %s</string>
+    <string name="global_balances_detail_pane">ბალანსი: %s</string>
+    <string name="global_balances_detail_owes_you">%s · მისაღები გაქვთ</string>
+    <string name="global_balances_detail_you_owe">%s · გადასახდელი გაქვთ</string>
+    <string name="global_balances_detail_guest">%s · სტუმარი აპის გარეშე</string>
+    <string name="global_balances_detail_note_owed">ნეტო თანხაში ჯგუფები უკვე გაქვითულია: “მოთხოვნა” და “მიღებულია” იყენებს თანხას %s. აპი გადახდას თითოეულ ჯგუფში აღრიცხავს.</string>
+    <string name="global_balances_detail_note_settle">ნეტო თანხაში ჯგუფები უკვე გაქვითულია: “ანგარიშსწორება” იყენებს თანხას %s. აპი გადახდას თითოეულ ჯგუფში აღრიცხავს.</string>
+    <string name="global_balances_detail_note_single">%s · ღიაა მხოლოდ ერთი საერთო ჯგუფი.</string>
+    <string name="global_balances_settled_title">ყველა ანგარიში გასწორებულია</string>
+    <string name="global_balances_settled_body">არც თქვენ გაქვთ მისაღები და არც გადასახდელი. როცა ვინმე ხარჯს დაამატებს, ბალანსი აქ გამოჩნდება.</string>
+    <string name="global_balances_settled_action">ჯგუფების ნახვა</string>
+    <string name="global_balances_nothing_to_pay_title">გადასახდელი არაფერი გაქვთ</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">ყველასთან ანგარიში გასწორებული გაქვთ. კვლავ მისაღები გაქვთ %2$s, %1$d ადამიანისგან.</item>
+        <item quantity="other">ყველასთან ანგარიში გასწორებული გაქვთ. კვლავ მისაღები გაქვთ %2$s, %1$d ადამიანისგან.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">ვისგან გაქვთ მისაღები</string>
+    <string name="global_balances_nothing_to_receive_title">მისაღები არაფერი გაქვთ</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">კვლავ გადასახდელი გაქვთ %2$s, %1$d ადამიანისთვის.</item>
+        <item quantity="other">კვლავ გადასახდელი გაქვთ %2$s, %1$d ადამიანისთვის.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">ვისთვის გაქვთ გადასახდელი</string>
+    <string name="global_balances_coming_soon">მალე</string>
+    <string name="global_balances_change_error">ცვლილების შენახვა ვერ მოხერხდა. სცადეთ ხელახლა.</string>
+    <string name="global_balances_copied">დაკოპირდა</string>
+    <string name="global_balances_charge_title">მოთხოვნა: %s</string>
+    <string name="global_balances_charge_owes">მისაღები გაქვთ %1$s · %2$s</string>
+    <string name="global_balances_charge_close">დახურვა</string>
+    <string name="global_balances_charge_guest">%s · სტუმარი აპის გარეშე. ამის შესახებ მხოლოდ ამ შეტყობინებიდან გაიგებს, ამიტომ მასში უკვე წერია, რა შევიდა ხარჯში.</string>
+    <string name="global_balances_charge_message">შეტყობინება</string>
+    <string name="global_balances_charge_pix">ჩემი Pix გასაღების დართვა</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">შეტყობინების კოპირება</string>
+    <string name="global_balances_charge_send">გაგზავნა</string>
+    <string name="global_balances_message">გამარჯობა, %1$s! Blitz Split-ის გამოთვლით, ჩემთვის გადასახდელი გაქვთ %2$s (%3$s).</string>
+    <string name="global_balances_message_guest">გამარჯობა, %1$s! ჩემთვის გადასახდელი გაქვთ %2$s (%3$s). ეს თქვენი წილია, ხარჯები: %4$s.</string>
+    <string name="global_balances_message_guest_paid">გამარჯობა, %1$s! ჩემთვის გადასახდელი გაქვთ %2$s (%3$s). ეს თქვენი წილია, ხარჯები: %4$s, უკვე გადახდილი თანხის (%5$s) გამოკლებით.</string>
+    <string name="global_balances_message_group">ჯგუფი %s</string>
+    <string name="global_balances_message_groups">ჯგუფები %s</string>
+    <string name="global_balances_message_pix">Pix (%1$s): %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">ტელეფონი</string>
+    <string name="global_balances_key_email">ელფოსტა</string>
+    <string name="global_balances_key_random">შემთხვევითი გასაღები</string>
+    <string name="global_balances_message_reroute">ჯგუფში %1$s ვალები გამარტივდა, ამიტომ თანხას პირდაპირ მე გადამიხდით და არა ამ ადამიანს: %2$s. თქვენი ჯამი არ შეცვლილა.</string>
+</resources>

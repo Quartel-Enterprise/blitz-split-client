@@ -125,6 +125,13 @@
     <string name="profile_language_basque">பாஸ்க்</string>
     <string name="profile_language_galician">காலிஸியன்</string>
     <string name="profile_language_romansh">ரோமான்ஷ்</string>
+    <string name="profile_language_zulu">ஜுலு</string>
+    <string name="profile_language_afrikaans">ஆஃப்ரிகான்ஸ்</string>
+    <string name="profile_language_georgian">ஜார்ஜியன்</string>
+    <string name="profile_language_armenian">ஆர்மேனியன்</string>
+    <string name="profile_language_albanian">அல்பேனியன்</string>
+    <string name="profile_language_macedonian">மாஸிடோனியன்</string>
+    <string name="profile_language_belarusian">பெலாருஷியன்</string>
     <string name="profile_language_system_detail">சாதனத்தின் மொழி</string>
     <string name="profile_notifications">அறிவிப்புகள்</string>
     <plurals name="profile_notifications_active">

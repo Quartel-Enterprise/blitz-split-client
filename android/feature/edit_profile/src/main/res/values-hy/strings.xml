@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Խմբագրել պրոֆիլը</string>
+    <string name="edit_profile_save">Պահել</string>
+    <string name="edit_profile_change_photo">Փոխել լուսանկարը</string>
+    <string name="edit_profile_take_photo">Լուսանկարել</string>
+    <string name="edit_profile_choose_photo">Ընտրել պատկերասրահից</string>
+    <string name="edit_profile_use_account_photo">Օգտագործել %1$s հաշվի լուսանկարը</string>
+    <string name="edit_profile_remove_photo">Հեռացնել լուսանկարը</string>
+    <string name="edit_profile_photo_error">Չհաջողվեց օգտագործել այս լուսանկարը։ Փորձեք մեկ այլը։</string>
+    <string name="edit_profile_avatar_color">Ավատարի գույն</string>
+    <string name="edit_profile_avatar_color_hint">Ցուցադրվում է, երբ լուսանկար չունեք։</string>
+    <string name="edit_profile_name_label">Ձեր անունը</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Մուտքագրեք առնվազն %d տառ։</string>
+    <string name="edit_profile_name_too_long">Օգտագործեք մինչև %d նիշ։</string>
+    <string name="edit_profile_account_notice">Անունը և լուսանկարը վերցվել են Ձեր %1$s հաշվից։ Դրանք այստեղ փոխելը վերաբերում է միայն Blitz Split հավելվածին և չի փոխում Ձեր %1$s հաշիվը։</string>
+    <string name="edit_profile_footer">Ձեր անունը և լուսանկարը տեսնում են Ձեր խմբերը և բոլոր նրանք, ովքեր ունեն Ձեր պրոֆիլի հղումը։</string>
+    <string name="profile_photo_close">Փակել</string>
+    <string name="profile_photo_camera">Տեսախցիկ</string>
+    <string name="profile_photo_gallery">Պատկերասրահ</string>
+    <string name="profile_photo_remove">Հեռացնել</string>
+    <string name="profile_photo_title">Պրոֆիլի լուսանկար</string>
+</resources>

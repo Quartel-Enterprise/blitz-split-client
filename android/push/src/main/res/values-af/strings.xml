@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Herinnering om te vereffen</string>
+    <string name="push_bill_created">%1$s het “%2$s” saam met jou bygevoeg</string>
+    <string name="push_bill_edited">%1$s het “%2$s” gewysig</string>
+    <string name="push_bill_deleted">%1$s het “%2$s” uitgevee</string>
+    <string name="push_comment_added">%1$s het op “%2$s” kommentaar gelewer: %3$s</string>
+    <string name="push_payment_paid_you">%1$s het aangeteken dat hulle jou betaal het</string>
+    <string name="push_payment_to_you">%1$s het aangeteken dat %2$s jou betaal het</string>
+    <string name="push_payment_received_yours">%1$s het jou betaling as ontvang gemerk</string>
+    <string name="push_payment_from_you">%1$s het aangeteken dat jy betaal het aan: %2$s</string>
+    <string name="push_payment_undone">%1$s het \'n betaling met jou ontdoen</string>
+    <string name="push_charge_sent">%1$s het jou \'n herinnering gestuur om te vereffen</string>
+    <string name="push_settle_reminder">Jy het \'n oop saldo in %1$s</string>
+    <string name="push_settle_reminders">Jy het oop saldo\'s in %1$s groepe</string>
+    <string name="push_added_to_group">%1$s het jou by die groep gevoeg</string>
+    <string name="push_member_joined">%1$s het by die groep aangesluit</string>
+    <string name="push_debts_simplified_to_you">%1$s het die skuld vereenvoudig. Nou ontvang jy %3$s van %2$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s het die skuld vereenvoudig. Nou betaal jy %3$s aan %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s het die skuld vereenvoudig. Kyk hoe dit jou raak.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s het Vereenvoudig skuld afgeskakel. Nou ontvang jy %3$s van %2$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s het Vereenvoudig skuld afgeskakel. Nou betaal jy %3$s aan %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s het Vereenvoudig skuld afgeskakel. Kyk hoe dit jou raak.</string>
+    <string name="notification_settings_bills">Uitgawes</string>
+    <string name="notification_settings_bills_detail">Nuwe, gewysigde of uitgeveede uitgawes waarin jy is</string>
+    <string name="notification_settings_payments">Betalings en vereffenings</string>
+    <string name="notification_settings_payments_detail">Betalings aan of van jou, en vereenvoudigde skuld</string>
+    <string name="notification_settings_comments">Opmerkings</string>
+    <string name="notification_settings_comments_detail">Op uitgawes waarin jy is en gesprekke waarin jy geskryf het</string>
+    <string name="notification_settings_people_and_groups">Mense en groepe</string>
+    <string name="notification_settings_people_and_groups_detail">Wie by jou groepe aansluit of dit verlaat, en wat daarin verander</string>
+    <string name="notification_settings_payment_requests">Betalingsversoeke</string>
+    <string name="notification_settings_payment_requests_detail">Wanneer iemand jou vra om te betaal</string>
+    <string name="notification_settings_balance_reminder">Herinnering oor oop saldo</string>
+    <string name="notification_settings_balance_reminder_detail">Een keer per week, as daar \'n oop saldo is</string>
+</resources>

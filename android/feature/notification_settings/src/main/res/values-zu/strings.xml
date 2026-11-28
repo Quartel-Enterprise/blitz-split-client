@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Izaziso</string>
+    <string name="notification_settings_denied_title">Izaziso ze-Blitz Split zicishiwe ku-Android.</string>
+    <string name="notification_settings_denied_body">Zivule ezilungiselelweni zesistimu ukuze uthole izaziso ze-push ezingezansi. Insimbi iyaqhubeka nokusebenza.</string>
+    <string name="notification_settings_open_settings">Vula izilungiselelo</string>
+    <string name="notification_settings_refused_body">I-Android ikuvumela ukuthi uzivumele futhi kanye ukuze uthole izaziso ze-push ezingezansi. Insimbi iyaqhubeka nokusebenza.</string>
+    <string name="notification_settings_turn_on">Vula</string>
+    <string name="notification_settings_blocked_in_android">Kuvinjelwe ku-Android</string>
+    <string name="notification_settings_open_channel_settings_description">Vula izilungiselelo ze-Android: %1$s</string>
+    <string name="notification_settings_push_switch">Izaziso ze-push</string>
+    <string name="notification_settings_push_switch_detail">Kule divayisi kuphela</string>
+    <string name="notification_settings_section">Ngazise mayelana</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Kuhlelo lokusebenza</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">I-Push ithumela isaziso kule divayisi. Okuthi Kuhlelo lokusebenza kukumaka njengokusha ensimbini nasethebhini elithi Umsebenzi; uma kucishiwe, kusavela ethebhini elithi Umsebenzi, sekufundiwe.</string>
+    <string name="notification_settings_footer">Izaziso zifika uma kune-inthanethi. Ukuze uthulise iqembu, sebenzisa imenyu engaphakathi kwalo.</string>
+</resources>

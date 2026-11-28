@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Mënyrë e re pagese</string>
+    <string name="paying_method_edit_title">Modifiko mënyrën e pagesës</string>
+    <string name="paying_method_type">Lloji</string>
+    <string name="paying_method_name">Emri</string>
+    <string name="paying_method_name_optional">Emri (opsional)</string>
+    <string name="paying_method_color">Ngjyra</string>
+    <string name="paying_method_default">Mënyra e parazgjedhur</string>
+    <string name="paying_method_default_hint">Shpenzimet e reja që paguani fillojnë me të.</string>
+    <string name="paying_method_delete">Fshi mënyrën e pagesës</string>
+    <string name="paying_method_delete_title">Të fshihet kjo mënyrë pagese?</string>
+    <string name="paying_method_delete_body">Shpenzimet që i shënuat me të nuk do ta shfaqin më.</string>
+    <string name="paying_method_delete_confirm">Fshi</string>
+    <string name="paying_method_save">Ruaj</string>
+</resources>

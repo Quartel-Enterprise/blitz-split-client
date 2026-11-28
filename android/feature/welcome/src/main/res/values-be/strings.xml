@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Падзяліце рахунак без клопату</string>
+    <string name="welcome_offline_title">Працуе афлайн</string>
+    <string name="welcome_offline_body">Усё захоўваецца на Вашай прыладзе і сінхранізуецца пазней.</string>
+    <string name="welcome_optional_title">Уліковы запіс не абавязковы</string>
+    <string name="welcome_optional_body">Google або Apple толькі дапамагаюць нічога не страціць пры змене прылады.</string>
+    <string name="welcome_invite_title">Запрашайце па спасылцы або QR-кодзе</string>
+    <string name="welcome_invite_body">Сябры далучаюцца да групы без стварэння ўліковага запісу.</string>
+    <string name="welcome_no_connection_title">Няма злучэння.</string>
+    <string name="welcome_no_connection_body">Для ўваходу з уліковым запісам патрэбны інтэрнэт. Карыстайцеся без уліковага запісу зараз і падключыцеся пазней у Профілі.</string>
+    <string name="welcome_or">або</string>
+    <string name="welcome_use_without_account">Карыстацца без уліковага запісу</string>
+    <string name="welcome_used_on_another_device">Я ўжо карыстаюся на іншай прыладзе</string>
+    <string name="welcome_sign_in_failed">Зараз не ўдалося ўвайсці. Паспрабуйце яшчэ раз.</string>
+    <string name="welcome_legal_notice">Працягваючы, Вы прымаеце %1$s і пацвярджаеце, што азнаёміліся з дакументам %2$s.</string>
+    <string name="welcome_legal_terms">Умовы выкарыстання</string>
+    <string name="welcome_legal_privacy">Палітыка прыватнасці</string>
+    <string name="welcome_no_account_note">Без уліковага запісу Вашы даныя выдаляюцца праз 30 дзён без выкарыстання. Падключыце Google або Apple, каб захаваць іх.</string>
+    <string name="welcome_no_account_note_offline">Без уліковага запісу Вашы даныя выдаляюцца праз 30 дзён без выкарыстання. Каб захаваць іх, падключыце Google або Apple пазней у Профілі.</string>
+    <string name="welcome_expired_title">Вашы даныя выдалены</string>
+    <string name="welcome_expired_body">Вы карысталіся праграмай без уліковага запісу і не адкрывалі яе 30 дзён, таму Вашы даныя выдалены. Падключыце Google або Apple, каб захаваць іх наступным разам.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

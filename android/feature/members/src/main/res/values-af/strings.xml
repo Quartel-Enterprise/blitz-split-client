@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Uitnodigingskakel</string>
+    <string name="members_link_pending">Nog nie geskep nie</string>
+    <string name="members_share">Deel</string>
+    <string name="members_me">%s (jy)</string>
+    <string name="members_status_this_device">Hierdie toestel</string>
+    <string name="members_status_joined">Aangesluit</string>
+    <string name="members_status_not_joined">Nog nie aangesluit nie</string>
+    <string name="members_options">Opsies vir %s</string>
+    <string name="members_rename">Hernoem</string>
+    <string name="members_personal_invite">Persoonlike uitnodiging vir %s</string>
+    <string name="members_personal_message">Wie hierdie skakel oopmaak, sluit dadelik aan as %s, sonder om uit die lys te kies. Dit werk een keer.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Wie hierdie skakel oopmaak, sluit dadelik aan as %1$s, sonder om uit die lys te kies, en sien reeds hul aandeel van %2$s in die uitgawe wat tot dusver bygevoeg is. Dit werk een keer.</item>
+        <item quantity="other">Wie hierdie skakel oopmaak, sluit dadelik aan as %1$s, sonder om uit die lys te kies, en sien reeds hul aandeel van %2$s in die %3$d uitgawes wat tot dusver bygevoeg is. Dit werk een keer.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopieer skakel</string>
+    <string name="members_personal_copied">Gekopieer</string>
+    <string name="members_personal_share">Deel met %s</string>
+    <string name="members_personal_share_message">Sluit by %1$s aan as %2$s op Blitz Split: %3$s</string>
+    <string name="members_remove">Verwyder uit groep</string>
+    <string name="members_remove_joined">%s het reeds by die groep aangesluit</string>
+    <string name="members_remove_title">Verwyder %s uit die groep?</string>
+    <string name="members_remove_message">%s het nog nie aangesluit nie. Jy kan hulle later weer byvoeg.</string>
+    <string name="members_remove_confirm">Verwyder</string>
+    <string name="members_release">Stel naam vry</string>
+    <string name="members_release_title">Stel die naam van %s vry?</string>
+    <string name="members_release_message">Wie as %1$s aangesluit het, verlaat die groep. Die naam, kleur en uitgawes van %1$s bly, en %1$s kan weer deur die groep se skakel gekies word.</string>
+    <string name="members_release_confirm">Stel vry</string>
+    <string name="members_release_error">Kon nie die naam vrystel nie. Kontroleer jou verbinding en probeer weer.</string>
+    <string name="members_add">Voeg persoon by</string>
+    <string name="members_invite_instead">Het hulle die app? Nooi met die skakel</string>
+    <string name="members_name_label">Naam</string>
+    <string name="members_save">Stoor</string>
+    <string name="members_cancel">Kanselleer</string>
+    <string name="members_change_error">Kon nie die verandering stoor nie. Probeer weer.</string>
+    <string name="members_remove_open_balance">%s het \'n oop saldo</string>
+    <string name="members_balance_to_get_back">%s om terug te kry</string>
+    <string name="members_balance_owes">%s moet betaal</string>
+    <string name="members_balance_settled">Vereffen</string>
+</resources>

@@ -47,6 +47,13 @@ import SwiftUI
 /// swaps its perfect's auxiliary as Italian does ("Ursina ha partì", "Vus avais partì"). Mongolian's and Lao's verbs
 /// don't change with the person, Icelandic's perfect "hefur" is the same for "þú" and for a name, Galician's respectful
 /// "vostede" takes a name's verb, and Basque writes each activity as a noun phrase, so their verbs stay as they are.
+/// Armenian puts its aorist last, in "-եց" or "-աց", to which the user's "Դուք" adds "իք" ("Ana ծախսը բաժանեց", "Դուք
+/// ծախսը բաժանեցիք"). Albanian swaps its perfect's "ka" or "është" for "keni" or "jeni" ("Ana ka ndarë", "Ju keni
+/// ndarë"), Macedonian its "има" for "имате" ("Ана има поделено", "Вие имате поделено"). Belarusian's past says the
+/// gender, which the app doesn't know, so it is written "-ў(-ла)" ("-ўся(-лася)" when reflexive), which the user's
+/// polite "Вы" turns into the plural "-лі" ("-ліся"): "Ана падзяліў(-ла)", "Вы падзялілі". Zulu's class-1a concord "u-"
+/// is the second person singular's too, Afrikaans' verbs don't change with the person, and Georgian writes each activity
+/// as a noun phrase, so their verbs stay as they are.
 ///
 /// Latvian starts each verb phrase with a simple past, which says the person but not the gender: its third person in
 /// "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji"; "Ana
@@ -104,6 +111,8 @@ enum SecondPerson {
         "sl": ["je": "si"],
         "ca": ["ha": "has", "l’ha": "l’has", "l'ha": "l'has"],
         "rm": ["ha": "avais"],
+        "sq": ["ka": "keni", "është": "jeni"],
+        "mk": ["има": "имате"],
     ]
 
     /// Spanish: "dividió" → "dividiste", "se unió a" → "te uniste a", "cambió la división de" → "cambiaste la división de".
@@ -128,8 +137,11 @@ enum SecondPerson {
     /// "-ai" or "-ei" for "-o" or "-ė" ("-aisi", "-eisi" when reflexive), so "padalijo" → "padalijai", "ištrynė" →
     /// "ištrynei", "dalijosi" → "dalijaisi". Nepali: the same as Hindi with "ले", so "ले खर्च बाँड्नुभयो" → "खर्च
     /// बाँड्नुभयो". Azerbaijani and Kazakh: the simple past last takes the user's ending by its last vowel, so "böldü:" →
-    /// "böldünüz:", "бөлді:" → "бөлдіңіз:"; Kyrgyz likewise, so "бөлдү:" → "бөлдүңүз:", "чыкты:" → "чыктыңыз:". Another
-    /// language keeps the verb as it is.
+    /// "böldünüz:", "бөлді:" → "бөлдіңіз:"; Kyrgyz likewise, so "бөлдү:" → "бөлдүңүз:", "чыкты:" → "чыктыңыз:".
+    /// Armenian: the aorist last takes "իք", so "բաժանեց:" → "բաժանեցիք:". Albanian ("ka ndarë" → "keni ndarë") and
+    /// Macedonian ("има поделено" → "имате поделено") swap their auxiliary. Belarusian: the past the phrase starts with,
+    /// written "-ў(-ла)", takes the plural "-лі", so "падзяліў(-ла)" → "падзялілі", "разлічыўся(-лася)" → "разлічыліся".
+    /// Another language keeps the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
@@ -143,6 +155,14 @@ enum SecondPerson {
         case "kk": return harmonicVerbLastForYou(verb, consonants: "[дт]", endings: [("ы", "ңыз"), ("і", "ңіз")])
         case "ky":
             return harmonicVerbLastForYou(verb, consonants: "[дт]", endings: [("ы", "ңыз"), ("и", "ңиз"), ("у", "ңуз"), ("ү", "ңүз")])
+        case "hy": return verbLastForYou(verb, past: "[եա]ց$", ending: "իք")
+        case "be":
+            // Why: the past may be followed by a comma or a colon ("выдаліў(-ла): …").
+            return verb.replacingOccurrences(
+                of: #"^(\S*?)ў(ся)?\(-ла(ся)?\)(?=[\s,:]|$)"#,
+                with: "$1лі$2",
+                options: .regularExpression,
+            )
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
         case "mr": return verbWithoutSubjectParticle(verb, particle: "यांनी")

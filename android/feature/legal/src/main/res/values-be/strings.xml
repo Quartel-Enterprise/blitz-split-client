@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">Палітыка прыватнасці</string>
+    <string name="legal_terms">Умовы выкарыстання</string>
+    <string name="legal_updated_privacy_policy">Абноўлена: %1$s</string>
+    <string name="legal_updated_terms">Абноўлена: %1$s</string>
+    <string name="legal_load_failed_title">Не ўдалося загрузіць гэту старонку</string>
+    <string name="legal_load_failed_body">Праверце злучэнне і паспрабуйце яшчэ раз.</string>
+    <string name="legal_retry">Паўтарыць</string>
+</resources>

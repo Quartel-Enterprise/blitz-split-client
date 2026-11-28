@@ -125,6 +125,13 @@
     <string name="profile_language_basque">బాస్క్యూ</string>
     <string name="profile_language_galician">గాలిషియన్</string>
     <string name="profile_language_romansh">రోమన్ష్</string>
+    <string name="profile_language_zulu">జూలూ</string>
+    <string name="profile_language_afrikaans">ఆఫ్రికాన్స్</string>
+    <string name="profile_language_georgian">జార్జియన్</string>
+    <string name="profile_language_armenian">ఆర్మేనియన్</string>
+    <string name="profile_language_albanian">అల్బేనియన్</string>
+    <string name="profile_language_macedonian">మాసిడోనియన్</string>
+    <string name="profile_language_belarusian">బెలారుషియన్</string>
     <string name="profile_language_system_detail">పరికరం భాష</string>
     <string name="profile_notifications">నోటిఫికేషన్‌లు</string>
     <plurals name="profile_notifications_active">

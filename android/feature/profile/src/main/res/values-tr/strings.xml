@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Baskça</string>
     <string name="profile_language_galician">Galiçyaca</string>
     <string name="profile_language_romansh">Romanşça</string>
+    <string name="profile_language_zulu">Zuluca</string>
+    <string name="profile_language_afrikaans">Afrikaanca</string>
+    <string name="profile_language_georgian">Gürcüce</string>
+    <string name="profile_language_armenian">Ermenice</string>
+    <string name="profile_language_albanian">Arnavutça</string>
+    <string name="profile_language_macedonian">Makedonca</string>
+    <string name="profile_language_belarusian">Belarusça</string>
     <string name="profile_language_system_detail">Cihaz dili</string>
     <string name="profile_notifications">Bildirimler</string>
     <plurals name="profile_notifications_active">

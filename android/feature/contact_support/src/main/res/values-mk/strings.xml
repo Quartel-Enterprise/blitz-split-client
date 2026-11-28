@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Контактирај поддршка</string>
+    <string name="contact_support_description">Ќе ја отвориме Вашата апликација за е-пошта со подготвена порака. Опишете што се случило и испратете ја: вистински луѓе ја читаат секоја порака.</string>
+    <string name="contact_support_to">До</string>
+    <string name="contact_support_diagnostics">Ќе биде вклучено во е-поштата</string>
+    <string name="contact_support_app_version">Верзија на апликацијата</string>
+    <string name="contact_support_platform">Платформа</string>
+    <string name="contact_support_language">Јазик</string>
+    <string name="contact_support_account">Корисничка сметка</string>
+    <string name="contact_support_profile">Профил</string>
+    <string name="contact_support_language_system">Систем</string>
+    <string name="contact_support_account_local">Само овој уред</string>
+    <string name="contact_support_account_anonymous">Не е поврзано</string>
+    <string name="contact_support_open_email">Отвори е-пошта</string>
+    <string name="contact_support_copy_email">Копирај адреса за е-пошта</string>
+    <string name="contact_support_notice_copied">Адресата за е-пошта е копирана.</string>
+    <string name="contact_support_notice_no_app">Не е пронајдена апликација за е-пошта. Наместо тоа, адресата е копирана.</string>
+    <string name="contact_support_close">Затвори</string>
+</resources>

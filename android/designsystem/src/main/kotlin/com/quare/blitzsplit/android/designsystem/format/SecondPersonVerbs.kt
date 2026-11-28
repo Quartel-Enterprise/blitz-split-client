@@ -94,6 +94,8 @@ private val secondPersonAuxiliaries = mapOf(
     SLOVENIAN to mapOf("je" to "si"),
     CATALAN to mapOf("ha" to "has", "l’ha" to "l’has", "l'ha" to "l'has"),
     ROMANSH to mapOf("ha" to "avais"),
+    ALBANIAN to mapOf("ka" to "keni", "është" to "jeni"),
+    MACEDONIAN to mapOf("има" to "имате"),
 )
 private val turkicPast = Regex("[dt][ıiuü]$")
 private val persianPast = Regex("[دت]$")
@@ -126,6 +128,15 @@ private const val CYRILLIC_SCRIPT = "Cyrl"
 private const val CHINA = "CN"
 private const val ICELANDIC = "is"
 private const val ROMANSH = "rm"
+private const val ZULU = "zu"
+private const val GEORGIAN = "ka"
+private const val ARMENIAN = "hy"
+private val armenianPast = Regex("[եա]ց$")
+private const val ARMENIAN_SECOND_PERSON_ENDING = "իք"
+private const val ALBANIAN = "sq"
+private const val MACEDONIAN = "mk"
+private const val BELARUSIAN = "be"
+private val belarusianPast = Regex("""^(\S*?)ў(ся)?\(-ла(ся)?\)(?=[\s,:]|$)""")
 private const val TAMIL_THIRD_PERSON_PAST = "ார்"
 private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
 private const val SWAHILI = "sw"
@@ -189,6 +200,12 @@ private val youSubjectLanguages = setOf(
     KYRGYZ,
     ICELANDIC,
     ROMANSH,
+    ZULU,
+    GEORGIAN,
+    ARMENIAN,
+    ALBANIAN,
+    MACEDONIAN,
+    BELARUSIAN,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -273,8 +290,16 @@ private val irregularSecondPerson = mapOf(
  * perfect's auxiliary as Italian does, every verb phrase starting with "ha": "Ursina ha partì", "Vus avais partì".
  * Mongolian's and Lao's verbs don't change with the person, Icelandic's perfect "hefur" is the same for "þú" and for a
  * name, Galician's respectful "vostede" takes a name's verb, and Basque writes each activity as a noun phrase
- * ("Ana · gastuaren banaketa"), so their verbs stay as they are. Same rules as the web's and the Apple app's
- * `verbForYou`.
+ * ("Ana · gastuaren banaketa"), so their verbs stay as they are. Armenian puts its aorist last, ending every verb
+ * phrase, before the colon that leads to the object, in "-եց" or "-աց", to which the user's "Դուք" adds "իք" ("Ana
+ * ծախսը բաժանեց", "Դուք ծախսը բաժանեցիք"). Albanian and Macedonian swap their perfect's auxiliary, every verb phrase
+ * starting with it: Albanian's "ka" or "është" becomes "keni" or "jeni" ("Ana ka ndarë", "Ju keni ndarë"), Macedonian's
+ * "има" "имате" ("Ана има поделено", "Вие имате поделено"). Belarusian's past says the gender, which the app doesn't
+ * know, so every verb phrase starts with a past written "-ў(-ла)" ("-ўся(-лася)" when reflexive), which the user's
+ * polite "Вы" turns into the plural "-лі" ("-ліся"): "Ана падзяліў(-ла)", "Вы падзялілі". Zulu's class-1a concord "u-"
+ * is the second person singular's too ("Ana uhlukanise", "Wena uhlukanise"), Afrikaans' verbs don't change with the
+ * person, and Georgian writes each activity as a noun phrase ("Ana · ხარჯის გაყოფა"), so their verbs stay as they
+ * are. Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -312,6 +337,13 @@ fun toSecondPerson(
     KAZAKH -> toVerbLastSecondPerson(verb, kazakhPast) { clause -> kazakhSecondPersonEndings.getValue(clause.last()) }
 
     KYRGYZ -> toVerbLastSecondPerson(verb, kyrgyzPast) { clause -> kyrgyzSecondPersonEndings.getValue(clause.last()) }
+
+    ARMENIAN -> toVerbLastSecondPerson(verb, armenianPast, ARMENIAN_SECOND_PERSON_ENDING)
+
+    BELARUSIAN -> belarusianPast.replace(verb) { match ->
+        val (stem, reflexive) = match.destructured
+        stem + "лі" + reflexive
+    }
 
     KOREAN -> dropSubjectParticle(verb, KOREAN_HONORIFIC_SUBJECT)
 
@@ -460,6 +492,9 @@ private fun toSpanishSecondPerson(verb: String): String {
  * өчүрдүңүз: …" and Romansh "Vus avais stizzà…", with their rules, and Mongolian "Та устгалаа: …" and Icelandic "Þú
  * hefur eytt: …", their verbs not changing with the person. Lao, Basque and Galician name the deleter after the verb
  * ("ຖືກລຶບໂດຍ ທ່ານ", "Ezabatzailea: zu", "eliminado por vostede"), so they keep the "by you" of the other languages.
+ * Armenian says "Դուք ջնջեցիք: …", Albanian "Ju keni fshirë: …", Macedonian "Вие имате избришано: …" and Belarusian
+ * "Вы выдалілі: …", with their rules, and Zulu "Wena ususe: …" and Georgian "თქვენ · წაშლა: …", their verbs not
+ * changing with the person. Afrikaans names the deleter after the verb ("uitgevee deur jou"), so it keeps the "by you".
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

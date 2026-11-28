@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala, Kazakh, Mongolian, Kyrgyz, Lao, Icelandic, Basque, Galician and Romansh: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala, Kazakh, Mongolian, Kyrgyz, Lao, Icelandic, Basque, Galician, Romansh, Zulu, Afrikaans, Georgian, Armenian, Albanian, Macedonian and Belarusian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -435,7 +435,25 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     "GL". Romansh (Rumantsch Grischun) talks with the formal "Vus", and every activity verb phrase starts with its
     perfect's "ha", which the user's turns into "avais", as Italian's auxiliary map does; "Rumantsch", chip "RM". The
     tugrik, the som, the kip and the krona come with the first four (below); Basque and Galician use the euro and
-    Romansh the Swiss franc. Their store listings are left for later too (`UNLISTED_LANGS`). Lithuanian
+    Romansh the Swiss franc. Their store listings are left for later too (`UNLISTED_LANGS`).
+    Zulu, Afrikaans, Georgian, Armenian, Albanian, Macedonian and Belarusian (issue #602, the most standard choices,
+    with no product owner input) are each one variant for every tag of theirs, call the app Blitz Split, write 0-9
+    (their own default) and the Gregorian calendar, and never glue a case ending or suffix to a value the app fills in.
+    Zulu talks with "wena", standard in Zulu software, whose concord "u-" is a name's too, so its verbs stay as they are;
+    "isiZulu", chip "ZU". Afrikaans talks with "jy", and its verbs don't change with the person; "Afrikaans", chip
+    "AF". Georgian (Mkhedruli) talks with the formal "თქვენ" and writes each activity sentence as a noun phrase
+    ("Ana · ხარჯის გაყოფა: …"), so no verb or ergative ending depends on the actor; "ქართული", chip "KA". Armenian
+    talks with the formal "Դուք", ends its sentences with its own full stop "։" (`fullStopUi`, `WordGap.fullStop`,
+    the web's `fullStop`), never the colon ":", and puts its aorist last, to which the user's rows add "իք"
+    ([activity-and-push.md](activity-and-push.md)); its plural's one takes 0 too; "Հայերեն", chip "HY". Albanian
+    talks with the formal "ju", every activity verb phrase starting with its perfect's "ka" or "është", which the user's
+    turns into "keni" or "jeni"; "Shqip", chip "SQ". Macedonian talks with the formal "Вие", every activity verb phrase
+    starting with "има", which the user's turns into "имате"; its plural's one takes 21, 31… too, so the web's
+    two-form messages are one|other, as Latvian's; "Македонски", chip "MK". Belarusian talks with the formal "Вы",
+    has one, few, many and other as Russian, writes a past "-ў(-ла)" as Russian's "(а)", which the user's turns into
+    the plural "-лі", and never declines a name; "Беларуская", chip "BE". The rand, the lari, the dram, the lek, the
+    denar and the Belarusian ruble come with them (below). Their store listings are left for later too
+    (`UNLISTED_LANGS`). Lithuanian
     (Pierre's calls, issue #581) is one variant for every `lt` tag, talks to the user in the informal "tu" and calls
     the app Blitz Split. A name the app fills in is never declined: it stands as the subject or after a noun that
     carries the case ("narys Ana"). Its simple past says no gender, and every activity verb phrase starts with it,
@@ -732,6 +750,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     shows the som's amounts right, by the raw code, and the tugrik's, the kip's and the krona's 100 times smaller until
     it updates, as with the tenge. No store screenshots are priced in them, since their languages have no store
     listing yet.
+  - The South African rand (ZAR), the Georgian lari (GEL), the Armenian dram (AMD), the Albanian lek (ALL), the
+    Macedonian denar (MKD) and the Belarusian ruble (BYN) come with Zulu and Afrikaans, Georgian, Armenian, Albanian,
+    Macedonian and Belarusian (issue #602), in that order after the krona, and start a new group in South Africa,
+    Georgia, Armenia, Albania, North Macedonia and Belarus. The rand, the lari and the Belarusian ruble keep ISO's 2
+    decimals; the dram, the lek and the denar have none, as the tenge: ISO gives each 2, but no price shows luma,
+    qindarka or deni. All keep the usual cap of 100 million (100 million drams is about US$ 250,000). An app version
+    from before them reads them as unknown codes with two decimals: it shows the rand's, the lari's and the ruble's
+    amounts right, by the raw code, and the dram's, the lek's and the denar's 100 times smaller until it updates. No
+    store screenshots are priced in them.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

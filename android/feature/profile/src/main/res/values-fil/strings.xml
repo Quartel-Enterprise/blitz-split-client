@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Basque</string>
     <string name="profile_language_galician">Galician</string>
     <string name="profile_language_romansh">Romansh</string>
+    <string name="profile_language_zulu">Zulu</string>
+    <string name="profile_language_afrikaans">Afrikaans</string>
+    <string name="profile_language_georgian">Georgian</string>
+    <string name="profile_language_armenian">Armenian</string>
+    <string name="profile_language_albanian">Albanian</string>
+    <string name="profile_language_macedonian">Macedonian</string>
+    <string name="profile_language_belarusian">Belarusian</string>
     <string name="profile_language_system_detail">Wika ng device</string>
     <string name="profile_notifications">Mga notipikasyon</string>
     <plurals name="profile_notifications_active">

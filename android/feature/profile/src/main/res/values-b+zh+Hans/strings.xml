@@ -124,6 +124,13 @@
     <string name="profile_language_basque">巴斯克语</string>
     <string name="profile_language_galician">加利西亚语</string>
     <string name="profile_language_romansh">罗曼什语</string>
+    <string name="profile_language_zulu">祖鲁语</string>
+    <string name="profile_language_afrikaans">南非荷兰语</string>
+    <string name="profile_language_georgian">格鲁吉亚语</string>
+    <string name="profile_language_armenian">亚美尼亚语</string>
+    <string name="profile_language_albanian">阿尔巴尼亚语</string>
+    <string name="profile_language_macedonian">马其顿语</string>
+    <string name="profile_language_belarusian">白俄罗斯语</string>
     <string name="profile_language_system_detail">设备语言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

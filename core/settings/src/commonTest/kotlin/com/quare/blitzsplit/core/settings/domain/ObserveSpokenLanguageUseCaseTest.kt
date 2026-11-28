@@ -174,6 +174,13 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.BASQUE,
                 AppLanguage.GALICIAN,
                 AppLanguage.ROMANSH,
+                AppLanguage.ZULU,
+                AppLanguage.AFRIKAANS,
+                AppLanguage.GEORGIAN,
+                AppLanguage.ARMENIAN,
+                AppLanguage.ALBANIAN,
+                AppLanguage.MACEDONIAN,
+                AppLanguage.BELARUSIAN,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
 
@@ -250,6 +257,13 @@ class ObserveSpokenLanguageUseCaseTest {
                     "eu",
                     "gl",
                     "rm",
+                    "zu",
+                    "af",
+                    "ka",
+                    "hy",
+                    "sq",
+                    "mk",
+                    "be",
                     "zh-Hant",
                 ),
                 spoken,
@@ -341,6 +355,13 @@ class ObserveSpokenLanguageUseCaseTest {
             "eu",
             "gl",
             "rm",
+            "zu",
+            "af",
+            "ka",
+            "hy",
+            "sq",
+            "mk",
+            "be",
             "zh-Hant",
         )
 
@@ -426,6 +447,13 @@ class ObserveSpokenLanguageUseCaseTest {
                 "eu-ES",
                 "gl-ES",
                 "rm-CH",
+                "zu-ZA",
+                "af-ZA",
+                "ka-GE",
+                "hy-AM",
+                "sq-AL",
+                "mk-MK",
+                "be-BY",
                 "zh-TW",
             )
 
@@ -504,6 +532,13 @@ class ObserveSpokenLanguageUseCaseTest {
                     "eu",
                     "gl",
                     "rm",
+                    "zu",
+                    "af",
+                    "ka",
+                    "hy",
+                    "sq",
+                    "mk",
+                    "be",
                     "zh-Hant",
                 ),
                 spoken,
@@ -555,7 +590,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System WHEN the device is in a language the app does not have THEN it is en`() = runTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
-        val devices = listOf("yo", "ig-NG", "zu", "zu-ZA", "ha", "ha-NG", "ceb", "ceb-PH", "ig")
+        val devices = listOf("yo", "ig-NG", "xh", "xh-ZA", "ha", "ha-NG", "ceb", "ceb-PH", "ig")
 
         // When
         val spoken = devices.map { spokenOn(it) }
@@ -709,7 +744,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System on a device with no language the app has WHEN observing THEN it is en`() = runTest {
         // Given
         prepareScenario()
-        deviceLanguages = listOf("yo-NG", "zu-ZA")
+        deviceLanguages = listOf("yo-NG", "xh-ZA")
 
         // When
         val language = observeSpokenLanguage().first()

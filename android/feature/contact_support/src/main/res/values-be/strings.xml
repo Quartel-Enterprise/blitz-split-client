@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Звязацца з падтрымкай</string>
+    <string name="contact_support_description">Мы адкрыем Вашу праграму электроннай пошты з гатовым паведамленнем. Апішыце, што здарылася, і адпраўце: кожнае паведамленне чытаюць жывыя людзі.</string>
+    <string name="contact_support_to">Каму</string>
+    <string name="contact_support_diagnostics">Будзе ўключана ў ліст</string>
+    <string name="contact_support_app_version">Версія праграмы</string>
+    <string name="contact_support_platform">Платформа</string>
+    <string name="contact_support_language">Мова</string>
+    <string name="contact_support_account">Уліковы запіс</string>
+    <string name="contact_support_profile">Профіль</string>
+    <string name="contact_support_language_system">Мова сістэмы</string>
+    <string name="contact_support_account_local">Толькі гэта прылада</string>
+    <string name="contact_support_account_anonymous">Не падключаны</string>
+    <string name="contact_support_open_email">Адкрыць пошту</string>
+    <string name="contact_support_copy_email">Капіяваць адрас электроннай пошты</string>
+    <string name="contact_support_notice_copied">Адрас электроннай пошты скапіяваны.</string>
+    <string name="contact_support_notice_no_app">Праграма электроннай пошты не знойдзена. Замест гэтага адрас скапіяваны.</string>
+    <string name="contact_support_close">Закрыць</string>
+</resources>

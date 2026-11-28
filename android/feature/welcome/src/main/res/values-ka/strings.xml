@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">გაყავით ხარჯი უპრობლემოდ</string>
+    <string name="welcome_offline_title">მუშაობს ოფლაინ</string>
+    <string name="welcome_offline_body">ყველაფერი თქვენს მოწყობილობაზე ინახება და მოგვიანებით სინქრონიზდება.</string>
+    <string name="welcome_optional_title">ანგარიში არასავალდებულოა</string>
+    <string name="welcome_optional_body">Google ან Apple მხოლოდ იმისთვისაა, რომ მოწყობილობის შეცვლისას არაფერი დაკარგოთ.</string>
+    <string name="welcome_invite_title">მოიწვიეთ ბმულით ან QR კოდით</string>
+    <string name="welcome_invite_body">მეგობრები ჯგუფში ანგარიშის შექმნის გარეშე წევრიანდებიან.</string>
+    <string name="welcome_no_connection_title">კავშირი არ არის.</string>
+    <string name="welcome_no_connection_body">ანგარიშით შესვლას ინტერნეტი სჭირდება. ახლა გამოიყენეთ ანგარიშის გარეშე და მოგვიანებით დაუკავშირდით პროფილში.</string>
+    <string name="welcome_or">ან</string>
+    <string name="welcome_use_without_account">ანგარიშის გარეშე გამოყენება</string>
+    <string name="welcome_used_on_another_device">სხვა მოწყობილობაზე უკვე ვიყენებდი</string>
+    <string name="welcome_sign_in_failed">ამჟამად შესვლა ვერ მოხერხდა. სცადეთ ხელახლა.</string>
+    <string name="welcome_legal_notice">გაგრძელებით ეთანხმებით დოკუმენტს %1$s და ადასტურებთ, რომ გაეცანით დოკუმენტს %2$s.</string>
+    <string name="welcome_legal_terms">მომსახურების პირობები</string>
+    <string name="welcome_legal_privacy">კონფიდენციალურობის პოლიტიკა</string>
+    <string name="welcome_no_account_note">ანგარიშის გარეშე თქვენი მონაცემები წაიშლება 30-დღიანი უმოქმედობის შემდეგ. მათ შესანარჩუნებლად დააკავშირეთ Google ან Apple.</string>
+    <string name="welcome_no_account_note_offline">ანგარიშის გარეშე თქვენი მონაცემები წაიშლება 30-დღიანი უმოქმედობის შემდეგ. მათ შესანარჩუნებლად მოგვიანებით პროფილში დააკავშირეთ Google ან Apple.</string>
+    <string name="welcome_expired_title">თქვენი მონაცემები წაიშალა</string>
+    <string name="welcome_expired_body">აპს ანგარიშის გარეშე იყენებდით და 30 დღე არ გაგიხსნიათ, ამიტომ თქვენი მონაცემები წაიშალა. შემდეგში მათ შესანარჩუნებლად დააკავშირეთ Google ან Apple.</string>
+    <string name="welcome_expired_ok">კარგი</string>
+</resources>

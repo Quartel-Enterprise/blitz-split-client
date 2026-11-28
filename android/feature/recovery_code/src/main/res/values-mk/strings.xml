@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Зачувајте го Вашиот код за враќање</string>
+    <string name="recovery_code_body">Ја користите без корисничка сметка. Овие 12 збора ги враќаат Вашите податоци ако смените или изгубите уред. Запишете ги по ред. По 30 дена некористење, Вашите податоци се бришат и зборовите престануваат да работат.</string>
+    <string name="recovery_code_copy">Копирај ги зборовите</string>
+    <string name="recovery_code_save_to_password_manager">Зачувај во менаџерот на лозинки</string>
+    <string name="recovery_code_connect_instead">Наместо тоа, поврзете Google или Apple</string>
+    <string name="recovery_code_connect_instead_body">Не е потребен код</string>
+    <string name="recovery_code_sign_in_failed">Поврзувањето моментално не успеа. Обидете се повторно.</string>
+    <string name="recovery_code_also_in_profile">Го има и во Профил › Враќање.</string>
+    <string name="recovery_code_remind_later">Потсети ме подоцна</string>
+    <string name="recovery_code_saved">Го зачував</string>
+    <string name="recovery_code_download">Преземи</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · код за враќање\n\n%1$s\n\nКористете го во “Веќе ја користев на друг уред” за да ги вратите Вашите податоци.\n</string>
+</resources>

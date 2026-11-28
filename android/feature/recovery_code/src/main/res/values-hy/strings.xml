@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Պահեք Ձեր վերականգնման կոդը</string>
+    <string name="recovery_code_body">Դուք օգտագործում եք հավելվածն առանց հաշվի։ Այս 12 բառը կվերադարձնեն Ձեր տվյալները, եթե փոխեք կամ կորցնեք սարքը։ Գրի առեք դրանք հերթականությամբ։ 30 օր չօգտագործելուց հետո Ձեր տվյալները ջնջվում են, և բառերը դադարում են աշխատել։</string>
+    <string name="recovery_code_copy">Պատճենել բառերը</string>
+    <string name="recovery_code_save_to_password_manager">Պահել գաղտնաբառերի կառավարիչում</string>
+    <string name="recovery_code_connect_instead">Փոխարենը կապել Google կամ Apple</string>
+    <string name="recovery_code_connect_instead_body">Կոդ պետք չէ</string>
+    <string name="recovery_code_sign_in_failed">Այս պահին չհաջողվեց կապել։ Փորձեք կրկին։</string>
+    <string name="recovery_code_also_in_profile">Այն կա նաև Պրոֆիլ › Վերականգնում բաժնում։</string>
+    <string name="recovery_code_remind_later">Հիշեցնել ավելի ուշ</string>
+    <string name="recovery_code_saved">Պահել եմ</string>
+    <string name="recovery_code_download">Ներբեռնել</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · վերականգնման կոդ\n\n%1$s\n\nՕգտագործեք այն “Օգտագործել եմ մեկ այլ սարքում” բաժնում՝ Ձեր տվյալները վերադարձնելու համար։\n</string>
+</resources>

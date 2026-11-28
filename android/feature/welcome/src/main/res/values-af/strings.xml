@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Verdeel die rekening, sonder gesukkel</string>
+    <string name="welcome_offline_title">Werk vanlyn</string>
+    <string name="welcome_offline_body">Alles bly op jou toestel en sinkroniseer later.</string>
+    <string name="welcome_optional_title">\'n Rekening is opsioneel</string>
+    <string name="welcome_optional_body">Google of Apple keer net dat jy niks verloor wanneer jy van toestel verander nie.</string>
+    <string name="welcome_invite_title">Nooi met \'n skakel of QR-kode</string>
+    <string name="welcome_invite_body">Vriende sluit by die groep aan sonder om \'n rekening te skep.</string>
+    <string name="welcome_no_connection_title">Geen verbinding nie.</string>
+    <string name="welcome_no_connection_body">Om met \'n rekening aan te meld, is internet nodig. Gebruik dit nou sonder \'n rekening en koppel later in Profiel.</string>
+    <string name="welcome_or">of</string>
+    <string name="welcome_use_without_account">Gebruik sonder \'n rekening</string>
+    <string name="welcome_used_on_another_device">Ek het dit al op \'n ander toestel gebruik</string>
+    <string name="welcome_sign_in_failed">Kon nie nou aanmeld nie. Probeer weer.</string>
+    <string name="welcome_legal_notice">Deur voort te gaan, aanvaar jy die %1$s en erken jy die %2$s.</string>
+    <string name="welcome_legal_terms">Diensbepalings</string>
+    <string name="welcome_legal_privacy">Privaatheidsbeleid</string>
+    <string name="welcome_no_account_note">Sonder \'n rekening word jou data na 30 dae sonder gebruik uitgevee. Koppel Google of Apple om dit te hou.</string>
+    <string name="welcome_no_account_note_offline">Sonder \'n rekening word jou data na 30 dae sonder gebruik uitgevee. Koppel later Google of Apple in Profiel om dit te hou.</string>
+    <string name="welcome_expired_title">Jou data is uitgevee</string>
+    <string name="welcome_expired_body">Jy het die app sonder \'n rekening gebruik en dit 30 dae lank nie oopgemaak nie, so jou data is uitgevee. Koppel Google of Apple om dit volgende keer te hou.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

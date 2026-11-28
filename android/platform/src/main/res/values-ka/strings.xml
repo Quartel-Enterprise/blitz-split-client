@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · აღდგენის კოდი</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">ფოტოს გადასაღებად პარამეტრებში დაუშვით კამერა.</string>
+    <string name="platform_camera_settings">პარამეტრები</string>
+    <string name="platform_receipt_source_camera">ფოტოს გადაღება</string>
+    <string name="platform_receipt_source_gallery">გალერეიდან არჩევა</string>
+    <string name="platform_receipt_source_file">ფაილის არჩევა</string>
+    <string name="platform_receipt_camera_title">ქვითრის სკანირება</string>
+    <string name="platform_receipt_camera_close">დახურვა</string>
+    <string name="platform_receipt_camera_flash_on">ფლეშის ჩართვა</string>
+    <string name="platform_receipt_camera_flash_off">ფლეშის გამორთვა</string>
+    <string name="platform_receipt_camera_hint">მოათავსეთ მთელი ქვითარი ჩარჩოში. ჩვენ შევავსებთ თანხას, თარიღსა და აღწერას; თქვენ შეამოწმებთ შენახვამდე.</string>
+    <string name="platform_receipt_camera_gallery">გალერეიდან არჩევა</string>
+    <string name="platform_receipt_camera_shutter">ფოტოს გადაღება</string>
+    <string name="platform_receipt_camera_unavailable">კამერა მიუწვდომელია. აირჩიეთ ქვითრის ფოტო გალერეიდან.</string>
+    <string name="platform_receipt_camera_permission">დაუშვით კამერა ქვითრის დასასკანერებლად ან აირჩიეთ ფოტო გალერეიდან.</string>
+    <string name="platform_receipt_camera_allow">კამერის დაშვება</string>
+    <string name="platform_receipt_camera_settings">პარამეტრების გახსნა</string>
+</resources>

@@ -126,6 +126,13 @@
     <string name="profile_language_basque">Basc</string>
     <string name="profile_language_galician">Gallec</string>
     <string name="profile_language_romansh">Romanx</string>
+    <string name="profile_language_zulu">Zulu</string>
+    <string name="profile_language_afrikaans">Afrikaans</string>
+    <string name="profile_language_georgian">Georgià</string>
+    <string name="profile_language_armenian">Armeni</string>
+    <string name="profile_language_albanian">Albanès</string>
+    <string name="profile_language_macedonian">Macedoni</string>
+    <string name="profile_language_belarusian">Belarús</string>
     <string name="profile_language_system_detail">Idioma del dispositiu</string>
     <string name="profile_notifications">Notificacions</string>
     <plurals name="profile_notifications_active">
