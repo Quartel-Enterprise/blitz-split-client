@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Balanslar</string>
+    <string name="global_balances_profile">Profil</string>
+    <string name="global_balances_offline">Oflayn · bu cihazın balansları</string>
+    <string name="global_balances_filter">Göstərin</string>
+    <string name="global_balances_filter_all">Hamısı</string>
+    <string name="global_balances_filter_you_owe">Ödəyəcəksiniz</string>
+    <string name="global_balances_filter_owes_you">Alacaqsınız</string>
+    <string name="global_balances_hint">Qruplar arasında artıq qarşılıqlı hesablanıb: hər şəxs bir dəfə göstərilir.</string>
+    <string name="global_balances_hint_empty">Bu cihazdakı bütün qruplar toplanır.</string>
+    <string name="global_balances_section_you_owe">Ödəyəcəksiniz · %d</string>
+    <string name="global_balances_section_owes_you">Alacaqsınız · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d qrup</item>
+        <item quantity="other">%d qrup</item>
+    </plurals>
+    <string name="global_balances_guest">%s · qonaq</string>
+    <string name="global_balances_you_owe">ödəyəcəksiniz</string>
+    <string name="global_balances_owes_you">alacaqsınız</string>
+    <string name="global_balances_by_group_show">Qruplara görə göstərin: %s</string>
+    <string name="global_balances_by_group_hide">Qruplara görə gizlədin: %s</string>
+    <string name="global_balances_received">Alındı</string>
+    <string name="global_balances_received_from">Alındı · %s</string>
+    <string name="global_balances_settle">Hesablaşın</string>
+    <string name="global_balances_settle_with">Hesablaşın: %s</string>
+    <string name="global_balances_charge">Pul istəyin</string>
+    <string name="global_balances_charge_person">Pul istəyin: %s</string>
+    <string name="global_balances_detail_pane">Balans: %s</string>
+    <string name="global_balances_detail_owes_you">%s sizə borcludur</string>
+    <string name="global_balances_detail_you_owe">Bu şəxsə borclusunuz: %s</string>
+    <string name="global_balances_detail_guest">%s · tətbiqi olmayan qonaq</string>
+    <string name="global_balances_detail_note_owed">Xalis məbləğdə qruplar artıq qarşılıqlı hesablanıb. Pul istəyin və Alındı bu məbləğlə işləyir: %s. Tətbiq hər qrupda bir ödəniş qeyd edir.</string>
+    <string name="global_balances_detail_note_settle">Xalis məbləğdə qruplar artıq qarşılıqlı hesablanıb. Hesablaşın bu məbləğlə işləyir: %s. Tətbiq hər qrupda bir ödəniş qeyd edir.</string>
+    <string name="global_balances_detail_note_single">Bu şəxslə yalnız bir açıq qrup var: %s.</string>
+    <string name="global_balances_settled_title">Hamı hesablaşıb</string>
+    <string name="global_balances_settled_body">Heç kim sizə borclu deyil, siz də heç kimə borclu deyilsiniz. Kimsə xərc əlavə edəndə balans burada görünəcək.</string>
+    <string name="global_balances_settled_action">Qruplara baxın</string>
+    <string name="global_balances_nothing_to_pay_title">Heç nə ödəməli deyilsiniz</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Hamı ilə hesablaşmısınız. Hələ %1$d nəfərdən alacağınız məbləğ: %2$s.</item>
+        <item quantity="other">Hamı ilə hesablaşmısınız. Hələ %1$d nəfərdən alacağınız məbləğ: %2$s.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Kimdən alacağınıza baxın</string>
+    <string name="global_balances_nothing_to_receive_title">Heç kim sizə borclu deyil</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Hələ %1$d nəfərə ödəyəcəyiniz məbləğ: %2$s.</item>
+        <item quantity="other">Hələ %1$d nəfərə ödəyəcəyiniz məbləğ: %2$s.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Kimə ödəyəcəyinizə baxın</string>
+    <string name="global_balances_coming_soon">Tezliklə</string>
+    <string name="global_balances_change_error">Dəyişikliyi yadda saxlamaq alınmadı. Yenidən cəhd edin.</string>
+    <string name="global_balances_copied">Kopyalandı</string>
+    <string name="global_balances_charge_title">Pul istəyin: %s</string>
+    <string name="global_balances_charge_owes">Alacaqsınız: %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Bağlayın</string>
+    <string name="global_balances_charge_guest">%s tətbiqi olmayan qonaqdır. Bundan yalnız bu mesajla xəbər tutacaq, ona görə mesajda xərcə nələrin daxil olduğu artıq yazılıb.</string>
+    <string name="global_balances_charge_message">Mesaj</string>
+    <string name="global_balances_charge_pix">Pix açarımı əlavə edin</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Mesajı kopyalayın</string>
+    <string name="global_balances_charge_send">Göndərin</string>
+    <string name="global_balances_message">Salam, %1$s! Blitz Split hesablamasına görə mənə borcunuz: %2$s (%3$s).</string>
+    <string name="global_balances_message_guest">Salam, %1$s! Mənə borcunuz: %2$s (%3$s). Bu, sizin bu xərcdəki payınızdır: %4$s.</string>
+    <string name="global_balances_message_guest_paid">Salam, %1$s! Mənə borcunuz: %2$s (%3$s). Bu, sizin bu xərcdəki payınızdır: %4$s, artıq ödədiyiniz %5$s çıxılmaqla.</string>
+    <string name="global_balances_message_group">qrup: %s</string>
+    <string name="global_balances_message_groups">qruplar: %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telefon</string>
+    <string name="global_balances_key_email">E-poçt</string>
+    <string name="global_balances_key_random">Təsadüfi açar</string>
+    <string name="global_balances_message_reroute">%1$s qrupu borcları sadələşdirdi, ona görə %2$s adlı şəxsə ödəmək əvəzinə birbaşa mənə ödəyirsiniz; ümumi məbləğiniz dəyişmədi.</string>
+</resources>

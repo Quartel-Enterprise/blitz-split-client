@@ -26,7 +26,7 @@ import { fileURLToPath } from "node:url";
  * The languages of the notes, English first: the ones blitz-split-site's release notes have. Portugal's Portuguese,
  * pt-PT, is one of its own there, written in full, not the few words over Brazil's that the apps keep for it.
  */
-export const LANGS = ["en", "pt", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh", "he", "th", "vi", "zh-Hant", "sv", "cs", "ro", "bn", "ms", "el", "hr", "hu", "ur", "fil", "sr", "sk", "fa", "ta", "nb", "te", "bg", "mr", "sw", "ca", "da", "fi", "lv", "et", "gu", "sl", "lt", "pa", "ml", "kn", "my", "km", "or"];
+export const LANGS = ["en", "pt", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh", "he", "th", "vi", "zh-Hant", "sv", "cs", "ro", "bn", "ms", "el", "hr", "hu", "ur", "fil", "sr", "sk", "fa", "ta", "nb", "te", "bg", "mr", "sw", "ca", "da", "fi", "lv", "et", "gu", "sl", "lt", "pa", "ml", "kn", "my", "km", "or", "ne", "az", "am", "si", "kk"];
 /** The platforms a note names, in the order it lists them; "all" stands alone, for every one of them. */
 export const PLATFORMS = ["android", "ios", "mac", "web"];
 /** What a note is, in the order a version lists its notes. Only "fixed" leaves the version a patch. */
@@ -103,6 +103,11 @@ const NOTHING_TO_SAY = {
   my: "ချို့ယွင်းချက်များကို ပြင်ဆင်ပြီး စွမ်းဆောင်ရည်ကို မြှင့်တင်ထားပါသည်။",
   km: "ការជួសជុលបញ្ហា និងការកែលម្អដំណើរការ។",
   or: "ବଗ୍ ସମାଧାନ ଏବଂ ପ୍ରଦର୍ଶନରେ ଉନ୍ନତି।",
+  ne: "बग समाधान र कार्यसम्पादनमा सुधार।",
+  az: "Xəta düzəlişləri və performans təkmilləşdirmələri.",
+  am: "የሳንካ ጥገናዎች እና የአፈጻጸም ማሻሻያዎች።",
+  si: "දෝෂ නිවැරදි කිරීම් සහ කාර්ය සාධන වැඩිදියුණු කිරීම්.",
+  kk: "Қателер түзетілді және өнімділік жақсартылды.",
 };
 
 export class NotesError extends Error {}

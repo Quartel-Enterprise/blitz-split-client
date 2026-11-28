@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">ඔබේ යාළුවන් ඔබට කියන්නේ මොකක්ද?</string>
+    <string name="profile_setup_subtitle">ඔබේ සමූහවලට සහ ඔබේ පැතිකඩ සබැඳිය ඇති ඕනෑම කෙනෙකුට ඔබේ නම පෙනෙනවා.</string>
+    <string name="profile_setup_avatar_color">අවතාරයේ පාට</string>
+    <string name="profile_setup_add_photo">ඡායාරූපයක් එක් කරන්න</string>
+    <string name="profile_setup_photo_error">මෙම ඡායාරූපය භාවිත කරන්න බැරි වුණා. වෙනත් එකක් උත්සාහ කරන්න.</string>
+    <string name="profile_setup_name_label">ඔබේ නම</string>
+    <string name="profile_setup_name_placeholder">නිමල් පෙරේරා</string>
+    <string name="profile_setup_name_too_short">අවම වශයෙන් අකුරු %d ටයිප් කරන්න.</string>
+    <string name="profile_setup_name_too_long">අක්ෂර %d දක්වා භාවිත කරන්න.</string>
+    <string name="profile_setup_name_hint">ඔබට පසුව පැතිකඩේදී එය වෙනස් කරන්න පුළුවන්.</string>
+    <string name="profile_setup_saved_locally">දැනට මෙම උපාංගයේ පමණක් සුරැකුණා.</string>
+    <string name="profile_setup_continue">ඉදිරියට</string>
+</resources>

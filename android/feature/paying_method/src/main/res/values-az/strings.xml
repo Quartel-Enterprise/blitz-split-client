@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Yeni ödəniş üsulu</string>
+    <string name="paying_method_edit_title">Ödəniş üsulunu redaktə edin</string>
+    <string name="paying_method_type">Növ</string>
+    <string name="paying_method_name">Ad</string>
+    <string name="paying_method_name_optional">Ad (istəyə görə)</string>
+    <string name="paying_method_color">Rəng</string>
+    <string name="paying_method_default">Standart üsul</string>
+    <string name="paying_method_default_hint">Ödədiyiniz yeni xərclər bununla başlayır.</string>
+    <string name="paying_method_delete">Ödəniş üsulunu silin</string>
+    <string name="paying_method_delete_title">Bu ödəniş üsulu silinsin?</string>
+    <string name="paying_method_delete_body">Bununla qeyd etdiyiniz xərclərdə o artıq görünməyəcək.</string>
+    <string name="paying_method_delete_confirm">Silin</string>
+    <string name="paying_method_save">Yadda saxlayın</string>
+</resources>

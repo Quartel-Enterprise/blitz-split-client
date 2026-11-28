@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">አዲስ ቡድን</string>
+    <string name="create_group_close">ይዝጉ</string>
+    <string name="create_group_create">ይፍጠሩ</string>
+    <string name="create_group_change_color">የቡድኑን ቀለም ይቀይሩ</string>
+    <string name="create_group_name_label">የቡድን ስም</string>
+    <string name="create_group_type_label">የቡድን ዓይነት</string>
+    <string name="create_group_members_title">ማን አለ</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d ሰው</item>
+        <item quantity="other">%d ሰዎች</item>
+    </plurals>
+    <string name="create_group_me">እርስዎ</string>
+    <string name="create_group_remove_member">ያስወግዱ: %s</string>
+    <string name="create_group_add_placeholder">በስም ያክሉ</string>
+    <string name="create_group_add">ያክሉ</string>
+    <string name="create_group_no_app_notice">አሁን ማንም መተግበሪያው አያስፈልገውም። ለሁሉም ወጪዎችን አሁኑኑ ማከልና ሊንኩን በኋላ መላክ ይችላሉ።</string>
+    <string name="create_group_currency">ነባሪ ምንዛሬ</string>
+    <string name="create_group_currency_caption">አዳዲስ ወጪዎች በዚህ ምንዛሬ ይጀምራሉ፤ እያንዳንዱ ወጪ ሌላ ምንዛሬ ሊጠቀም ይችላል።</string>
+    <string name="create_group_save_error">ቡድኑን ማስቀመጥ አልተቻለም። እንደገና ይሞክሩ።</string>
+    <string name="create_group_photo">የቡድን ፎቶ</string>
+    <string name="create_group_take_photo">ፎቶ ያንሱ</string>
+    <string name="create_group_choose_photo">ፎቶ ይምረጡ</string>
+    <string name="create_group_remove_photo">ፎቶውን ያስወግዱ</string>
+    <string name="create_group_photo_error">ይህን ፎቶ መጠቀም አልተቻለም። ሌላ ይሞክሩ።</string>
+</resources>

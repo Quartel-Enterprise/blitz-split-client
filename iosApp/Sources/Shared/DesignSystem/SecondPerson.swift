@@ -36,7 +36,13 @@ import SwiftUI
 /// user's "-ಿರಿ" ("Ana ಒಂದು ಖರ್ಚನ್ನು ಹಂಚಿದರು", "ನೀವು ಒಂದು ಖರ್ಚನ್ನು ಹಂಚಿದಿರಿ").
 /// Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb stays as it is ("Ana ചെലവ് വിഭജിച്ചു",
 /// "നിങ്ങൾ ചെലവ് വിഭജിച്ചു"). Odia's respectful past "-ଲେ" is the same for a name and for "ଆପଣ", so its verb stays as
-/// it is too ("Ana ଏକ ଖର୍ଚ୍ଚ ବାଣ୍ଟିଲେ", "ଆପଣ ଏକ ଖର୍ଚ୍ଚ ବାଣ୍ଟିଲେ").
+/// it is too ("Ana ଏକ ଖର୍ଚ୍ଚ ବାଣ୍ଟିଲେ", "ଆପଣ ଏକ ଖର୍ଚ୍ଚ ବାଣ୍ଟିଲେ"). Nepali does as Hindi with its ergative "ले", apart after a
+/// name and one word with the user's "तपाईंले", so its verb phrases all start with "ले", which the user's drops ("Ana ले
+/// खर्च बाँड्नुभयो", "तपाईंले खर्च बाँड्नुभयो"). Azerbaijani puts its simple past last as Turkish does, and the user's
+/// respectful "Siz" adds "-nız", "-niz", "-nuz" or "-nüz" to it after its last vowel ("Ana xərci böldü", "Siz xərci
+/// böldünüz"), and Kazakh likewise "-ңыз" or "-ңіз" ("Ana шығынды бөлді", "Сіз шығынды бөлдіңіз"). Amharic's
+/// respectful plural past is the same for a name and for "እርስዎ", and Sinhala's colloquial past doesn't change with the
+/// person, so their verbs stay as they are.
 ///
 /// Latvian starts each verb phrase with a simple past, which says the person but not the gender: its third person in
 /// "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji"; "Ana
@@ -115,7 +121,9 @@ enum SecondPerson {
     /// phrase starts with ends in "-i" for "-a" and "-ies" for "-ās", so "sadalīja" → "sadalīji", "pievienojās" →
     /// "pievienojies". Lithuanian: the simple past the phrase starts with, which says no gender, ends in
     /// "-ai" or "-ei" for "-o" or "-ė" ("-aisi", "-eisi" when reflexive), so "padalijo" → "padalijai", "ištrynė" →
-    /// "ištrynei", "dalijosi" → "dalijaisi". Another language keeps the verb as it is.
+    /// "ištrynei", "dalijosi" → "dalijaisi". Nepali: the same as Hindi with "ले", so "ले खर्च बाँड्नुभयो" → "खर्च
+    /// बाँड्नुभयो". Azerbaijani and Kazakh: the simple past last takes the user's ending by its last vowel, so "böldü:" →
+    /// "böldünüz:", "бөлді:" → "бөлдіңіз:". Another language keeps the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
@@ -124,11 +132,15 @@ enum SecondPerson {
         case "fa": return verbLastForYou(verb, past: "[دت]$", ending: "ید")
         case "ta": return verbLastForYou(verb, past: "ார்$", ending: "ீர்கள்", dropped: "ார்")
         case "kn": return verbLastForYou(verb, past: "[ಕ-ಹ]ರು$", ending: "ಿರಿ", dropped: "ರು")
+        case "az":
+            return harmonicVerbLastForYou(verb, consonants: "[dt]", endings: [("ı", "nız"), ("i", "niz"), ("u", "nuz"), ("ü", "nüz")])
+        case "kk": return harmonicVerbLastForYou(verb, consonants: "[дт]", endings: [("ы", "ңыз"), ("і", "ңіз")])
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
         case "mr": return verbWithoutSubjectParticle(verb, particle: "यांनी")
         case "gu": return verbWithoutSubjectParticle(verb, particle: "એ")
         case "pa": return verbWithoutSubjectParticle(verb, particle: "ਨੇ")
+        case "ne": return verbWithoutSubjectParticle(verb, particle: "ले")
         case let .some(code) where pastAuxiliaries[code] != nil:
             // Why: the past may be followed by a comma or a colon ("změnil(a), kdo platil").
             guard verb.range(of: #"^\S*l\(a\)(?=[\s,:]|$)"#, options: .regularExpression) != nil,
@@ -196,6 +208,17 @@ enum SecondPerson {
     /// ("böldü" → "böldün", "katıldı" → "katıldın"). A phrase whose clause doesn't end in that past stays as it is.
     private static func turkishVerbForYou(_ verb: String) -> String {
         verbLastForYou(verb, past: "[dt][ıiuü]$", ending: "n")
+    }
+
+    /// Azerbaijani and Kazakh put the verb last as Turkish does, and the user's ending follows the last vowel of the
+    /// past: "böldü" → "böldünüz", "etdi" → "etdiniz", "qoşuldu" → "qoşuldunuz", "бөлді" → "бөлдіңіз", "шықты" →
+    /// "шықтыңыз". `endings` pairs each vowel the past may end in with the user's ending after it.
+    private static func harmonicVerbLastForYou(_ verb: String, consonants: String, endings: [(String, String)]) -> String {
+        for (vowel, ending) in endings {
+            let said = verbLastForYou(verb, past: consonants + vowel + "$", ending: ending)
+            if said != verb { return said }
+        }
+        return verb
     }
 
     /// A language that puts its verb last (Turkish, Persian): the clause before the colon that leads to the object, if

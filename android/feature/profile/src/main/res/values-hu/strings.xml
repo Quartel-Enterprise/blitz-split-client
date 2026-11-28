@@ -113,6 +113,11 @@
     <string name="profile_language_burmese">Burmai</string>
     <string name="profile_language_khmer">Khmer</string>
     <string name="profile_language_odia">Orija</string>
+    <string name="profile_language_nepali">Nepáli</string>
+    <string name="profile_language_azerbaijani">Azerbajdzsáni</string>
+    <string name="profile_language_amharic">Amhara</string>
+    <string name="profile_language_sinhala">Szingaléz</string>
+    <string name="profile_language_kazakh">Kazah</string>
     <string name="profile_language_system_detail">Az eszköz nyelve</string>
     <string name="profile_notifications">Értesítések</string>
     <plurals name="profile_notifications_active">

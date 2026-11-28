@@ -112,6 +112,11 @@
     <string name="profile_language_burmese">မြန်မာ</string>
     <string name="profile_language_khmer">ခမာ</string>
     <string name="profile_language_odia">အိုဒီယာ</string>
+    <string name="profile_language_nepali">နီပေါ</string>
+    <string name="profile_language_azerbaijani">အဇာဘိုင်ဂျန်</string>
+    <string name="profile_language_amharic">အမ်ဟာရစ်</string>
+    <string name="profile_language_sinhala">စင်ဟာလာ</string>
+    <string name="profile_language_kazakh">ကာဇာခ်</string>
     <string name="profile_language_system_detail">စက်၏ ဘာသာစကား</string>
     <string name="profile_notifications">အသိပေးချက်များ</string>
     <plurals name="profile_notifications_active">

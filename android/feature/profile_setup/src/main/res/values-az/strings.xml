@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Dostlarınız sizi necə çağırır?</string>
+    <string name="profile_setup_subtitle">Qruplarınız və profil linkiniz olan hər kəs adınızı görür.</string>
+    <string name="profile_setup_avatar_color">Avatar rəngi</string>
+    <string name="profile_setup_add_photo">Foto əlavə edin</string>
+    <string name="profile_setup_photo_error">Bu fotodan istifadə etmək alınmadı. Başqasını sınayın.</string>
+    <string name="profile_setup_name_label">Adınız</string>
+    <string name="profile_setup_name_placeholder">Elçin Məmmədov</string>
+    <string name="profile_setup_name_too_short">Ən azı %d hərf yazın.</string>
+    <string name="profile_setup_name_too_long">Ən çox %d simvol yazın.</string>
+    <string name="profile_setup_name_hint">Onu sonra Profildə dəyişə bilərsiniz.</string>
+    <string name="profile_setup_saved_locally">Hələlik yalnız bu cihazda saxlanılıb.</string>
+    <string name="profile_setup_continue">Davam edin</string>
+</resources>

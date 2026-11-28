@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">දැනුම්දීම්</string>
+    <string name="notification_settings_denied_title">Android හි Blitz Split දැනුම්දීම් අක්‍රිය කර ඇත.</string>
+    <string name="notification_settings_denied_body">පහත දැනුම්දීම් ලබාගන්න, පද්ධති සැකසීම් තුළ ඒවා සක්‍රිය කරන්න. සීනුව දිගටම ක්‍රියා කරනවා.</string>
+    <string name="notification_settings_open_settings">සැකසීම් විවෘත කරන්න</string>
+    <string name="notification_settings_refused_body">පහත දැනුම්දීම් ලබාගන්න, Android ඔබට තවත් එක් වරක් ඒවාට ඉඩ දෙන්න අවස්ථාව දෙනවා. සීනුව දිගටම ක්‍රියා කරනවා.</string>
+    <string name="notification_settings_turn_on">සක්‍රිය කරන්න</string>
+    <string name="notification_settings_blocked_in_android">Android හි අවහිර කර ඇත</string>
+    <string name="notification_settings_open_channel_settings_description">Android සැකසීම් විවෘත කරන්න: %1$s</string>
+    <string name="notification_settings_push_switch">Push දැනුම්දීම්</string>
+    <string name="notification_settings_push_switch_detail">මෙම උපාංගයේ පමණයි</string>
+    <string name="notification_settings_section">මට දැනුම් දෙන්න</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">ඇප් එක තුළ</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push මෙම උපාංගයට දැනුම්දීමක් යවනවා. ඇප් එක තුළ එය සීනුවේ සහ ක්‍රියාකාරකම් තුළ අලුත් ලෙස සලකුණු කරනවා; අක්‍රිය කළ විට, එය තවමත් ක්‍රියාකාරකම් තුළ, දැනටමත් කියවූ ලෙස පෙන්වනවා.</string>
+    <string name="notification_settings_footer">අන්තර්ජාලය ඇති විට දැනුම්දීම් ලැබෙනවා. සමූහයක් නිහඬ කරන්න, එය තුළ ඇති මෙනුව භාවිත කරන්න.</string>
+</resources>

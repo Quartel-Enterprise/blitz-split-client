@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">ሰዓት ያገናኙ</string>
+    <string name="connect_watch_close">ይዝጉ</string>
+    <string name="connect_watch_body">ሰዓትዎ የሚያሳየውን ኮድ ይጻፉ። ወደ መለያዎ ይገባል፣ ከዚያም በራሱ ይመሳሰላል።</string>
+    <string name="connect_watch_code_label">የሰዓት ኮድ</string>
+    <string name="connect_watch_error_invalid">የተሳሳተ ወይም ጊዜው ያለፈበት ኮድ። በሰዓቱ ላይ አዲስ ያግኙ።</string>
+    <string name="connect_watch_error_too_many">በጣም ብዙ የተሳሳቱ ኮዶች። ጥቂት ደቂቃዎች ይጠብቁና እንደገና ይሞክሩ።</string>
+    <string name="connect_watch_error_needs_account">መጀመሪያ መለያ ያገናኙ: ውሂብዎ በዚህ መሣሪያ ላይ ብቻ ነው።</string>
+    <string name="connect_watch_error_failed">ሰዓቱን ማገናኘት አልተቻለም። እንደገና ይሞክሩ።</string>
+    <string name="connect_watch_offline">ሰዓቱን ማገናኘት ኢንተርኔት ያስፈልገዋል።</string>
+    <string name="connect_watch_own_watch_only">በራስዎ ሰዓት ላይ የሚታይ ኮድ ብቻ ይጻፉ: ያንን ሰዓት የያዙ ሁሉ ወደ መለያዎ ይገባሉ።</string>
+    <string name="connect_watch_validity">ኮዱ ለ5 ደቂቃዎች፣ አንድ ጊዜ ያገለግላል።</string>
+    <string name="connect_watch_button">ያገናኙ</string>
+    <string name="connect_watch_connected_title">ሰዓቱ ተገናኝቷል</string>
+    <string name="connect_watch_connected_body">ቡድኖችዎን ያያል፣ በራሱም ይመሳሰላል። ግንኙነቱን ለማቋረጥ፣ በሰዓቱ ላይ ይውጡ።</string>
+</resources>

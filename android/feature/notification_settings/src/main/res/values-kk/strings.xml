@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Хабарландырулар</string>
+    <string name="notification_settings_denied_title">Blitz Split хабарландырулары Android жүйесінде өшірулі.</string>
+    <string name="notification_settings_denied_body">Төмендегі push хабарландыруларын алу үшін оларды жүйе баптауларында қосыңыз. Қоңырауша жұмысын жалғастырады.</string>
+    <string name="notification_settings_open_settings">Баптауларды ашу</string>
+    <string name="notification_settings_refused_body">Төмендегі push хабарландыруларын алу үшін Android оларға тағы бір рет рұқсат беруге мүмкіндік береді. Қоңырауша жұмысын жалғастырады.</string>
+    <string name="notification_settings_turn_on">Қосу</string>
+    <string name="notification_settings_blocked_in_android">Android жүйесінде бұғатталған</string>
+    <string name="notification_settings_open_channel_settings_description">Android баптауларын ашу: %1$s</string>
+    <string name="notification_settings_push_switch">Push хабарландырулары</string>
+    <string name="notification_settings_push_switch_detail">Тек осы құрылғыда</string>
+    <string name="notification_settings_section">Маған хабарлау</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Қолданбада</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push осы құрылғыға хабарландыру жібереді. Қолданбада — қоңыраушада және Әрекеттерде жаңа деп белгілейді; өшірулі болса, Әрекеттерде оқылған күйде бәрібір көрінеді.</string>
+    <string name="notification_settings_footer">Хабарлар интернет болғанда келеді. Топтың дыбысын өшіру үшін оның ішіндегі мәзірді пайдаланыңыз.</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">ඔබ මෙම සමූහයේ නැහැ</string>
+    <string name="bill_link_not_in_group_message">මෙම අදහස ඇත්තේ ඔබ නැති සමූහයක. ඔබට සබැඳිය එවූ කෙනාගෙන් ආරාධනය ඉල්ලන්න.</string>
+    <string name="bill_link_offline_title">අන්තර්ජාලය නැහැ</string>
+    <string name="bill_link_offline_message">ඔබ නැවත සබැඳි වූ විට සබැඳිය නැවත විවෘත කරන්න.</string>
+    <string name="bill_link_go_home">මුල් පිටුවට යන්න</string>
+    <string name="discard_changes_title">වෙනස්කම් ඉවතලන්නද?</string>
+    <string name="discard_changes_message">නොසුරැකි වෙනස්කම් නැති වෙනවා.</string>
+    <string name="discard_changes_discard">ඉවතලන්න</string>
+    <string name="discard_changes_keep_editing">දිගටම සංස්කරණය කරන්න</string>
+    <string name="watch_channel_name">ඔරලෝසුව</string>
+    <string name="watch_connected_title">%1$s ඔබේ ගිණුමට සම්බන්ධ වුණා</string>
+    <string name="watch_connected_title_unnamed">ඔරලෝසුව ඔබේ ගිණුමට සම්බන්ධ වුණා</string>
+    <string name="watch_connected_text">එයට ඔබේ සමූහ පෙනෙන අතර ඉබේම සමමුහුර්ත වෙනවා. එය විසන්ධි කරන්න, ඔරලෝසුවෙන් වරන්න.</string>
+</resources>

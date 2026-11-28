@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">नयाँ भुक्तानी विधि</string>
+    <string name="paying_method_edit_title">भुक्तानी विधि सम्पादन गर्नुहोस्</string>
+    <string name="paying_method_type">प्रकार</string>
+    <string name="paying_method_name">नाम</string>
+    <string name="paying_method_name_optional">नाम (ऐच्छिक)</string>
+    <string name="paying_method_color">रङ</string>
+    <string name="paying_method_default">डिफल्ट विधि</string>
+    <string name="paying_method_default_hint">तपाईंले तिर्ने नयाँ खर्च यसैबाट सुरु हुन्छन्।</string>
+    <string name="paying_method_delete">भुक्तानी विधि मेटाउनुहोस्</string>
+    <string name="paying_method_delete_title">यो भुक्तानी विधि मेटाउने?</string>
+    <string name="paying_method_delete_body">तपाईंले यसले चिन्ह लगाएका खर्चमा यो अब देखिने छैन।</string>
+    <string name="paying_method_delete_confirm">मेटाउनुहोस्</string>
+    <string name="paying_method_save">सेभ गर्नुहोस्</string>
+</resources>

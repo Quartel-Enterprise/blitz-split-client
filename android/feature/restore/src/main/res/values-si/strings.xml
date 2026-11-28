@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">ඔබේ සමූහ නැවත ගෙනෙන්න</string>
+    <string name="restore_subtitle">කලින් ගිණුමකින් පුරනය වුණාද? නැවත පුරනය වන්න. එසේ නොවේ නම්, ප්‍රතිසාධන කේතය හෝ ඔබේ පැරණි උපාංගයේ QR කේතය භාවිත කරන්න.</string>
+    <string name="restore_no_connection_title">සම්බන්ධතාවයක් නැහැ</string>
+    <string name="restore_no_connection_body">ගිණුමකින් හෝ කේතයකින් පුරනය වීමට ඔබේ සමූහ බාගන්න අන්තර්ජාලය අවශ්‍යයි. ඔබ ටයිප් කළ දේ තබාගෙන ඇත.</string>
+    <string name="restore_code_label">නැත්නම් ප්‍රතිසාධන කේතය භාවිත කරන්න</string>
+    <string name="restore_code_hint">පිළිවෙළට වචන 12. සියලු ක්ෂේත්‍ර පුරවන්න, ඒවා සියල්ල එක් ක්ෂේත්‍රයකට අලවන්න.</string>
+    <string name="restore_scan_qr_title">ඔබේ පැරණි උපාංගයේ QR කේතය ස්කෑන් කරන්න</string>
+    <string name="restore_scan_qr_body">එහි: පැතිකඩ › ප්‍රතිසාධනය › QR කේතය පෙන්වන්න</string>
+    <string name="restore_recover">ප්‍රතිසාධනය කරන්න</string>
+    <string name="restore_try_again">නැවත උත්සාහ කරන්න</string>
+    <string name="restore_start_fresh">මෙම උපාංගයේ අලුතින් පටන් ගන්න</string>
+    <string name="restore_error_invalid_code">කේතය හමු වුණේ නැහැ. වචන සහ ඒවායේ පිළිවෙළ පරීක්ෂා කර, නැවත උත්සාහ කරන්න.</string>
+    <string name="restore_error_too_many_attempts">උත්සාහයන් වැඩියි. මිනිත්තු කිහිපයක් ඉඳලා නැවත උත්සාහ කරන්න.</string>
+    <string name="restore_error_sign_in_failed">දැන් පුරනය වෙන්න බැරි වුණා. නැවත උත්සාහ කරන්න.</string>
+    <string name="restore_error_unknown">යමක් වැරදුණා. නැවත උත්සාහ කරන්න.</string>
+</resources>

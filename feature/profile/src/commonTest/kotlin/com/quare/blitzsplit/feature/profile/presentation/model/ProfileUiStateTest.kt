@@ -75,6 +75,11 @@ class ProfileUiStateTest {
             AppLanguage.BURMESE -> listOf("မြန်မာ", "Burmese")
             AppLanguage.KHMER -> listOf("ខ្មែរ", "Khmer")
             AppLanguage.ODIA -> listOf("ଓଡ଼ିଆ", "Odia")
+            AppLanguage.NEPALI -> listOf("नेपाली", "Nepali")
+            AppLanguage.AZERBAIJANI -> listOf("Azərbaycan dili", "Azerbaijani")
+            AppLanguage.AMHARIC -> listOf("አማርኛ", "Amharic")
+            AppLanguage.SINHALA -> listOf("සිංහල", "Sinhala")
+            AppLanguage.KAZAKH -> listOf("Қазақ тілі", "Kazakh")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -149,6 +154,11 @@ class ProfileUiStateTest {
         AppLanguage.BURMESE,
         AppLanguage.KHMER,
         AppLanguage.ODIA,
+        AppLanguage.NEPALI,
+        AppLanguage.AZERBAIJANI,
+        AppLanguage.AMHARIC,
+        AppLanguage.SINHALA,
+        AppLanguage.KAZAKH,
     )
 
     @Test
@@ -766,6 +776,11 @@ class ProfileUiStateTest {
                 AppLanguage.BURMESE,
                 AppLanguage.KHMER,
                 AppLanguage.ODIA,
+                AppLanguage.NEPALI,
+                AppLanguage.AZERBAIJANI,
+                AppLanguage.AMHARIC,
+                AppLanguage.SINHALA,
+                AppLanguage.KAZAKH,
             ),
             options,
         )
@@ -842,6 +857,11 @@ class ProfileUiStateTest {
                 AppLanguage.BURMESE,
                 AppLanguage.KHMER,
                 AppLanguage.ODIA,
+                AppLanguage.NEPALI,
+                AppLanguage.AZERBAIJANI,
+                AppLanguage.AMHARIC,
+                AppLanguage.SINHALA,
+                AppLanguage.KAZAKH,
             ),
             options,
         )

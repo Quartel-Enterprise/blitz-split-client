@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">අලුත් දේ</string>
+    <string name="release_notes_show_beta">බීටා අනුවාද පෙන්වන්න</string>
+    <string name="release_notes_beta_badge">බීටා %1$d</string>
+    <string name="release_notes_installed_badge">මෙම අනුවාදය</string>
+    <string name="release_notes_empty">තවම අලුත් දේ නැහැ.</string>
+    <string name="release_notes_empty_only_betas">තවම ස්ථාවර අනුවාදයක් නැහැ. පරීක්ෂා කෙරෙන දේ බලන්න බීටා අනුවාද සක්‍රිය කරන්න.</string>
+    <string name="release_notes_load_failed_title">අලුත් දේ පූරණය කරන්න බැරි වුණා</string>
+    <string name="release_notes_load_failed_body">ඔබේ සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.</string>
+    <string name="release_notes_retry">නැවත උත්සාහ කරන්න</string>
+    <string name="release_notes_open_on_github">GitHub හි විවෘත කරන්න</string>
+</resources>

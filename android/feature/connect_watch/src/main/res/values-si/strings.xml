@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">ඔරලෝසුව සම්බන්ධ කරන්න</string>
+    <string name="connect_watch_close">වසන්න</string>
+    <string name="connect_watch_body">ඔබේ ඔරලෝසුව පෙන්වන කේතය ටයිප් කරන්න. එය ඔබේ ගිණුමට පුරනය වී පසුව ඉබේම සමමුහුර්ත වෙනවා.</string>
+    <string name="connect_watch_code_label">ඔරලෝසු කේතය</string>
+    <string name="connect_watch_error_invalid">වැරදි හෝ කල් ඉකුත් වූ කේතයක්. ඔරලෝසුවෙන් නව එකක් ලබාගන්න.</string>
+    <string name="connect_watch_error_too_many">වැරදි කේත වැඩියි. මිනිත්තු කිහිපයක් ඉඳලා නැවත උත්සාහ කරන්න.</string>
+    <string name="connect_watch_error_needs_account">මුලින්ම ගිණුමක් සම්බන්ධ කරන්න: ඔබේ දත්ත ඇත්තේ මෙම උපාංගයේ පමණයි.</string>
+    <string name="connect_watch_error_failed">ඔරලෝසුව සම්බන්ධ කරන්න බැරි වුණා. නැවත උත්සාහ කරන්න.</string>
+    <string name="connect_watch_offline">ඔරලෝසුව සම්බන්ධ කරන්න අන්තර්ජාලය අවශ්‍යයි.</string>
+    <string name="connect_watch_own_watch_only">ඔබේම ඔරලෝසුවේ පෙන්වන කේතයක් පමණක් ටයිප් කරන්න: එම ඔරලෝසුව ඇති ඕනෑම කෙනෙකු ඔබේ ගිණුමට ඇතුළු වෙනවා.</string>
+    <string name="connect_watch_validity">කේතය මිනිත්තු 5ක් සඳහා, එක් වරක් වලංගුයි.</string>
+    <string name="connect_watch_button">සම්බන්ධ කරන්න</string>
+    <string name="connect_watch_connected_title">ඔරලෝසුව සම්බන්ධ කළා</string>
+    <string name="connect_watch_connected_body">එයට ඔබේ සමූහ පෙනෙන අතර ඉබේම සමමුහුර්ත වෙනවා. එය විසන්ධි කරන්න, ඔරලෝසුවෙන් වරන්න.</string>
+</resources>

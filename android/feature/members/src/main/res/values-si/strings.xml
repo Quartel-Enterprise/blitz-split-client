@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">ආරාධනා සබැඳිය</string>
+    <string name="members_link_pending">තවම සාදා නැහැ</string>
+    <string name="members_share">බෙදාගන්න</string>
+    <string name="members_me">%s (ඔබ)</string>
+    <string name="members_status_this_device">මෙම උපාංගය</string>
+    <string name="members_status_joined">එක්වුණා</string>
+    <string name="members_status_not_joined">තවම එක්වී නැහැ</string>
+    <string name="members_options">විකල්ප: %s</string>
+    <string name="members_rename">නම වෙනස් කරන්න</string>
+    <string name="members_personal_invite">පුද්ගලික ආරාධනය: %s</string>
+    <string name="members_personal_message">මෙම සබැඳිය විවෘත කරන ඕනෑම කෙනෙකු ලැයිස්තුවෙන් තෝරන්නේ නැතිව කෙලින්ම එක්වන්නේ මෙලෙස: %s. එය ක්‍රියා කරන්නේ එක් වරක් පමණයි.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">මෙම සබැඳිය විවෘත කරන ඕනෑම කෙනෙකු ලැයිස්තුවෙන් තෝරන්නේ නැතිව කෙලින්ම එක්වන්නේ මෙලෙස: %1$s. මේ වන තුරු එක් කළ වියදම් %3$d තුළ ඔවුන්ගේ කොටස වන %2$s දැනටමත් පෙනෙනවා. එය ක්‍රියා කරන්නේ එක් වරක් පමණයි.</item>
+        <item quantity="other">මෙම සබැඳිය විවෘත කරන ඕනෑම කෙනෙකු ලැයිස්තුවෙන් තෝරන්නේ නැතිව කෙලින්ම එක්වන්නේ මෙලෙස: %1$s. මේ වන තුරු එක් කළ වියදම් %3$d තුළ ඔවුන්ගේ කොටස වන %2$s දැනටමත් පෙනෙනවා. එය ක්‍රියා කරන්නේ එක් වරක් පමණයි.</item>
+    </plurals>
+    <string name="members_personal_copy">සබැඳිය පිටපත් කරන්න</string>
+    <string name="members_personal_copied">පිටපත් කළා</string>
+    <string name="members_personal_share">බෙදාගන්න: %s</string>
+    <string name="members_personal_share_message">Blitz Split හි %1$s සමූහයට එක්වන්න, මෙලෙස: %2$s. සබැඳිය: %3$s</string>
+    <string name="members_remove">සමූහයෙන් ඉවත් කරන්න</string>
+    <string name="members_remove_joined">%s දැනටමත් සමූහයට එක්වුණා</string>
+    <string name="members_remove_title">සමූහයෙන් ඉවත් කරන්නද: %s?</string>
+    <string name="members_remove_message">%s තවම එක්වී නැහැ. ඔබට පසුව නැවත එක් කරන්න පුළුවන්.</string>
+    <string name="members_remove_confirm">ඉවත් කරන්න</string>
+    <string name="members_release">නම නිදහස් කරන්න</string>
+    <string name="members_release_title">නම නිදහස් කරන්නද: %s?</string>
+    <string name="members_release_message">%1$s ලෙස එක්වූ කෙනා සමූහයෙන් ඉවත් වෙනවා. %1$s නම, පාට සහ වියදම් එලෙසම පවතින අතර, සමූහයේ සබැඳියෙන් %1$s නැවත තෝරාගත හැකියි.</string>
+    <string name="members_release_confirm">නිදහස් කරන්න</string>
+    <string name="members_release_error">නම නිදහස් කරන්න බැරි වුණා. ඔබේ සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.</string>
+    <string name="members_add">පුද්ගලයෙකු එක් කරන්න</string>
+    <string name="members_invite_instead">ඇප් එක තිබෙනවාද? සබැඳියෙන් ආරාධනා කරන්න</string>
+    <string name="members_name_label">නම</string>
+    <string name="members_save">සුරකින්න</string>
+    <string name="members_cancel">අවලංගු කරන්න</string>
+    <string name="members_change_error">වෙනස සුරකින්න බැරි වුණා. නැවත උත්සාහ කරන්න.</string>
+    <string name="members_remove_open_balance">විවෘත ශේෂයක් තිබෙනවා: %s</string>
+    <string name="members_balance_to_get_back">ලැබිය යුතුයි: %s</string>
+    <string name="members_balance_owes">ගෙවිය යුතුයි: %s</string>
+    <string name="members_balance_settled">පියවා ඇත</string>
+</resources>

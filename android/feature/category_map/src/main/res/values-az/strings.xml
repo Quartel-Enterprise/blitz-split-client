@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Söz yoxdur</string>
+    <string name="category_map_title">Kateqoriya xəritəsi</string>
+    <string name="category_map_search">Sözləri axtarın</string>
+    <string name="category_map_add">Söz əlavə edin</string>
+    <string name="category_map_more">Digər seçimlər</string>
+    <string name="category_map_restore">Standarta qaytarın</string>
+    <string name="category_map_back">Geri</string>
+    <string name="category_map_intro">Xərcin başlığında bu sözlərdən biri olanda kateqoriyası özü gəlir. “Uber ev” Nəqliyyat olur.</string>
+    <string name="category_map_intro_offline">Xəritə oflayn işləyir: dəyişikliklər bu cihazda dərhal qüvvəyə minir və internet qayıdanda digər cihazlarınıza çatır.</string>
+    <string name="category_map_device_only">Xəritəniz yalnız bu cihazda qalır. Onu digər cihazlarınıza aparmaq üçün Profildə Google və ya Apple ilə daxil olun.</string>
+    <string name="category_map_open_profile">Profili açın</string>
+    <string name="category_map_longest_wins">İki söz başlığa uyğun gələndə ən uzunu qalib gəlir.</string>
+    <string name="category_map_no_result">İçində “%1$s” olan söz yoxdur</string>
+    <string name="category_map_no_result_body">Onu əlavə edin və başlığında bu söz olan xərclər düzgün kateqoriya ilə gəlsin.</string>
+    <string name="category_map_add_query">“%1$s” əlavə edin</string>
+    <string name="category_map_empty_title">Xəritəniz boşdur</string>
+    <string name="category_map_empty_body">Söz olmadan kateqoriya başlıqdan gəlmir: onu hər xərcdə özünüz seçirsiniz.</string>
+    <string name="category_map_group_category"> · %1$s qrupunun kateqoriyası</string>
+    <string name="category_map_only_main">Yalnız %1$s</string>
+    <string name="category_map_only_in_group">yalnız %1$s qrupunda</string>
+    <string name="category_map_no_terms_yet">Hələ söz yoxdur.</string>
+    <string name="category_map_add_in">%1$s kateqoriyasına söz əlavə edin</string>
+    <string name="category_map_tip">Kateqoriyasını dəyişmək və ya silmək üçün sözə toxunun. Vurğu işarələrinə və böyük-kiçik hərfə baxmadan bütöv sözə uyğun gəlir.</string>
+    <string name="category_map_queued">növbədə</string>
+    <string name="category_map_term_action">%1$s, %2$s. Redaktə edin</string>
+    <string name="category_map_new_term">Yeni söz</string>
+    <string name="category_map_edit_term">Sözü redaktə edin</string>
+    <string name="category_map_term_label">Söz və ya ifadə</string>
+    <string name="category_map_term_help">Vurğu işarələrinə və böyük-kiçik hərfə baxmadan bütöv sözə uyğun gəlir.</string>
+    <string name="category_map_term_help_app">Tətbiqin sözüdür. Standarta qaytarın onu ilkin halına qaytarır.</string>
+    <string name="category_map_term_duplicate">“%1$s” artıq %2$s kateqoriyasını seçir. Hər sözün bir kateqoriyası olur.</string>
+    <string name="category_map_term_too_short">Ən azı 2 hərf yazın.</string>
+    <string name="category_map_term_too_long">Ən çox 30 hərf yazın.</string>
+    <string name="category_map_term_invalid">Yalnız hərf, rəqəm və boşluqdan istifadə edin.</string>
+    <string name="category_map_category">Kateqoriya</string>
+    <string name="category_map_category_help">Bu, kateqoriya və ya alt kateqoriya ola bilər.</string>
+    <string name="category_map_category_help_edit">Burada dəyişmək sözü başqa kateqoriyaya köçürür.</string>
+    <string name="category_map_category_help_move">Köçürmə sözü %1$s kateqoriyasından çıxarır.</string>
+    <string name="category_map_example">Nümunə</string>
+    <string name="category_map_example_move">Köçürülsə</string>
+    <string name="category_map_remove">Silin</string>
+    <string name="category_map_cancel">Ləğv edin</string>
+    <string name="category_map_save">Yadda saxlayın</string>
+    <string name="category_map_move_to">Köçürün: %1$s</string>
+    <string name="category_map_removed">“%1$s” xəritədən çıxarıldı</string>
+    <string name="category_map_undo">Geri qaytarın</string>
+    <string name="category_map_restore_title">Standart xəritə bərpa edilsin?</string>
+    <string name="category_map_restore_body">Tətbiqin 60 sözü, sildikləriniz və köçürdükləriniz də daxil olmaqla, ilkin halına qayıdır.</string>
+    <string name="category_map_restore_own_one">Yaratdığınız “%1$s” sözü qalır.</string>
+    <string name="category_map_restore_confirm">Bərpa edin</string>
+    <string name="category_map_save_error">Xəritəni yadda saxlamaq alınmadı. Yenidən cəhd edin.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d söz</item>
+        <item quantity="other">%d söz</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d alt kateqoriya</item>
+        <item quantity="other">%d alt kateqoriya</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">İçində “%2$s” olan %1$d söz</item>
+        <item quantity="other">İçində “%2$s” olan %1$d söz</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Oflayn · %d dəyişiklik növbədə</item>
+        <item quantity="other">Oflayn · %d dəyişiklik növbədə</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Yaratdığınız %d söz qalır.</item>
+        <item quantity="other">Yaratdığınız %d söz qalır.</item>
+    </plurals>
+    <string name="category_map_new_category">Yeni kateqoriya</string>
+    <string name="category_map_new_subcategory_in">%s kateqoriyasında yeni alt kateqoriya</string>
+    <string name="category_map_edit_category">Redaktə edin: %s</string>
+    <string name="category_map_category_group">Qrup</string>
+    <string name="category_map_change_color">Rəngi dəyişin: %1$s</string>
+    <string name="category_map_restore_color">Rəngi bərpa edin</string>
+    <string name="category_map_color_done">Hazırdır</string>
+</resources>

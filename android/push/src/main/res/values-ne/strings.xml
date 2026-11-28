@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">हिसाब मिलाउने रिमाइन्डर</string>
+    <string name="push_bill_created">%1$s ले तपाईंसँग “%2$s” थप्नुभयो</string>
+    <string name="push_bill_edited">%1$s ले “%2$s” सम्पादन गर्नुभयो</string>
+    <string name="push_bill_deleted">%1$s ले “%2$s” मेटाउनुभयो</string>
+    <string name="push_comment_added">%1$s ले टिप्पणी गर्नुभयो (“%2$s”): %3$s</string>
+    <string name="push_payment_paid_you">%1$s ले तपाईंलाई तिरेको चिन्ह लगाउनुभयो</string>
+    <string name="push_payment_to_you">%1$s ले चिन्ह लगाउनुभयो: %2$s ले तपाईंलाई तिर्नुभयो</string>
+    <string name="push_payment_received_yours">%1$s ले तपाईंको भुक्तानी पाएको चिन्ह लगाउनुभयो</string>
+    <string name="push_payment_from_you">%1$s ले चिन्ह लगाउनुभयो: तपाईंले तिर्नुभयो, पाउने: %2$s</string>
+    <string name="push_payment_undone">%1$s ले तपाईंसँगको भुक्तानी पूर्ववत् गर्नुभयो</string>
+    <string name="push_charge_sent">%1$s ले तपाईंलाई हिसाब मिलाउन रिमाइन्डर पठाउनुभयो</string>
+    <string name="push_settle_reminder">तपाईंको यो ग्रुपमा ब्यालेन्स खुला छ: %1$s</string>
+    <string name="push_settle_reminders">तपाईंको %1$s ग्रुपमा ब्यालेन्स खुला छ</string>
+    <string name="push_added_to_group">%1$s ले तपाईंलाई ग्रुपमा थप्नुभयो</string>
+    <string name="push_member_joined">%1$s ले ग्रुप जोइन गर्नुभयो</string>
+    <string name="push_debts_simplified_to_you">%1$s ले ऋण सरल गर्नुभयो। अब %2$s ले तपाईंलाई %3$s तिर्नुहुन्छ।</string>
+    <string name="push_debts_simplified_from_you">%1$s ले ऋण सरल गर्नुभयो। अब तपाईंले %3$s तिर्नुहुन्छ, पाउने: %2$s।</string>
+    <string name="push_debts_simplified_other">%1$s ले ऋण सरल गर्नुभयो। तपाईंका लागि कस्तो भयो हेर्नुहोस्।</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ले “ऋण सरल गर्नुहोस्” बन्द गर्नुभयो। अब %2$s ले तपाईंलाई %3$s तिर्नुहुन्छ।</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ले “ऋण सरल गर्नुहोस्” बन्द गर्नुभयो। अब तपाईंले %3$s तिर्नुहुन्छ, पाउने: %2$s।</string>
+    <string name="push_debts_unsimplified_other">%1$s ले “ऋण सरल गर्नुहोस्” बन्द गर्नुभयो। तपाईंका लागि कस्तो भयो हेर्नुहोस्।</string>
+    <string name="notification_settings_bills">खर्चहरू</string>
+    <string name="notification_settings_bills_detail">तपाईं भएका नयाँ, सम्पादन गरिएका वा मेटाइएका खर्चहरू</string>
+    <string name="notification_settings_payments">भुक्तानी र हिसाब मिलान</string>
+    <string name="notification_settings_payments_detail">तपाईंलाई वा तपाईंबाट भएका भुक्तानी, र सरल गरिएका ऋण</string>
+    <string name="notification_settings_comments">टिप्पणीहरू</string>
+    <string name="notification_settings_comments_detail">तपाईं भएका खर्च र तपाईंले लेखेका थ्रेडहरूमा</string>
+    <string name="notification_settings_people_and_groups">मान्छे र ग्रुपहरू</string>
+    <string name="notification_settings_people_and_groups_detail">तपाईंका ग्रुपमा को जोइन गर्नुहुन्छ वा छोड्नुहुन्छ, र तिनमा के बदलिन्छ</string>
+    <string name="notification_settings_payment_requests">भुक्तानी अनुरोधहरू</string>
+    <string name="notification_settings_payment_requests_detail">कसैले तपाईंलाई तिर्न भन्दा</string>
+    <string name="notification_settings_balance_reminder">खुला ब्यालेन्सको रिमाइन्डर</string>
+    <string name="notification_settings_balance_reminder_detail">हप्तामा एक पटक, ब्यालेन्स खुला भए</string>
+</resources>

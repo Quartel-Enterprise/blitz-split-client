@@ -867,6 +867,66 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Nepali tag WHEN reading it THEN is Nepali`() {
+        // Given
+        val tags = listOf("ne", "ne-NP", "NE_np", "ne-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.NEPALI }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Azerbaijani tag WHEN reading it THEN is Azerbaijani`() {
+        // Given
+        val tags = listOf("az", "az-AZ", "AZ_az", "az-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.AZERBAIJANI }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Amharic tag WHEN reading it THEN is Amharic`() {
+        // Given
+        val tags = listOf("am", "am-ET", "AM_et", "am-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.AMHARIC }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Sinhala tag WHEN reading it THEN is Sinhala`() {
+        // Given
+        val tags = listOf("si", "si-LK", "SI_lk", "si-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.SINHALA }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Kazakh tag WHEN reading it THEN is Kazakh`() {
+        // Given
+        val tags = listOf("kk", "kk-KZ", "KK_kz", "kk-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.KAZAKH }, languages)
+    }
+
+    @Test
     fun `GIVEN a Traditional Chinese tag WHEN reading it THEN is Traditional Chinese`() {
         // Given
         val tags = listOf("zh-Hant", "zh-TW", "zh_TW", "zh-Hant-TW", "zh-HK", "zh-MO", "ZH-hant", "zh-Hant-CN")
@@ -1014,6 +1074,11 @@ class AppLanguageTest {
                 "MY",
                 "KM",
                 "OR",
+                "NE",
+                "AZ",
+                "AM",
+                "SI",
+                "KK",
             ),
             codes,
         )

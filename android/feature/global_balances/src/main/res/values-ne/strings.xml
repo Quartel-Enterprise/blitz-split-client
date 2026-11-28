@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">ब्यालेन्सहरू</string>
+    <string name="global_balances_profile">प्रोफाइल</string>
+    <string name="global_balances_offline">अफलाइन · यो डिभाइसका ब्यालेन्स</string>
+    <string name="global_balances_filter">देखाउनुहोस्</string>
+    <string name="global_balances_filter_all">सबै</string>
+    <string name="global_balances_filter_you_owe">तपाईंले तिर्नुपर्ने</string>
+    <string name="global_balances_filter_owes_you">तपाईंले पाउनुपर्ने</string>
+    <string name="global_balances_hint">ग्रुपहरूबीच पहिल्यै मिलाइएको: हरेक व्यक्ति एक पटक मात्र देखिन्छ।</string>
+    <string name="global_balances_hint_empty">यो डिभाइसका सबै ग्रुप जोड्दै।</string>
+    <string name="global_balances_section_you_owe">तपाईंले तिर्नुपर्ने · %d</string>
+    <string name="global_balances_section_owes_you">तपाईंले पाउनुपर्ने · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d ग्रुप</item>
+        <item quantity="other">%d ग्रुप</item>
+    </plurals>
+    <string name="global_balances_guest">%s · पाहुना</string>
+    <string name="global_balances_you_owe">तपाईंले तिर्नुपर्ने</string>
+    <string name="global_balances_owes_you">तपाईंले पाउनुपर्ने</string>
+    <string name="global_balances_by_group_show">ग्रुपअनुसार देखाउनुहोस्: %s</string>
+    <string name="global_balances_by_group_hide">ग्रुपअनुसार लुकाउनुहोस्: %s</string>
+    <string name="global_balances_received">पाइयो</string>
+    <string name="global_balances_received_from">यो व्यक्तिबाट पाइयो: %s</string>
+    <string name="global_balances_settle">हिसाब मिलाउनुहोस्</string>
+    <string name="global_balances_settle_with">हिसाब मिलाउनुहोस्: %s</string>
+    <string name="global_balances_charge">माग्नुहोस्</string>
+    <string name="global_balances_charge_person">पैसा माग्नुहोस्: %s</string>
+    <string name="global_balances_detail_pane">ब्यालेन्स: %s</string>
+    <string name="global_balances_detail_owes_you">%s ले तपाईंलाई तिर्नुपर्छ</string>
+    <string name="global_balances_detail_you_owe">तपाईंले तिर्नुपर्छ, पाउने: %s</string>
+    <string name="global_balances_detail_guest">%s · एप नभएका पाहुना</string>
+    <string name="global_balances_detail_note_owed">खुद रकमले ग्रुपहरू पहिल्यै मिलाउँछ: “माग्नुहोस्” र “पाइयो” ले यो रकम प्रयोग गर्छन्: %s। एपले हरेक ग्रुपमा भुक्तानी रेकर्ड गर्छ।</string>
+    <string name="global_balances_detail_note_settle">खुद रकमले ग्रुपहरू पहिल्यै मिलाउँछ: “हिसाब मिलाउनुहोस्” ले यो रकम प्रयोग गर्छ: %s। एपले हरेक ग्रुपमा भुक्तानी रेकर्ड गर्छ।</string>
+    <string name="global_balances_detail_note_single">यो व्यक्तिसँग एउटा मात्र ग्रुप खुला छ: %s।</string>
+    <string name="global_balances_settled_title">सबै हिसाब मिल्यो</string>
+    <string name="global_balances_settled_body">तपाईंलाई कसैले तिर्नुपर्दैन र तपाईंले पनि कसैलाई तिर्नुपर्दैन। कसैले खर्च थपेपछि, ब्यालेन्स यहाँ देखिन्छ।</string>
+    <string name="global_balances_settled_action">ग्रुपहरू हेर्नुहोस्</string>
+    <string name="global_balances_nothing_to_pay_title">तपाईंले केही तिर्नुपर्दैन</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">तपाईंले सबैसँग हिसाब मिलाउनुभयो। तपाईंले अझै %1$d जनाबाट %2$s फिर्ता पाउन बाँकी छ।</item>
+        <item quantity="other">तपाईंले सबैसँग हिसाब मिलाउनुभयो। तपाईंले अझै %1$d जनाबाट %2$s फिर्ता पाउन बाँकी छ।</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">तपाईंलाई कसले तिर्नुपर्छ हेर्नुहोस्</string>
+    <string name="global_balances_nothing_to_receive_title">तपाईंलाई कसैले तिर्नुपर्दैन</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">तपाईंले अझै %1$d जनालाई %2$s तिर्नुपर्छ।</item>
+        <item quantity="other">तपाईंले अझै %1$d जनालाई %2$s तिर्नुपर्छ।</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">तपाईंले कसलाई तिर्नुपर्छ हेर्नुहोस्</string>
+    <string name="global_balances_coming_soon">चाँडै आउँदैछ</string>
+    <string name="global_balances_change_error">परिवर्तन सेभ गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</string>
+    <string name="global_balances_copied">कपी भयो</string>
+    <string name="global_balances_charge_title">पैसा माग्नुहोस्: %s</string>
+    <string name="global_balances_charge_owes">तपाईंलाई %1$s तिर्नुपर्छ · %2$s</string>
+    <string name="global_balances_charge_close">बन्द गर्नुहोस्</string>
+    <string name="global_balances_charge_guest">%s एप नभएका पाहुना हुनुहुन्छ। उहाँले यही म्यासेजबाट मात्र थाहा पाउनुहुन्छ, त्यसैले यसमा खर्चमा के-के परेको थियो भन्ने पहिल्यै लेखिएको छ।</string>
+    <string name="global_balances_charge_message">म्यासेज</string>
+    <string name="global_balances_charge_pix">मेरो Pix की समावेश गर्नुहोस्</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">म्यासेज कपी गर्नुहोस्</string>
+    <string name="global_balances_charge_send">पठाउनुहोस्</string>
+    <string name="global_balances_message">नमस्ते %1$s! Blitz Split को हिसाबअनुसार, तपाईंले मलाई %2$s तिर्नुपर्छ (%3$s)।</string>
+    <string name="global_balances_message_guest">नमस्ते %1$s! तपाईंले मलाई %2$s तिर्नुपर्छ (%3$s)। यसमा तपाईंको भाग: %4$s।</string>
+    <string name="global_balances_message_guest_paid">नमस्ते %1$s! तपाईंले मलाई %2$s तिर्नुपर्छ (%3$s)। यसमा तपाईंको भाग: %4$s, तपाईंले पहिल्यै तिर्नुभएको %5$s घटाएर।</string>
+    <string name="global_balances_message_group">ग्रुप: %s</string>
+    <string name="global_balances_message_groups">ग्रुपहरू: %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">फोन</string>
+    <string name="global_balances_key_email">इमेल</string>
+    <string name="global_balances_key_random">र्‍यान्डम की</string>
+    <string name="global_balances_message_reroute">ऋण सरल गरियो (ग्रुप: %1$s), त्यसैले अब तपाईंले मलाई सिधै तिर्नुहुन्छ, यो व्यक्तिलाई होइन: %2$s; तपाईंको जम्मा रकम बदलिएको छैन।</string>
+</resources>

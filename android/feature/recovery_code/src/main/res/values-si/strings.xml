@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">ඔබේ ප්‍රතිසාධන කේතය සුරකින්න</string>
+    <string name="recovery_code_body">ඔබ මෙය ගිණුමක් නැතිව භාවිත කරනවා. ඔබ උපාංගය මාරු කළොත් හෝ නැති කළොත් මෙම වචන 12 ඔබේ දත්ත නැවත ගෙනෙනවා. ඒවා පිළිවෙළට ලියාගන්න. දින 30ක් භාවිත නොකළොත්, ඔබේ දත්ත මැකෙන අතර වචන ක්‍රියා කිරීම නවතිනවා.</string>
+    <string name="recovery_code_copy">වචන පිටපත් කරන්න</string>
+    <string name="recovery_code_save_to_password_manager">මුරපද කළමනාකරුට සුරකින්න</string>
+    <string name="recovery_code_connect_instead">ඒ වෙනුවට Google හෝ Apple සම්බන්ධ කරන්න</string>
+    <string name="recovery_code_connect_instead_body">කේතයක් අවශ්‍ය නැහැ</string>
+    <string name="recovery_code_sign_in_failed">දැන් සම්බන්ධ වෙන්න බැරි වුණා. නැවත උත්සාහ කරන්න.</string>
+    <string name="recovery_code_also_in_profile">එය පැතිකඩ › ප්‍රතිසාධනය තුළත් තිබෙනවා.</string>
+    <string name="recovery_code_remind_later">පසුව මතක් කරන්න</string>
+    <string name="recovery_code_saved">මම එය සුරැකුවා</string>
+    <string name="recovery_code_download">බාගන්න</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · ප්‍රතිසාධන කේතය\n\n%1$s\n\nඔබේ දත්ත නැවත ගෙනෙන්න, \"මම මෙය වෙනත් උපාංගයක භාවිත කළා\" තුළ මෙය භාවිත කරන්න.\n</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">ድጋፍን ያግኙ</string>
+    <string name="contact_support_description">የኢሜይል መተግበሪያዎን ዝግጁ ከሆነ መልዕክት ጋር እንከፍታለን። የሆነውን ይግለጹና ይላኩት: እያንዳንዱን መልዕክት እውነተኛ ሰዎች ያነባሉ።</string>
+    <string name="contact_support_to">ተቀባይ</string>
+    <string name="contact_support_diagnostics">በኢሜይሉ ውስጥ ይካተታል</string>
+    <string name="contact_support_app_version">የመተግበሪያ ስሪት</string>
+    <string name="contact_support_platform">መድረክ</string>
+    <string name="contact_support_language">ቋንቋ</string>
+    <string name="contact_support_account">መለያ</string>
+    <string name="contact_support_profile">መገለጫ</string>
+    <string name="contact_support_language_system">የሥርዓት</string>
+    <string name="contact_support_account_local">ይህ መሣሪያ ብቻ</string>
+    <string name="contact_support_account_anonymous">አልተገናኘም</string>
+    <string name="contact_support_open_email">ኢሜይል ይክፈቱ</string>
+    <string name="contact_support_copy_email">የኢሜይል አድራሻውን ይቅዱ</string>
+    <string name="contact_support_notice_copied">የኢሜይል አድራሻው ተቀድቷል።</string>
+    <string name="contact_support_notice_no_app">ምንም የኢሜይል መተግበሪያ አልተገኘም። በምትኩ አድራሻው ተቀድቷል።</string>
+    <string name="contact_support_close">ይዝጉ</string>
+</resources>

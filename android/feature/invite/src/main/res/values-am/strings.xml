@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">ይዝጉ</string>
+    <string name="invite_group_created">ቡድኑ ተፈጥሯል</string>
+    <string name="invite_title">ሁሉንም ወደ ቡድኑ ‘%s’ ይጋብዙ</string>
+    <string name="invite_qr_description">የቡድኑ የግብዣ ሊንክ QR ኮድ</string>
+    <string name="invite_copy">ይቅዱ</string>
+    <string name="invite_copied">ተቀድቷል</string>
+    <string name="invite_who_picks">ሊንኩን የሚከፍቱት ሰው በዝርዝሩ ላይ ማን እንደሆኑ ይመርጣሉ: %s። መለያ አያስፈልግም።</string>
+    <string name="invite_names_or">%1$s ወይም %2$s</string>
+    <string name="invite_anyone_joins">ሊንኩን የሚከፍቱት ሰው ቡድኑን ይቀላቀላሉ። መለያ አያስፈልግም።</string>
+    <string name="invite_pending_title">ሊንኩ በመጠባበቅ ላይ</string>
+    <string name="invite_pending_offline">መስመር ላይ እንደገቡ ይፈጠራል።</string>
+    <string name="invite_pending_online">ሊንኩን በመፍጠር ላይ…</string>
+    <string name="invite_failed_title">ሊንኩን መፍጠር አልተቻለም</string>
+    <string name="invite_failed_body">ቡድኑን በማመሳሰል ላይ ሳለ የሆነ ችግር ተፈጥሯል።</string>
+    <string name="invite_retry">እንደገና ይሞክሩ</string>
+    <string name="invite_share">ሊንኩን ያጋሩ</string>
+    <string name="invite_see_who_joined">ማን እንደተቀላቀሉ ይመልከቱ</string>
+    <string name="invite_add_person">መተግበሪያው የሌላቸውን ሰው ያክሉ</string>
+    <string name="invite_go_to_group">ወደ ቡድኑ ይሂዱ</string>
+    <string name="invite_change_link">ሊንኩን ይቀይሩ</string>
+    <string name="invite_change_link_title">የግብዣ ሊንኩን ይቀይሩ?</string>
+    <string name="invite_change_link_message">አሁን ያለው ሊንክና QR ኮድ መሥራት ያቆማሉ፣ ጥቅም ላይ ያልዋሉ የግል ግብዣዎችም ጭምር። አስቀድመው የተቀላቀሉት በቡድኑ ውስጥ ይቆያሉ።</string>
+    <string name="invite_change_link_failed">ሊንኩን መቀየር አልተቻለም። እንደገና ይሞክሩ።</string>
+    <string name="invite_share_message">የቡድኑን ‘%1$s’ ወጪዎች በBlitz Split እንከፋፈል። በዚህ ሊንክ ይቀላቀሉ: %2$s</string>
+</resources>

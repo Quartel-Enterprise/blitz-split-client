@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Жаңа төлем әдісі</string>
+    <string name="paying_method_edit_title">Төлем әдісін өңдеу</string>
+    <string name="paying_method_type">Түрі</string>
+    <string name="paying_method_name">Атауы</string>
+    <string name="paying_method_name_optional">Атауы (міндетті емес)</string>
+    <string name="paying_method_color">Түсі</string>
+    <string name="paying_method_default">Әдепкі әдіс</string>
+    <string name="paying_method_default_hint">Сіз төлейтін жаңа шығындар осы әдіспен басталады.</string>
+    <string name="paying_method_delete">Төлем әдісін жою</string>
+    <string name="paying_method_delete_title">Бұл төлем әдісін жоясыз ба?</string>
+    <string name="paying_method_delete_body">Осы әдіспен белгіленген шығындарда ол енді көрсетілмейді.</string>
+    <string name="paying_method_delete_confirm">Жою</string>
+    <string name="paying_method_save">Сақтау</string>
+</resources>

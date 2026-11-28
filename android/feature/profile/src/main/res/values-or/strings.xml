@@ -113,6 +113,11 @@
     <string name="profile_language_burmese">ବର୍ମୀ</string>
     <string name="profile_language_khmer">ଖମେର୍</string>
     <string name="profile_language_odia">ଓଡ଼ିଆ</string>
+    <string name="profile_language_nepali">ନେପାଳୀ</string>
+    <string name="profile_language_azerbaijani">ଆଜେରବାଇଜାନି</string>
+    <string name="profile_language_amharic">ଆମହାରିକ୍</string>
+    <string name="profile_language_sinhala">ସିଂହଳ</string>
+    <string name="profile_language_kazakh">କାଜାଖ୍</string>
     <string name="profile_language_system_detail">ଡିଭାଇସ୍ ଭାଷା</string>
     <string name="profile_notifications">ନୋଟିଫିକେସନ୍</string>
     <plurals name="profile_notifications_active">

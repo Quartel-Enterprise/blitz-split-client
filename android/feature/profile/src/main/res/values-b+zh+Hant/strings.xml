@@ -112,6 +112,11 @@
     <string name="profile_language_burmese">緬甸文</string>
     <string name="profile_language_khmer">高棉文</string>
     <string name="profile_language_odia">奧里亞文</string>
+    <string name="profile_language_nepali">尼泊爾文</string>
+    <string name="profile_language_azerbaijani">亞塞拜然文</string>
+    <string name="profile_language_amharic">阿姆哈拉文</string>
+    <string name="profile_language_sinhala">僧伽羅文</string>
+    <string name="profile_language_kazakh">哈薩克文</string>
     <string name="profile_language_system_detail">裝置語言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

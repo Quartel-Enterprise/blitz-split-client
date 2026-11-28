@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">වචන නැහැ</string>
+    <string name="category_map_title">කාණ්ඩ සිතියම</string>
+    <string name="category_map_search">වචන සොයන්න</string>
+    <string name="category_map_add">වචනයක් එක් කරන්න</string>
+    <string name="category_map_more">තවත් විකල්ප</string>
+    <string name="category_map_restore">පෙරනිමිය ප්‍රතිසාධනය කරන්න</string>
+    <string name="category_map_back">ආපසු</string>
+    <string name="category_map_intro">වියදමක මාතෘකාවේ මෙම වචනවලින් එකක් තිබේ නම්, එහි කාණ්ඩය ඉබේම එනවා. “Uber home” ප්‍රවාහනය බවට පත් වෙනවා.</string>
+    <string name="category_map_intro_offline">සිතියම නොබැඳිව ක්‍රියා කරනවා: වෙනස්කම් මෙම උපාංගයේ වහාම ක්‍රියාත්මක වෙන අතර නැවත සබැඳි වූ විට ඔබේ අනිත් උපාංගවලට ළඟා වෙනවා.</string>
+    <string name="category_map_device_only">ඔබේ සිතියම මෙම උපාංගයේ පමණක් තිබෙනවා. එය ඔබේ අනිත් උපාංගවලට ගෙන යන්න, ඔබේ පැතිකඩේදී Google හෝ Apple සමඟ පුරනය වන්න.</string>
+    <string name="category_map_open_profile">පැතිකඩ විවෘත කරන්න</string>
+    <string name="category_map_longest_wins">වචන දෙකක් මාතෘකාවකට ගැළපෙන විට, දිගම එක ජය ගන්නවා.</string>
+    <string name="category_map_no_result">“%1$s” සහිත වචනයක් නැහැ</string>
+    <string name="category_map_no_result_body">එය එක් කරන්න, එවිට මාතෘකාවේ මෙම වචනය ඇති වියදම් නිවැරදි කාණ්ඩය සමඟ එනවා.</string>
+    <string name="category_map_add_query">“%1$s” එක් කරන්න</string>
+    <string name="category_map_empty_title">ඔබේ සිතියම හිස්</string>
+    <string name="category_map_empty_body">වචන නැතිව, කාණ්ඩය මාතෘකාවෙන් එන්නේ නැහැ: ඔබ එය එක් එක් වියදමේදී තෝරනවා.</string>
+    <string name="category_map_group_category"> · %1$s සමූහයේ කාණ්ඩය</string>
+    <string name="category_map_only_main">%1$s පමණයි</string>
+    <string name="category_map_only_in_group">මෙහි පමණයි: %1$s</string>
+    <string name="category_map_no_terms_yet">තවම වචන නැහැ.</string>
+    <string name="category_map_add_in">වචනයක් එක් කරන්න: %1$s</string>
+    <string name="category_map_tip">වචනයක කාණ්ඩය වෙනස් කරන්න හෝ එය ඉවත් කරන්න එය තට්ටු කරන්න. එය අක්ෂර ලකුණු සහ කැපිටල්/සිම්පල් නොසලකා මුළු වචනයටම ගැළපෙනවා.</string>
+    <string name="category_map_queued">පෝලිමේ</string>
+    <string name="category_map_term_action">%1$s, %2$s. සංස්කරණය කරන්න</string>
+    <string name="category_map_new_term">නව වචනය</string>
+    <string name="category_map_edit_term">වචනය සංස්කරණය කරන්න</string>
+    <string name="category_map_term_label">වචනය හෝ වාක්‍ය ඛණ්ඩය</string>
+    <string name="category_map_term_help">අක්ෂර ලකුණු සහ කැපිටල්/සිම්පල් නොසලකා මුළු වචනයටම ගැළපෙනවා.</string>
+    <string name="category_map_term_help_app">ඇප් එකේ වචනයක්. පෙරනිමිය ප්‍රතිසාධනය කිරීමෙන් එය මුල් ආකාරයටම නැවත එනවා.</string>
+    <string name="category_map_term_duplicate">“%1$s” දැනටමත් තෝරන්නේ: %2$s. එක් එක් වචනයට ඇත්තේ එක් කාණ්ඩයයි.</string>
+    <string name="category_map_term_too_short">අවම වශයෙන් අකුරු 2ක් භාවිත කරන්න.</string>
+    <string name="category_map_term_too_long">උපරිම වශයෙන් අකුරු 30ක් භාවිත කරන්න.</string>
+    <string name="category_map_term_invalid">අකුරු, ඉලක්කම් සහ හිස්තැන් පමණක් භාවිත කරන්න.</string>
+    <string name="category_map_category">කාණ්ඩය</string>
+    <string name="category_map_category_help">එය කාණ්ඩය හෝ උප කාණ්ඩයක් විය හැකියි.</string>
+    <string name="category_map_category_help_edit">මෙහිදී එය වෙනස් කිරීමෙන් වචනය වෙනත් කාණ්ඩයකට ගෙන යනවා.</string>
+    <string name="category_map_category_help_move">ගෙන යාමෙන් වචනය මෙයින් ඉවත් වෙනවා: %1$s.</string>
+    <string name="category_map_example">උදාහරණය</string>
+    <string name="category_map_example_move">ගෙන ගියොත්</string>
+    <string name="category_map_remove">ඉවත් කරන්න</string>
+    <string name="category_map_cancel">අවලංගු කරන්න</string>
+    <string name="category_map_save">සුරකින්න</string>
+    <string name="category_map_move_to">ගෙන යන්න: %1$s</string>
+    <string name="category_map_removed">“%1$s” සිතියමෙන් ඉවත් වුණා</string>
+    <string name="category_map_undo">අහෝසි කරන්න</string>
+    <string name="category_map_restore_title">පෙරනිමි සිතියම ප්‍රතිසාධනය කරන්නද?</string>
+    <string name="category_map_restore_body">ඔබ ඉවත් කළ හෝ ගෙන ගිය ඒවාත් ඇතුළුව, ඇප් එකේ වචන 60 මුල් ආකාරයටම නැවත එනවා.</string>
+    <string name="category_map_restore_own_one">ඔබ සෑදූ වචනය, “%1$s”, එලෙසම පවතිනවා.</string>
+    <string name="category_map_restore_confirm">ප්‍රතිසාධනය කරන්න</string>
+    <string name="category_map_save_error">සිතියම සුරකින්න බැරි වුණා. නැවත උත්සාහ කරන්න.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">වචන %d</item>
+        <item quantity="other">වචන %d</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">උප කාණ්ඩ %d</item>
+        <item quantity="other">උප කාණ්ඩ %d</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">“%2$s” සහිත වචන %1$d</item>
+        <item quantity="other">“%2$s” සහිත වචන %1$d</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">නොබැඳි · පෝලිමේ ඇති වෙනස්කම් %d</item>
+        <item quantity="other">නොබැඳි · පෝලිමේ ඇති වෙනස්කම් %d</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">ඔබ සෑදූ වචන %d එලෙසම පවතිනවා.</item>
+        <item quantity="other">ඔබ සෑදූ වචන %d එලෙසම පවතිනවා.</item>
+    </plurals>
+    <string name="category_map_new_category">නව කාණ්ඩය</string>
+    <string name="category_map_new_subcategory_in">නව උප කාණ්ඩය: %s</string>
+    <string name="category_map_edit_category">සංස්කරණය කරන්න: %s</string>
+    <string name="category_map_category_group">සමූහය</string>
+    <string name="category_map_change_color">පාට වෙනස් කරන්න: %1$s</string>
+    <string name="category_map_restore_color">පාට ප්‍රතිසාධනය කරන්න</string>
+    <string name="category_map_color_done">හරි</string>
+</resources>

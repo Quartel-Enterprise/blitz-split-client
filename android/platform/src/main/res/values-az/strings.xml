@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · bərpa kodu</string>
+    <string name="platform_export_file_name">blitz-split-melumatlar-%1$s.json</string>
+    <string name="platform_camera_denied">Foto çəkmək üçün Ayarlarda kameraya icazə verin.</string>
+    <string name="platform_camera_settings">Ayarlar</string>
+    <string name="platform_receipt_source_camera">Foto çəkin</string>
+    <string name="platform_receipt_source_gallery">Qalereyadan seçin</string>
+    <string name="platform_receipt_source_file">Fayl seçin</string>
+    <string name="platform_receipt_camera_title">Qəbzi skan edin</string>
+    <string name="platform_receipt_camera_close">Bağlayın</string>
+    <string name="platform_receipt_camera_flash_on">Fləşi yandırın</string>
+    <string name="platform_receipt_camera_flash_off">Fləşi söndürün</string>
+    <string name="platform_receipt_camera_hint">Bütün qəbzi çərçivəyə sığdırın. Məbləği, tarixi və təsviri biz doldururuq; siz yadda saxlamazdan əvvəl yoxlayırsınız.</string>
+    <string name="platform_receipt_camera_gallery">Qalereyadan seçin</string>
+    <string name="platform_receipt_camera_shutter">Foto çəkin</string>
+    <string name="platform_receipt_camera_unavailable">Kamera əlçatan deyil. Qalereyadan qəbzin fotosunu seçin.</string>
+    <string name="platform_receipt_camera_permission">Qəbzi skan etmək üçün kameraya icazə verin və ya qalereyadan foto seçin.</string>
+    <string name="platform_receipt_camera_allow">Kameraya icazə verin</string>
+    <string name="platform_receipt_camera_settings">Ayarları açın</string>
+</resources>

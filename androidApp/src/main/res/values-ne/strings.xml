@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">तपाईं यो ग्रुपमा हुनुहुन्न</string>
+    <string name="bill_link_not_in_group_message">यो टिप्पणी तपाईं नभएको ग्रुपमा छ। तपाईंलाई लिंक पठाउने व्यक्तिसँग निमन्त्रणा माग्नुहोस्।</string>
+    <string name="bill_link_offline_title">इन्टरनेट छैन</string>
+    <string name="bill_link_offline_message">फेरि अनलाइन भएपछि लिंक फेरि खोल्नुहोस्।</string>
+    <string name="bill_link_go_home">होममा जानुहोस्</string>
+    <string name="discard_changes_title">परिवर्तनहरू खारेज गर्ने?</string>
+    <string name="discard_changes_message">सेभ नगरिएका परिवर्तनहरू हराउनेछन्।</string>
+    <string name="discard_changes_discard">खारेज गर्नुहोस्</string>
+    <string name="discard_changes_keep_editing">सम्पादन जारी राख्नुहोस्</string>
+    <string name="watch_channel_name">घडी</string>
+    <string name="watch_connected_title">%1$s तपाईंको खातामा जोडियो</string>
+    <string name="watch_connected_title_unnamed">घडी तपाईंको खातामा जोडियो</string>
+    <string name="watch_connected_text">यसले तपाईंका ग्रुपहरू देख्छ र आफैं सिंक हुन्छ। यसलाई छुटाउन, घडीमा साइन आउट गर्नुहोस्।</string>
+</resources>

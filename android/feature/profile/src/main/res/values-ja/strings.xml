@@ -112,6 +112,11 @@
     <string name="profile_language_burmese">ビルマ語</string>
     <string name="profile_language_khmer">クメール語</string>
     <string name="profile_language_odia">オディア語</string>
+    <string name="profile_language_nepali">ネパール語</string>
+    <string name="profile_language_azerbaijani">アゼルバイジャン語</string>
+    <string name="profile_language_amharic">アムハラ語</string>
+    <string name="profile_language_sinhala">シンハラ語</string>
+    <string name="profile_language_kazakh">カザフ語</string>
     <string name="profile_language_system_detail">デバイスの言語</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

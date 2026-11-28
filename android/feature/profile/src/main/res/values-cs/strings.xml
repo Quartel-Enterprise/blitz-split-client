@@ -115,6 +115,11 @@
     <string name="profile_language_burmese">Barmština</string>
     <string name="profile_language_khmer">Khmerština</string>
     <string name="profile_language_odia">Urijština</string>
+    <string name="profile_language_nepali">Nepálština</string>
+    <string name="profile_language_azerbaijani">Ázerbájdžánština</string>
+    <string name="profile_language_amharic">Amharština</string>
+    <string name="profile_language_sinhala">Sinhálština</string>
+    <string name="profile_language_kazakh">Kazaština</string>
     <string name="profile_language_system_detail">Jazyk zařízení</string>
     <string name="profile_notifications">Oznámení</string>
     <plurals name="profile_notifications_active">

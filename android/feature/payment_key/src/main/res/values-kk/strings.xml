@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Жаңа Pix кілті</string>
+    <string name="payment_key_title_pix_edit">Pix кілтін өңдеу</string>
+    <string name="payment_key_title_bitcoin_new">Жаңа Bitcoin кілті</string>
+    <string name="payment_key_title_bitcoin_edit">Bitcoin кілтін өңдеу</string>
+    <string name="payment_key_save">Сақтау</string>
+
+    <string name="payment_key_pix_intro">Сізге төлейтін адам есеп айырысқанда осы кілтті көреді. Кілттің қай түрі?</string>
+    <string name="payment_key_pix_question">Кілттің қай түрі?</string>
+    <string name="payment_key_pix_explanation">Сізге төлейтін адам есеп айырысқанда осы кілтті көреді.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Телефон</string>
+    <string name="payment_key_type_email">Email</string>
+    <string name="payment_key_type_random">Кездейсоқ</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Аймақ коды бар ұялы нөмір</string>
+    <string name="payment_key_label_email">Email</string>
+    <string name="payment_key_label_random">Кездейсоқ кілт</string>
+
+    <string name="payment_key_bitcoin_intro">Қалай алғыңыз келеді?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">жылдам, комиссиясы төмен</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">блокчейнде</string>
+    <string name="payment_key_label_lightning">Lightning Address немесе LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin мекенжайы</string>
+
+    <string name="payment_key_paste">Қою</string>
+
+    <string name="payment_key_hint_cpf">Пішімі: 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Пішімі: +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Пішімі: name@domain.com</string>
+    <string name="payment_key_hint_random">Банкіңіз көрсеткендей 32 әріп пен сан</string>
+    <string name="payment_key_hint_lightning">Мысалы, name@wallet.com немесе LNURL1…</string>
+    <string name="payment_key_hint_onchain">bc1q немесе bc1p деп басталатын mainnet мекенжайы</string>
+
+    <string name="payment_key_valid_cpf">Пішімі: 000.000.000-00 · бақылау сандары сәйкес</string>
+    <string name="payment_key_valid_phone">Пішімі: +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Пішімі: name@domain.com</string>
+    <string name="payment_key_valid_random">Кездейсоқ кілт танылды (32 таңба)</string>
+    <string name="payment_key_valid_lightning_address">Жарамды Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Жарамды LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF жарамсыз: бақылау сандары сәйкес емес.</string>
+    <string name="payment_key_error_invalid_phone">Ұялы нөмір толық емес: аймақ кодын және 9-дан басталатын 9 цифрды енгізіңіз.</string>
+    <string name="payment_key_error_invalid_email">Email толық емес: домен жоқ, мысалы, .com немесе .com.br.</string>
+    <string name="payment_key_error_invalid_random">Кездейсоқ кілт толық емес: онда 32 әріп пен сан болады.</string>
+    <string name="payment_key_error_invalid_lightning">Бұл Lightning Address (name@wallet) те, LNURL де емес.</string>
+    <string name="payment_key_error_lightning_invoice">Бұл Lightning шоты (lnbc…): ол бір рет төленеді және мерзімі өтеді. Lightning Address немесе LNURL қойыңыз.</string>
+    <string name="payment_key_error_invalid_onchain">Мекенжай жарамсыз. bc1q немесе bc1p деп басталатын mainnet мекенжайын пайдаланыңыз.</string>
+    <string name="payment_key_error_testnet_address">Бұл testnet мекенжайы (tb1…). Мұнда тек bc1… мекенжайлары бар Bitcoin mainnet жұмыс істейді.</string>
+    <string name="payment_key_error_already_saved">Сізде бұл кілт бар.</string>
+
+    <string name="payment_key_switched_to_onchain">Бұл on-chain мекенжайы, сондықтан On-chain түріне ауыстырдық.</string>
+    <string name="payment_key_switched_to_lightning">Бұл Lightning Address, сондықтан Lightning түріне ауыстырдық.</string>
+    <string name="payment_key_cpf_notice">Сізге төлейтін адам CPF нөміріңізді толық көреді. Оны бөліскіңіз келмесе, телефонды, email-ді немесе кездейсоқ кілтті пайдаланыңыз.</string>
+    <string name="payment_key_held_notice">Бұл түрдегі Pix кілті тек біреу бола алады, сондықтан бұл — сіз сақтаған кілт. Қаласаңыз, оны осында өзгертіңіз.</string>
+
+    <string name="payment_key_accepted_title">Қабылдаймыз</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">Әдепкі Pix кілті</string>
+    <string name="payment_key_default_bitcoin_title">Әдепкі Bitcoin кілті</string>
+    <string name="payment_key_default_pix_detail">Есеп айырысқанда бірінші көрсетіледі.</string>
+    <string name="payment_key_default_bitcoin_detail">Біреу BTC-мен төлегенде бірінші көрсетіледі.</string>
+    <string name="payment_key_default_now">Қазір: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Өзгерту үшін басқа кілтті әдепкі етіңіз.</string>
+    <string name="payment_key_default_locked_new">Осы түрдегі алғашқы кілтіңіз әдепкі болады.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">телефон</string>
+    <string name="payment_key_default_type_email">email</string>
+    <string name="payment_key_default_type_random">кездейсоқ кілт</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split ақша аудармайды: төлеуші өз банкінің қолданбасында төлейді. Кілттің сіздің атыңызда екенін тексеріңіз.</string>
+    <string name="payment_key_footer_bitcoin">Есеп айырысқанда соманы ағымдағы бағам бойынша сатпен көрсетеміз. Бұл тек болжам: төлеуші оны өз әмиянында растайды.</string>
+
+    <string name="payment_key_delete">Кілтті жою</string>
+    <string name="payment_key_delete_title">Бұл кілтті жоясыз ба?</string>
+    <string name="payment_key_delete_body">Сізге қарыз адамдар есеп айырысқанда оны енді көрмейді.</string>
+    <string name="payment_key_delete_confirm">Жою</string>
+</resources>

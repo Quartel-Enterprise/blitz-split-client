@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Qruplarınızı geri qaytarın</string>
+    <string name="restore_subtitle">Əvvəl hesabla daxil olmusunuz? Sadəcə yenidən daxil olun. Olmamısınızsa, bərpa kodundan və ya köhnə cihazınızdakı QR koddan istifadə edin.</string>
+    <string name="restore_no_connection_title">Bağlantı yoxdur</string>
+    <string name="restore_no_connection_body">Hesab və ya kodla daxil olmaq üçün qruplarınızı yükləməyə internet lazımdır. Yazdıqlarınız saxlanılır.</string>
+    <string name="restore_code_label">Və ya bərpa kodundan istifadə edin</string>
+    <string name="restore_code_hint">12 söz ardıcıllıqla. Bütün xanaları doldurmaq üçün hamısını bir xanaya yapışdırın.</string>
+    <string name="restore_scan_qr_title">Köhnə cihazınızdakı QR kodu skan edin</string>
+    <string name="restore_scan_qr_body">Orada: Profil › Bərpa › QR kodu göstərin</string>
+    <string name="restore_recover">Bərpa edin</string>
+    <string name="restore_try_again">Yenidən cəhd edin</string>
+    <string name="restore_start_fresh">Bu cihazda yenidən başlayın</string>
+    <string name="restore_error_invalid_code">Kod tapılmadı. Sözləri və onların ardıcıllığını yoxlayın, sonra yenidən cəhd edin.</string>
+    <string name="restore_error_too_many_attempts">Çox sayda cəhd. Bir neçə dəqiqə gözləyin və yenidən cəhd edin.</string>
+    <string name="restore_error_sign_in_failed">Hazırda daxil olmaq alınmadı. Yenidən cəhd edin.</string>
+    <string name="restore_error_unknown">Xəta baş verdi. Yenidən cəhd edin.</string>
+</resources>

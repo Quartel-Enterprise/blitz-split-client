@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Dəstəklə əlaqə</string>
+    <string name="contact_support_description">E-poçt tətbiqinizi hazır mesajla açacağıq. Nə baş verdiyini yazın və göndərin: hər mesajı real insanlar oxuyur.</string>
+    <string name="contact_support_to">Kimə</string>
+    <string name="contact_support_diagnostics">E-poçta daxil ediləcək</string>
+    <string name="contact_support_app_version">Tətbiq versiyası</string>
+    <string name="contact_support_platform">Platforma</string>
+    <string name="contact_support_language">Dil</string>
+    <string name="contact_support_account">Hesab</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">Sistem</string>
+    <string name="contact_support_account_local">Yalnız bu cihaz</string>
+    <string name="contact_support_account_anonymous">Qoşulmayıb</string>
+    <string name="contact_support_open_email">E-poçtu açın</string>
+    <string name="contact_support_copy_email">E-poçt ünvanını kopyalayın</string>
+    <string name="contact_support_notice_copied">E-poçt ünvanı kopyalandı.</string>
+    <string name="contact_support_notice_no_app">E-poçt tətbiqi tapılmadı. Əvəzində ünvan kopyalandı.</string>
+    <string name="contact_support_close">Bağlayın</string>
+</resources>

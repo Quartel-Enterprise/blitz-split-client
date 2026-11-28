@@ -114,6 +114,11 @@
     <string name="profile_language_burmese">Burmanski</string>
     <string name="profile_language_khmer">Kmerski</string>
     <string name="profile_language_odia">Orijski</string>
+    <string name="profile_language_nepali">Nepalski</string>
+    <string name="profile_language_azerbaijani">Azerbajdžanski</string>
+    <string name="profile_language_amharic">Amharski</string>
+    <string name="profile_language_sinhala">Sinhaleški</string>
+    <string name="profile_language_kazakh">Kazaški</string>
     <string name="profile_language_system_detail">Jezik uređaja</string>
     <string name="profile_notifications">Obavijesti</string>
     <plurals name="profile_notifications_active">

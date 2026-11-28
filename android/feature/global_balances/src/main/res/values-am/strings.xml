@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">ቀሪ ሂሳቦች</string>
+    <string name="global_balances_profile">መገለጫ</string>
+    <string name="global_balances_offline">ከመስመር ውጭ · የዚህ መሣሪያ ቀሪ ሂሳቦች</string>
+    <string name="global_balances_filter">ያሳዩ</string>
+    <string name="global_balances_filter_all">ሁሉም</string>
+    <string name="global_balances_filter_you_owe">የሚከፍሉት</string>
+    <string name="global_balances_filter_owes_you">የሚቀበሉት</string>
+    <string name="global_balances_hint">በቡድኖች መካከል አስቀድሞ ተጣርቷል: እያንዳንዱ ሰው አንድ ጊዜ ይታያል።</string>
+    <string name="global_balances_hint_empty">በዚህ መሣሪያ ላይ ያሉትን ቡድኖች ሁሉ በማስላት ላይ።</string>
+    <string name="global_balances_section_you_owe">የሚከፍሉት · %d</string>
+    <string name="global_balances_section_owes_you">የሚቀበሉት · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d ቡድን</item>
+        <item quantity="other">%d ቡድኖች</item>
+    </plurals>
+    <string name="global_balances_guest">%s · እንግዳ</string>
+    <string name="global_balances_you_owe">የሚከፍሉት</string>
+    <string name="global_balances_owes_you">የሚቀበሉት</string>
+    <string name="global_balances_by_group_show">በቡድን ያሳዩ: %s</string>
+    <string name="global_balances_by_group_hide">በቡድን ይደብቁ: %s</string>
+    <string name="global_balances_received">ተቀብያለሁ</string>
+    <string name="global_balances_received_from">ከዚህ ሰው ተቀብያለሁ: %s</string>
+    <string name="global_balances_settle">ሂሳብ ያወራርዱ</string>
+    <string name="global_balances_settle_with">ሂሳብ ያወራርዱ: %s</string>
+    <string name="global_balances_charge">ይጠይቁ</string>
+    <string name="global_balances_charge_person">ገንዘብ ይጠይቁ: %s</string>
+    <string name="global_balances_detail_pane">ከዚህ ሰው ጋር ያለው ቀሪ ሂሳብ: %s</string>
+    <string name="global_balances_detail_owes_you">%s ለእርስዎ መክፈል አለባቸው</string>
+    <string name="global_balances_detail_you_owe">%s ከእርስዎ መቀበል አለባቸው</string>
+    <string name="global_balances_detail_guest">%s · መተግበሪያው የሌላቸው እንግዳ</string>
+    <string name="global_balances_detail_note_owed">የተጣራው መጠን ቡድኖቹን አስቀድሞ ያካክሳል: ‘ይጠይቁ’ እና ‘ተቀብያለሁ’ የሚጠቀሙት ይህን መጠን ነው: %s። መተግበሪያው በእያንዳንዱ ቡድን አንድ ክፍያ ይመዘግባል።</string>
+    <string name="global_balances_detail_note_settle">የተጣራው መጠን ቡድኖቹን አስቀድሞ ያካክሳል: ‘ሂሳብ ያወራርዱ’ የሚጠቀመው ይህን መጠን ነው: %s። መተግበሪያው በእያንዳንዱ ቡድን አንድ ክፍያ ይመዘግባል።</string>
+    <string name="global_balances_detail_note_single">ከዚህ ሰው ጋር ክፍት የሆነው አንድ ቡድን ብቻ ነው: %s።</string>
+    <string name="global_balances_settled_title">ሁሉም ተወራርዷል</string>
+    <string name="global_balances_settled_body">ማንም ለእርስዎ ዕዳ የለበትም፣ እርስዎም ለማንም ዕዳ የለብዎትም። አንድ ሰው ወጪ ሲጨምር፣ ቀሪ ሂሳቡ እዚህ ይታያል።</string>
+    <string name="global_balances_settled_action">ቡድኖችን ይመልከቱ</string>
+    <string name="global_balances_nothing_to_pay_title">ምንም ዕዳ የለብዎትም</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">ከሁሉም ጋር ሂሳብ አወራርደዋል። አሁንም %1$d ሰው %2$s ሊመልሱልዎ ይገባል።</item>
+        <item quantity="other">ከሁሉም ጋር ሂሳብ አወራርደዋል። አሁንም %1$d ሰዎች %2$s ሊመልሱልዎ ይገባል።</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">ለእርስዎ ዕዳ ያለባቸውን ይመልከቱ</string>
+    <string name="global_balances_nothing_to_receive_title">ማንም ለእርስዎ ዕዳ የለበትም</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">አሁንም %1$d ሰው ከእርስዎ %2$s መቀበል አለባቸው።</item>
+        <item quantity="other">አሁንም %1$d ሰዎች ከእርስዎ %2$s መቀበል አለባቸው።</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">ዕዳ ያለብዎትን ሰዎች ይመልከቱ</string>
+    <string name="global_balances_coming_soon">በቅርቡ ይመጣል</string>
+    <string name="global_balances_change_error">ለውጡን ማስቀመጥ አልተቻለም። እንደገና ይሞክሩ።</string>
+    <string name="global_balances_copied">ተቀድቷል</string>
+    <string name="global_balances_charge_title">ገንዘብ ይጠይቁ: %s</string>
+    <string name="global_balances_charge_owes">የሚቀበሉት: %1$s · %2$s</string>
+    <string name="global_balances_charge_close">ይዝጉ</string>
+    <string name="global_balances_charge_guest">%s መተግበሪያው የሌላቸው እንግዳ ናቸው። ስለ ጉዳዩ የሚያውቁት ከዚህ መልዕክት ብቻ ስለሆነ፣ መልዕክቱ በሂሳቡ ውስጥ የገባውን አስቀድሞ ይገልጻል።</string>
+    <string name="global_balances_charge_message">መልዕክት</string>
+    <string name="global_balances_charge_pix">የPix መለያ ቁጥሬን ያካትቱ</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">መልዕክቱን ይቅዱ</string>
+    <string name="global_balances_charge_send">ይላኩ</string>
+    <string name="global_balances_message">ሰላም %1$s! በBlitz Split ስሌት መሠረት ዕዳ አለብዎት: %2$s (%3$s)።</string>
+    <string name="global_balances_message_guest">ሰላም %1$s! ዕዳ አለብዎት: %2$s (%3$s)፣ ይህም ከሂሳቡ ያለዎት ድርሻ ነው: %4$s።</string>
+    <string name="global_balances_message_guest_paid">ሰላም %1$s! ዕዳ አለብዎት: %2$s (%3$s)፣ ይህም ከሂሳቡ ያለዎት ድርሻ ነው: %4$s፣ አስቀድመው የከፈሉት ተቀንሶ: %5$s።</string>
+    <string name="global_balances_message_group">ቡድኑ %s</string>
+    <string name="global_balances_message_groups">ቡድኖቹ %s</string>
+    <string name="global_balances_message_pix">Pix (%1$s): %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">ስልክ</string>
+    <string name="global_balances_key_email">ኢሜይል</string>
+    <string name="global_balances_key_random">በዘፈቀደ የተፈጠረ መለያ ቁጥር</string>
+    <string name="global_balances_message_reroute">ቡድኑ %1$s ዕዳዎቹን አቃለለ፣ ስለዚህ ለዚህ ሰው ከመክፈል ይልቅ (%2$s) በቀጥታ ለእኔ ይከፍላሉ፤ ጠቅላላ መጠንዎ አልተለወጠም።</string>
+</resources>

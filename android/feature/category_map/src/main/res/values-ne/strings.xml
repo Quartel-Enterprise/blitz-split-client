@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">कुनै शब्द छैन</string>
+    <string name="category_map_title">श्रेणी म्याप</string>
+    <string name="category_map_search">शब्द खोज्नुहोस्</string>
+    <string name="category_map_add">शब्द थप्नुहोस्</string>
+    <string name="category_map_more">थप विकल्पहरू</string>
+    <string name="category_map_restore">डिफल्ट रिस्टोर गर्नुहोस्</string>
+    <string name="category_map_back">पछाडि</string>
+    <string name="category_map_intro">खर्चको शीर्षकमा यीमध्ये कुनै शब्द भए, त्यसको श्रेणी आफैं आउँछ। “Uber घर” यातायात बन्छ।</string>
+    <string name="category_map_intro_offline">म्याप अफलाइन पनि चल्छ: परिवर्तनहरू यो डिभाइसमा तुरुन्तै लागू हुन्छन् र अनलाइन भएपछि तपाईंका अरू डिभाइसमा पुग्छन्।</string>
+    <string name="category_map_device_only">तपाईंको म्याप यो डिभाइसमा मात्र रहन्छ। यसलाई अरू डिभाइसमा लैजान, आफ्नो प्रोफाइलमा Google वा Apple बाट साइन इन गर्नुहोस्।</string>
+    <string name="category_map_open_profile">प्रोफाइल खोल्नुहोस्</string>
+    <string name="category_map_longest_wins">दुई शब्द एउटै शीर्षकसँग मिले, सबैभन्दा लामो शब्दले जित्छ।</string>
+    <string name="category_map_no_result">“%1$s” भएको कुनै शब्द छैन</string>
+    <string name="category_map_no_result_body">यसलाई थप्नुहोस्, अनि शीर्षकमा यो शब्द भएका खर्च सही श्रेणीसहित आउँछन्।</string>
+    <string name="category_map_add_query">थप्नुहोस्: “%1$s”</string>
+    <string name="category_map_empty_title">तपाईंको म्याप खाली छ</string>
+    <string name="category_map_empty_body">शब्दहरू नभए, श्रेणी शीर्षकबाट आउँदैन: हरेक खर्चमा तपाईं आफैं छान्नुहुन्छ।</string>
+    <string name="category_map_group_category"> · ‘%1$s’ ग्रुपको श्रेणी</string>
+    <string name="category_map_only_main">%1$s मात्र</string>
+    <string name="category_map_only_in_group">यहाँ मात्र: %1$s</string>
+    <string name="category_map_no_terms_yet">अहिलेसम्म कुनै शब्द छैन।</string>
+    <string name="category_map_add_in">यो श्रेणीमा शब्द थप्नुहोस्: %1$s</string>
+    <string name="category_map_tip">श्रेणी बदल्न वा हटाउन कुनै शब्द ट्याप गर्नुहोस्। यो पूरा शब्दसँग मिल्छ, एक्सेन्ट र ठूलो-सानो अक्षरलाई बेवास्ता गरेर।</string>
+    <string name="category_map_queued">पठाउन बाँकी</string>
+    <string name="category_map_term_action">%1$s, %2$s। सम्पादन गर्नुहोस्</string>
+    <string name="category_map_new_term">नयाँ शब्द</string>
+    <string name="category_map_edit_term">शब्द सम्पादन गर्नुहोस्</string>
+    <string name="category_map_term_label">शब्द वा वाक्यांश</string>
+    <string name="category_map_term_help">पूरा शब्दसँग मिल्छ, एक्सेन्ट र ठूलो-सानो अक्षरलाई बेवास्ता गरेर।</string>
+    <string name="category_map_term_help_app">एपको शब्द। डिफल्ट रिस्टोर गर्दा यो जस्तो आएको थियो त्यस्तै फर्किन्छ।</string>
+    <string name="category_map_term_duplicate">“%1$s” ले पहिल्यै यो छान्छ: %2$s। हरेक शब्दको एउटा श्रेणी हुन्छ।</string>
+    <string name="category_map_term_too_short">कम्तीमा 2 अक्षर प्रयोग गर्नुहोस्।</string>
+    <string name="category_map_term_too_long">बढीमा 30 अक्षर प्रयोग गर्नुहोस्।</string>
+    <string name="category_map_term_invalid">अक्षर, अङ्क र स्पेस मात्र प्रयोग गर्नुहोस्।</string>
+    <string name="category_map_category">श्रेणी</string>
+    <string name="category_map_category_help">यो श्रेणी वा उपश्रेणी हुन सक्छ।</string>
+    <string name="category_map_category_help_edit">यहाँ बदल्दा शब्द अर्को श्रेणीमा सर्छ।</string>
+    <string name="category_map_category_help_move">सार्दा शब्द यहाँबाट हट्छ: %1$s।</string>
+    <string name="category_map_example">उदाहरण</string>
+    <string name="category_map_example_move">सारेमा</string>
+    <string name="category_map_remove">हटाउनुहोस्</string>
+    <string name="category_map_cancel">रद्द गर्नुहोस्</string>
+    <string name="category_map_save">सेभ गर्नुहोस्</string>
+    <string name="category_map_move_to">यहाँ सार्नुहोस्: %1$s</string>
+    <string name="category_map_removed">“%1$s” म्यापबाट हट्यो</string>
+    <string name="category_map_undo">अनडू</string>
+    <string name="category_map_restore_title">डिफल्ट म्याप रिस्टोर गर्ने?</string>
+    <string name="category_map_restore_body">एपका 60 शब्द जस्तो आएका थिए त्यस्तै फर्किन्छन्, तपाईंले हटाएका वा सारेका समेत।</string>
+    <string name="category_map_restore_own_one">तपाईंले बनाएको शब्द, “%1$s”, रहन्छ।</string>
+    <string name="category_map_restore_confirm">रिस्टोर गर्नुहोस्</string>
+    <string name="category_map_save_error">म्याप सेभ गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d शब्द</item>
+        <item quantity="other">%d शब्द</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d उपश्रेणी</item>
+        <item quantity="other">%d उपश्रेणी</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">“%2$s” भएको %1$d शब्द</item>
+        <item quantity="other">“%2$s” भएका %1$d शब्द</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">अफलाइन · %d परिवर्तन पठाउन बाँकी</item>
+        <item quantity="other">अफलाइन · %d परिवर्तन पठाउन बाँकी</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">तपाईंले बनाएको %d शब्द रहन्छ।</item>
+        <item quantity="other">तपाईंले बनाएका %d शब्द रहन्छन्।</item>
+    </plurals>
+    <string name="category_map_new_category">नयाँ श्रेणी</string>
+    <string name="category_map_new_subcategory_in">यो श्रेणीमा नयाँ उपश्रेणी: %s</string>
+    <string name="category_map_edit_category">सम्पादन गर्नुहोस्: %s</string>
+    <string name="category_map_category_group">ग्रुप</string>
+    <string name="category_map_change_color">रङ बदल्नुहोस्: %1$s</string>
+    <string name="category_map_restore_color">रङ रिस्टोर गर्नुहोस्</string>
+    <string name="category_map_color_done">भयो</string>
+</resources>

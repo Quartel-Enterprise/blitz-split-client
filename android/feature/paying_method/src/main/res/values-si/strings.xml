@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">නව ගෙවීම් ක්‍රමය</string>
+    <string name="paying_method_edit_title">ගෙවීම් ක්‍රමය සංස්කරණය කරන්න</string>
+    <string name="paying_method_type">වර්ගය</string>
+    <string name="paying_method_name">නම</string>
+    <string name="paying_method_name_optional">නම (අත්‍යවශ්‍ය නැහැ)</string>
+    <string name="paying_method_color">පාට</string>
+    <string name="paying_method_default">පෙරනිමි ක්‍රමය</string>
+    <string name="paying_method_default_hint">ඔබ ගෙවන නව වියදම් එයින් පටන් ගන්නවා.</string>
+    <string name="paying_method_delete">ගෙවීම් ක්‍රමය මකන්න</string>
+    <string name="paying_method_delete_title">මෙම ගෙවීම් ක්‍රමය මකන්නද?</string>
+    <string name="paying_method_delete_body">ඔබ එයින් සලකුණු කළ වියදම්වල එය තවදුරටත් පෙන්වන්නේ නැහැ.</string>
+    <string name="paying_method_delete_confirm">මකන්න</string>
+    <string name="paying_method_save">සුරකින්න</string>
+</resources>

@@ -113,6 +113,11 @@
     <string name="profile_language_burmese">Burmesiska</string>
     <string name="profile_language_khmer">Khmer</string>
     <string name="profile_language_odia">Odia</string>
+    <string name="profile_language_nepali">Nepalesiska</string>
+    <string name="profile_language_azerbaijani">Azerbajdzjanska</string>
+    <string name="profile_language_amharic">Amhariska</string>
+    <string name="profile_language_sinhala">Singalesiska</string>
+    <string name="profile_language_kazakh">Kazakiska</string>
     <string name="profile_language_system_detail">Enhetens språk</string>
     <string name="profile_notifications">Aviseringar</string>
     <plurals name="profile_notifications_active">

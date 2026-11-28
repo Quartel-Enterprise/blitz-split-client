@@ -113,6 +113,11 @@
     <string name="profile_language_burmese">Бирмански</string>
     <string name="profile_language_khmer">Кхмерски</string>
     <string name="profile_language_odia">Ория</string>
+    <string name="profile_language_nepali">Непалски</string>
+    <string name="profile_language_azerbaijani">Азербайджански</string>
+    <string name="profile_language_amharic">Амхарски</string>
+    <string name="profile_language_sinhala">Синхалски</string>
+    <string name="profile_language_kazakh">Казахски</string>
     <string name="profile_language_system_detail">Език на устройството</string>
     <string name="profile_notifications">Известия</string>
     <plurals name="profile_notifications_active">

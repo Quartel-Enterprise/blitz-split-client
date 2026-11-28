@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">ጓደኞችዎ ምን ብለው ይጠሩዎታል?</string>
+    <string name="profile_setup_subtitle">ቡድኖችዎና የመገለጫ ሊንክዎ ያላቸው ሁሉ ስምዎን ያያሉ።</string>
+    <string name="profile_setup_avatar_color">የአቫታር ቀለም</string>
+    <string name="profile_setup_add_photo">ፎቶ ያክሉ</string>
+    <string name="profile_setup_photo_error">ይህን ፎቶ መጠቀም አልተቻለም። ሌላ ይሞክሩ።</string>
+    <string name="profile_setup_name_label">ስምዎ</string>
+    <string name="profile_setup_name_placeholder">አበበ በቀለ</string>
+    <string name="profile_setup_name_too_short">ቢያንስ %d ፊደላት ይጻፉ።</string>
+    <string name="profile_setup_name_too_long">እስከ %d ቁምፊዎች ይጠቀሙ።</string>
+    <string name="profile_setup_name_hint">በኋላ በመገለጫ ውስጥ ሊቀይሩት ይችላሉ።</string>
+    <string name="profile_setup_saved_locally">ለጊዜው በዚህ መሣሪያ ላይ ብቻ ተቀምጧል።</string>
+    <string name="profile_setup_continue">ይቀጥሉ</string>
+</resources>

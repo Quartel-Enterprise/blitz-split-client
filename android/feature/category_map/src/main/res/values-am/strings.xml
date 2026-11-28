@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">ምንም ቃል የለም</string>
+    <string name="category_map_title">የምድብ ካርታ</string>
+    <string name="category_map_search">ቃላትን ይፈልጉ</string>
+    <string name="category_map_add">ቃል ያክሉ</string>
+    <string name="category_map_more">ተጨማሪ አማራጮች</string>
+    <string name="category_map_restore">ነባሪውን ወደነበረበት ይመልሱ</string>
+    <string name="category_map_back">ይመለሱ</string>
+    <string name="category_map_intro">የአንድ ወጪ ርዕስ ከእነዚህ ቃላት አንዱን ሲይዝ፣ ምድቡ በራሱ ይመጣል። “Uber ወደ ቤት” ትራንስፖርት ይሆናል።</string>
+    <string name="category_map_intro_offline">ካርታው ከመስመር ውጭ ይሠራል: ለውጦች በዚህ መሣሪያ ላይ ወዲያውኑ ይቆጠራሉ፣ መስመር ላይ ሲመለሱም ሌሎች መሣሪያዎችዎ ላይ ይደርሳሉ።</string>
+    <string name="category_map_device_only">ካርታዎ በዚህ መሣሪያ ላይ ብቻ ይቆያል። ወደ ሌሎች መሣሪያዎችዎ ለመውሰድ፣ በመገለጫዎ ውስጥ በGoogle ወይም Apple ይግቡ።</string>
+    <string name="category_map_open_profile">መገለጫን ይክፈቱ</string>
+    <string name="category_map_longest_wins">ሁለት ቃላት ከአንድ ርዕስ ጋር ሲዛመዱ፣ ረጅሙ ያሸንፋል።</string>
+    <string name="category_map_no_result">“%1$s” ያለው ቃል የለም</string>
+    <string name="category_map_no_result_body">ያክሉት፣ ርዕሳቸው ይህን ቃል የያዘ ወጪዎችም በትክክለኛው ምድብ ይመጣሉ።</string>
+    <string name="category_map_add_query">ያክሉ: “%1$s”</string>
+    <string name="category_map_empty_title">ካርታዎ ባዶ ነው</string>
+    <string name="category_map_empty_body">ቃላት ከሌሉ፣ ምድቡ ከርዕሱ አይመጣም: በእያንዳንዱ ወጪ ላይ እርስዎ ይመርጡታል።</string>
+    <string name="category_map_group_category"> · ምድብ: %1$s</string>
+    <string name="category_map_only_main">%1$s ብቻ</string>
+    <string name="category_map_only_in_group">%1$s ውስጥ ብቻ</string>
+    <string name="category_map_no_terms_yet">ገና ምንም ቃል የለም።</string>
+    <string name="category_map_add_in">በምድቡ %1$s ውስጥ ቃል ያክሉ</string>
+    <string name="category_map_tip">ምድቡን ለመቀየር ወይም ለማስወገድ አንድ ቃል ይንኩ። የድምፅ ምልክቶችንና ትልቅ/ትንሽ ፊደልን ችላ በማለት ሙሉውን ቃል ያዛምዳል።</string>
+    <string name="category_map_queued">በወረፋ ላይ</string>
+    <string name="category_map_term_action">%1$s፣ %2$s። ያርትዑ</string>
+    <string name="category_map_new_term">አዲስ ቃል</string>
+    <string name="category_map_edit_term">ቃሉን ያርትዑ</string>
+    <string name="category_map_term_label">ቃል ወይም ሐረግ</string>
+    <string name="category_map_term_help">የድምፅ ምልክቶችንና ትልቅ/ትንሽ ፊደልን ችላ በማለት ሙሉውን ቃል ያዛምዳል።</string>
+    <string name="category_map_term_help_app">የመተግበሪያው ቃል ነው። ነባሪውን ወደነበረበት መመለስ እንደመጣው ይመልሰዋል።</string>
+    <string name="category_map_term_duplicate">“%1$s” አስቀድሞ ይህን ምድብ ይመርጣል: %2$s። እያንዳንዱ ቃል አንድ ምድብ አለው።</string>
+    <string name="category_map_term_too_short">ቢያንስ 2 ፊደላት ይጠቀሙ።</string>
+    <string name="category_map_term_too_long">ቢበዛ 30 ፊደላት ይጠቀሙ።</string>
+    <string name="category_map_term_invalid">ፊደላትን፣ አሃዞችንና ክፍተቶችን ብቻ ይጠቀሙ።</string>
+    <string name="category_map_category">ምድብ</string>
+    <string name="category_map_category_help">ምድቡ ወይም ንዑስ ምድብ ሊሆን ይችላል።</string>
+    <string name="category_map_category_help_edit">እዚህ መቀየሩ ቃሉን ወደ ሌላ ምድብ ያንቀሳቅሰዋል።</string>
+    <string name="category_map_category_help_move">ማንቀሳቀሱ ቃሉን ከምድቡ %1$s ያስወጣዋል።</string>
+    <string name="category_map_example">ምሳሌ</string>
+    <string name="category_map_example_move">ከተንቀሳቀሰ</string>
+    <string name="category_map_remove">ያስወግዱ</string>
+    <string name="category_map_cancel">ይቅር</string>
+    <string name="category_map_save">ያስቀምጡ</string>
+    <string name="category_map_move_to">ወደ ምድቡ %1$s ያንቀሳቅሱ</string>
+    <string name="category_map_removed">“%1$s” ከካርታው ወጥቷል</string>
+    <string name="category_map_undo">ይቀልብሱ</string>
+    <string name="category_map_restore_title">ነባሪውን ካርታ ወደነበረበት ይመልሱ?</string>
+    <string name="category_map_restore_body">የመተግበሪያው 60 ቃላት እንደመጡት ይመለሳሉ፣ ያስወገዷቸውን ወይም ያንቀሳቀሷቸውን ጨምሮ።</string>
+    <string name="category_map_restore_own_one">የፈጠሩት ቃል፣ “%1$s”፣ ይቆያል።</string>
+    <string name="category_map_restore_confirm">ወደነበረበት ይመልሱ</string>
+    <string name="category_map_save_error">ካርታውን ማስቀመጥ አልተቻለም። እንደገና ይሞክሩ።</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d ቃል</item>
+        <item quantity="other">%d ቃላት</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d ንዑስ ምድብ</item>
+        <item quantity="other">%d ንዑስ ምድቦች</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">“%2$s” ያለው %1$d ቃል</item>
+        <item quantity="other">“%2$s” ያላቸው %1$d ቃላት</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">ከመስመር ውጭ · %d ለውጥ በወረፋ ላይ</item>
+        <item quantity="other">ከመስመር ውጭ · %d ለውጦች በወረፋ ላይ</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">የፈጠሯቸው %d ቃላት ይቆያሉ።</item>
+        <item quantity="other">የፈጠሯቸው %d ቃላት ይቆያሉ።</item>
+    </plurals>
+    <string name="category_map_new_category">አዲስ ምድብ</string>
+    <string name="category_map_new_subcategory_in">በምድቡ %s ውስጥ አዲስ ንዑስ ምድብ</string>
+    <string name="category_map_edit_category">ያርትዑ: %s</string>
+    <string name="category_map_category_group">ቡድን</string>
+    <string name="category_map_change_color">ቀለሙን ይቀይሩ: %1$s</string>
+    <string name="category_map_restore_color">ቀለሙን ወደነበረበት ይመልሱ</string>
+    <string name="category_map_color_done">ተጠናቋል</string>
+</resources>

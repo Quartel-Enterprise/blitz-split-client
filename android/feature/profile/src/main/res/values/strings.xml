@@ -116,6 +116,11 @@
     <string name="profile_language_burmese">Burmese</string>
     <string name="profile_language_khmer">Khmer</string>
     <string name="profile_language_odia">Odia</string>
+    <string name="profile_language_nepali">Nepali</string>
+    <string name="profile_language_azerbaijani">Azerbaijani</string>
+    <string name="profile_language_amharic">Amharic</string>
+    <string name="profile_language_sinhala">Sinhala</string>
+    <string name="profile_language_kazakh">Kazakh</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_language_native_english" translatable="false">English (US)</string>
@@ -177,6 +182,11 @@
     <string name="profile_language_native_burmese" translatable="false">မြန်မာ</string>
     <string name="profile_language_native_khmer" translatable="false">ខ្មែរ</string>
     <string name="profile_language_native_odia" translatable="false">ଓଡ଼ିଆ</string>
+    <string name="profile_language_native_nepali" translatable="false">नेपाली</string>
+    <string name="profile_language_native_azerbaijani" translatable="false">Azərbaycan dili</string>
+    <string name="profile_language_native_amharic" translatable="false">አማርኛ</string>
+    <string name="profile_language_native_sinhala" translatable="false">සිංහල</string>
+    <string name="profile_language_native_kazakh" translatable="false">Қазақ тілі</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">
         <item quantity="one">%d active</item>

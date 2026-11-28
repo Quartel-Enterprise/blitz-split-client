@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">आफ्ना ग्रुपहरू फिर्ता ल्याउनुहोस्</string>
+    <string name="restore_subtitle">पहिले खाताबाट साइन इन गर्नुभएको थियो? फेरि साइन इन गर्नुहोस्। होइन भने, रिकभरी कोड वा पुरानो डिभाइसको QR कोड प्रयोग गर्नुहोस्।</string>
+    <string name="restore_no_connection_title">कनेक्सन छैन</string>
+    <string name="restore_no_connection_body">खाता वा कोडबाट साइन इन गर्दा तपाईंका ग्रुपहरू डाउनलोड गर्न इन्टरनेट चाहिन्छ। तपाईंले टाइप गरेको कुरा राखिएको छ।</string>
+    <string name="restore_code_label">वा रिकभरी कोड प्रयोग गर्नुहोस्</string>
+    <string name="restore_code_hint">12 शब्द क्रमैसँग। सबै फिल्ड भर्न, सबै शब्द एउटै फिल्डमा पेस्ट गर्नुहोस्।</string>
+    <string name="restore_scan_qr_title">पुरानो डिभाइसको QR कोड स्क्यान गर्नुहोस्</string>
+    <string name="restore_scan_qr_body">त्यहाँ: प्रोफाइल › रिकभरी › QR कोड देखाउनुहोस्</string>
+    <string name="restore_recover">रिकभर गर्नुहोस्</string>
+    <string name="restore_try_again">फेरि प्रयास गर्नुहोस्</string>
+    <string name="restore_start_fresh">यो डिभाइसमा नयाँ सुरु गर्नुहोस्</string>
+    <string name="restore_error_invalid_code">कोड भेटिएन। शब्दहरू र तिनको क्रम जाँचेर फेरि प्रयास गर्नुहोस्।</string>
+    <string name="restore_error_too_many_attempts">धेरै पटक प्रयास भयो। केही मिनेट पर्खेर फेरि प्रयास गर्नुहोस्।</string>
+    <string name="restore_error_sign_in_failed">अहिले साइन इन गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</string>
+    <string name="restore_error_unknown">केही गडबड भयो। फेरि प्रयास गर्नुहोस्।</string>
+</resources>

@@ -112,6 +112,11 @@
     <string name="profile_language_burmese">미얀마어</string>
     <string name="profile_language_khmer">크메르어</string>
     <string name="profile_language_odia">오디아어</string>
+    <string name="profile_language_nepali">네팔어</string>
+    <string name="profile_language_azerbaijani">아제르바이잔어</string>
+    <string name="profile_language_amharic">암하라어</string>
+    <string name="profile_language_sinhala">싱할라어</string>
+    <string name="profile_language_kazakh">카자흐어</string>
     <string name="profile_language_system_detail">기기 언어</string>
     <string name="profile_notifications">알림</string>
     <plurals name="profile_notifications_active">

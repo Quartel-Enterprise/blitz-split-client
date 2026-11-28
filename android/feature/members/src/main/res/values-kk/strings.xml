@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Шақыру сілтемесі</string>
+    <string name="members_link_pending">Әлі жасалмаған</string>
+    <string name="members_share">Бөлісу</string>
+    <string name="members_me">%s (сіз)</string>
+    <string name="members_status_this_device">Осы құрылғы</string>
+    <string name="members_status_joined">Қосылды</string>
+    <string name="members_status_not_joined">Әлі қосылмаған</string>
+    <string name="members_options">Опциялар: %s</string>
+    <string name="members_rename">Атын өзгерту</string>
+    <string name="members_personal_invite">Жеке шақыру: %s</string>
+    <string name="members_personal_message">Бұл сілтемені ашқан адам тізімнен таңдамай, бірден осы атпен қосылады: %s. Бір рет жұмыс істейді.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Бұл сілтемені ашқан адам тізімнен таңдамай, бірден осы атпен қосылады: %1$s. Ол осы уақытқа дейін қосылған шығындағы өз үлесін (%2$s) бірден көреді. Бір рет жұмыс істейді.</item>
+        <item quantity="other">Бұл сілтемені ашқан адам тізімнен таңдамай, бірден осы атпен қосылады: %1$s. Ол осы уақытқа дейін қосылған %3$d шығындағы өз үлесін (%2$s) бірден көреді. Бір рет жұмыс істейді.</item>
+    </plurals>
+    <string name="members_personal_copy">Сілтемені көшіру</string>
+    <string name="members_personal_copied">Көшірілді</string>
+    <string name="members_personal_share">Бөлісу: %s</string>
+    <string name="members_personal_share_message">Blitz Split қолданбасында %1$s тобына қосылыңыз. Сіздің атыңыз: %2$s. Сілтеме: %3$s</string>
+    <string name="members_remove">Топтан шығару</string>
+    <string name="members_remove_joined">%s топқа қосылып қойған</string>
+    <string name="members_remove_title">%s топтан шығарылсын ба?</string>
+    <string name="members_remove_message">%s әлі қосылмаған. Кейін оны қайта қоса аласыз.</string>
+    <string name="members_remove_confirm">Шығару</string>
+    <string name="members_release">Атты босату</string>
+    <string name="members_release_title">Атты босатасыз ба: %s?</string>
+    <string name="members_release_message">%1$s атымен қосылған адам топтан шығады. %1$s есімі, түсі және шығындары сақталады, ал %1$s есімін топ сілтемесі арқылы қайта таңдауға болады.</string>
+    <string name="members_release_confirm">Босату</string>
+    <string name="members_release_error">Атты босату мүмкін болмады. Байланысты тексеріп, қайталап көріңіз.</string>
+    <string name="members_add">Адам қосу</string>
+    <string name="members_invite_instead">Қолданбасы бар ма? Сілтеме арқылы шақырыңыз</string>
+    <string name="members_name_label">Аты</string>
+    <string name="members_save">Сақтау</string>
+    <string name="members_cancel">Бас тарту</string>
+    <string name="members_change_error">Өзгерісті сақтау мүмкін болмады. Қайталап көріңіз.</string>
+    <string name="members_remove_open_balance">%s балансы ашық</string>
+    <string name="members_balance_to_get_back">%s алынуы керек</string>
+    <string name="members_balance_owes">%s төлеуі керек</string>
+    <string name="members_balance_settled">Есеп айырысылды</string>
+</resources>

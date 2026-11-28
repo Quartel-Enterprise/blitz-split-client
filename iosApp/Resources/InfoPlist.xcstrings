@@ -5,7 +5,19 @@
       "comment" : "The name under the app icon: Bora Rachar only in Brazil's Portuguese",
       "extractionState" : "manual",
       "localizations" : {
+        "am" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "az" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -143,6 +155,12 @@
             "value" : "Blitz Split"
           }
         },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "km" : {
           "stringUnit" : {
             "state" : "translated",
@@ -203,6 +221,12 @@
             "value" : "Blitz Split"
           }
         },
+        "ne" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -246,6 +270,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "si" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -341,7 +371,19 @@
       "comment" : "The app name in menus and the About window",
       "extractionState" : "manual",
       "localizations" : {
+        "am" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "az" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -479,6 +521,12 @@
             "value" : "Blitz Split"
           }
         },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "km" : {
           "stringUnit" : {
             "state" : "translated",
@@ -539,6 +587,12 @@
             "value" : "Blitz Split"
           }
         },
+        "ne" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -582,6 +636,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "si" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -677,10 +737,22 @@
       "comment" : "Why the app asks for the camera: scanning an invite's or the recovery QR code, and taking the profile photo and a bill's photos",
       "extractionState" : "manual",
       "localizations" : {
+        "am" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "የግብዣን ወይም የቀድሞ መሣሪያዎን QR ኮድ ለመቃኘት፣ እንዲሁም የመገለጫ ፎቶዎን እና የወጪ ፎቶዎችን ለማንሳት።"
+          }
+        },
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "لمسح رمز QR الخاص بدعوة أو من جهازك القديم، ولالتقاط صورة ملفك الشخصي وصور الفواتير."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dəvətin və ya köhnə cihazınızın QR kodunu skan etmək, profil şəklinizi və xərclərin şəkillərini çəkmək üçün."
           }
         },
         "bg" : {
@@ -815,6 +887,12 @@
             "value" : "招待や古いデバイスのQRコードのスキャン、プロフィール写真や支出の写真の撮影に使用します。"
           }
         },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Шақырудың немесе ескі құрылғыңыздың QR кодын сканерлеу, профиль фотосын және шығын фотоларын түсіру үшін."
+          }
+        },
         "km" : {
           "stringUnit" : {
             "state" : "translated",
@@ -875,6 +953,12 @@
             "value" : "For å skanne QR-koden i en invitasjon eller fra den gamle enheten din, og for å ta profilbildet ditt og bilder av utgifter."
           }
         },
+        "ne" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कुनै निमन्त्रणाको वा तपाईंको पुरानो डिभाइसको QR कोड स्क्यान गर्न, र तपाईंको प्रोफाइल फोटो र खर्चका फोटो खिच्न।"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -921,6 +1005,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Чтобы сканировать QR-код приглашения или со старого устройства, а также фотографировать себя для профиля и снимать счета."
+          }
+        },
+        "si" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ආරාධනාවක හෝ ඔබේ පැරණි උපාංගයේ QR කේතය ස්කෑන් කිරීමට, සහ ඔබේ පැතිකඩ ඡායාරූපය සහ වියදම්වල ඡායාරූප ගැනීමට."
           }
         },
         "sk" : {
@@ -1013,10 +1103,22 @@
       "comment" : "Why the app asks for the contacts: inviting someone from them with a group's link",
       "extractionState" : "manual",
       "localizations" : {
+        "am" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ከእውቂያዎችዎ ሰዎችን በቡድኑ ሊንክ ለመጋበዝ። ቁጥሮቻቸው በዚህ መሣሪያ ላይ ይቆያሉ።"
+          }
+        },
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "لدعوة أشخاص من جهات اتصالك برابط مجموعة. تبقى أرقامهم على هذا الجهاز."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qrupun linki ilə kontaktlarınızdakı insanları dəvət etmək üçün. Onların nömrələri bu cihazda qalır."
           }
         },
         "bg" : {
@@ -1151,6 +1253,12 @@
             "value" : "グループのリンクで連絡先から招待するために使用します。電話番号はこのデバイスから出ません。"
           }
         },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Топ сілтемесі арқылы контактілеріңіздегі адамдарды шақыру үшін. Олардың нөмірлері осы құрылғыда қалады."
+          }
+        },
         "km" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1211,6 +1319,12 @@
             "value" : "For å invitere folk fra kontaktene dine med lenken til en gruppe. Numrene deres blir på denne enheten."
           }
         },
+        "ne" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "समूहको लिंकमार्फत तपाईंका सम्पर्कहरूबाट मानिसहरूलाई निमन्त्रणा गर्न। उनीहरूका नम्बर यही डिभाइसमा रहन्छन्।"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1257,6 +1371,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Чтобы приглашать людей из контактов по ссылке группы. Их номера остаются на этом устройстве."
+          }
+        },
+        "si" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "කණ්ඩායමේ සබැඳිය හරහා ඔබේ සම්බන්ධතාවලින් අයට ආරාධනා කිරීමට. ඔවුන්ගේ අංක මෙම උපාංගයේම පවතී."
           }
         },
         "sk" : {
@@ -1349,10 +1469,22 @@
       "comment" : "Why the app asks to add to Photos: saving a bill's photo from its viewer (Download, then Save Image)",
       "extractionState" : "manual",
       "localizations" : {
+        "am" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "የወጪ ፎቶዎችን በቤተ-መጽሐፍትዎ ውስጥ ለማስቀመጥ።"
+          }
+        },
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "لحفظ صور الفاتورة في مكتبتك."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xərclərin şəkillərini kitabxananızda saxlamaq üçün."
           }
         },
         "bg" : {
@@ -1487,6 +1619,12 @@
             "value" : "支出の写真をライブラリに保存するために使用します。"
           }
         },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Шығын фотоларын кітапханаңызға сақтау үшін."
+          }
+        },
         "km" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1547,6 +1685,12 @@
             "value" : "For å lagre bildene til en utgift i bildebiblioteket ditt."
           }
         },
+        "ne" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "खर्चका फोटो तपाईंको लाइब्रेरीमा सेभ गर्न।"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1593,6 +1737,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Чтобы сохранять фото счетов в твою медиатеку."
+          }
+        },
+        "si" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "වියදම්වල ඡායාරූප ඔබේ පුස්තකාලයට සුරැකීමට."
           }
         },
         "sk" : {

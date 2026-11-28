@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Жабу</string>
+    <string name="invite_group_created">Топ құрылды</string>
+    <string name="invite_title">Барлығын %s тобына шақырыңыз</string>
+    <string name="invite_qr_description">Топқа шақыру сілтемесінің QR коды</string>
+    <string name="invite_copy">Көшіру</string>
+    <string name="invite_copied">Көшірілді</string>
+    <string name="invite_who_picks">Сілтемені ашқан адам тізімнен өзін таңдайды: %s. Аккаунт қажет емес.</string>
+    <string name="invite_names_or">%1$s немесе %2$s</string>
+    <string name="invite_anyone_joins">Сілтемені ашқан адам топқа қосылады. Аккаунт қажет емес.</string>
+    <string name="invite_pending_title">Сілтеме күтілуде</string>
+    <string name="invite_pending_offline">Желіге қосылған бойда жасалады.</string>
+    <string name="invite_pending_online">Сілтеме жасалуда…</string>
+    <string name="invite_failed_title">Сілтемені жасау мүмкін болмады</string>
+    <string name="invite_failed_body">Топты синхрондау кезінде қате шықты.</string>
+    <string name="invite_retry">Қайталау</string>
+    <string name="invite_share">Сілтемемен бөлісу</string>
+    <string name="invite_see_who_joined">Кім қосылғанын көру</string>
+    <string name="invite_add_person">Қолданбасы жоқ адамды қосу</string>
+    <string name="invite_go_to_group">Топқа өту</string>
+    <string name="invite_change_link">Сілтемені өзгерту</string>
+    <string name="invite_change_link_title">Шақыру сілтемесін өзгертесіз бе?</string>
+    <string name="invite_change_link_message">Қазіргі сілтеме мен QR код, пайдаланылмаған жеке шақыруларды қоса, жұмысын тоқтатады. Қосылып қойған адамдар топта қалады.</string>
+    <string name="invite_change_link_failed">Сілтемені өзгерту мүмкін болмады. Қайталап көріңіз.</string>
+    <string name="invite_share_message">Blitz Split қолданбасында %1$s шығындарын бөлейік. Осы сілтеме арқылы қосылыңыз: %2$s</string>
+</resources>

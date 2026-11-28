@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">ශේෂ</string>
+    <string name="global_balances_profile">පැතිකඩ</string>
+    <string name="global_balances_offline">නොබැඳි · මෙම උපාංගයේ ශේෂ</string>
+    <string name="global_balances_filter">පෙන්වන්න</string>
+    <string name="global_balances_filter_all">සියල්ල</string>
+    <string name="global_balances_filter_you_owe">ඔබ ගෙවිය යුතු</string>
+    <string name="global_balances_filter_owes_you">ඔබට ලැබිය යුතු</string>
+    <string name="global_balances_hint">සමූහ අතර දැනටමත් ගළපා ඇත: එක් එක් පුද්ගලයා එක් වරක් පෙන්වනවා.</string>
+    <string name="global_balances_hint_empty">මෙම උපාංගයේ සියලු සමූහ එකතු කරමින්.</string>
+    <string name="global_balances_section_you_owe">ඔබ ගෙවිය යුතු · %d</string>
+    <string name="global_balances_section_owes_you">ඔබට ලැබිය යුතු · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">සමූහ %d</item>
+        <item quantity="other">සමූහ %d</item>
+    </plurals>
+    <string name="global_balances_guest">%s · අමුත්තා</string>
+    <string name="global_balances_you_owe">ඔබ ගෙවිය යුතු</string>
+    <string name="global_balances_owes_you">ඔබට ලැබිය යුතු</string>
+    <string name="global_balances_by_group_show">සමූහය අනුව පෙන්වන්න: %s</string>
+    <string name="global_balances_by_group_hide">සමූහය අනුව සඟවන්න: %s</string>
+    <string name="global_balances_received">ලැබුණා</string>
+    <string name="global_balances_received_from">ලැබුණේ: %s</string>
+    <string name="global_balances_settle">ගිණුම් පියවන්න</string>
+    <string name="global_balances_settle_with">ගිණුම් පියවන්න: %s</string>
+    <string name="global_balances_charge">ඉල්ලන්න</string>
+    <string name="global_balances_charge_person">මුදල් ඉල්ලන්න: %s</string>
+    <string name="global_balances_detail_pane">ශේෂය: %s</string>
+    <string name="global_balances_detail_owes_you">ඔබට ලැබිය යුතුයි: %s</string>
+    <string name="global_balances_detail_you_owe">ඔබ ගෙවිය යුතුයි: %s</string>
+    <string name="global_balances_detail_guest">%s · ඇප් එක නැති අමුත්තා</string>
+    <string name="global_balances_detail_note_owed">ශුද්ධ මුදල දැනටමත් සමූහ ගළපයි: ඉල්ලන්න සහ ලැබුණා භාවිත කරන්නේ %s. ඇප් එක එක් එක් සමූහයේ ගෙවීමක් සටහන් කරනවා.</string>
+    <string name="global_balances_detail_note_settle">ශුද්ධ මුදල දැනටමත් සමූහ ගළපයි: ගිණුම් පියවන්න භාවිත කරන්නේ %s. ඇප් එක එක් එක් සමූහයේ ගෙවීමක් සටහන් කරනවා.</string>
+    <string name="global_balances_detail_note_single">විවෘතව ඇත්තේ එක් සමූහයක් පමණයි: %s.</string>
+    <string name="global_balances_settled_title">සියල්ල පියවා ඇත</string>
+    <string name="global_balances_settled_body">ඔබට කිසිවෙකුගෙන් ලැබිය යුතු නැහැ, ඔබත් කිසිවෙකුට ගෙවිය යුතු නැහැ. කවුරුහරි වියදමක් එක් කළ විට, ශේෂය මෙහි පෙන්වනවා.</string>
+    <string name="global_balances_settled_action">සමූහ බලන්න</string>
+    <string name="global_balances_nothing_to_pay_title">ඔබ කිසිවක් ගෙවිය යුතු නැහැ</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">ඔබ සියලු දෙනා සමඟ ගිණුම් පියවා ඇත. ඔබට තවමත් %2$s ලැබිය යුතුයි, පුද්ගලයින් %1$d දෙනෙකුගෙන්.</item>
+        <item quantity="other">ඔබ සියලු දෙනා සමඟ ගිණුම් පියවා ඇත. ඔබට තවමත් %2$s ලැබිය යුතුයි, පුද්ගලයින් %1$d දෙනෙකුගෙන්.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">ඔබට ලැබිය යුත්තේ කාගෙන්දැයි බලන්න</string>
+    <string name="global_balances_nothing_to_receive_title">ඔබට කිසිවෙකුගෙන් ලැබිය යුතු නැහැ</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">ඔබ තවමත් %2$s ගෙවිය යුතුයි, පුද්ගලයින් %1$d දෙනෙකුට.</item>
+        <item quantity="other">ඔබ තවමත් %2$s ගෙවිය යුතුයි, පුද්ගලයින් %1$d දෙනෙකුට.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">ඔබ ගෙවිය යුත්තේ කාටදැයි බලන්න</string>
+    <string name="global_balances_coming_soon">ළඟදීම</string>
+    <string name="global_balances_change_error">වෙනස සුරකින්න බැරි වුණා. නැවත උත්සාහ කරන්න.</string>
+    <string name="global_balances_copied">පිටපත් කළා</string>
+    <string name="global_balances_charge_title">මුදල් ඉල්ලන්න: %s</string>
+    <string name="global_balances_charge_owes">ඔබට ලැබිය යුතුයි: %1$s · %2$s</string>
+    <string name="global_balances_charge_close">වසන්න</string>
+    <string name="global_balances_charge_guest">%s ඇප් එක නැති අමුත්තෙක්. මේ ගැන දැනගන්නේ මෙම පණිවිඩයෙන් පමණයි, ඒ නිසා වියදමට ඇතුළත් වූ දේ එහි දැනටමත් සඳහන්.</string>
+    <string name="global_balances_charge_message">පණිවිඩය</string>
+    <string name="global_balances_charge_pix">මගේ Pix යතුර ඇතුළත් කරන්න</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">පණිවිඩය පිටපත් කරන්න</string>
+    <string name="global_balances_charge_send">යවන්න</string>
+    <string name="global_balances_message">ආයුබෝවන් %1$s! Blitz Split ගණනය අනුව, %3$s සඳහා ඔබ මට %2$s ගෙවිය යුතුයි.</string>
+    <string name="global_balances_message_guest">ආයුබෝවන් %1$s! %3$s සඳහා ඔබ මට %2$s ගෙවිය යුතුයි. ඔබේ කොටස ගණන් කළේ මෙයින්: %4$s.</string>
+    <string name="global_balances_message_guest_paid">ආයුබෝවන් %1$s! %3$s සඳහා ඔබ මට %2$s ගෙවිය යුතුයි. ඔබේ කොටස ගණන් කළේ මෙයින්: %4$s, ඔබ දැනටමත් ගෙවූ %5$s අඩු කර.</string>
+    <string name="global_balances_message_group">%s සමූහය</string>
+    <string name="global_balances_message_groups">%s සමූහ</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">දුරකථනය</string>
+    <string name="global_balances_key_email">ඊමේල්</string>
+    <string name="global_balances_key_random">අහඹු යතුර</string>
+    <string name="global_balances_message_reroute">%1$s සමූහය ණය සරල කළා, ඒ නිසා %2$s වෙත ගෙවනවා වෙනුවට ඔබ මට කෙලින්ම ගෙවනවා; ඔබේ එකතුව වෙනස් වුණේ නැහැ.</string>
+</resources>

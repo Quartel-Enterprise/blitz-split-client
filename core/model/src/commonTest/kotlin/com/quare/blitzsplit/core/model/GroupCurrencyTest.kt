@@ -262,6 +262,66 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN Nepal WHEN picking its currency THEN it is the Nepalese rupee with its 2 decimals`() {
+        // Given
+        val region = "NP"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.NPR to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Azerbaijan WHEN picking its currency THEN it is the manat with its 2 decimals`() {
+        // Given
+        val region = "AZ"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.AZN to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Ethiopia WHEN picking its currency THEN it is the birr with its 2 decimals`() {
+        // Given
+        val region = "ET"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.ETB to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Sri Lanka WHEN picking its currency THEN it is the Sri Lankan rupee with its 2 decimals`() {
+        // Given
+        val region = "LK"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.LKR to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Kazakhstan WHEN picking its currency THEN it is the tenge typed without decimals`() {
+        // Given
+        val region = "KZ"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.KZT to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
     fun `GIVEN India WHEN picking its currency THEN it is the rupee with its 2 decimals`() {
         // Given
         val region = "IN"

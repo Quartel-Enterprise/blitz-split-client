@@ -115,6 +115,11 @@
     <string name="profile_language_burmese">Birmiečių</string>
     <string name="profile_language_khmer">Khmerų</string>
     <string name="profile_language_odia">Orijų</string>
+    <string name="profile_language_nepali">Nepaliečių</string>
+    <string name="profile_language_azerbaijani">Azerbaidžaniečių</string>
+    <string name="profile_language_amharic">Amharų</string>
+    <string name="profile_language_sinhala">Sinhalų</string>
+    <string name="profile_language_kazakh">Kazachų</string>
     <string name="profile_language_system_detail">Įrenginio kalba</string>
     <string name="profile_notifications">Pranešimai</string>
     <plurals name="profile_notifications_active">

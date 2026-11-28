@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">පැතිකඩ සංස්කරණය කරන්න</string>
+    <string name="edit_profile_save">සුරකින්න</string>
+    <string name="edit_profile_change_photo">ඡායාරූපය වෙනස් කරන්න</string>
+    <string name="edit_profile_take_photo">ඡායාරූපයක් ගන්න</string>
+    <string name="edit_profile_choose_photo">ගැලරියෙන් තෝරන්න</string>
+    <string name="edit_profile_use_account_photo">%1$s ගිණුමේ ඡායාරූපය භාවිත කරන්න</string>
+    <string name="edit_profile_remove_photo">ඡායාරූපය ඉවත් කරන්න</string>
+    <string name="edit_profile_photo_error">මෙම ඡායාරූපය භාවිත කරන්න බැරි වුණා. වෙනත් එකක් උත්සාහ කරන්න.</string>
+    <string name="edit_profile_avatar_color">අවතාරයේ පාට</string>
+    <string name="edit_profile_avatar_color_hint">ඔබට ඡායාරූපයක් නැති විට පෙන්වනවා.</string>
+    <string name="edit_profile_name_label">ඔබේ නම</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">අවම වශයෙන් අකුරු %d ටයිප් කරන්න.</string>
+    <string name="edit_profile_name_too_long">අක්ෂර %d දක්වා භාවිත කරන්න.</string>
+    <string name="edit_profile_account_notice">නම සහ ඡායාරූපය ආවේ ඔබේ %1$s ගිණුමෙන්. මෙහිදී ඒවා වෙනස් කිරීම Blitz Split සඳහා පමණක් අදාළ වන අතර ඔබේ %1$s ගිණුම වෙනස් කරන්නේ නැහැ.</string>
+    <string name="edit_profile_footer">ඔබේ සමූහවලට සහ ඔබේ පැතිකඩ සබැඳිය ඇති ඕනෑම කෙනෙකුට ඔබේ නම සහ ඡායාරූපය පෙනෙනවා.</string>
+    <string name="profile_photo_close">වසන්න</string>
+    <string name="profile_photo_camera">කැමරාව</string>
+    <string name="profile_photo_gallery">ගැලරිය</string>
+    <string name="profile_photo_remove">ඉවත් කරන්න</string>
+    <string name="profile_photo_title">පැතිකඩ ඡායාරූපය</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Шотты оңай бөліңіз</string>
+    <string name="welcome_offline_title">Офлайн жұмыс істейді</string>
+    <string name="welcome_offline_body">Бәрі құрылғыңызда сақталып, кейін синхрондалады.</string>
+    <string name="welcome_optional_title">Аккаунт міндетті емес</string>
+    <string name="welcome_optional_body">Google немесе Apple тек құрылғыны ауыстырғанда ештеңе жоғалмауы үшін керек.</string>
+    <string name="welcome_invite_title">Сілтеме немесе QR код арқылы шақырыңыз</string>
+    <string name="welcome_invite_body">Достарыңыз аккаунт жасамай-ақ топқа қосылады.</string>
+    <string name="welcome_no_connection_title">Байланыс жоқ.</string>
+    <string name="welcome_no_connection_body">Аккаунтпен кіру үшін интернет керек. Қазір аккаунтсыз пайдаланып, кейін Профильде қосыңыз.</string>
+    <string name="welcome_or">немесе</string>
+    <string name="welcome_use_without_account">Аккаунтсыз пайдалану</string>
+    <string name="welcome_used_on_another_device">Басқа құрылғыда пайдаланғанмын</string>
+    <string name="welcome_sign_in_failed">Қазір кіру мүмкін болмады. Қайталап көріңіз.</string>
+    <string name="welcome_legal_notice">Жалғастырсаңыз, %1$s құжатын қабылдап, %2$s құжатымен танысқаныңызды растайсыз.</string>
+    <string name="welcome_legal_terms">Қызмет көрсету шарттары</string>
+    <string name="welcome_legal_privacy">Құпиялық саясаты</string>
+    <string name="welcome_no_account_note">Аккаунт болмаса, деректеріңіз 30 күн пайдаланылмаған соң жойылады. Оларды сақтау үшін Google немесе Apple аккаунтын қосыңыз.</string>
+    <string name="welcome_no_account_note_offline">Аккаунт болмаса, деректеріңіз 30 күн пайдаланылмаған соң жойылады. Оларды сақтау үшін кейін Профильде Google немесе Apple аккаунтын қосыңыз.</string>
+    <string name="welcome_expired_title">Деректеріңіз жойылды</string>
+    <string name="welcome_expired_body">Сіз қолданбаны аккаунтсыз пайдаланып, оны 30 күн ашпадыңыз, сондықтан деректеріңіз жойылды. Келесі жолы сақтау үшін Google немесе Apple аккаунтын қосыңыз.</string>
+    <string name="welcome_expired_ok">Жарайды</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Қолдау қызметіне жазу</string>
+    <string name="contact_support_description">Пошта қолданбаңызды дайын хабарламамен ашамыз. Не болғанын сипаттап, жіберіңіз: әр хабарламаны нақты адамдар оқиды.</string>
+    <string name="contact_support_to">Кімге</string>
+    <string name="contact_support_diagnostics">Хатқа қосылады</string>
+    <string name="contact_support_app_version">Қолданба нұсқасы</string>
+    <string name="contact_support_platform">Платформа</string>
+    <string name="contact_support_language">Тіл</string>
+    <string name="contact_support_account">Аккаунт</string>
+    <string name="contact_support_profile">Профиль</string>
+    <string name="contact_support_language_system">Жүйе</string>
+    <string name="contact_support_account_local">Тек осы құрылғы</string>
+    <string name="contact_support_account_anonymous">Қосылмаған</string>
+    <string name="contact_support_open_email">Поштаны ашу</string>
+    <string name="contact_support_copy_email">Электрондық пошта мекенжайын көшіру</string>
+    <string name="contact_support_notice_copied">Электрондық пошта мекенжайы көшірілді.</string>
+    <string name="contact_support_notice_no_app">Пошта қолданбасы табылмады. Оның орнына мекенжай көшірілді.</string>
+    <string name="contact_support_close">Жабу</string>
+</resources>

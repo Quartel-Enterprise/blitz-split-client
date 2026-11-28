@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">වසන්න</string>
+    <string name="invite_group_created">සමූහය සෑදුවා</string>
+    <string name="invite_title">සියලු දෙනාට ආරාධනා කරන්න: %s</string>
+    <string name="invite_qr_description">සමූහයේ ආරාධනා සබැඳියේ QR කේතය</string>
+    <string name="invite_copy">පිටපත් කරන්න</string>
+    <string name="invite_copied">පිටපත් කළා</string>
+    <string name="invite_who_picks">සබැඳිය විවෘත කරන ඕනෑම කෙනෙකු ලැයිස්තුවෙන් තමන් කවුද කියා තෝරනවා: %s. ගිණුමක් අවශ්‍ය නැහැ.</string>
+    <string name="invite_names_or">%1$s හෝ %2$s</string>
+    <string name="invite_anyone_joins">සබැඳිය විවෘත කරන ඕනෑම කෙනෙකු සමූහයට එක්වෙනවා. ගිණුමක් අවශ්‍ය නැහැ.</string>
+    <string name="invite_pending_title">සබැඳිය පොරොත්තුවෙන්</string>
+    <string name="invite_pending_offline">ඔබ සබැඳි වූ වහාම එය සෑදෙනවා.</string>
+    <string name="invite_pending_online">සබැඳිය සාදමින්…</string>
+    <string name="invite_failed_title">සබැඳිය සාදන්න බැරි වුණා</string>
+    <string name="invite_failed_body">සමූහය සමමුහුර්ත කරන අතරතුර යමක් වැරදුණා.</string>
+    <string name="invite_retry">නැවත උත්සාහ කරන්න</string>
+    <string name="invite_share">සබැඳිය බෙදාගන්න</string>
+    <string name="invite_see_who_joined">එක්වූ අය බලන්න</string>
+    <string name="invite_add_person">ඇප් එක නැති කෙනෙකු එක් කරන්න</string>
+    <string name="invite_go_to_group">සමූහයට යන්න</string>
+    <string name="invite_change_link">සබැඳිය වෙනස් කරන්න</string>
+    <string name="invite_change_link_title">ආරාධනා සබැඳිය වෙනස් කරන්නද?</string>
+    <string name="invite_change_link_message">වත්මන් සබැඳිය සහ QR කේතය ක්‍රියා කිරීම නවතිනවා, භාවිත නොකළ පුද්ගලික ආරාධනත් ඇතුළුව. දැනටමත් එක්වූ අය සමූහයේ රැඳී සිටිනවා.</string>
+    <string name="invite_change_link_failed">සබැඳිය වෙනස් කරන්න බැරි වුණා. නැවත උත්සාහ කරන්න.</string>
+    <string name="invite_share_message">Blitz Split හි %1$s සමූහයේ වියදම් බෙදාගනිමු. මෙම සබැඳියෙන් එක්වන්න: %2$s</string>
+</resources>
