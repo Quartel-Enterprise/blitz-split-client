@@ -73,9 +73,9 @@ Plugin Portal. Entries no library or plugin points at (the SDK levels) are liste
 - **`blitzsplit-shared`** is a `file:` dependency on the JS library `:shared` builds: never bumped.
 - **Firebase** on Apple (`iosApp/project.yml`) and on the web (`firebase` in npm) are separate SDKs
   with separate release lines; bump each to its own newest.
-- **`Quartel-Enterprise/claude-review`** and **`Quartel-Enterprise/copied-code-check`** are bumped
+- **`Quartel-Enterprise/ai-review`** and **`Quartel-Enterprise/copied-code-check`** are bumped
   by Renovate in pull requests of their own as soon as they release. Leave those two out unless the
-  user asks. Every `uses:` of claude-review must pin the same release (`claude-review-refs.yml`
+  user asks. Every `uses:` of ai-review must pin the same release (`ai-review-refs.yml`
   fails otherwise), and copied-code-check's `uses:` in `duplication.yml` is also what
   `scripts/cpd.sh` runs.
   **`quare-ktlint-rules`** in the catalog is read by `scripts/ktlint.sh`.
@@ -171,7 +171,7 @@ one after the other:
 
 ### 6. Open the pull request
 
-When the bump changes `.github/workflows/claude-review.yml` (an action it uses, such as
+When the bump changes `.github/workflows/ai-review.yml` (an action it uses, such as
 `actions/checkout`), the Claude review skips that pull request: `claude-code-action` only runs
 when the workflow file matches the one on `main`, so the review posts "The review ended without a
 findings list" and its job still passes. That is expected, not a failure to fix: the review gate

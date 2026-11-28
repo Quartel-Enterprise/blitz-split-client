@@ -11,7 +11,7 @@ name: build-and-test
 # times what each job takes on a pull request that recompiles everything.
 on:
   pull_request:
-    # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
+    # The defaults, plus a draft marked ready, which ai-review reviews then (see review-gate below).
     types:
       - opened
       - synchronize

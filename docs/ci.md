@@ -13,10 +13,10 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
 | `release-notes` | `release-notes/`, `store-listing/`, `scripts/release/`, the screenshots' store locales and screens (`scripts/store-screenshots/screens.tsv` and the generators' `StoreLocale.kt`), the check of a set of screenshots made on a Mac with the two workflows it is held to (`scripts/store-screenshots/local-set.mjs` and its tests, `app-store-screenshots.yml` and `app-store-screenshots-upload.yml`), what the tidy-up of the App Store's shelves removes and sorts with the lane it is held to (`scripts/store-screenshots/shelves.mjs`, its tests and `fastlane/Fastfile`), and the workflows that send Google Play's screenshots, which tests hold together and to the lane they run (`release-production.yml`, `play-store-screenshots.yml`, `play-store-screenshots-upload.yml`, the `play-screenshots-draw` and `play-store-lane` actions and `fastlane/Fastfile`), and `scripts/heavy-check.sh` with its tests | `node scripts/release/release-notes.mjs check`, which fails on a fragment a release couldn't publish, `node scripts/release/store-listing.mjs check`, which fails on a store listing over a store's limit ([store-listing.md](store-listing.md)), and the tests of the release scripts: `release-notes.test.mjs`, `release-scripts.test.mjs`, `play-screenshot-groups.test.mjs`, `play-screenshots-lane.test.mjs` (the lane itself, run against a stand-in for Google Play; it needs the pinned fastlane and is skipped on the runner, so run it on a Mac when the lane changes), `store-listing.test.mjs`, `scripts/store-screenshots/local-set.test.mjs`, `scripts/store-screenshots/shelves.test.mjs` and, of the queue a Mac's heavy builds share, `scripts/heavy-check.test.mjs` ([release-notes.md](release-notes.md)) |
 | `codeql` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes that touch no Python script, and once a week | GitHub's code scanning (CodeQL), one job per language: the workflows, JavaScript and TypeScript, Python, and Kotlin, which it reads from a build of the `jvm` target and of the Android debug variant. Its alerts are under Security → Code scanning, and a pull request gets the ones it adds as review comments ([Code scanning](#code-scanning)) |
-| `claude-review` | A pull request opened, or a draft marked ready; or the push that solves the conflict it opened with | Reviews it, fixes what it found, posts the rest |
-| `claude-review-on-request` | The `ai-review` label | Reviews it again, only commenting |
+| `ai-review` | A pull request opened, or a draft marked ready; or the push that solves the conflict it opened with | Reviews it, fixes what it found, posts the rest |
+| `ai-review-on-request` | The `ai-review` label | Reviews it again, only commenting |
 | `run-checks` | The `run-checks` label | Re-runs the checks the gate held, once the review's threads are resolved |
-| `claude-review-refs` | Pull requests that change a workflow | Fails when the workflows pin different releases of the shared review |
+| `ai-review-refs` | Pull requests that change a workflow | Fails when the workflows pin different releases of the shared review |
 | `merge-when-green` | The `merge-when-green` label, each pull request workflow that completes, every push to `main`, every 15 minutes (when GitHub fires it), and by hand | Squash merges the pull request once every check passed and every conversation is resolved |
 | `release-beta` | By hand, with `./scripts/release/release-beta.sh` | Ships a beta to the closed group: Android on Firebase App Distribution, the web on Cloudflare Pages, iOS and macOS on TestFlight, and iOS again on Firebase App Distribution as an ad hoc build. Merges the versionCode back into `main`, publishes the `X.Y.Z-beta_N` GitHub pre-release and sends the beta's release notes to blitz-split-site; see [release-process.md](release-process.md) |
 | `store-listing` | By hand, by an administrator, on `main` | Sends the stores' listing text to Google Play and the App Store with `fastlane upload_listing`: text only, no build and no submission ([store-listing.md](store-listing.md)) |
@@ -297,13 +297,13 @@ Claude reviews a pull request at three points:
 
 - **Before it opens**, `create-pr` runs `/code-review high --max-findings all` and `review-conventions`, on the
   author's machine, and fixes their findings before pushing.
-- **On GitHub, when it opens**, `claude-review` runs the same `/code-review high --max-findings all`, on Opus, with
+- **On GitHub, when it opens**, `ai-review` runs the same `/code-review high --max-findings all`, on Opus, with
   `--fix`: it applies the findings that are clear and contained, pushes them to the branch as a commit of
   `claude[bot]`, and posts one review. The fixed findings are listed in its body, under the fix commit; each one left
   for the author is an inline comment, labelled 🔴 **Must fix**, 🟡 **Should fix** or ⚪ **Nitpick**, with a
   suggestion to commit when the fix fits the commented lines. A draft is reviewed when it is marked ready. Later
   pushes, the fix commit included, aren't reviewed again.
-- **On request**, the `ai-review` label runs `claude-review-on-request`: the same review, only commenting, told what
+- **On request**, the `ai-review` label runs `ai-review-on-request`: the same review, only commenting, told what
   the earlier reviews found so it doesn't repeat them. The label is removed when it ends. Use it after new pushes.
 
 Both fail only when the run itself does (an expired token, the 30-minute timeout), never because of what they found.
@@ -311,10 +311,10 @@ They are skipped on pull requests from forks, which get no secrets. The action r
 changes the workflow file that started it, so a change to either review workflow can only be tried after it merges.
 
 The review, the gate and the threads lookups are the `review`, `gate` and `threads` actions of
-[Quartel-Enterprise/claude-review](https://github.com/Quartel-Enterprise/claude-review), shared with
-bible-planner-mobile-client. Every `uses:` of them (`claude-review.yml`, `claude-review-on-request.yml`,
+[Quartel-Enterprise/ai-review](https://github.com/Quartel-Enterprise/ai-review), shared with
+bible-planner-mobile-client. Every `uses:` of them (`ai-review.yml`, `ai-review-on-request.yml`,
 `review-gate.yml`, `run-checks.yml`, `merge-when-green.yml`) pins the same exact release: a fix there ships as a release, then a bump of all
-of them here, which `claude-review-refs` checks. Renovate opens that bump as one pull request as soon as the release
+of them here, which `ai-review-refs` checks. Renovate opens that bump as one pull request as soon as the release
 ships (see [Dependency updates](#dependency-updates)), and the review skips it, since it changes the review's own
 workflow. What runs comes from that release, never from the pull request under
 review, so a pull request can't change the review that judges it. How the review works, which Bash commands it may
@@ -349,8 +349,8 @@ away.
 
 | Job                                  | Key                                   | Billed to                    |
 |--------------------------------------|---------------------------------------|------------------------------|
-| `claude-review`                      | `CLAUDE_CODE_OAUTH_TOKEN` (the plan)  | The plan's usage limits      |
-| `claude-review-on-request`           | `CLAUDE_CODE_OAUTH_TOKEN` (the plan)  | The plan's usage limits      |
+| `ai-review`                      | `CLAUDE_CODE_OAUTH_TOKEN` (the plan)  | The plan's usage limits      |
+| `ai-review-on-request`           | `CLAUDE_CODE_OAUTH_TOKEN` (the plan)  | The plan's usage limits      |
 | Every other workflow                 | None: no other job calls Claude       | -                            |
 
 The plan's monthly API credit (Max US$100, Ultra US$200, see the
@@ -361,7 +361,7 @@ Claude with `-p`; and the review action runs Claude through `anthropics/claude-c
 starts with `CLAUDE_CODE_ENTRYPOINT=claude-code-github-action` (`base-action/src/parse-sdk-options.ts`). Passing the
 action's `anthropic-api-key` instead of `oauth-token` would only bill the reviews per token, outside the credit. Only
 `claude -p` or the Agent SDK run in a plain step, with that organization's key, draws from the credit, which would mean
-replacing `claude-code-action` in Quartel-Enterprise/claude-review, and with it the Claude App's token the review
+replacing `claude-code-action` in Quartel-Enterprise/ai-review, and with it the Claude App's token the review
 pushes and posts with.
 
 The credit wouldn't cover the reviews anyway: from 18 October to 17 November 2026 the reviews reported US$352 of API
@@ -377,15 +377,15 @@ commit, again on the fix commit):
 
 - `build-and-test`, `apple`, `static-analysis`, `duplication`, `module-graph`, `release-notes`, `translations` and `codeql` start with a `review-gate` job, the reusable
   `review-gate.yml`. On the commit a pull request opened with or a draft was marked ready on, and on the review's
-  fix commit (a push by `claude[bot]`), it waits for the `claude-review` run of the reviewed commit to end (on a draft
+  fix commit (a push by `claude[bot]`), it waits for the `ai-review` run of the reviewed commit to end (on a draft
   marked ready, only a run that event created, never the one skipped while it was a draft). When the
   head moved meanwhile (the fix commit), it skips the checks here: they run on the new commit. Every other event (an
   author's push, a reopened pull request, `main`) skips the gate, and the checks run right away. A draft, a fork, a
   failed or cancelled review, one still running after 40 minutes or GitHub's API failing three times in a row let
   the checks run.
 - GitHub starts no pull request workflow while the pull request conflicts with its base, so one opened (or marked
-  ready) with a conflict gets neither the review nor the checks on that event. `claude-review` also runs on pushes
-  for that case: on a push, the shared `review` action looks for a `claude-review` run between the pull request's
+  ready) with a conflict gets neither the review nor the checks on that event. `ai-review` also runs on pushes
+  for that case: on a push, the shared `review` action looks for a `ai-review` run between the pull request's
   opening (or a draft's last marking as ready) and this one, and with none (GitHub started none while it conflicted)
   the push that solved the conflict is reviewed. The gate
   doesn't wait for that review, since the push is an author's: the checks run on it right away, and again on the
@@ -425,7 +425,7 @@ the label added again, as below. A push to the pull request moves its head commi
 to pass again. A failed check leaves the pull request open with the label on; re-running the check and getting it
 green merges it. The pull request's current head is the one judged, whichever commit's run started the workflow, so
 a pull request whose changes run no check workflow (docs only, `iosApp` only) merges once the review ends, even after
-the review pushed its fix commit. Every push runs `claude-review`, which ends in seconds without reviewing (see the
+the review pushed its fix commit. Every push runs `ai-review`, which ends in seconds without reviewing (see the
 review gate below) and starts `merge-when-green` when it completes. A label added, or a sweep run, right after a push
 still waits 30 seconds first, for the push's workflows to register their runs. Drafts wait until they are marked
 ready, and pull requests from forks are never merged: their author could push after a maintainer added the label.
@@ -433,8 +433,8 @@ ready, and pull requests from forks are never merged: their author could push af
 A job waiting on another has no check until it starts, so while `review-gate` waits for the review, or right after it
 passes, every check of a pull request can be green while its workflows still have jobs to start. Every run of the
 head commit therefore counts as unfinished until it completes, and its completion starts `merge-when-green` again. So
-does a `claude-review` run of an earlier commit, which ends on the opening commit after pushing its fix commit. Only the
-runs a label starts (`claude-review-on-request`, `run-checks`, `merge-when-green`) don't count.
+does a `ai-review` run of an earlier commit, which ends on the opening commit after pushing its fix commit. Only the
+runs a label starts (`ai-review-on-request`, `run-checks`, `merge-when-green`) don't count.
 
 GitHub sometimes leaves a job's check in progress after its workflow run completed: the job has no steps and never
 ends. A check still pending in a completed run takes the run's conclusion instead (a run succeeds only when every job of
@@ -447,7 +447,7 @@ Two kinds of check turn green with nothing to start `merge-when-green` then:
 - The `Analyze` checks of GitHub's Code Quality. They are jobs of a run GitHub starts on its own on every push of a
   pull request, docs only included: its event is `dynamic`, its workflow (`dynamic/github-code-quality/codeql`) is no
   file of the repository and it is named after the pull request, so a `workflow_run` trigger can't name it. On a pull
-  request whose changes run no check workflow they are the last checks to finish, after the `claude-review` run that
+  request whose changes run no check workflow they are the last checks to finish, after the `ai-review` run that
   started `merge-when-green`: such a pull request used to sit green with its label on until the next push to `main`
   swept it.
 
@@ -535,19 +535,19 @@ Dependabot, which only bumped the two Quartel-Enterprise actions.
 - Every minor and patch goes in one pull request a week, `chore: bump the libraries of every platform`, opened on
   Monday before 9:00 (São Paulo). A major gets a pull request of its own, so its breaking changes are fixed apart from
   the rest; the packages that must share a version (React, Tailwind, Remotion) move their major together.
-- The claude-review refs move together in one pull request, and copied-code-check in one of its own, both as soon as
+- The ai-review refs move together in one pull request, and copied-code-check in one of its own, both as soon as
   a release ships.
 - The stability rule and the pins are those of the `bump-versions` skill: a stable release only moves to a newer
   stable one; `@js-joda/core` follows kotlinx-datetime by hand; `androidx-lifecycle` moves only once JetBrains'
   `lifecycle-viewmodel` has the release; the CI runtimes (`java-version`, `node-version`,
   `ruby-version`) and the Android SDK levels change only when the build needs them.
-- Renovate's pull requests get claude-review like a person's: `claude-review.yml` lists `renovate` in the action's
+- Renovate's pull requests get ai-review like a person's: `ai-review.yml` lists `renovate` in the action's
   `allowed-bots`, without which claude-code-action refuses a run a bot started and the `review` job fails.
 - Renovate never merges. Its pull requests run the checks like any other: read the release notes it links, fix what
   breaks on the branch (or run the `bump-versions` skill for a major that needs code changes), and add
   `merge-when-green`. A Kotlin bump that brings new npm packages fails the JS build with "Lock file was changed":
   run `./gradlew kotlinUpgradeYarnLock` on the branch and commit `kotlin-js-store/yarn.lock`. Once anyone (or
-  claude-review's fix commit) pushes to a Renovate branch, Renovate stops rebasing it: merge `main` into it by hand
+  ai-review's fix commit) pushes to a Renovate branch, Renovate stops rebasing it: merge `main` into it by hand
   instead, and never tick the pull request's rebase checkbox, which would throw those commits away.
 - The Dependency Dashboard issue is off (the `:disableDependencyDashboard` preset), so Renovate opens only pull
   requests, on the schedules above. An update held by the schedule or by `prConcurrentLimit` waits for a later run,
@@ -622,7 +622,7 @@ A `run:` of a workflow or a composite action holds a call, not a script, once th
   and the script reads `$PR_NUMBER`, so a value is never pasted into the shell's code.
 - The job needs the script on disk. A job that has no `actions/checkout` starts with one that checks out `scripts/ci`
   alone (`sparse-checkout: scripts/ci`, `persist-credentials: false`), and a job that checks out only some files lists
-  the script among them. `claude-review-on-request` and `run-checks` are the exceptions, with their steps left in the YAML (the first checks out the pull request's head,
+  the script among them. `ai-review-on-request` and `run-checks` are the exceptions, with their steps left in the YAML (the first checks out the pull request's head,
   the second's steps are a line or two): it checks out
   the pull request's head after the first, and a script of the head would run next to the review's token.
 - A workflow that is path filtered also lists its scripts in `paths`, and so does the regex of its `changes` job that

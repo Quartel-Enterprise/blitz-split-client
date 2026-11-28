@@ -62,7 +62,7 @@ git log HEAD..origin/<branch> --oneline
 
 - **Uncommitted changes**: stop and ask the user whether they belong in the pull request. If they
   do, commit them with `create-pr`'s commit message rules; never discard them.
-- **Commits on `origin` not in the local branch** (the opening `claude-review`'s fix commit, for
+- **Commits on `origin` not in the local branch** (the opening `ai-review`'s fix commit, for
   one): bring them in first, so the push below isn't rejected and `finish-task` later finds the
   local branch at the pull request's head: `git pull --ff-only origin <branch>`, or, when both
   sides have new commits, `git pull --no-rebase origin <branch>` (a merge commit, never a rebase).
@@ -79,7 +79,7 @@ gh pr checks <pr>
 Keep this output: step 6 reports it, as the state the merge skipped. Read later, the pending checks
 would have finished or been cancelled with the branch.
 
-If a `claude-review` check is still running, its fix commit and threads would land after the merge,
+If a `ai-review` check is still running, its fix commit and threads would land after the merge,
 on a branch nobody merges again. The review is not CI, so tell the user in one line and ask whether
 to wait for it or merge now. On "wait", wait for that check alone (the app's `<ci-monitor-event>`
 or `gh pr checks <pr> --watch --interval 10`), then go back to step 3.

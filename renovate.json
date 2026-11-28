@@ -88,15 +88,15 @@
       "groupSlug": "remotion-major"
     },
     {
-      "description": "Every uses: of claude-review must pin the same release (claude-review-refs.yml), so they move together, as soon as a release ships.",
+      "description": "Every uses: of ai-review must pin the same release (ai-review-refs.yml), so they move together, as soon as a release ships.",
       "matchManagers": [
         "github-actions"
       ],
       "matchPackageNames": [
-        "Quartel-Enterprise/claude-review{/,}**"
+        "Quartel-Enterprise/ai-review{/,}**"
       ],
-      "groupName": "claude-review",
-      "groupSlug": "claude-review",
+      "groupName": "ai-review",
+      "groupSlug": "ai-review",
       "schedule": [
         "at any time"
       ]
