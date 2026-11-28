@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Баск хэл</string>
     <string name="profile_language_galician">Галис хэл</string>
     <string name="profile_language_romansh">Романш хэл</string>
+    <string name="profile_language_zulu">Зулу хэл</string>
+    <string name="profile_language_afrikaans">Африкаанс хэл</string>
+    <string name="profile_language_georgian">Гүрж хэл</string>
+    <string name="profile_language_armenian">Армян хэл</string>
+    <string name="profile_language_albanian">Албани хэл</string>
+    <string name="profile_language_macedonian">Македон хэл</string>
+    <string name="profile_language_belarusian">Беларусь хэл</string>
     <string name="profile_language_system_detail">Төхөөрөмжийн хэл</string>
     <string name="profile_notifications">Мэдэгдэл</string>
     <plurals name="profile_notifications_active">

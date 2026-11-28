@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Rikthejini grupet tuaja</string>
+    <string name="restore_subtitle">Jeni identifikuar më parë me një llogari? Thjesht identifikohuni sërish. Përndryshe, përdorni kodin e rikuperimit ose kodin QR nga pajisja juaj e vjetër.</string>
+    <string name="restore_no_connection_title">Pa lidhje</string>
+    <string name="restore_no_connection_body">Identifikimi me llogari ose kod kërkon internet për të shkarkuar grupet tuaja. Ajo që shkruat ruhet.</string>
+    <string name="restore_code_label">Ose përdorni kodin e rikuperimit</string>
+    <string name="restore_code_hint">12 fjalët sipas radhës. Ngjitini të gjitha në një fushë për të plotësuar çdo fushë.</string>
+    <string name="restore_scan_qr_title">Skanoni kodin QR nga pajisja juaj e vjetër</string>
+    <string name="restore_scan_qr_body">Atje: Profili › Rikuperimi › Shfaq kodin QR</string>
+    <string name="restore_recover">Rikupero</string>
+    <string name="restore_try_again">Provo përsëri</string>
+    <string name="restore_start_fresh">Fillo nga e para në këtë pajisje</string>
+    <string name="restore_error_invalid_code">Kodi nuk u gjet. Kontrolloni fjalët dhe radhën e tyre, pastaj provoni përsëri.</string>
+    <string name="restore_error_too_many_attempts">Shumë përpjekje. Prisni disa minuta dhe provoni përsëri.</string>
+    <string name="restore_error_sign_in_failed">Identifikimi nuk u krye tani. Provoni përsëri.</string>
+    <string name="restore_error_unknown">Diçka shkoi keq. Provoni përsëri.</string>
+</resources>

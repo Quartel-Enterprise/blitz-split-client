@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Բառեր չկան</string>
+    <string name="category_map_title">Կատեգորիաների քարտեզ</string>
+    <string name="category_map_search">Որոնել բառեր</string>
+    <string name="category_map_add">Ավելացնել բառ</string>
+    <string name="category_map_more">Այլ ընտրանքներ</string>
+    <string name="category_map_restore">Վերականգնել լռելյայնը</string>
+    <string name="category_map_back">Հետ</string>
+    <string name="category_map_intro">Երբ ծախսի վերնագրում կա այս բառերից մեկը, կատեգորիան ընտրվում է ինքնաբերաբար։ “Uber տուն” վերնագիրը դառնում է Տրանսպորտ։</string>
+    <string name="category_map_intro_offline">Քարտեզն աշխատում է անցանց. փոփոխություններն անմիջապես գործում են այս սարքում և հասնում են Ձեր մյուս սարքերին, երբ նորից առցանց լինեք։</string>
+    <string name="category_map_device_only">Ձեր քարտեզը մնում է միայն այս սարքում։ Այն Ձեր մյուս սարքերին փոխանցելու համար Պրոֆիլում մուտք գործեք Google-ով կամ Apple-ով։</string>
+    <string name="category_map_open_profile">Բացել Պրոֆիլը</string>
+    <string name="category_map_longest_wins">Երբ երկու բառ համընկնում են վերնագրի հետ, հաղթում է ավելի երկարը։</string>
+    <string name="category_map_no_result">“%1$s” պարունակող բառ չկա</string>
+    <string name="category_map_no_result_body">Ավելացրեք այն, և վերնագրում այս բառն ունեցող ծախսերը կգան ճիշտ կատեգորիայով։</string>
+    <string name="category_map_add_query">Ավելացնել “%1$s”</string>
+    <string name="category_map_empty_title">Ձեր քարտեզը դատարկ է</string>
+    <string name="category_map_empty_body">Առանց բառերի կատեգորիան վերնագրից չի որոշվում. Դուք այն ընտրում եք յուրաքանչյուր ծախսում։</string>
+    <string name="category_map_group_category"> · %1$s խմբի կատեգորիա</string>
+    <string name="category_map_only_main">Միայն %1$s</string>
+    <string name="category_map_only_in_group">միայն %1$s խմբում</string>
+    <string name="category_map_no_terms_yet">Բառեր դեռ չկան։</string>
+    <string name="category_map_add_in">Ավելացնել բառ %1$s կատեգորիայում</string>
+    <string name="category_map_tip">Հպեք բառին՝ կատեգորիան փոխելու կամ այն հեռացնելու համար։ Այն համընկնում է ամբողջ բառի հետ՝ անտեսելով շեշտերն ու մեծատառերը։</string>
+    <string name="category_map_queued">հերթում</string>
+    <string name="category_map_term_action">%1$s, %2$s։ Խմբագրել</string>
+    <string name="category_map_new_term">Նոր բառ</string>
+    <string name="category_map_edit_term">Խմբագրել բառը</string>
+    <string name="category_map_term_label">Բառ կամ արտահայտություն</string>
+    <string name="category_map_term_help">Համընկնում է ամբողջ բառի հետ՝ անտեսելով շեշտերն ու մեծատառերը։</string>
+    <string name="category_map_term_help_app">Հավելվածի բառ։ Լռելյայնի վերականգնումն այն կվերադարձնի նախնական տեսքով։</string>
+    <string name="category_map_term_duplicate">“%1$s” բառն արդեն ընտրում է %2$s կատեգորիան։ Յուրաքանչյուր բառ ունի մեկ կատեգորիա։</string>
+    <string name="category_map_term_too_short">Օգտագործեք առնվազն 2 տառ։</string>
+    <string name="category_map_term_too_long">Օգտագործեք առավելագույնը 30 տառ։</string>
+    <string name="category_map_term_invalid">Օգտագործեք միայն տառեր, թվանշաններ և բացատներ։</string>
+    <string name="category_map_category">Կատեգորիա</string>
+    <string name="category_map_category_help">Կարող է լինել կատեգորիա կամ ենթակատեգորիա։</string>
+    <string name="category_map_category_help_edit">Այստեղ փոխելով՝ բառը տեղափոխում եք այլ կատեգորիա։</string>
+    <string name="category_map_category_help_move">Տեղափոխելը բառը հանում է %1$s կատեգորիայից։</string>
+    <string name="category_map_example">Օրինակ</string>
+    <string name="category_map_example_move">Տեղափոխելու դեպքում</string>
+    <string name="category_map_remove">Հեռացնել</string>
+    <string name="category_map_cancel">Չեղարկել</string>
+    <string name="category_map_save">Պահել</string>
+    <string name="category_map_move_to">Տեղափոխել %1$s կատեգորիա</string>
+    <string name="category_map_removed">“%1$s” բառը հանվեց քարտեզից</string>
+    <string name="category_map_undo">Հետարկել</string>
+    <string name="category_map_restore_title">Վերականգնե՞լ լռելյայն քարտեզը</string>
+    <string name="category_map_restore_body">Հավելվածի 60 բառը կվերադառնան նախնական տեսքով, ներառյալ նրանք, որոնք հեռացրել կամ տեղափոխել եք։</string>
+    <string name="category_map_restore_own_one">Ձեր ստեղծած “%1$s” բառը կմնա։</string>
+    <string name="category_map_restore_confirm">Վերականգնել</string>
+    <string name="category_map_save_error">Չհաջողվեց պահել քարտեզը։ Փորձեք կրկին։</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d բառ</item>
+        <item quantity="other">%d բառ</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d ենթակատեգորիա</item>
+        <item quantity="other">%d ենթակատեգորիա</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d բառ “%2$s” հարցմամբ</item>
+        <item quantity="other">%1$d բառ “%2$s” հարցմամբ</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Անցանց · %d փոփոխություն հերթում</item>
+        <item quantity="other">Անցանց · %d փոփոխություն հերթում</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Ձեր ստեղծած %d բառը կմնա։</item>
+        <item quantity="other">Ձեր ստեղծած %d բառը կմնան։</item>
+    </plurals>
+    <string name="category_map_new_category">Նոր կատեգորիա</string>
+    <string name="category_map_new_subcategory_in">Նոր ենթակատեգորիա %s կատեգորիայում</string>
+    <string name="category_map_edit_category">Խմբագրել՝ %s</string>
+    <string name="category_map_category_group">Խումբ</string>
+    <string name="category_map_change_color">Փոխել գույնը՝ %1$s</string>
+    <string name="category_map_restore_color">Վերականգնել գույնը</string>
+    <string name="category_map_color_done">Պատրաստ է</string>
+</resources>

@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Baszk</string>
     <string name="profile_language_galician">Galíciai</string>
     <string name="profile_language_romansh">Rétoromán</string>
+    <string name="profile_language_zulu">Zulu</string>
+    <string name="profile_language_afrikaans">Afrikaans</string>
+    <string name="profile_language_georgian">Grúz</string>
+    <string name="profile_language_armenian">Örmény</string>
+    <string name="profile_language_albanian">Albán</string>
+    <string name="profile_language_macedonian">Macedón</string>
+    <string name="profile_language_belarusian">Belarusz</string>
     <string name="profile_language_system_detail">Az eszköz nyelve</string>
     <string name="profile_notifications">Értesítések</string>
     <plurals name="profile_notifications_active">

@@ -124,6 +124,13 @@
     <string name="profile_language_basque">ဘာစ်က်</string>
     <string name="profile_language_galician">ဂါလီစီယာ</string>
     <string name="profile_language_romansh">ရောမန်ချ်</string>
+    <string name="profile_language_zulu">ဇူးလူး</string>
+    <string name="profile_language_afrikaans">အာဖရိကန်</string>
+    <string name="profile_language_georgian">ဂျော်ဂျီယာ</string>
+    <string name="profile_language_armenian">အာမေးနီးယား</string>
+    <string name="profile_language_albanian">အယ်လ်ဘေးနီးယား</string>
+    <string name="profile_language_macedonian">မက်ဆီဒိုးနီးယား</string>
+    <string name="profile_language_belarusian">ဘီလာရုစ်</string>
     <string name="profile_language_system_detail">စက်၏ ဘာသာစကား</string>
     <string name="profile_notifications">အသိပေးချက်များ</string>
     <plurals name="profile_notifications_active">

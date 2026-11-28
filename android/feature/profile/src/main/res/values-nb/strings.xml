@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Baskisk</string>
     <string name="profile_language_galician">Galisisk</string>
     <string name="profile_language_romansh">Retoromansk</string>
+    <string name="profile_language_zulu">Zulu</string>
+    <string name="profile_language_afrikaans">Afrikaans</string>
+    <string name="profile_language_georgian">Georgisk</string>
+    <string name="profile_language_armenian">Armensk</string>
+    <string name="profile_language_albanian">Albansk</string>
+    <string name="profile_language_macedonian">Makedonsk</string>
+    <string name="profile_language_belarusian">Belarusisk</string>
     <string name="profile_language_system_detail">Enhetens språk</string>
     <string name="profile_notifications">Varsler</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Спасылка-запрашэнне</string>
+    <string name="members_link_pending">Яшчэ не створана</string>
+    <string name="members_share">Абагуліць</string>
+    <string name="members_me">%s (Вы)</string>
+    <string name="members_status_this_device">Гэта прылада</string>
+    <string name="members_status_joined">У групе</string>
+    <string name="members_status_not_joined">Яшчэ не ў групе</string>
+    <string name="members_options">Параметры: %s</string>
+    <string name="members_rename">Перайменаваць</string>
+    <string name="members_personal_invite">Асабістае запрашэнне: %s</string>
+    <string name="members_personal_message">Той, хто адкрые гэту спасылку, адразу далучыцца як %s, без выбару са спісу. Спасылка спрацуе адзін раз.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Той, хто адкрые гэту спасылку, адразу далучыцца як %1$s, без выбару са спісу, і ўжо ўбачыць сваю долю %2$s у %3$d дададзеным выдатку. Спасылка спрацуе адзін раз.</item>
+        <item quantity="few">Той, хто адкрые гэту спасылку, адразу далучыцца як %1$s, без выбару са спісу, і ўжо ўбачыць сваю долю %2$s у %3$d дададзеных выдатках. Спасылка спрацуе адзін раз.</item>
+        <item quantity="many">Той, хто адкрые гэту спасылку, адразу далучыцца як %1$s, без выбару са спісу, і ўжо ўбачыць сваю долю %2$s у %3$d дададзеных выдатках. Спасылка спрацуе адзін раз.</item>
+        <item quantity="other">Той, хто адкрые гэту спасылку, адразу далучыцца як %1$s, без выбару са спісу, і ўжо ўбачыць сваю долю %2$s у %3$d дададзеных выдатках. Спасылка спрацуе адзін раз.</item>
+    </plurals>
+    <string name="members_personal_copy">Капіяваць спасылку</string>
+    <string name="members_personal_copied">Скапіявана</string>
+    <string name="members_personal_share">Абагуліць: %s</string>
+    <string name="members_personal_share_message">Запрашэнне ў групу %1$s як %2$s у Blitz Split: %3$s</string>
+    <string name="members_remove">Выдаліць з групы</string>
+    <string name="members_remove_joined">%s ужо ў групе</string>
+    <string name="members_remove_title">Выдаліць удзельніка %s з групы?</string>
+    <string name="members_remove_message">%s яшчэ не ў групе. Пазней можна дадаць яшчэ раз.</string>
+    <string name="members_remove_confirm">Выдаліць</string>
+    <string name="members_release">Вызваліць імя</string>
+    <string name="members_release_title">Вызваліць імя: %s?</string>
+    <string name="members_release_message">Той, хто далучыўся як %1$s, пакіне групу. Імя “%1$s”, колер і выдаткі застануцца, і імя “%1$s” можна будзе зноў выбраць па спасылцы групы.</string>
+    <string name="members_release_confirm">Вызваліць</string>
+    <string name="members_release_error">Не ўдалося вызваліць імя. Праверце злучэнне і паспрабуйце яшчэ раз.</string>
+    <string name="members_add">Дадаць чалавека</string>
+    <string name="members_invite_instead">Ёсць праграма? Запрасіце па спасылцы</string>
+    <string name="members_name_label">Імя</string>
+    <string name="members_save">Захаваць</string>
+    <string name="members_cancel">Скасаваць</string>
+    <string name="members_change_error">Не ўдалося захаваць змену. Паспрабуйце яшчэ раз.</string>
+    <string name="members_remove_open_balance">%s мае незакрыты баланс</string>
+    <string name="members_balance_to_get_back">мае атрымаць %s</string>
+    <string name="members_balance_owes">мае заплаціць %s</string>
+    <string name="members_balance_settled">Разлічана</string>
+</resources>

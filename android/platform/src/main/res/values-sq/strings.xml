@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · kodi i rikuperimit</string>
+    <string name="platform_export_file_name">blitz-split-te-dhenat-%1$s.json</string>
+    <string name="platform_camera_denied">Lejoni kamerën te Cilësimet për të bërë foto.</string>
+    <string name="platform_camera_settings">Cilësimet</string>
+    <string name="platform_receipt_source_camera">Bëj foto</string>
+    <string name="platform_receipt_source_gallery">Zgjidh nga galeria</string>
+    <string name="platform_receipt_source_file">Zgjidh skedarin</string>
+    <string name="platform_receipt_camera_title">Skano kuponin</string>
+    <string name="platform_receipt_camera_close">Mbyll</string>
+    <string name="platform_receipt_camera_flash_on">Ndiz blicin</string>
+    <string name="platform_receipt_camera_flash_off">Fik blicin</string>
+    <string name="platform_receipt_camera_hint">Futeni të gjithë kuponin në kornizë. Ne plotësojmë shumën, datën dhe përshkrimin; ju i kontrolloni para se të ruani.</string>
+    <string name="platform_receipt_camera_gallery">Zgjidh nga galeria</string>
+    <string name="platform_receipt_camera_shutter">Bëj foto</string>
+    <string name="platform_receipt_camera_unavailable">Kamera nuk është e disponueshme. Zgjidhni një foto të kuponit nga galeria.</string>
+    <string name="platform_receipt_camera_permission">Lejoni kamerën për të skanuar kuponin, ose zgjidhni një foto nga galeria.</string>
+    <string name="platform_receipt_camera_allow">Lejo kamerën</string>
+    <string name="platform_receipt_camera_settings">Hap cilësimet</string>
+</resources>

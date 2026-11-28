@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">საათის დაკავშირება</string>
+    <string name="connect_watch_close">დახურვა</string>
+    <string name="connect_watch_body">შეიყვანეთ კოდი, რომელსაც თქვენი საათი აჩვენებს. ის თქვენს ანგარიშში შევა და შემდეგ თავისით მოახდენს სინქრონიზაციას.</string>
+    <string name="connect_watch_code_label">საათის კოდი</string>
+    <string name="connect_watch_error_invalid">კოდი არასწორია ან ვადაგასულია. მიიღეთ ახალი საათზე.</string>
+    <string name="connect_watch_error_too_many">ძალიან ბევრი არასწორი კოდი. დაელოდეთ რამდენიმე წუთს და სცადეთ ხელახლა.</string>
+    <string name="connect_watch_error_needs_account">ჯერ ანგარიში დააკავშირეთ: თქვენი მონაცემები მხოლოდ ამ მოწყობილობაზეა.</string>
+    <string name="connect_watch_error_failed">საათის დაკავშირება ვერ მოხერხდა. სცადეთ ხელახლა.</string>
+    <string name="connect_watch_offline">საათის დასაკავშირებლად ინტერნეტია საჭირო.</string>
+    <string name="connect_watch_own_watch_only">შეიყვანეთ მხოლოდ თქვენს საკუთარ საათზე ნაჩვენები კოდი: ვისაც ის საათი აქვს, თქვენს ანგარიშში შევა.</string>
+    <string name="connect_watch_validity">კოდი მოქმედებს 5 წუთის განმავლობაში, ერთხელ.</string>
+    <string name="connect_watch_button">დაკავშირება</string>
+    <string name="connect_watch_connected_title">საათი დაკავშირებულია</string>
+    <string name="connect_watch_connected_body">ის ხედავს თქვენს ჯგუფებს და თავისით ახდენს სინქრონიზაციას. გასათიშად საათზე გამოდით ანგარიშიდან.</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Okusha</string>
+    <string name="release_notes_show_beta">Bonisa izinguqulo ze-beta</string>
+    <string name="release_notes_beta_badge">I-beta %1$d</string>
+    <string name="release_notes_installed_badge">Le nguqulo</string>
+    <string name="release_notes_empty">Akukho okusha okwamanje.</string>
+    <string name="release_notes_empty_only_betas">Ayikabi khona inguqulo ezinzile. Vula izinguqulo ze-beta ukuze ubone okuhlolwayo.</string>
+    <string name="release_notes_load_failed_title">Akukwazekanga ukulayisha okusha</string>
+    <string name="release_notes_load_failed_body">Hlola uxhumano lwakho bese uzama futhi.</string>
+    <string name="release_notes_retry">Zama futhi</string>
+    <string name="release_notes_open_on_github">Vula ku-GitHub</string>
+</resources>

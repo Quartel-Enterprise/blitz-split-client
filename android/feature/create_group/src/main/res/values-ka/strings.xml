@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">ახალი ჯგუფი</string>
+    <string name="create_group_close">დახურვა</string>
+    <string name="create_group_create">შექმნა</string>
+    <string name="create_group_change_color">ჯგუფის ფერის შეცვლა</string>
+    <string name="create_group_name_label">ჯგუფის სახელი</string>
+    <string name="create_group_type_label">ჯგუფის ტიპი</string>
+    <string name="create_group_members_title">ვინ მონაწილეობს</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d ადამიანი</item>
+        <item quantity="other">%d ადამიანი</item>
+    </plurals>
+    <string name="create_group_me">თქვენ</string>
+    <string name="create_group_remove_member">წაშლა: %s</string>
+    <string name="create_group_add_placeholder">დამატება სახელით</string>
+    <string name="create_group_add">დამატება</string>
+    <string name="create_group_no_app_notice">ახლა აპი არავის სჭირდება. უკვე შეგიძლიათ ყველასთვის ხარჯების დამატება და ბმულის მოგვიანებით გაგზავნა.</string>
+    <string name="create_group_currency">ნაგულისხმევი ვალუტა</string>
+    <string name="create_group_currency_caption">ახალი ხარჯები ამ ვალუტით იწყება; თითოეულ ხარჯს შეუძლია სხვა ვალუტა გამოიყენოს.</string>
+    <string name="create_group_save_error">ჯგუფის შენახვა ვერ მოხერხდა. სცადეთ ხელახლა.</string>
+    <string name="create_group_photo">ჯგუფის ფოტო</string>
+    <string name="create_group_take_photo">ფოტოს გადაღება</string>
+    <string name="create_group_choose_photo">ფოტოს არჩევა</string>
+    <string name="create_group_remove_photo">ფოტოს წაშლა</string>
+    <string name="create_group_photo_error">ამ ფოტოს გამოყენება ვერ მოხერხდა. სცადეთ სხვა.</string>
+</resources>

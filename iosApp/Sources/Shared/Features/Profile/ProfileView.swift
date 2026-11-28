@@ -605,6 +605,13 @@ private struct LanguageName: View {
         case .basque: "Euskara"
         case .galician: "Galego"
         case .romansh: "Rumantsch"
+        case .zulu: "isiZulu"
+        case .afrikaans: "Afrikaans"
+        case .georgian: "ქართული"
+        case .armenian: "Հայերեն"
+        case .albanian: "Shqip"
+        case .macedonian: "Македонски"
+        case .belarusian: "Беларуская"
         default: nil
         }
     }
@@ -963,6 +970,41 @@ private struct LanguageName: View {
         )
         case .romansh: String(
             localized: "Romansh",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .zulu: String(
+            localized: "Zulu",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .afrikaans: String(
+            localized: "Afrikaans",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .georgian: String(
+            localized: "Georgian",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .armenian: String(
+            localized: "Armenian",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .albanian: String(
+            localized: "Albanian",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .macedonian: String(
+            localized: "Macedonian",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .belarusian: String(
+            localized: "Belarusian",
             bundle: .appLanguage,
             comment: "A language of Profile › Language, in the app's language",
         )

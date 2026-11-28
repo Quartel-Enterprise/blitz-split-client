@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Բաժանեք ծախսը՝ առանց գլխացավանքի</string>
+    <string name="welcome_offline_title">Աշխատում է անցանց</string>
+    <string name="welcome_offline_body">Ամեն ինչ մնում է Ձեր սարքում և համաժամացվում է ավելի ուշ։</string>
+    <string name="welcome_optional_title">Հաշիվը պարտադիր չէ</string>
+    <string name="welcome_optional_body">Google կամ Apple հաշիվը միայն օգնում է ոչինչ չկորցնել, երբ սարքը փոխում եք։</string>
+    <string name="welcome_invite_title">Հրավիրեք հղումով կամ QR կոդով</string>
+    <string name="welcome_invite_body">Ընկերները միանում են խմբին՝ առանց հաշիվ ստեղծելու։</string>
+    <string name="welcome_no_connection_title">Կապ չկա։</string>
+    <string name="welcome_no_connection_body">Հաշվով մուտք գործելու համար ինտերնետ է պետք։ Հիմա օգտագործեք առանց հաշվի և կապեք հաշիվը ավելի ուշ՝ Պրոֆիլում։</string>
+    <string name="welcome_or">կամ</string>
+    <string name="welcome_use_without_account">Օգտագործել առանց հաշվի</string>
+    <string name="welcome_used_on_another_device">Օգտագործել եմ մեկ այլ սարքում</string>
+    <string name="welcome_sign_in_failed">Այս պահին չհաջողվեց մուտք գործել։ Փորձեք կրկին։</string>
+    <string name="welcome_legal_notice">Շարունակելով՝ Դուք ընդունում եք %1$s փաստաթուղթը և ծանոթ եք %2$s փաստաթղթին։</string>
+    <string name="welcome_legal_terms">Ծառայության պայմաններ</string>
+    <string name="welcome_legal_privacy">Գաղտնիության քաղաքականություն</string>
+    <string name="welcome_no_account_note">Առանց հաշվի Ձեր տվյալները ջնջվում են 30 օր չօգտագործելուց հետո։ Կապեք Google կամ Apple հաշիվը՝ դրանք պահելու համար։</string>
+    <string name="welcome_no_account_note_offline">Առանց հաշվի Ձեր տվյալները ջնջվում են 30 օր չօգտագործելուց հետո։ Դրանք պահելու համար ավելի ուշ Պրոֆիլում կապեք Google կամ Apple հաշիվը։</string>
+    <string name="welcome_expired_title">Ձեր տվյալները ջնջվել են</string>
+    <string name="welcome_expired_body">Դուք օգտագործում էիք հավելվածն առանց հաշվի և 30 օր չէիք բացել այն, ուստի Ձեր տվյալները ջնջվեցին։ Կապեք Google կամ Apple հաշիվը, որպեսզի հաջորդ անգամ դրանք պահպանվեն։</string>
+    <string name="welcome_expired_ok">Լավ</string>
+</resources>

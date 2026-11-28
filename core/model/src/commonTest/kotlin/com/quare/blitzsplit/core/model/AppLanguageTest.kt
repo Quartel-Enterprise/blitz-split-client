@@ -1035,6 +1035,90 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Zulu tag WHEN reading it THEN is Zulu`() {
+        // Given
+        val tags = listOf("zu", "zu-ZA", "ZU_za", "zu-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.ZULU }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Afrikaans tag WHEN reading it THEN is Afrikaans`() {
+        // Given
+        val tags = listOf("af", "af-ZA", "AF_za", "af-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.AFRIKAANS }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Georgian tag WHEN reading it THEN is Georgian`() {
+        // Given
+        val tags = listOf("ka", "ka-GE", "KA_ge", "ka-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.GEORGIAN }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Armenian tag WHEN reading it THEN is Armenian`() {
+        // Given
+        val tags = listOf("hy", "hy-AM", "HY_am", "hy-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.ARMENIAN }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Albanian tag WHEN reading it THEN is Albanian`() {
+        // Given
+        val tags = listOf("sq", "sq-AL", "SQ_al", "sq-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.ALBANIAN }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Macedonian tag WHEN reading it THEN is Macedonian`() {
+        // Given
+        val tags = listOf("mk", "mk-MK", "MK_mk", "mk-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.MACEDONIAN }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Belarusian tag WHEN reading it THEN is Belarusian`() {
+        // Given
+        val tags = listOf("be", "be-BY", "BE_by", "be-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.BELARUSIAN }, languages)
+    }
+
+    @Test
     fun `GIVEN a Traditional Chinese tag WHEN reading it THEN is Traditional Chinese`() {
         // Given
         val tags = listOf("zh-Hant", "zh-TW", "zh_TW", "zh-Hant-TW", "zh-HK", "zh-MO", "ZH-hant", "zh-Hant-CN")
@@ -1194,6 +1278,13 @@ class AppLanguageTest {
                 "EU",
                 "GL",
                 "RM",
+                "ZU",
+                "AF",
+                "KA",
+                "HY",
+                "SQ",
+                "MK",
+                "BE",
             ),
             codes,
         )

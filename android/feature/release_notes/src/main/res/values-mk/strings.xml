@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Што е ново</string>
+    <string name="release_notes_show_beta">Прикажи бета-верзии</string>
+    <string name="release_notes_beta_badge">Бета %1$d</string>
+    <string name="release_notes_installed_badge">Оваа верзија</string>
+    <string name="release_notes_empty">Сè уште нема белешки за новото.</string>
+    <string name="release_notes_empty_only_betas">Сè уште нема стабилна верзија. Вклучете ги бета-верзиите за да видите што се тестира.</string>
+    <string name="release_notes_load_failed_title">Не можеше да се вчита што е ново</string>
+    <string name="release_notes_load_failed_body">Проверете ја врската и обидете се повторно.</string>
+    <string name="release_notes_retry">Обиди се повторно</string>
+    <string name="release_notes_open_on_github">Отвори на GitHub</string>
+</resources>

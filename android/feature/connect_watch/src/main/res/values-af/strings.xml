@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Koppel horlosie</string>
+    <string name="connect_watch_close">Maak toe</string>
+    <string name="connect_watch_body">Tik die kode wat jou horlosie wys. Dit meld by jou rekening aan en sinkroniseer dan vanself.</string>
+    <string name="connect_watch_code_label">Horlosiekode</string>
+    <string name="connect_watch_error_invalid">Verkeerde of verstreke kode. Kry \'n nuwe een op die horlosie.</string>
+    <string name="connect_watch_error_too_many">Te veel verkeerde kodes. Wag \'n paar minute en probeer weer.</string>
+    <string name="connect_watch_error_needs_account">Koppel eers \'n rekening: jou data is net op hierdie toestel.</string>
+    <string name="connect_watch_error_failed">Kon nie die horlosie koppel nie. Probeer weer.</string>
+    <string name="connect_watch_offline">Om die horlosie te koppel, is internet nodig.</string>
+    <string name="connect_watch_own_watch_only">Tik net \'n kode wat op jou eie horlosie verskyn: wie daardie horlosie het, kom in jou rekening in.</string>
+    <string name="connect_watch_validity">Die kode is 5 minute lank geldig, een keer.</string>
+    <string name="connect_watch_button">Koppel</string>
+    <string name="connect_watch_connected_title">Horlosie gekoppel</string>
+    <string name="connect_watch_connected_body">Dit sien jou groepe en sinkroniseer vanself. Om dit te ontkoppel, meld op die horlosie af.</string>
+</resources>

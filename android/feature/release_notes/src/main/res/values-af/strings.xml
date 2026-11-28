@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Wat\'s nuut</string>
+    <string name="release_notes_show_beta">Wys beta-weergawes</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Hierdie weergawe</string>
+    <string name="release_notes_empty">Nog niks oor wat nuut is nie.</string>
+    <string name="release_notes_empty_only_betas">Daar is nog geen stabiele weergawe nie. Skakel beta-weergawes aan om te sien wat getoets word.</string>
+    <string name="release_notes_load_failed_title">Kon nie laai wat nuut is nie</string>
+    <string name="release_notes_load_failed_body">Kontroleer jou verbinding en probeer weer.</string>
+    <string name="release_notes_retry">Probeer weer</string>
+    <string name="release_notes_open_on_github">Maak oop op GitHub</string>
+</resources>

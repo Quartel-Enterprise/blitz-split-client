@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Pa fjalë</string>
+    <string name="category_map_title">Harta e kategorive</string>
+    <string name="category_map_search">Kërko fjalë</string>
+    <string name="category_map_add">Shto fjalë</string>
+    <string name="category_map_more">Më shumë opsione</string>
+    <string name="category_map_restore">Rikthe parazgjedhjen</string>
+    <string name="category_map_back">Prapa</string>
+    <string name="category_map_intro">Kur titulli i një shpenzimi ka një nga këto fjalë, kategoria vjen vetë. “Uber në shtëpi” bëhet Transport.</string>
+    <string name="category_map_intro_offline">Harta funksionon jashtë linje: ndryshimet vlejnë menjëherë në këtë pajisje dhe arrijnë te pajisjet e tjera sapo të jeni sërish në linjë.</string>
+    <string name="category_map_device_only">Harta juaj qëndron vetëm në këtë pajisje. Për ta pasur në pajisjet e tjera, identifikohuni me Google ose Apple te Profili.</string>
+    <string name="category_map_open_profile">Hap Profilin</string>
+    <string name="category_map_longest_wins">Kur dy fjalë përputhen me një titull, fiton më e gjata.</string>
+    <string name="category_map_no_result">Asnjë fjalë me “%1$s”</string>
+    <string name="category_map_no_result_body">Shtojeni dhe shpenzimet me këtë fjalë në titull vijnë me kategorinë e duhur.</string>
+    <string name="category_map_add_query">Shto “%1$s”</string>
+    <string name="category_map_empty_title">Harta juaj është bosh</string>
+    <string name="category_map_empty_body">Pa fjalë, kategoria nuk vjen nga titulli: e zgjidhni në çdo shpenzim.</string>
+    <string name="category_map_group_category"> · kategori e grupit %1$s</string>
+    <string name="category_map_only_main">Vetëm %1$s</string>
+    <string name="category_map_only_in_group">vetëm në grupin %1$s</string>
+    <string name="category_map_no_terms_yet">Ende pa fjalë.</string>
+    <string name="category_map_add_in">Shto fjalë në kategorinë %1$s</string>
+    <string name="category_map_tip">Prekni një fjalë për t\'i ndryshuar kategorinë ose për ta hequr. Përputhet me fjalën e plotë, pa marrë parasysh theksat dhe shkronjat e mëdha.</string>
+    <string name="category_map_queued">në radhë</string>
+    <string name="category_map_term_action">%1$s, %2$s. Modifiko</string>
+    <string name="category_map_new_term">Fjalë e re</string>
+    <string name="category_map_edit_term">Modifiko fjalën</string>
+    <string name="category_map_term_label">Fjalë ose frazë</string>
+    <string name="category_map_term_help">Përputhet me fjalën e plotë, pa marrë parasysh theksat dhe shkronjat e mëdha.</string>
+    <string name="category_map_term_help_app">Fjalë e aplikacionit. Rikthe parazgjedhjen e kthen siç ishte.</string>
+    <string name="category_map_term_duplicate">“%1$s” zgjedh tashmë kategorinë %2$s. Çdo fjalë ka një kategori.</string>
+    <string name="category_map_term_too_short">Përdorni të paktën 2 shkronja.</string>
+    <string name="category_map_term_too_long">Përdorni të shumtën 30 shkronja.</string>
+    <string name="category_map_term_invalid">Përdorni vetëm shkronja, shifra dhe hapësira.</string>
+    <string name="category_map_category">Kategoria</string>
+    <string name="category_map_category_help">Mund të jetë kategoria ose një nënkategori.</string>
+    <string name="category_map_category_help_edit">Nëse e ndryshoni këtu, fjala kalon në një kategori tjetër.</string>
+    <string name="category_map_category_help_move">Zhvendosja e heq fjalën nga kategoria %1$s.</string>
+    <string name="category_map_example">Shembull</string>
+    <string name="category_map_example_move">Nëse zhvendoset</string>
+    <string name="category_map_remove">Hiq</string>
+    <string name="category_map_cancel">Anulo</string>
+    <string name="category_map_save">Ruaj</string>
+    <string name="category_map_move_to">Zhvendos te: %1$s</string>
+    <string name="category_map_removed">“%1$s” u hoq nga harta</string>
+    <string name="category_map_undo">Zhbëj</string>
+    <string name="category_map_restore_title">Të rikthehet harta e parazgjedhur?</string>
+    <string name="category_map_restore_body">60 fjalët e aplikacionit kthehen siç ishin, përfshirë ato që hoqët ose zhvendosët.</string>
+    <string name="category_map_restore_own_one">Fjala që krijuat, “%1$s”, mbetet.</string>
+    <string name="category_map_restore_confirm">Rikthe</string>
+    <string name="category_map_save_error">Harta nuk u ruajt. Provoni përsëri.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d fjalë</item>
+        <item quantity="other">%d fjalë</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d nënkategori</item>
+        <item quantity="other">%d nënkategori</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d fjalë me “%2$s”</item>
+        <item quantity="other">%1$d fjalë me “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Jashtë linje · %d ndryshim në radhë</item>
+        <item quantity="other">Jashtë linje · %d ndryshime në radhë</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">%d fjala që krijuat mbetet.</item>
+        <item quantity="other">%d fjalët që krijuat mbeten.</item>
+    </plurals>
+    <string name="category_map_new_category">Kategori e re</string>
+    <string name="category_map_new_subcategory_in">Nënkategori e re në kategorinë %s</string>
+    <string name="category_map_edit_category">Modifiko: %s</string>
+    <string name="category_map_category_group">Grupi</string>
+    <string name="category_map_change_color">Ndrysho ngjyrën: %1$s</string>
+    <string name="category_map_restore_color">Rikthe ngjyrën</string>
+    <string name="category_map_color_done">U krye</string>
+</resources>

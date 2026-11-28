@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Si ju thërrasin miqtë?</string>
+    <string name="profile_setup_subtitle">Grupet tuaja dhe kushdo me lidhjen e profilit tuaj e shohin emrin tuaj.</string>
+    <string name="profile_setup_avatar_color">Ngjyra e avatarit</string>
+    <string name="profile_setup_add_photo">Shto foto</string>
+    <string name="profile_setup_photo_error">Kjo foto nuk mund të përdorej. Provoni një tjetër.</string>
+    <string name="profile_setup_name_label">Emri juaj</string>
+    <string name="profile_setup_name_placeholder">Arben Hoxha</string>
+    <string name="profile_setup_name_too_short">Shkruani të paktën %d shkronja.</string>
+    <string name="profile_setup_name_too_long">Përdorni deri në %d karaktere.</string>
+    <string name="profile_setup_name_hint">Mund ta ndryshoni më vonë te Profili.</string>
+    <string name="profile_setup_saved_locally">Ruajtur vetëm në këtë pajisje për momentin.</string>
+    <string name="profile_setup_continue">Vazhdo</string>
+</resources>

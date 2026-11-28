@@ -125,6 +125,13 @@
     <string name="profile_language_basque">බාස්ක්</string>
     <string name="profile_language_galician">ගැලීසියානු</string>
     <string name="profile_language_romansh">රොමෑන්ෂ්</string>
+    <string name="profile_language_zulu">සුලු</string>
+    <string name="profile_language_afrikaans">අප්‍රිකානු</string>
+    <string name="profile_language_georgian">ජෝර්ජියානු</string>
+    <string name="profile_language_armenian">ආර්මේනියානු</string>
+    <string name="profile_language_albanian">ඇල්බේනියානු</string>
+    <string name="profile_language_macedonian">මැසිඩෝනියානු</string>
+    <string name="profile_language_belarusian">බෙලරුසියානු</string>
     <string name="profile_language_system_detail">උපාංග භාෂාව</string>
     <string name="profile_notifications">දැනුම්දීම්</string>
     <plurals name="profile_notifications_active">

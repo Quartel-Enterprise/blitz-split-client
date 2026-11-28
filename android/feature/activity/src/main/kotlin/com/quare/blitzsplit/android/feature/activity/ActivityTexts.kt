@@ -365,8 +365,8 @@ internal fun deletedNoticeTextOf(
     val atMillis = deletion.atMillis
     /*
      * Why: in Spanish, Portugal's Portuguese, French, German, Italian, Polish, Dutch, Turkish, Russian, Ukrainian,
-     * Korean, Hindi, Vietnamese, Swedish, Czech, Romanian, Bengali, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian, Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam, Kannada, Odia, Nepali, Azerbaijani, Amharic, Sinhala, Kazakh, Mongolian, Kyrgyz, Icelandic and Romansh the sentence starts
-     * with who did it, "Tú…", "내가…", "आपने…", "Bạn…", "Du…", "Ty jsi…", "Ty si…", "Ти изтри…", "Tu has…", "Tu ai…", "আপনি…", "Εσύ…", "Ti si…", "Te…", "நீங்கள்…", "మీరు…", "तुम्ही…", "તમે…", "ਤੁਸੀਂ…", "നിങ്ങൾ…", "ನೀವು…", "ଆପଣ…", "तपाईंले…", "Siz…", "እርስዎ…", "ඔබ…", "Сіз…", "Та…", "Сиз…", "Þú…", "Vus…".
+     * Korean, Hindi, Vietnamese, Swedish, Czech, Romanian, Bengali, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian, Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam, Kannada, Odia, Nepali, Azerbaijani, Amharic, Sinhala, Kazakh, Mongolian, Kyrgyz, Icelandic, Romansh, Zulu, Georgian, Armenian, Albanian, Macedonian and Belarusian the sentence starts
+     * with who did it, "Tú…", "내가…", "आपने…", "Bạn…", "Du…", "Ty jsi…", "Ty si…", "Ти изтри…", "Tu has…", "Tu ai…", "আপনি…", "Εσύ…", "Ti si…", "Te…", "நீங்கள்…", "మీరు…", "तुम्ही…", "તમે…", "ਤੁਸੀਂ…", "നിങ്ങൾ…", "ನೀವು…", "ଆପଣ…", "तपाईंले…", "Siz…", "እርስዎ…", "ඔබ…", "Сіз…", "Та…", "Сиз…", "Þú…", "Vus…", "Wena…", "თქვენ…", "Դուք…", "Ju…", "Вие…", "Вы…".
      */
     val isYouSubject = deletion.byMe && isYouSubjectUi()
     val byName = when {

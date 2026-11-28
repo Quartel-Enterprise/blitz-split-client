@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">პროფილის რედაქტირება</string>
+    <string name="edit_profile_save">შენახვა</string>
+    <string name="edit_profile_change_photo">ფოტოს შეცვლა</string>
+    <string name="edit_profile_take_photo">ფოტოს გადაღება</string>
+    <string name="edit_profile_choose_photo">გალერეიდან არჩევა</string>
+    <string name="edit_profile_use_account_photo">%1$s ანგარიშის ფოტოს გამოყენება</string>
+    <string name="edit_profile_remove_photo">ფოტოს წაშლა</string>
+    <string name="edit_profile_photo_error">ამ ფოტოს გამოყენება ვერ მოხერხდა. სცადეთ სხვა.</string>
+    <string name="edit_profile_avatar_color">ავატარის ფერი</string>
+    <string name="edit_profile_avatar_color_hint">ჩანს, როცა ფოტო არ გაქვთ.</string>
+    <string name="edit_profile_name_label">თქვენი სახელი</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">შეიყვანეთ მინიმუმ %d ასო.</string>
+    <string name="edit_profile_name_too_long">გამოიყენეთ მაქსიმუმ %d სიმბოლო.</string>
+    <string name="edit_profile_account_notice">სახელი და ფოტო აღებულია თქვენი %1$s ანგარიშიდან. აქ მათი შეცვლა მხოლოდ Blitz Split-ზე აისახება და თქვენს %1$s ანგარიშს არ ცვლის.</string>
+    <string name="edit_profile_footer">თქვენს სახელსა და ფოტოს ხედავენ თქვენი ჯგუფები და ყველა, ვისაც თქვენი პროფილის ბმული აქვს.</string>
+    <string name="profile_photo_close">დახურვა</string>
+    <string name="profile_photo_camera">კამერა</string>
+    <string name="profile_photo_gallery">გალერეა</string>
+    <string name="profile_photo_remove">წაშლა</string>
+    <string name="profile_photo_title">პროფილის ფოტო</string>
+</resources>

@@ -124,6 +124,13 @@
     <string name="profile_language_basque">Bahasa Basque</string>
     <string name="profile_language_galician">Bahasa Galicia</string>
     <string name="profile_language_romansh">Bahasa Romansh</string>
+    <string name="profile_language_zulu">Bahasa Zulu</string>
+    <string name="profile_language_afrikaans">Bahasa Afrikaans</string>
+    <string name="profile_language_georgian">Bahasa Georgia</string>
+    <string name="profile_language_armenian">Bahasa Armenia</string>
+    <string name="profile_language_albanian">Bahasa Albania</string>
+    <string name="profile_language_macedonian">Bahasa Macedonia</string>
+    <string name="profile_language_belarusian">Bahasa Belarus</string>
     <string name="profile_language_system_detail">Bahasa peranti</string>
     <string name="profile_notifications">Pemberitahuan</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Amabhalansi</string>
+    <string name="global_balances_profile">Iphrofayela</string>
+    <string name="global_balances_offline">Ungaxhunyiwe · amabhalansi ale divayisi</string>
+    <string name="global_balances_filter">Bonisa</string>
+    <string name="global_balances_filter_all">Konke</string>
+    <string name="global_balances_filter_you_owe">Uzokhokha</string>
+    <string name="global_balances_filter_owes_you">Uzothola</string>
+    <string name="global_balances_hint">Sekulinganisiwe kuwo wonke amaqembu: umuntu ngamunye uvela kanye.</string>
+    <string name="global_balances_hint_empty">Kuhlanganiswa wonke amaqembu akule divayisi.</string>
+    <string name="global_balances_section_you_owe">Uzokhokha · %d</string>
+    <string name="global_balances_section_owes_you">Uzothola · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">iqembu elingu-%d</item>
+        <item quantity="other">amaqembu angu-%d</item>
+    </plurals>
+    <string name="global_balances_guest">%s · isivakashi</string>
+    <string name="global_balances_you_owe">uzokhokha</string>
+    <string name="global_balances_owes_you">uzothola</string>
+    <string name="global_balances_by_group_show">Bonisa ngeqembu: %s</string>
+    <string name="global_balances_by_group_hide">Fihla ngeqembu: %s</string>
+    <string name="global_balances_received">Kutholakele</string>
+    <string name="global_balances_received_from">Kutholakele kulo muntu: %s</string>
+    <string name="global_balances_settle">Xazulula izikweletu</string>
+    <string name="global_balances_settle_with">Xazulula izikweletu nalo muntu: %s</string>
+    <string name="global_balances_charge">Cela imali</string>
+    <string name="global_balances_charge_person">Cela imali kulo muntu: %s</string>
+    <string name="global_balances_detail_pane">Ibhalansi nalo muntu: %s</string>
+    <string name="global_balances_detail_owes_you">%s ukukweleta</string>
+    <string name="global_balances_detail_you_owe">Ukweleta: %s</string>
+    <string name="global_balances_detail_guest">%s · isivakashi esingenalo uhlelo lokusebenza</string>
+    <string name="global_balances_detail_note_owed">Inani elisele selivele lilinganisa amaqembu: okuthi Cela imali nokuthi Kutholakele kusebenzisa inani elithi %s. Uhlelo lokusebenza lurekhoda inkokhelo eqenjini ngalinye.</string>
+    <string name="global_balances_detail_note_settle">Inani elisele selivele lilinganisa amaqembu: okuthi Xazulula izikweletu kusebenzisa inani elithi %s. Uhlelo lokusebenza lurekhoda inkokhelo eqenjini ngalinye.</string>
+    <string name="global_balances_detail_note_single">Iqembu elilodwa kuphela elivulekile nalo muntu: %s.</string>
+    <string name="global_balances_settled_title">Konke kuxazululiwe</string>
+    <string name="global_balances_settled_body">Akekho okukweletayo futhi awukweleti muntu. Uma othile engeza isindleko, ibhalansi izovela lapha.</string>
+    <string name="global_balances_settled_action">Bona amaqembu</string>
+    <string name="global_balances_nothing_to_pay_title">Awukweleti lutho</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Usuxazulule izikweletu nabo bonke. Usazothola inani elithi %2$s kumuntu ongu-%1$d.</item>
+        <item quantity="other">Usuxazulule izikweletu nabo bonke. Usazothola inani elithi %2$s kubantu abangu-%1$d.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Bona abakukweletayo</string>
+    <string name="global_balances_nothing_to_receive_title">Akekho okukweletayo</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Usakweleta inani elithi %2$s kumuntu ongu-%1$d.</item>
+        <item quantity="other">Usakweleta inani elithi %2$s kubantu abangu-%1$d.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Bona obakweletayo</string>
+    <string name="global_balances_coming_soon">Kuyeza maduze</string>
+    <string name="global_balances_change_error">Akukwazekanga ukulondoloza ushintsho. Zama futhi.</string>
+    <string name="global_balances_copied">Kukopishiwe</string>
+    <string name="global_balances_charge_title">Cela imali kulo muntu: %s</string>
+    <string name="global_balances_charge_owes">Ukukweleta: %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Vala</string>
+    <string name="global_balances_charge_guest">%s yisivakashi esingenalo uhlelo lokusebenza. Uzokwazi ngakho kulo mlayezo kuphela, ngakho usuvele usho ukuthi yini efakwe esindlekweni.</string>
+    <string name="global_balances_charge_message">Umlayezo</string>
+    <string name="global_balances_charge_pix">Faka ukhiye wami we-Pix</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Kopisha umlayezo</string>
+    <string name="global_balances_charge_send">Thumela</string>
+    <string name="global_balances_message">Sawubona %1$s! Ngokubala kwe-Blitz Split, ungikweleta inani elithi %2$s (%3$s).</string>
+    <string name="global_balances_message_guest">Sawubona %1$s! Ungikweleta inani elithi %2$s (%3$s): isabelo sakho sesindleko esithi %4$s.</string>
+    <string name="global_balances_message_guest_paid">Sawubona %1$s! Ungikweleta inani elithi %2$s (%3$s): isabelo sakho sesindleko esithi %4$s, kususwe inani elithi %5$s osulikhokhile.</string>
+    <string name="global_balances_message_group">iqembu elithi %s</string>
+    <string name="global_balances_message_groups">amaqembu athi %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Ifoni</string>
+    <string name="global_balances_key_email">I-imeyili</string>
+    <string name="global_balances_key_random">Ukhiye ongahleliwe</string>
+    <string name="global_balances_message_reroute">Iqembu elithi %1$s lenze izikweletu zalo zaba lula, ngakho ungikhokhela mina ngqo esikhundleni sokukhokha lo muntu: %2$s. Isamba sakho asishintshanga.</string>
+</resources>

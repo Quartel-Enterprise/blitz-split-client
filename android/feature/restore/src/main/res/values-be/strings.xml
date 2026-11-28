@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Вярніце свае групы</string>
+    <string name="restore_subtitle">Раней уваходзілі з уліковым запісам? Проста ўвайдзіце зноў. Калі не, выкарыстайце код аднаўлення або QR-код са старой прылады.</string>
+    <string name="restore_no_connection_title">Няма злучэння</string>
+    <string name="restore_no_connection_body">Для ўваходу з уліковым запісам або кодам патрэбны інтэрнэт, каб спампаваць Вашы групы. Увядзенае захавана.</string>
+    <string name="restore_code_label">Або выкарыстайце код аднаўлення</string>
+    <string name="restore_code_hint">12 слоў па парадку. Устаўце іх усе ў адно поле, каб запоўніць усе палі.</string>
+    <string name="restore_scan_qr_title">Скануйце QR-код са старой прылады</string>
+    <string name="restore_scan_qr_body">Там: Профіль › Аднаўленне › Паказаць QR-код</string>
+    <string name="restore_recover">Аднавіць</string>
+    <string name="restore_try_again">Паўтарыць</string>
+    <string name="restore_start_fresh">Пачаць нанава на гэтай прыладзе</string>
+    <string name="restore_error_invalid_code">Код не знойдзены. Праверце словы і іх парадак і паспрабуйце яшчэ раз.</string>
+    <string name="restore_error_too_many_attempts">Занадта шмат спроб. Пачакайце некалькі хвілін і паспрабуйце яшчэ раз.</string>
+    <string name="restore_error_sign_in_failed">Зараз не ўдалося ўвайсці. Паспрабуйце яшчэ раз.</string>
+    <string name="restore_error_unknown">Нешта пайшло не так. Паспрабуйце яшчэ раз.</string>
+</resources>

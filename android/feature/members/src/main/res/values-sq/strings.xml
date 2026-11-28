@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Lidhje ftese</string>
+    <string name="members_link_pending">Ende e pakrijuar</string>
+    <string name="members_share">Shpërndaj</string>
+    <string name="members_me">%s (ju)</string>
+    <string name="members_status_this_device">Kjo pajisje</string>
+    <string name="members_status_joined">U bashkua</string>
+    <string name="members_status_not_joined">Ende pa u bashkuar</string>
+    <string name="members_options">Opsionet: %s</string>
+    <string name="members_rename">Riemërto</string>
+    <string name="members_personal_invite">Ftesë personale për: %s</string>
+    <string name="members_personal_message">Kush e hap këtë lidhje bashkohet drejtpërdrejt si %s, pa zgjedhur nga lista. Funksionon një herë.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Kush e hap këtë lidhje bashkohet drejtpërdrejt si %1$s, pa zgjedhur nga lista, dhe sheh që tani pjesën e vet prej %2$s në shpenzimin e shtuar deri tani. Funksionon një herë.</item>
+        <item quantity="other">Kush e hap këtë lidhje bashkohet drejtpërdrejt si %1$s, pa zgjedhur nga lista, dhe sheh që tani pjesën e vet prej %2$s në %3$d shpenzimet e shtuara deri tani. Funksionon një herë.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopjo lidhjen</string>
+    <string name="members_personal_copied">U kopjua</string>
+    <string name="members_personal_share">Shpërndaj me: %s</string>
+    <string name="members_personal_share_message">Bashkohu me grupin %1$s si %2$s në Blitz Split: %3$s</string>
+    <string name="members_remove">Hiq nga grupi</string>
+    <string name="members_remove_joined">%s është bashkuar tashmë me grupin</string>
+    <string name="members_remove_title">Të hiqet %s nga grupi?</string>
+    <string name="members_remove_message">%s nuk është bashkuar ende. Mund ta shtoni sërish më vonë.</string>
+    <string name="members_remove_confirm">Hiq</string>
+    <string name="members_release">Liro emrin</string>
+    <string name="members_release_title">Të lirohet emri i personit %s?</string>
+    <string name="members_release_message">Kush u bashkua si %1$s largohet nga grupi. Emri, ngjyra dhe shpenzimet e personit %1$s mbeten, dhe %1$s mund të zgjidhet sërish përmes lidhjes së grupit.</string>
+    <string name="members_release_confirm">Liro</string>
+    <string name="members_release_error">Emri nuk u lirua. Kontrolloni lidhjen dhe provoni përsëri.</string>
+    <string name="members_add">Shto person</string>
+    <string name="members_invite_instead">E ka aplikacionin? Ftojeni me lidhjen</string>
+    <string name="members_name_label">Emri</string>
+    <string name="members_save">Ruaj</string>
+    <string name="members_cancel">Anulo</string>
+    <string name="members_change_error">Ndryshimi nuk u ruajt. Provoni përsëri.</string>
+    <string name="members_remove_open_balance">%s ka një bilanc të hapur</string>
+    <string name="members_balance_to_get_back">duhet të marrë %s</string>
+    <string name="members_balance_owes">duhet të paguajë %s</string>
+    <string name="members_balance_settled">Llogaritë e shlyera</string>
+</resources>

@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Bask dili</string>
     <string name="profile_language_galician">Qalisiya dili</string>
     <string name="profile_language_romansh">Romanş dili</string>
+    <string name="profile_language_zulu">Zulu dili</string>
+    <string name="profile_language_afrikaans">Afrikaans dili</string>
+    <string name="profile_language_georgian">Gürcü dili</string>
+    <string name="profile_language_armenian">Erməni dili</string>
+    <string name="profile_language_albanian">Alban dili</string>
+    <string name="profile_language_macedonian">Makedon dili</string>
+    <string name="profile_language_belarusian">Belarus dili</string>
     <string name="profile_language_system_detail">Cihaz dili</string>
     <string name="profile_notifications">Bildirişlər</string>
     <plurals name="profile_notifications_active">

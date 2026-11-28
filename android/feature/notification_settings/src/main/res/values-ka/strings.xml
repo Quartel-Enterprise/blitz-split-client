@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">შეტყობინებები</string>
+    <string name="notification_settings_denied_title">Blitz Split-ის შეტყობინებები Android-ში გამორთულია.</string>
+    <string name="notification_settings_denied_body">ჩართეთ ისინი სისტემის პარამეტრებში, რომ მიიღოთ ქვემოთ მოცემული push-შეტყობინებები. ზარის ხატულა კვლავ მუშაობს.</string>
+    <string name="notification_settings_open_settings">პარამეტრების გახსნა</string>
+    <string name="notification_settings_refused_body">Android კიდევ ერთხელ გაძლევთ მათი დაშვების საშუალებას, რომ მიიღოთ ქვემოთ მოცემული push-შეტყობინებები. ზარის ხატულა კვლავ მუშაობს.</string>
+    <string name="notification_settings_turn_on">ჩართვა</string>
+    <string name="notification_settings_blocked_in_android">დაბლოკილია Android-ში</string>
+    <string name="notification_settings_open_channel_settings_description">Android-ის პარამეტრების გახსნა: %1$s</string>
+    <string name="notification_settings_push_switch">Push-შეტყობინებები</string>
+    <string name="notification_settings_push_switch_detail">მხოლოდ ამ მოწყობილობაზე</string>
+    <string name="notification_settings_section">შემატყობინეთ</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">აპში</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push ამ მოწყობილობაზე შეტყობინებას აგზავნის. “აპში” მას ახლად მონიშნავს ზარის ხატულაზე და აქტივობაში; გამორთვის შემთხვევაში აქტივობაში მაინც ჩანს, უკვე წაკითხულად.</string>
+    <string name="notification_settings_footer">შეტყობინებები მოდის, როცა ინტერნეტია. ჯგუფის დასადუმებლად გამოიყენეთ მისი შიდა მენიუ.</string>
+</resources>

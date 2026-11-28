@@ -127,6 +127,13 @@
     <string name="profile_language_basque">Baskičtina</string>
     <string name="profile_language_galician">Galícijčina</string>
     <string name="profile_language_romansh">Rétorománčina</string>
+    <string name="profile_language_zulu">Zuluština</string>
+    <string name="profile_language_afrikaans">Afrikánčina</string>
+    <string name="profile_language_georgian">Gruzínčina</string>
+    <string name="profile_language_armenian">Arménčina</string>
+    <string name="profile_language_albanian">Albánčina</string>
+    <string name="profile_language_macedonian">Macedónčina</string>
+    <string name="profile_language_belarusian">Bieloruština</string>
     <string name="profile_language_system_detail">Jazyk zariadenia</string>
     <string name="profile_notifications">Upozornenia</string>
     <plurals name="profile_notifications_active">

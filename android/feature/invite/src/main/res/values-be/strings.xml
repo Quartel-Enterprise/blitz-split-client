@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Закрыць</string>
+    <string name="invite_group_created">Група створана</string>
+    <string name="invite_title">Запрасіце ўсіх у групу %s</string>
+    <string name="invite_qr_description">QR-код спасылкі-запрашэння ў групу</string>
+    <string name="invite_copy">Капіяваць</string>
+    <string name="invite_copied">Скапіявана</string>
+    <string name="invite_who_picks">Той, хто адкрые спасылку, выбірае сябе ў спісе: %s. Уліковы запіс не патрэбны.</string>
+    <string name="invite_names_or">%1$s або %2$s</string>
+    <string name="invite_anyone_joins">Той, хто адкрые спасылку, далучыцца да групы. Уліковы запіс не патрэбны.</string>
+    <string name="invite_pending_title">Спасылка чакае</string>
+    <string name="invite_pending_offline">Яна будзе створана, як толькі з’явіцца інтэрнэт.</string>
+    <string name="invite_pending_online">Ствараем спасылку…</string>
+    <string name="invite_failed_title">Не ўдалося стварыць спасылку</string>
+    <string name="invite_failed_body">Падчас сінхранізацыі групы нешта пайшло не так.</string>
+    <string name="invite_retry">Паўтарыць</string>
+    <string name="invite_share">Абагуліць спасылку</string>
+    <string name="invite_see_who_joined">Паглядзець, хто далучыўся</string>
+    <string name="invite_add_person">Дадаць чалавека без праграмы</string>
+    <string name="invite_go_to_group">Перайсці ў групу</string>
+    <string name="invite_change_link">Змяніць спасылку</string>
+    <string name="invite_change_link_title">Змяніць спасылку-запрашэнне?</string>
+    <string name="invite_change_link_message">Цяперашняя спасылка і QR-код перастануць працаваць, разам з невыкарыстанымі асабістымі запрашэннямі. Тыя, хто ўжо далучыўся, застануцца ў групе.</string>
+    <string name="invite_change_link_failed">Не ўдалося змяніць спасылку. Паспрабуйце яшчэ раз.</string>
+    <string name="invite_share_message">Давайце дзяліць выдаткі групы %1$s у Blitz Split. Далучайцеся па гэтай спасылцы: %2$s</string>
+</resources>

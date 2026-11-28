@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Ruani kodin tuaj të rikuperimit</string>
+    <string name="recovery_code_body">Po e përdorni pa llogari. Këto 12 fjalë ju rikthejnë të dhënat nëse ndërroni ose humbni pajisjen. Shkruajini sipas radhës. Pas 30 ditësh pa përdorim, të dhënat tuaja fshihen dhe fjalët nuk funksionojnë më.</string>
+    <string name="recovery_code_copy">Kopjo fjalët</string>
+    <string name="recovery_code_save_to_password_manager">Ruaj në menaxherin e fjalëkalimeve</string>
+    <string name="recovery_code_connect_instead">Lidhni Google ose Apple në vend të kësaj</string>
+    <string name="recovery_code_connect_instead_body">Nuk nevojitet kod</string>
+    <string name="recovery_code_sign_in_failed">Lidhja nuk u krye tani. Provoni përsëri.</string>
+    <string name="recovery_code_also_in_profile">Gjendet edhe te Profili › Rikuperimi.</string>
+    <string name="recovery_code_remind_later">Më kujto më vonë</string>
+    <string name="recovery_code_saved">E kam ruajtur</string>
+    <string name="recovery_code_download">Shkarko</string>
+    <string name="recovery_code_file_name">blitz-split-kodi-i-rikuperimit.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · kodi i rikuperimit\n\n%1$s\n\nPërdoreni te \"E kam përdorur në një pajisje tjetër\" për të rikthyer të dhënat tuaja.\n</string>
+</resources>

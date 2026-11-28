@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Awukho kuleli qembu</string>
+    <string name="bill_link_not_in_group_message">Lawa mazwana aseqenjini ongekho kulo. Cela lowo okuthumelele ilinki akunikeze isimemo.</string>
+    <string name="bill_link_offline_title">Ayikho i-inthanethi</string>
+    <string name="bill_link_offline_message">Vula ilinki futhi uma usuxhunyiwe ku-inthanethi.</string>
+    <string name="bill_link_go_home">Iya eKhaya</string>
+    <string name="discard_changes_title">Lahla izinguquko?</string>
+    <string name="discard_changes_message">Izinguquko ezingalondoloziwe zizolahleka.</string>
+    <string name="discard_changes_discard">Lahla</string>
+    <string name="discard_changes_keep_editing">Qhubeka uhlela</string>
+    <string name="watch_channel_name">Iwashi</string>
+    <string name="watch_connected_title">%1$s lixhunywe ku-akhawunti yakho</string>
+    <string name="watch_connected_title_unnamed">Iwashi lixhunywe ku-akhawunti yakho</string>
+    <string name="watch_connected_text">Libona amaqembu akho futhi livumelanisa ngokwalo. Ukuze ulinqamule, phuma ngemvume ewashini.</string>
+</resources>

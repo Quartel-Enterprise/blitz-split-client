@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">მოწვევის ბმული</string>
+    <string name="members_link_pending">ჯერ არ შექმნილა</string>
+    <string name="members_share">გაზიარება</string>
+    <string name="members_me">%s (თქვენ)</string>
+    <string name="members_status_this_device">ეს მოწყობილობა</string>
+    <string name="members_status_joined">გაწევრიანებულია</string>
+    <string name="members_status_not_joined">ჯერ არ გაწევრიანებულა</string>
+    <string name="members_options">პარამეტრები: %s</string>
+    <string name="members_rename">სახელის შეცვლა</string>
+    <string name="members_personal_invite">პირადი მოწვევა: %s</string>
+    <string name="members_personal_message">ვინც ამ ბმულს გახსნის, პირდაპირ გაწევრიანდება სახელით %s, სიიდან არჩევის გარეშე. მოქმედებს ერთხელ.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">ვინც ამ ბმულს გახსნის, პირდაპირ გაწევრიანდება სახელით %1$s, სიიდან არჩევის გარეშე, და მაშინვე დაინახავს თავის წილს (%2$s) აქამდე დამატებულ ხარჯში. მოქმედებს ერთხელ.</item>
+        <item quantity="other">ვინც ამ ბმულს გახსნის, პირდაპირ გაწევრიანდება სახელით %1$s, სიიდან არჩევის გარეშე, და მაშინვე დაინახავს თავის წილს (%2$s) აქამდე დამატებულ %3$d ხარჯში. მოქმედებს ერთხელ.</item>
+    </plurals>
+    <string name="members_personal_copy">ბმულის კოპირება</string>
+    <string name="members_personal_copied">დაკოპირდა</string>
+    <string name="members_personal_share">გაზიარება: %s</string>
+    <string name="members_personal_share_message">გაწევრიანდით ჯგუფში %1$s Blitz Split-ში სახელით %2$s: %3$s</string>
+    <string name="members_remove">ჯგუფიდან წაშლა</string>
+    <string name="members_remove_joined">%s უკვე გაწევრიანებულია ჯგუფში</string>
+    <string name="members_remove_title">წავშალოთ ჯგუფიდან: %s?</string>
+    <string name="members_remove_message">%s ჯერ არ გაწევრიანებულა. მოგვიანებით შეგიძლიათ ხელახლა დაამატოთ.</string>
+    <string name="members_remove_confirm">წაშლა</string>
+    <string name="members_release">სახელის გათავისუფლება</string>
+    <string name="members_release_title">გავათავისუფლოთ სახელი: %s?</string>
+    <string name="members_release_message">ვინც სახელით %1$s გაწევრიანდა, ჯგუფს დატოვებს. სახელი %1$s, მისი ფერი და ხარჯები დარჩება, და %1$s ხელახლა შეიძლება აირჩიონ ჯგუფის ბმულით.</string>
+    <string name="members_release_confirm">გათავისუფლება</string>
+    <string name="members_release_error">სახელის გათავისუფლება ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.</string>
+    <string name="members_add">ადამიანის დამატება</string>
+    <string name="members_invite_instead">აქვს აპი? მოიწვიეთ ბმულით</string>
+    <string name="members_name_label">სახელი</string>
+    <string name="members_save">შენახვა</string>
+    <string name="members_cancel">გაუქმება</string>
+    <string name="members_change_error">ცვლილების შენახვა ვერ მოხერხდა. სცადეთ ხელახლა.</string>
+    <string name="members_remove_open_balance">%s · ბალანსი ღიაა</string>
+    <string name="members_balance_to_get_back">მისაღები: %s</string>
+    <string name="members_balance_owes">გადასახდელი: %s</string>
+    <string name="members_balance_settled">ანგარიში გასწორებულია</string>
+</resources>

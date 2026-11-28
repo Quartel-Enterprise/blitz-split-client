@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Wat noem jou vriende jou?</string>
+    <string name="profile_setup_subtitle">Jou groepe en enigiemand met jou profielskakel sien jou naam.</string>
+    <string name="profile_setup_avatar_color">Avatarkleur</string>
+    <string name="profile_setup_add_photo">Voeg foto by</string>
+    <string name="profile_setup_photo_error">Kon nie hierdie foto gebruik nie. Probeer \'n ander een.</string>
+    <string name="profile_setup_name_label">Jou naam</string>
+    <string name="profile_setup_name_placeholder">Jan Alleman</string>
+    <string name="profile_setup_name_too_short">Tik ten minste %d letters.</string>
+    <string name="profile_setup_name_too_long">Gebruik hoogstens %d karakters.</string>
+    <string name="profile_setup_name_hint">Jy kan dit later in Profiel verander.</string>
+    <string name="profile_setup_saved_locally">Vir eers net op hierdie toestel gestoor.</string>
+    <string name="profile_setup_continue">Gaan voort</string>
+</resources>

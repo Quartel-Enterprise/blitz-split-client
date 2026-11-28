@@ -125,6 +125,13 @@
     <string name="profile_language_basque">ባስክኛ</string>
     <string name="profile_language_galician">ጋሊሽያኛ</string>
     <string name="profile_language_romansh">ሮማንሽኛ</string>
+    <string name="profile_language_zulu">ዙሉኛ</string>
+    <string name="profile_language_afrikaans">አፍሪካንስኛ</string>
+    <string name="profile_language_georgian">ጆርጂያኛ</string>
+    <string name="profile_language_armenian">አርመንኛ</string>
+    <string name="profile_language_albanian">አልባንኛ</string>
+    <string name="profile_language_macedonian">መቄዶንኛ</string>
+    <string name="profile_language_belarusian">ቤላሩስኛ</string>
     <string name="profile_language_system_detail">የመሣሪያ ቋንቋ</string>
     <string name="profile_notifications">ማሳወቂያዎች</string>
     <plurals name="profile_notifications_active">

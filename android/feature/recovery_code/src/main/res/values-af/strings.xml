@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Stoor jou herstelkode</string>
+    <string name="recovery_code_body">Jy gebruik dit sonder \'n rekening. Hierdie 12 woorde bring jou data terug as jy van toestel verander of jou toestel verloor. Skryf hulle in volgorde neer. Na 30 dae sonder gebruik word jou data uitgevee en werk die woorde nie meer nie.</string>
+    <string name="recovery_code_copy">Kopieer woorde</string>
+    <string name="recovery_code_save_to_password_manager">Stoor in wagwoordbestuurder</string>
+    <string name="recovery_code_connect_instead">Koppel eerder Google of Apple</string>
+    <string name="recovery_code_connect_instead_body">Geen kode nodig nie</string>
+    <string name="recovery_code_sign_in_failed">Kon nie nou koppel nie. Probeer weer.</string>
+    <string name="recovery_code_also_in_profile">Dit is ook in Profiel › Herstel.</string>
+    <string name="recovery_code_remind_later">Herinner my later</string>
+    <string name="recovery_code_saved">Ek het dit gestoor</string>
+    <string name="recovery_code_download">Laai af</string>
+    <string name="recovery_code_file_name">blitz-split-herstelkode.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · herstelkode\n\n%1$s\n\nGebruik dit by \"Ek het dit al op \'n ander toestel gebruik\" om jou data terug te bring.\n</string>
+</resources>

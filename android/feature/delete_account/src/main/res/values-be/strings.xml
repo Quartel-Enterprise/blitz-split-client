@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Выдаліць уліковы запіс</string>
+    <string name="delete_account_offline_title">Няма інтэрнэту.</string>
+    <string name="delete_account_offline_body">Каб выдаліць уліковы запіс, патрэбна злучэнне з інтэрнэтам. Падключыцеся і паспрабуйце яшчэ раз.</string>
+    <string name="delete_account_heading">Выдаліць Ваш уліковы запіс і Вашы даныя?</string>
+    <string name="delete_account_deleted_title">Што будзе выдалена</string>
+    <string name="delete_account_deleted_profile">Ваш профіль (імя, фота і колер)</string>
+    <string name="delete_account_deleted_keys">Вашы ключы Pix і Bitcoin</string>
+    <string name="delete_account_deleted_provider">Сувязь з Вашым уліковым запісам %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Ваш код аднаўлення</string>
+    <string name="delete_account_deleted_device">Копія Вашых даных на гэтай прыладзе</string>
+    <string name="delete_account_kept_title">Што застанецца ў Вашых групах</string>
+    <string name="delete_account_kept_groups">Групы з выдаткамі і плацяжамі — для іншых удзельнікаў</string>
+    <string name="delete_account_kept_member">Ваша імя ў кожнай групе — як удзельніка без уліковага запісу</string>
+    <string name="delete_account_kept_comments">Вашы каментарыі і дададзеныя Вамі фота — пад Вашым імем</string>
+    <string name="delete_account_export">Спачатку экспартаваць мае даныя</string>
+    <string name="delete_account_confirm">Я разумею, што гэта нельга адрабіць</string>
+    <string name="delete_account_delete">Выдаліць уліковы запіс</string>
+    <string name="delete_account_cancel">Скасаваць</string>
+    <string name="delete_account_failed">Не ўдалося выдаліць уліковы запіс. Паспрабуйце яшчэ раз.</string>
+</resources>

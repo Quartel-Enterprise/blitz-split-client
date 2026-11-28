@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Няма слоў</string>
+    <string name="category_map_title">Карта катэгорый</string>
+    <string name="category_map_search">Пошук слоў</string>
+    <string name="category_map_add">Дадаць слова</string>
+    <string name="category_map_more">Іншыя параметры</string>
+    <string name="category_map_restore">Аднавіць стандартную</string>
+    <string name="category_map_back">Назад</string>
+    <string name="category_map_intro">Калі ў назве выдатку ёсць адно з гэтых слоў, катэгорыя выбіраецца сама. “Uber дадому” трапляе ў Транспарт.</string>
+    <string name="category_map_intro_offline">Карта працуе афлайн: змены адразу дзейнічаюць на гэтай прыладзе і трапляюць на іншыя Вашы прылады, калі злучэнне вернецца.</string>
+    <string name="category_map_device_only">Ваша карта захоўваецца толькі на гэтай прыладзе. Каб перанесці яе на іншыя прылады, увайдзіце праз Google або Apple у Профілі.</string>
+    <string name="category_map_open_profile">Адкрыць Профіль</string>
+    <string name="category_map_longest_wins">Калі назве адпавядаюць два словы, перамагае даўжэйшае.</string>
+    <string name="category_map_no_result">Няма слова з “%1$s”</string>
+    <string name="category_map_no_result_body">Дадайце яго, і выдаткі з гэтым словам у назве атрымаюць правільную катэгорыю.</string>
+    <string name="category_map_add_query">Дадаць “%1$s”</string>
+    <string name="category_map_empty_title">Ваша карта пустая</string>
+    <string name="category_map_empty_body">Без слоў катэгорыя не вызначаецца па назве: Вы выбіраеце яе для кожнага выдатку.</string>
+    <string name="category_map_group_category"> · катэгорыя групы %1$s</string>
+    <string name="category_map_only_main">Толькі %1$s</string>
+    <string name="category_map_only_in_group">толькі ў групе %1$s</string>
+    <string name="category_map_no_terms_yet">Слоў пакуль няма.</string>
+    <string name="category_map_add_in">Дадаць слова ў катэгорыю %1$s</string>
+    <string name="category_map_tip">Націсніце на слова, каб змяніць яго катэгорыю або выдаліць яго. Супадае ўсё слова, без уліку націскаў і рэгістра.</string>
+    <string name="category_map_queued">у чарзе</string>
+    <string name="category_map_term_action">%1$s, %2$s. Рэдагаваць</string>
+    <string name="category_map_new_term">Новае слова</string>
+    <string name="category_map_edit_term">Рэдагаваць слова</string>
+    <string name="category_map_term_label">Слова або фраза</string>
+    <string name="category_map_term_help">Супадае ўсё слова, без уліку націскаў і рэгістра.</string>
+    <string name="category_map_term_help_app">Слова праграмы. Аднаўленне стандартнай карты верне яго ў першапачатковы выгляд.</string>
+    <string name="category_map_term_duplicate">“%1$s” ужо выбірае катэгорыю %2$s. Кожнае слова мае адну катэгорыю.</string>
+    <string name="category_map_term_too_short">Выкарыстайце не менш за 2 літары.</string>
+    <string name="category_map_term_too_long">Выкарыстайце не больш за 30 літар.</string>
+    <string name="category_map_term_invalid">Выкарыстоўвайце толькі літары, лічбы і прабелы.</string>
+    <string name="category_map_category">Катэгорыя</string>
+    <string name="category_map_category_help">Гэта можа быць катэгорыя або падкатэгорыя.</string>
+    <string name="category_map_category_help_edit">Змена тут перамяшчае слова ў іншую катэгорыю.</string>
+    <string name="category_map_category_help_move">Пры перамяшчэнні слова выходзіць з катэгорыі %1$s.</string>
+    <string name="category_map_example">Прыклад</string>
+    <string name="category_map_example_move">Пасля перамяшчэння</string>
+    <string name="category_map_remove">Выдаліць</string>
+    <string name="category_map_cancel">Скасаваць</string>
+    <string name="category_map_save">Захаваць</string>
+    <string name="category_map_move_to">Перамясціць у катэгорыю %1$s</string>
+    <string name="category_map_removed">“%1$s” выдалена з карты</string>
+    <string name="category_map_undo">Адрабіць</string>
+    <string name="category_map_restore_title">Аднавіць стандартную карту?</string>
+    <string name="category_map_restore_body">60 слоў праграмы вернуцца ў першапачатковым выглядзе, уключаючы тыя, што Вы выдалілі або перамясцілі.</string>
+    <string name="category_map_restore_own_one">Створанае Вамі слова “%1$s” застанецца.</string>
+    <string name="category_map_restore_confirm">Аднавіць</string>
+    <string name="category_map_save_error">Не ўдалося захаваць карту. Паспрабуйце яшчэ раз.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d слова</item>
+        <item quantity="few">%d словы</item>
+        <item quantity="many">%d слоў</item>
+        <item quantity="other">%d слова</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d падкатэгорыя</item>
+        <item quantity="few">%d падкатэгорыі</item>
+        <item quantity="many">%d падкатэгорый</item>
+        <item quantity="other">%d падкатэгорыі</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d слова з “%2$s”</item>
+        <item quantity="few">%1$d словы з “%2$s”</item>
+        <item quantity="many">%1$d слоў з “%2$s”</item>
+        <item quantity="other">%1$d слова з “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Афлайн · %d змена ў чарзе</item>
+        <item quantity="few">Афлайн · %d змены ў чарзе</item>
+        <item quantity="many">Афлайн · %d змен у чарзе</item>
+        <item quantity="other">Афлайн · %d змены ў чарзе</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Застанецца %d створанае Вамі слова.</item>
+        <item quantity="few">Застануцца %d створаныя Вамі словы.</item>
+        <item quantity="many">Застанецца %d створаных Вамі слоў.</item>
+        <item quantity="other">Застанецца %d створанага Вамі слова.</item>
+    </plurals>
+    <string name="category_map_new_category">Новая катэгорыя</string>
+    <string name="category_map_new_subcategory_in">Новая падкатэгорыя ў катэгорыі %s</string>
+    <string name="category_map_edit_category">Рэдагаваць: %s</string>
+    <string name="category_map_category_group">Група</string>
+    <string name="category_map_change_color">Змяніць колер: %1$s</string>
+    <string name="category_map_restore_color">Аднавіць колер</string>
+    <string name="category_map_color_done">Гатова</string>
+</resources>

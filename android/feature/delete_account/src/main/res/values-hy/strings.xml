@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Ջնջել հաշիվը</string>
+    <string name="delete_account_offline_title">Ինտերնետ չկա։</string>
+    <string name="delete_account_offline_body">Հաշիվը ջնջելու համար ինտերնետ կապ է պետք։ Միացեք և փորձեք կրկին։</string>
+    <string name="delete_account_heading">Ջնջե՞լ Ձեր հաշիվը և տվյալները</string>
+    <string name="delete_account_deleted_title">Ինչ է ջնջվում</string>
+    <string name="delete_account_deleted_profile">Ձեր պրոֆիլը (անուն, լուսանկար և գույն)</string>
+    <string name="delete_account_deleted_keys">Ձեր Pix և Bitcoin բանալիները</string>
+    <string name="delete_account_deleted_provider">Կապը Ձեր %1$s հաշվի հետ</string>
+    <string name="delete_account_deleted_recovery_code">Ձեր վերականգնման կոդը</string>
+    <string name="delete_account_deleted_device">Ձեր տվյալների պատճենն այս սարքում</string>
+    <string name="delete_account_kept_title">Ինչ է մնում Ձեր խմբերում</string>
+    <string name="delete_account_kept_groups">Խմբերը՝ իրենց ծախսերով և վճարումներով, մյուս անդամների համար</string>
+    <string name="delete_account_kept_member">Ձեր անունը յուրաքանչյուր խմբում՝ որպես առանց հաշվի անդամ</string>
+    <string name="delete_account_kept_comments">Ձեր մեկնաբանությունները և Ձեր ավելացրած լուսանկարները՝ Ձեր անունով</string>
+    <string name="delete_account_export">Նախ արտահանել իմ տվյալները</string>
+    <string name="delete_account_confirm">Հասկանում եմ, որ սա հնարավոր չէ հետարկել</string>
+    <string name="delete_account_delete">Ջնջել հաշիվը</string>
+    <string name="delete_account_cancel">Չեղարկել</string>
+    <string name="delete_account_failed">Չհաջողվեց ջնջել Ձեր հաշիվը։ Փորձեք կրկին։</string>
+</resources>

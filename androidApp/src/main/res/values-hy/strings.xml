@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Դուք այս խմբում չեք</string>
+    <string name="bill_link_not_in_group_message">Այս մեկնաբանությունը մի խմբում է, որտեղ Դուք չեք։ Խնդրեք հղումն ուղարկողից հրավերը։</string>
+    <string name="bill_link_offline_title">Ինտերնետ չկա</string>
+    <string name="bill_link_offline_message">Բացեք հղումը նորից, երբ կրկին առցանց լինեք։</string>
+    <string name="bill_link_go_home">Գնալ Գլխավոր</string>
+    <string name="discard_changes_title">Չեղարկե՞լ փոփոխությունները</string>
+    <string name="discard_changes_message">Չպահված փոփոխությունները կկորչեն։</string>
+    <string name="discard_changes_discard">Չեղարկել</string>
+    <string name="discard_changes_keep_editing">Շարունակել խմբագրել</string>
+    <string name="watch_channel_name">Ժամացույց</string>
+    <string name="watch_connected_title">%1$s կապվեց Ձեր հաշվին</string>
+    <string name="watch_connected_title_unnamed">Ժամացույցը կապվեց Ձեր հաշվին</string>
+    <string name="watch_connected_text">Այն տեսնում է Ձեր խմբերը և ինքնուրույն համաժամացվում է։ Այն անջատելու համար դուրս եկեք ժամացույցում։</string>
+</resources>

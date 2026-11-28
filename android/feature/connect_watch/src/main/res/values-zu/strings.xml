@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Xhuma iwashi</string>
+    <string name="connect_watch_close">Vala</string>
+    <string name="connect_watch_body">Bhala ikhodi eboniswa iwashi lakho. Lingena ngemvume ku-akhawunti yakho bese livumelanisa ngokwalo.</string>
+    <string name="connect_watch_code_label">Ikhodi yewashi</string>
+    <string name="connect_watch_error_invalid">Ikhodi engalungile noma ephelelwe yisikhathi. Thola entsha ewashini.</string>
+    <string name="connect_watch_error_too_many">Amakhodi amaningi kakhulu angalungile. Linda imizuzu embalwa bese uzama futhi.</string>
+    <string name="connect_watch_error_needs_account">Xhuma i-akhawunti kuqala: idatha yakho ikule divayisi kuphela.</string>
+    <string name="connect_watch_error_failed">Akukwazekanga ukuxhuma iwashi. Zama futhi.</string>
+    <string name="connect_watch_offline">Ukuxhuma iwashi kudinga i-inthanethi.</string>
+    <string name="connect_watch_own_watch_only">Bhala kuphela ikhodi eboniswa ewashini lakho: noma ubani onalelo washi ungena ku-akhawunti yakho.</string>
+    <string name="connect_watch_validity">Ikhodi isebenza imizuzu engu-5, kanye.</string>
+    <string name="connect_watch_button">Xhuma</string>
+    <string name="connect_watch_connected_title">Iwashi lixhunyiwe</string>
+    <string name="connect_watch_connected_body">Libona amaqembu akho futhi livumelanisa ngokwalo. Ukuze ulinqamule, phuma ngemvume ewashini.</string>
+</resources>

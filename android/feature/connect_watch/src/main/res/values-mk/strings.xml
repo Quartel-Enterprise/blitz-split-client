@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Поврзи часовник</string>
+    <string name="connect_watch_close">Затвори</string>
+    <string name="connect_watch_body">Внесете го кодот што го прикажува Вашиот часовник. Тој се најавува на Вашата корисничка сметка и потоа се синхронизира сам.</string>
+    <string name="connect_watch_code_label">Код од часовникот</string>
+    <string name="connect_watch_error_invalid">Погрешен или истечен код. Земете нов на часовникот.</string>
+    <string name="connect_watch_error_too_many">Премногу погрешни кодови. Почекајте неколку минути и обидете се повторно.</string>
+    <string name="connect_watch_error_needs_account">Прво поврзете корисничка сметка: Вашите податоци се само на овој уред.</string>
+    <string name="connect_watch_error_failed">Часовникот не можеше да се поврзе. Обидете се повторно.</string>
+    <string name="connect_watch_offline">За поврзување на часовникот потребен е интернет.</string>
+    <string name="connect_watch_own_watch_only">Внесувајте само код прикажан на Вашиот сопствен часовник: кој и да го има тој часовник, влегува во Вашата корисничка сметка.</string>
+    <string name="connect_watch_validity">Кодот важи 5 минути, еднаш.</string>
+    <string name="connect_watch_button">Поврзи</string>
+    <string name="connect_watch_connected_title">Часовникот е поврзан</string>
+    <string name="connect_watch_connected_body">Ги гледа Вашите групи и се синхронизира сам. За да го исклучите, одјавете се на часовникот.</string>
+</resources>

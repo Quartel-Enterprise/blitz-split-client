@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Напамін пра разлік</string>
+    <string name="push_bill_created">%1$s дадаў(-ла) выдатак з Вашым удзелам: “%2$s”</string>
+    <string name="push_bill_edited">%1$s змяніў(-ла) выдатак: “%2$s”</string>
+    <string name="push_bill_deleted">%1$s выдаліў(-ла) выдатак: “%2$s”</string>
+    <string name="push_comment_added">%1$s пакінуў(-ла) каментарый да “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s адзначыў(-ла) плацёж Вам</string>
+    <string name="push_payment_to_you">%1$s адзначыў(-ла) плацёж Вам ад удзельніка %2$s</string>
+    <string name="push_payment_received_yours">%1$s адзначыў(-ла) Ваш плацёж як атрыманы</string>
+    <string name="push_payment_from_you">%1$s адзначыў(-ла) Ваш плацёж удзельніку %2$s</string>
+    <string name="push_payment_undone">%1$s адмяніў(-ла) плацёж з Вамі</string>
+    <string name="push_charge_sent">%1$s адправіў(-ла) Вам напамін пра разлік</string>
+    <string name="push_settle_reminder">У Вас ёсць незакрыты баланс у групе %1$s</string>
+    <string name="push_settle_reminders">Незакрытыя балансы ў Вашых групах: %1$s</string>
+    <string name="push_added_to_group">%1$s дадаў(-ла) Вас у групу</string>
+    <string name="push_member_joined">%1$s стаў(-ла) ўдзельнікам групы</string>
+    <string name="push_debts_simplified_to_you">%1$s спрасціў(-ла) даўгі. Цяпер %2$s плаціць Вам %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s спрасціў(-ла) даўгі. Цяпер Вы плаціце %3$s удзельніку %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s спрасціў(-ла) даўгі. Паглядзіце, што змянілася для Вас.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s адключыў(-ла) спрашчэнне даўгоў. Цяпер %2$s плаціць Вам %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s адключыў(-ла) спрашчэнне даўгоў. Цяпер Вы плаціце %3$s удзельніку %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s адключыў(-ла) спрашчэнне даўгоў. Паглядзіце, што змянілася для Вас.</string>
+    <string name="notification_settings_bills">Выдаткі</string>
+    <string name="notification_settings_bills_detail">Новыя, змененыя або выдаленыя выдаткі з Вашым удзелам</string>
+    <string name="notification_settings_payments">Плацяжы і разлікі</string>
+    <string name="notification_settings_payments_detail">Плацяжы Вам або ад Вас і спрошчаныя даўгі</string>
+    <string name="notification_settings_comments">Каментарыі</string>
+    <string name="notification_settings_comments_detail">Да выдаткаў з Вашым удзелам і ў абмеркаваннях, дзе Вы пісалі</string>
+    <string name="notification_settings_people_and_groups">Людзі і групы</string>
+    <string name="notification_settings_people_and_groups_detail">Хто далучаецца да Вашых груп або пакідае іх і што ў іх змяняецца</string>
+    <string name="notification_settings_payment_requests">Запыты на аплату</string>
+    <string name="notification_settings_payment_requests_detail">Калі нехта просіць Вас заплаціць</string>
+    <string name="notification_settings_balance_reminder">Напамін пра незакрыты баланс</string>
+    <string name="notification_settings_balance_reminder_detail">Раз на тыдзень, калі ёсць незакрыты баланс</string>
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · код за враќање</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Дозволете ја камерата во Поставки за да фотографирате.</string>
+    <string name="platform_camera_settings">Поставки</string>
+    <string name="platform_receipt_source_camera">Фотографирај</string>
+    <string name="platform_receipt_source_gallery">Избери од галеријата</string>
+    <string name="platform_receipt_source_file">Избери датотека</string>
+    <string name="platform_receipt_camera_title">Скенирај фискална сметка</string>
+    <string name="platform_receipt_camera_close">Затвори</string>
+    <string name="platform_receipt_camera_flash_on">Вклучи го блицот</string>
+    <string name="platform_receipt_camera_flash_off">Исклучи го блицот</string>
+    <string name="platform_receipt_camera_hint">Сместете ја целата фискална сметка во рамката. Ние ги пополнуваме износот, датумот и описот; Вие проверувате пред да зачувате.</string>
+    <string name="platform_receipt_camera_gallery">Избери од галеријата</string>
+    <string name="platform_receipt_camera_shutter">Фотографирај</string>
+    <string name="platform_receipt_camera_unavailable">Камерата не е достапна. Изберете фотографија од фискалната сметка од галеријата.</string>
+    <string name="platform_receipt_camera_permission">Дозволете ја камерата за да ја скенирате фискалната сметка или изберете фотографија од галеријата.</string>
+    <string name="platform_receipt_camera_allow">Дозволи камера</string>
+    <string name="platform_receipt_camera_settings">Отвори поставки</string>
+</resources>

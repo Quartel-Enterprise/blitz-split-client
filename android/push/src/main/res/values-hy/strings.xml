@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Հաշիվները մաքրելու հիշեցում</string>
+    <string name="push_bill_created">%1$s Ձեզ ներառեց “%2$s” ծախսում</string>
+    <string name="push_bill_edited">%1$s խմբագրեց “%2$s” ծախսը</string>
+    <string name="push_bill_deleted">%1$s ջնջեց “%2$s” ծախսը</string>
+    <string name="push_comment_added">%1$s մեկնաբանություն թողեց “%2$s” ծախսում՝ %3$s</string>
+    <string name="push_payment_paid_you">%1$s նշեց, որ վճարել է Ձեզ</string>
+    <string name="push_payment_to_you">%1$s նշեց, որ %2$s վճարել է Ձեզ</string>
+    <string name="push_payment_received_yours">%1$s նշեց Ձեր վճարումը որպես ստացված</string>
+    <string name="push_payment_from_you">%1$s նշեց, որ Դուք վճարել եք, ստացող՝ %2$s</string>
+    <string name="push_payment_undone">%1$s չեղարկեց Ձեզ հետ կապված վճարումը</string>
+    <string name="push_charge_sent">%1$s Ձեզ հիշեցում ուղարկեց՝ հաշիվները մաքրելու համար</string>
+    <string name="push_settle_reminder">Դուք բաց հաշվեկշիռ ունեք %1$s խմբում</string>
+    <string name="push_settle_reminders">Դուք բաց հաշվեկշիռներ ունեք %1$s խմբում</string>
+    <string name="push_added_to_group">%1$s Ձեզ ավելացրեց խմբին</string>
+    <string name="push_member_joined">%1$s միացավ խմբին</string>
+    <string name="push_debts_simplified_to_you">%1$s պարզեցրեց պարտքերը։ Այժմ %2$s Ձեզ վճարում է %3$s։</string>
+    <string name="push_debts_simplified_from_you">%1$s պարզեցրեց պարտքերը։ Այժմ Դուք վճարում եք %3$s, ստացող՝ %2$s։</string>
+    <string name="push_debts_simplified_other">%1$s պարզեցրեց պարտքերը։ Տեսեք, թե ինչպես է դա ազդում Ձեզ վրա։</string>
+    <string name="push_debts_unsimplified_to_you">%1$s անջատեց Պարզեցնել պարտքերը։ Այժմ %2$s Ձեզ վճարում է %3$s։</string>
+    <string name="push_debts_unsimplified_from_you">%1$s անջատեց Պարզեցնել պարտքերը։ Այժմ Դուք վճարում եք %3$s, ստացող՝ %2$s։</string>
+    <string name="push_debts_unsimplified_other">%1$s անջատեց Պարզեցնել պարտքերը։ Տեսեք, թե ինչպես է դա ազդում Ձեզ վրա։</string>
+    <string name="notification_settings_bills">Ծախսեր</string>
+    <string name="notification_settings_bills_detail">Նոր, խմբագրված կամ ջնջված ծախսեր, որոնցում Դուք մասնակցում եք</string>
+    <string name="notification_settings_payments">Վճարումներ և հաշիվների մաքրում</string>
+    <string name="notification_settings_payments_detail">Ձեզ կամ Ձեզնից վճարումներ և պարզեցված պարտքեր</string>
+    <string name="notification_settings_comments">Մեկնաբանություններ</string>
+    <string name="notification_settings_comments_detail">Ծախսերում, որոնցում մասնակցում եք, և քննարկումներում, որտեղ գրել եք</string>
+    <string name="notification_settings_people_and_groups">Մարդիկ և խմբեր</string>
+    <string name="notification_settings_people_and_groups_detail">Ով է միանում Ձեր խմբերին կամ լքում դրանք, և ինչ է փոխվում դրանցում</string>
+    <string name="notification_settings_payment_requests">Վճարման հարցումներ</string>
+    <string name="notification_settings_payment_requests_detail">Երբ ինչ-որ մեկը խնդրում է Ձեզ վճարել</string>
+    <string name="notification_settings_balance_reminder">Բաց հաշվեկշռի հիշեցում</string>
+    <string name="notification_settings_balance_reminder_detail">Շաբաթը մեկ անգամ, եթե կա բաց հաշվեկշիռ</string>
+</resources>

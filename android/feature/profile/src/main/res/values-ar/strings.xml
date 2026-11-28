@@ -129,6 +129,13 @@
     <string name="profile_language_basque">الباسكية</string>
     <string name="profile_language_galician">الجاليكية</string>
     <string name="profile_language_romansh">الرومانشية</string>
+    <string name="profile_language_zulu">الزولو</string>
+    <string name="profile_language_afrikaans">الأفريقانية</string>
+    <string name="profile_language_georgian">الجورجية</string>
+    <string name="profile_language_armenian">الأرمنية</string>
+    <string name="profile_language_albanian">الألبانية</string>
+    <string name="profile_language_macedonian">المقدونية</string>
+    <string name="profile_language_belarusian">البيلاروسية</string>
     <string name="profile_language_system_detail">لغة الجهاز</string>
     <string name="profile_notifications">الإشعارات</string>
     <plurals name="profile_notifications_active">

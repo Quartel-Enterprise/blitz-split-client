@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Modifiko profilin</string>
+    <string name="edit_profile_save">Ruaj</string>
+    <string name="edit_profile_change_photo">Ndrysho foton</string>
+    <string name="edit_profile_take_photo">Bëj foto</string>
+    <string name="edit_profile_choose_photo">Zgjidh nga galeria</string>
+    <string name="edit_profile_use_account_photo">Përdor foton e llogarisë %1$s</string>
+    <string name="edit_profile_remove_photo">Hiq foton</string>
+    <string name="edit_profile_photo_error">Kjo foto nuk mund të përdorej. Provoni një tjetër.</string>
+    <string name="edit_profile_avatar_color">Ngjyra e avatarit</string>
+    <string name="edit_profile_avatar_color_hint">Shfaqet kur nuk keni foto.</string>
+    <string name="edit_profile_name_label">Emri juaj</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Shkruani të paktën %d shkronja.</string>
+    <string name="edit_profile_name_too_long">Përdorni deri në %d karaktere.</string>
+    <string name="edit_profile_account_notice">Emri dhe fotoja erdhën nga llogaria juaj %1$s. Ndryshimi i tyre këtu vlen vetëm për Blitz Split dhe nuk ndryshon llogarinë tuaj %1$s.</string>
+    <string name="edit_profile_footer">Grupet tuaja dhe kushdo me lidhjen e profilit tuaj shohin emrin dhe foton tuaj.</string>
+    <string name="profile_photo_close">Mbyll</string>
+    <string name="profile_photo_camera">Kamera</string>
+    <string name="profile_photo_gallery">Galeria</string>
+    <string name="profile_photo_remove">Hiq</string>
+    <string name="profile_photo_title">Foto e profilit</string>
+</resources>

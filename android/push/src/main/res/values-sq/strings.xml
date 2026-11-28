@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Kujtesë për shlyerjen e llogarive</string>
+    <string name="push_bill_created">%1$s shtoi “%2$s” me ju</string>
+    <string name="push_bill_edited">%1$s modifikoi “%2$s”</string>
+    <string name="push_bill_deleted">%1$s fshiu “%2$s”</string>
+    <string name="push_comment_added">%1$s komentoi te “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s shënoi se ju pagoi</string>
+    <string name="push_payment_to_you">%1$s shënoi se %2$s ju pagoi</string>
+    <string name="push_payment_received_yours">%1$s e shënoi pagesën tuaj si të marrë</string>
+    <string name="push_payment_from_you">%1$s shënoi se ju i paguat personit %2$s</string>
+    <string name="push_payment_undone">%1$s zhbëri një pagesë me ju</string>
+    <string name="push_charge_sent">%1$s ju dërgoi një kujtesë për të shlyer llogaritë</string>
+    <string name="push_settle_reminder">Keni një bilanc të hapur në grupin %1$s</string>
+    <string name="push_settle_reminders">Keni bilance të hapura në %1$s grupe</string>
+    <string name="push_added_to_group">%1$s ju shtoi në grup</string>
+    <string name="push_member_joined">%1$s u bashkua me grupin</string>
+    <string name="push_debts_simplified_to_you">%1$s thjeshtoi borxhet. Tani %2$s ju paguan %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s thjeshtoi borxhet. Tani ju i paguani personit %2$s %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s thjeshtoi borxhet. Shihni si është për ju.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s çaktivizoi Thjeshto borxhet. Tani %2$s ju paguan %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s çaktivizoi Thjeshto borxhet. Tani ju i paguani personit %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s çaktivizoi Thjeshto borxhet. Shihni si është për ju.</string>
+    <string name="notification_settings_bills">Shpenzimet</string>
+    <string name="notification_settings_bills_detail">Shpenzime të reja, të modifikuara ose të fshira ku jeni</string>
+    <string name="notification_settings_payments">Pagesat dhe shlyerjet</string>
+    <string name="notification_settings_payments_detail">Pagesat për ju ose nga ju, dhe borxhet e thjeshtuara</string>
+    <string name="notification_settings_comments">Komentet</string>
+    <string name="notification_settings_comments_detail">Te shpenzimet ku jeni dhe te bisedat ku keni shkruar</string>
+    <string name="notification_settings_people_and_groups">Njerëzit dhe grupet</string>
+    <string name="notification_settings_people_and_groups_detail">Kush bashkohet ose largohet nga grupet tuaja, dhe çfarë ndryshon në to</string>
+    <string name="notification_settings_payment_requests">Kërkesat e pagesave</string>
+    <string name="notification_settings_payment_requests_detail">Kur dikush ju kërkon të paguani</string>
+    <string name="notification_settings_balance_reminder">Kujtesë për bilancin e hapur</string>
+    <string name="notification_settings_balance_reminder_detail">Një herë në javë, nëse ka bilanc të hapur</string>
+</resources>

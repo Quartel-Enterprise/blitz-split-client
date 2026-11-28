@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Kry jou groepe terug</string>
+    <string name="restore_subtitle">Al voorheen met \'n rekening aangemeld? Meld net weer aan. Indien nie, gebruik die herstelkode of die QR-kode van jou ou toestel.</string>
+    <string name="restore_no_connection_title">Geen verbinding nie</string>
+    <string name="restore_no_connection_body">Om met \'n rekening of \'n kode aan te meld, is internet nodig om jou groepe af te laai. Wat jy getik het, word gehou.</string>
+    <string name="restore_code_label">Of gebruik die herstelkode</string>
+    <string name="restore_code_hint">Die 12 woorde in volgorde. Plak hulle almal in een veld om elke veld in te vul.</string>
+    <string name="restore_scan_qr_title">Skandeer die QR-kode van jou ou toestel</string>
+    <string name="restore_scan_qr_body">Daar: Profiel › Herstel › Wys QR-kode</string>
+    <string name="restore_recover">Herwin</string>
+    <string name="restore_try_again">Probeer weer</string>
+    <string name="restore_start_fresh">Begin van voor af op hierdie toestel</string>
+    <string name="restore_error_invalid_code">Kode nie gevind nie. Kontroleer die woorde en hul volgorde, en probeer dan weer.</string>
+    <string name="restore_error_too_many_attempts">Te veel pogings. Wag \'n paar minute en probeer weer.</string>
+    <string name="restore_error_sign_in_failed">Kon nie nou aanmeld nie. Probeer weer.</string>
+    <string name="restore_error_unknown">Iets het verkeerd geloop. Probeer weer.</string>
+</resources>

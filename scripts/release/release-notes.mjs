@@ -26,7 +26,7 @@ import { fileURLToPath } from "node:url";
  * The languages of the notes, English first: the ones blitz-split-site's release notes have. Portugal's Portuguese,
  * pt-PT, is one of its own there, written in full, not the few words over Brazil's that the apps keep for it.
  */
-export const LANGS = ["en", "pt", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh", "he", "th", "vi", "zh-Hant", "sv", "cs", "ro", "bn", "ms", "el", "hr", "hu", "ur", "fil", "sr", "sk", "fa", "ta", "nb", "te", "bg", "mr", "sw", "ca", "da", "fi", "lv", "et", "gu", "sl", "lt", "pa", "ml", "kn", "my", "km", "or", "ne", "az", "am", "si", "kk", "mn", "ky", "lo", "is", "eu", "gl", "rm"];
+export const LANGS = ["en", "pt", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh", "he", "th", "vi", "zh-Hant", "sv", "cs", "ro", "bn", "ms", "el", "hr", "hu", "ur", "fil", "sr", "sk", "fa", "ta", "nb", "te", "bg", "mr", "sw", "ca", "da", "fi", "lv", "et", "gu", "sl", "lt", "pa", "ml", "kn", "my", "km", "or", "ne", "az", "am", "si", "kk", "mn", "ky", "lo", "is", "eu", "gl", "rm", "zu", "af", "ka", "hy", "sq", "mk", "be"];
 /** The platforms a note names, in the order it lists them; "all" stands alone, for every one of them. */
 export const PLATFORMS = ["android", "ios", "mac", "web"];
 /** What a note is, in the order a version lists its notes. Only "fixed" leaves the version a patch. */
@@ -115,6 +115,13 @@ const NOTHING_TO_SAY = {
   eu: "Akatsen konponketak eta errendimendu-hobekuntzak.",
   gl: "Corrección de erros e melloras de rendemento.",
   rm: "Correcturas d'errurs e meglieraziuns da la prestaziun.",
+  zu: "Ukulungiswa kwamaphutha nokuthuthukiswa kokusebenza.",
+  af: "Foutregstellings en werkverrigtingverbeterings.",
+  ka: "შეცდომების გასწორება და მუშაობის გაუმჯობესება.",
+  hy: "Սխալների ուղղումներ և արտադրողականության բարելավումներ։",
+  sq: "Rregullime gabimesh dhe përmirësime të performancës.",
+  mk: "Поправки на грешки и подобрувања на перформансите.",
+  be: "Выпраўленні памылак і паляпшэнні прадукцыйнасці.",
 };
 
 export class NotesError extends Error {}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Njoftimet</string>
+    <string name="notification_settings_denied_title">Njoftimet e Blitz Split janë të çaktivizuara në Android.</string>
+    <string name="notification_settings_denied_body">Aktivizojini te cilësimet e sistemit për të marrë njoftimet push më poshtë. Zilja vazhdon të funksionojë.</string>
+    <string name="notification_settings_open_settings">Hap cilësimet</string>
+    <string name="notification_settings_refused_body">Android ju lejon t\'i lejoni edhe një herë për të marrë njoftimet push më poshtë. Zilja vazhdon të funksionojë.</string>
+    <string name="notification_settings_turn_on">Aktivizo</string>
+    <string name="notification_settings_blocked_in_android">Bllokuar në Android</string>
+    <string name="notification_settings_open_channel_settings_description">Hap cilësimet e Android për: %1$s</string>
+    <string name="notification_settings_push_switch">Njoftimet push</string>
+    <string name="notification_settings_push_switch_detail">Vetëm në këtë pajisje</string>
+    <string name="notification_settings_section">Më njofto për</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Në aplikacion</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push dërgon një njoftim në këtë pajisje. Në aplikacion e shënon si të ri te zilja dhe te Aktiviteti; i çaktivizuar, shfaqet gjithsesi te Aktiviteti, si i lexuar.</string>
+    <string name="notification_settings_footer">Njoftimet mbërrijnë kur ka internet. Për të heshtur një grup, përdorni menynë brenda tij.</string>
+</resources>

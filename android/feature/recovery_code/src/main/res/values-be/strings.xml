@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Захавайце код аднаўлення</string>
+    <string name="recovery_code_body">Вы карыстаецеся праграмай без уліковага запісу. Гэтыя 12 слоў вернуць Вашы даныя, калі Вы зменіце або страціце прыладу. Запішыце іх па парадку. Праз 30 дзён без выкарыстання Вашы даныя выдаляюцца, і словы перастаюць дзейнічаць.</string>
+    <string name="recovery_code_copy">Капіяваць словы</string>
+    <string name="recovery_code_save_to_password_manager">Захаваць у менеджары пароляў</string>
+    <string name="recovery_code_connect_instead">Замест гэтага падключыць Google або Apple</string>
+    <string name="recovery_code_connect_instead_body">Код не патрэбны</string>
+    <string name="recovery_code_sign_in_failed">Зараз не ўдалося падключыцца. Паспрабуйце яшчэ раз.</string>
+    <string name="recovery_code_also_in_profile">Ён таксама ёсць у раздзеле Профіль › Аднаўленне.</string>
+    <string name="recovery_code_remind_later">Нагадаць пазней</string>
+    <string name="recovery_code_saved">Код захаваны</string>
+    <string name="recovery_code_download">Спампаваць</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · код аднаўлення\n\n%1$s\n\nВыкарыстайце яго ў \"Я ўжо карыстаюся на іншай прыладзе\", каб вярнуць свае даныя.\n</string>
+</resources>

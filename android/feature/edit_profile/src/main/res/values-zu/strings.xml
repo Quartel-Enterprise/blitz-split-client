@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Hlela iphrofayela</string>
+    <string name="edit_profile_save">Londoloza</string>
+    <string name="edit_profile_change_photo">Shintsha isithombe</string>
+    <string name="edit_profile_take_photo">Thatha isithombe</string>
+    <string name="edit_profile_choose_photo">Khetha kugalari</string>
+    <string name="edit_profile_use_account_photo">Sebenzisa isithombe se-akhawunti: %1$s</string>
+    <string name="edit_profile_remove_photo">Susa isithombe</string>
+    <string name="edit_profile_photo_error">Akukwazekanga ukusebenzisa lesi sithombe. Zama esinye.</string>
+    <string name="edit_profile_avatar_color">Umbala we-avatar</string>
+    <string name="edit_profile_avatar_color_hint">Uvela uma ungenaso isithombe.</string>
+    <string name="edit_profile_name_label">Igama lakho</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Bhala okungenani izinhlamvu ezingu-%d.</string>
+    <string name="edit_profile_name_too_long">Sebenzisa izinhlamvu ezingeqi kwezingu-%d.</string>
+    <string name="edit_profile_account_notice">Igama nesithombe kuvela ku-akhawunti yakho ethi %1$s. Ukukushintsha lapha kusebenza ku-Blitz Split kuphela futhi akuyishintshi i-akhawunti yakho ethi %1$s.</string>
+    <string name="edit_profile_footer">Amaqembu akho nanoma ubani onelinki yephrofayela yakho babona igama lakho nesithombe.</string>
+    <string name="profile_photo_close">Vala</string>
+    <string name="profile_photo_camera">Ikhamera</string>
+    <string name="profile_photo_gallery">Igalari</string>
+    <string name="profile_photo_remove">Susa</string>
+    <string name="profile_photo_title">Isithombe sephrofayela</string>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Mbyll</string>
+    <string name="invite_group_created">Grupi u krijua</string>
+    <string name="invite_title">Ftoni të gjithë në grupin %s</string>
+    <string name="invite_qr_description">Kodi QR i lidhjes së ftesës së grupit</string>
+    <string name="invite_copy">Kopjo</string>
+    <string name="invite_copied">U kopjua</string>
+    <string name="invite_who_picks">Kush e hap lidhjen zgjedh kush është në listë: %s. Nuk nevojitet llogari.</string>
+    <string name="invite_names_or">%1$s ose %2$s</string>
+    <string name="invite_anyone_joins">Kush e hap lidhjen bashkohet me grupin. Nuk nevojitet llogari.</string>
+    <string name="invite_pending_title">Lidhja në pritje</string>
+    <string name="invite_pending_offline">Krijohet sapo të jeni në linjë.</string>
+    <string name="invite_pending_online">Po krijohet lidhja…</string>
+    <string name="invite_failed_title">Lidhja nuk u krijua</string>
+    <string name="invite_failed_body">Diçka shkoi keq gjatë sinkronizimit të grupit.</string>
+    <string name="invite_retry">Provo përsëri</string>
+    <string name="invite_share">Shpërndaj lidhjen</string>
+    <string name="invite_see_who_joined">Shiko kush u bashkua</string>
+    <string name="invite_add_person">Shto dikë pa aplikacion</string>
+    <string name="invite_go_to_group">Shko te grupi</string>
+    <string name="invite_change_link">Ndrysho lidhjen</string>
+    <string name="invite_change_link_title">Të ndryshohet lidhja e ftesës?</string>
+    <string name="invite_change_link_message">Lidhja dhe kodi QR aktual nuk funksionojnë më, përfshirë ftesat personale të papërdorura. Kush është bashkuar tashmë mbetet në grup.</string>
+    <string name="invite_change_link_failed">Lidhja nuk u ndryshua. Provoni përsëri.</string>
+    <string name="invite_share_message">Le t\'i ndajmë shpenzimet e grupit %1$s në Blitz Split. Bashkohu me këtë lidhje: %2$s</string>
+</resources>

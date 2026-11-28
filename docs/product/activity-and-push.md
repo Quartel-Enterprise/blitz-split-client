@@ -200,6 +200,21 @@ The feed, unread state, real time and push notifications.
     "Þú hefur eytt: …", "Vus avais stizzà…", `youSubjectLanguages`); Lao's, Basque's and Galician's name the deleter
     after the verb, so Android says it with their lowercase "you" ("ຖືກລຶບໂດຍ ທ່ານ", "Ezabatzailea: zu", "eliminado
     por vostede"), and the web's `activity_deletedByMe` and the Apple notice start with the actor in all seven.
+    Armenian puts the verb last (`toVerbLastSecondPerson`, `SecondPerson`, the web's `verbForYou`): every verb phrase
+    ends, before the colon, with an aorist in "-եց" or "-աց", to which the user's rows add "իք" ("Ana ծախսը բաժանեց:
+    …", "Դուք ծախսը բաժանեցիք: …"). Albanian and Macedonian swap their perfect's auxiliary (`secondPersonAuxiliaries`,
+    `auxiliaries`): every Albanian verb phrase starts with "ka" or "është", which the user's rows turn into "keni" or
+    "jeni" ("Ana ka ndarë shpenzimin: …", "Ju keni ndarë shpenzimin: …"), every Macedonian one with "има", which they
+    turn into "имате" ("Ана има поделено трошок: …", "Вие имате поделено трошок: …"). Belarusian's past says the
+    gender, which the app doesn't know, so every verb phrase starts with a past written "-ў(-ла)" ("-ўся(-лася)" when
+    reflexive), which the user's polite "Вы" turns into the plural "-лі" ("-ліся"): "Ана падзяліў(-ла) выдатак: …",
+    "Вы падзялілі выдатак: …". Zulu, Afrikaans and Georgian need no rule: Zulu's class-1a concord "u-" is the second
+    person singular's too ("Ana uhlukanise…", "Wena uhlukanise…"), Afrikaans' verbs don't change with the person, and
+    Georgian writes each activity sentence as a noun phrase ("Ana · ხარჯის გაყოფა: …"). The deleted-item notices of
+    Zulu, Georgian, Armenian, Albanian, Macedonian and Belarusian start with who deleted it ("Wena ususe: …", "თქვენ ·
+    წაშლა: …", "Դուք ջնջեցիք: …", "Ju keni fshirë: …", "Вие имате избришано: …", "Вы выдалілі: …",
+    `youSubjectLanguages`); Afrikaans' names the deleter after the verb ("uitgevee deur jou"), and the web's
+    `activity_deletedByMe` and the Apple notice start with the actor in all seven.
     Bulgarian needs no rule: every Bulgarian verb phrase starts with an aorist, whose second and third person singular
     are the same ("Ana раздели разхода…", "Ти раздели разхода…"), and which says nothing of the gender either. Its
     deleted-item notice starts with who deleted it too ("Ти изтри…", `youSubjectLanguages`).

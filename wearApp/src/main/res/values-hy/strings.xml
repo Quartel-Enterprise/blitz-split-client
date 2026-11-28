@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Այստեղ օգտագործեք նույն հաշիվը, ինչ Ձեր հեռախոսում։ Այնուհետև ժամացույցը կաշխատի ինքնուրույն։</string>
+    <string name="pair_connect">Միացնել</string>
+    <string name="pair_connecting">Հաշիվը ստացվում է Ձեր հեռախոսից…</string>
+    <string name="pair_connected_title">Պատրաստ է, %1$s</string>
+    <string name="pair_connected_title_unnamed">Պատրաստ է</string>
+    <string name="pair_connected_body">Ժամացույցը համաժամացվում է ինքնուրույն, նույնիսկ Ձեր հեռախոսից հեռու։</string>
+    <string name="pair_continue">Շարունակել</string>
+    <string name="pair_local_only_title">Ձեր տվյալները միայն Ձեր հեռախոսում են</string>
+    <string name="pair_local_only_body">Ձեր հեռախոսում միացրեք հաշիվ Պրոֆիլ բաժնում և այստեղ կրկին հպեք Միացնել։</string>
+    <string name="pair_ok">Լավ</string>
+    <string name="pair_far_title">Հեռախոսը հասանելի չէ</string>
+    <string name="pair_far_body">Մոտեցրեք Ձեր հեռախոսը կամ միացեք կոդով։</string>
+    <string name="pair_try_again">Փորձել կրկին</string>
+    <string name="pair_use_code">Օգտագործել կոդ</string>
+    <string name="pair_code_label">Ձեր կոդը</string>
+    <string name="pair_code_description">Կոդ %1$s</string>
+    <string name="pair_code_where">Ձեր հեռախոսում՝ Պրոֆիլ › Միացնել ժամացույցը</string>
+    <string name="pair_code_validity">Վավեր է 5 րոպե</string>
+    <string name="pair_cancel">Չեղարկել</string>
+    <string name="pair_signed_out_title">Դուք դուրս եկաք Ձեր հեռախոսում</string>
+    <string name="pair_signed_out_body">Տվյալները հեռացվեցին նաև այս ժամացույցից։</string>
+    <string name="pair_connect_again">Կրկին միացնել</string>
+    <string name="pair_error_offline">Ժամացույցը միացնելու համար անհրաժեշտ է ինտերնետ։</string>
+    <string name="pair_error_too_many">Չափազանց շատ փորձեր։ Սպասեք մի քանի րոպե և կրկին միացեք։</string>
+    <string name="pair_error_failed">Չհաջողվեց միացնել ժամացույցը։ Փորձեք կրկին։</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Հաշվեկշիռներ</string>
+    <string name="balances_offline">Անցանց</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Անցանց · %d փոփոխություն հերթում</item>
+        <item quantity="other">Անցանց · %d փոփոխություն հերթում</item>
+    </plurals>
+    <string name="balances_overall">Ընդհանուր հաշվեկշիռ</string>
+    <string name="balances_to_receive">ստանալու եք</string>
+    <string name="balances_you_owe">վճարելու եք</string>
+    <string name="balances_group_to_receive">%1$s ստանալու եք</string>
+    <string name="balances_group_you_owe">%1$s վճարելու եք</string>
+    <string name="balances_group_even">Ընդհանուր առմամբ հավասար</string>
+    <string name="balances_waiting">սպասում է ուղարկման</string>
+    <string name="balances_updated_at">Թարմացվել է ժամը %1$s</string>
+    <string name="balances_sign_out">Դուրս գալ</string>
+    <string name="balances_sign_out_title">Դուրս գա՞լ այս ժամացույցից</string>
+    <string name="balances_sign_out_body">Դրա տվյալները կջնջվեն, հենց որ հերթում եղածն ուղարկվի։ Ձեր հեռախոսում մուտքը կպահպանվի։</string>
+    <string name="balances_sign_out_scheduled">Դուրս գալը պլանավորված է</string>
+    <string name="balances_sign_out_scheduled_detail">Դուրս կգա, հենց որ ամեն ինչ վերբեռնվի</string>
+    <string name="balances_settled_title">Բաց հաշիվներ չկան</string>
+    <string name="balances_settled_body">Դուք ոչ ոքի պարտք չեք, և Ձեզ ոչ ոք պարտք չէ։ Նոր խմբերն ու ծախսերն այստեղ կհայտնվեն ինքնուրույն։</string>
+    <string name="group_you_owe_person">վճարելու եք: %1$s</string>
+    <string name="group_owes_you">%1$s պետք է Ձեզ վճարի</string>
+    <string name="group_former_member">Նախկին անդամ</string>
+    <string name="group_i_paid">Ես վճարեցի</string>
+    <string name="group_confirm_title">Վճարեցի՞ք %1$s, ստացող՝ %2$s</string>
+    <string name="group_confirm_body">%1$s։ Խումբը դա կտեսնի անմիջապես կամ երբ ինտերնետը վերադառնա։</string>
+    <string name="group_payment_recorded">Վճարումը գրանցվեց</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Հաշվեկշիռներ</string>
+    <string name="tile_to_receive_total">ընդհանուր ստանալու եք</string>
+    <string name="tile_to_pay_total">ընդհանուր վճարելու եք</string>
+    <string name="tile_owed_to_you">Ստանալու եք %1$s</string>
+    <string name="tile_you_owe">Վճարելու եք %1$s</string>
+    <string name="tile_settled_title">Բոլոր հաշիվները մաքրված են</string>
+    <string name="tile_settled_body">Վճարելու կամ ստանալու ոչինչ չկա</string>
+    <string name="tile_open">Բացել</string>
+    <string name="complication_name">Ընդհանուր հաշվեկշիռ</string>
+    <string name="complication_you_owe">Վճարելու եք %1$s</string>
+    <string name="complication_owed_to_you">Ստանալու եք %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Ստացված</string>
+    <string name="push_view_group">Դիտել խումբը</string>
+</resources>

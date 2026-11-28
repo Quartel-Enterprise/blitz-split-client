@@ -127,6 +127,13 @@
     <string name="profile_language_basque">Баскский</string>
     <string name="profile_language_galician">Галисийский</string>
     <string name="profile_language_romansh">Романшский</string>
+    <string name="profile_language_zulu">Зулу</string>
+    <string name="profile_language_afrikaans">Африкаанс</string>
+    <string name="profile_language_georgian">Грузинский</string>
+    <string name="profile_language_armenian">Армянский</string>
+    <string name="profile_language_albanian">Албанский</string>
+    <string name="profile_language_macedonian">Македонский</string>
+    <string name="profile_language_belarusian">Белорусский</string>
     <string name="profile_language_system_detail">Язык устройства</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_notifications">Уведомления</string>

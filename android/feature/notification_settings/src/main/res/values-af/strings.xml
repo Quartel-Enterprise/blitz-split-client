@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Kennisgewings</string>
+    <string name="notification_settings_denied_title">Blitz Split-kennisgewings is op Android afgeskakel.</string>
+    <string name="notification_settings_denied_body">Skakel hulle in die stelselinstellings aan om die stootkennisgewings hieronder te kry. Die klokkie werk steeds.</string>
+    <string name="notification_settings_open_settings">Maak instellings oop</string>
+    <string name="notification_settings_refused_body">Android laat jou toe om hulle nog een keer toe te laat om die stootkennisgewings hieronder te kry. Die klokkie werk steeds.</string>
+    <string name="notification_settings_turn_on">Skakel aan</string>
+    <string name="notification_settings_blocked_in_android">Geblokkeer in Android</string>
+    <string name="notification_settings_open_channel_settings_description">Maak Android-instellings oop vir %1$s</string>
+    <string name="notification_settings_push_switch">Stootkennisgewings</string>
+    <string name="notification_settings_push_switch_detail">Net op hierdie toestel</string>
+    <string name="notification_settings_section">Laat my weet van</string>
+    <string name="notification_settings_push">Stoot</string>
+    <string name="notification_settings_in_app">In die app</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Stoot stuur \'n kennisgewing na hierdie toestel. In die app merk dit as nuut by die klokkie en in Aktiwiteit; afgeskakel verskyn dit steeds in Aktiwiteit, reeds gelees.</string>
+    <string name="notification_settings_footer">Kennisgewings kom aan wanneer daar internet is. Om \'n groep stil te maak, gebruik die kieslys daarin.</string>
+</resources>

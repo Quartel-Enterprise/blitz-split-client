@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">ამ ჯგუფში არ ხართ</string>
+    <string name="bill_link_not_in_group_message">ეს კომენტარი ისეთ ჯგუფშია, რომლის წევრიც არ ხართ. მოწვევა სთხოვეთ მას, ვინც ბმული გამოგიგზავნათ.</string>
+    <string name="bill_link_offline_title">ინტერნეტი არ არის</string>
+    <string name="bill_link_offline_message">გახსენით ბმული ხელახლა, როცა ინტერნეტს დაუკავშირდებით.</string>
+    <string name="bill_link_go_home">მთავარზე გადასვლა</string>
+    <string name="discard_changes_title">გავაუქმოთ ცვლილებები?</string>
+    <string name="discard_changes_message">შეუნახავი ცვლილებები დაიკარგება.</string>
+    <string name="discard_changes_discard">გაუქმება</string>
+    <string name="discard_changes_keep_editing">რედაქტირების გაგრძელება</string>
+    <string name="watch_channel_name">საათი</string>
+    <string name="watch_connected_title">%1$s დაკავშირებულია თქვენს ანგარიშთან</string>
+    <string name="watch_connected_title_unnamed">საათი დაკავშირებულია თქვენს ანგარიშთან</string>
+    <string name="watch_connected_text">ის ხედავს თქვენს ჯგუფებს და თავისით ახდენს სინქრონიზაციას. გასათიშად საათზე გამოდით ანგარიშიდან.</string>
+</resources>

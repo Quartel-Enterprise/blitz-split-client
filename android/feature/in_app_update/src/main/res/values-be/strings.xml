@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">Спампоўваецца абнаўленне…</string>
+    <string name="in_app_update_download_failed">Не ўдалося спампаваць абнаўленне. Паспрабуйце пазней.</string>
+</resources>

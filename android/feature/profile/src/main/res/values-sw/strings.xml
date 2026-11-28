@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Kibaski</string>
     <string name="profile_language_galician">Kigalisia</string>
     <string name="profile_language_romansh">Kiromanshi</string>
+    <string name="profile_language_zulu">Kizulu</string>
+    <string name="profile_language_afrikaans">Kiafrikana</string>
+    <string name="profile_language_georgian">Kijojia</string>
+    <string name="profile_language_armenian">Kiarmenia</string>
+    <string name="profile_language_albanian">Kialbania</string>
+    <string name="profile_language_macedonian">Kimasedonia</string>
+    <string name="profile_language_belarusian">Kibelarusi</string>
     <string name="profile_language_system_detail">Lugha ya kifaa</string>
     <string name="profile_notifications">Arifa</string>
     <plurals name="profile_notifications_active">

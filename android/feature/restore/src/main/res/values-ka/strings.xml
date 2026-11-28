@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">დააბრუნეთ თქვენი ჯგუფები</string>
+    <string name="restore_subtitle">ადრე ანგარიშით შედიოდით? უბრალოდ ხელახლა შედით. თუ არა, გამოიყენეთ აღდგენის კოდი ან ძველი მოწყობილობის QR კოდი.</string>
+    <string name="restore_no_connection_title">კავშირი არ არის</string>
+    <string name="restore_no_connection_body">ანგარიშით ან კოდით შესვლას ინტერნეტი სჭირდება, რომ თქვენი ჯგუფები ჩამოიტვირთოს. რაც შეიყვანეთ, შენახულია.</string>
+    <string name="restore_code_label">ან გამოიყენეთ აღდგენის კოდი</string>
+    <string name="restore_code_hint">12 სიტყვა თანმიმდევრობით. ჩასვით ყველა ერთ ველში და ყველა ველი შეივსება.</string>
+    <string name="restore_scan_qr_title">დაასკანერეთ QR კოდი ძველი მოწყობილობიდან</string>
+    <string name="restore_scan_qr_body">იქ: პროფილი › აღდგენა › QR კოდის ჩვენება</string>
+    <string name="restore_recover">აღდგენა</string>
+    <string name="restore_try_again">ხელახლა ცდა</string>
+    <string name="restore_start_fresh">ამ მოწყობილობაზე თავიდან დაწყება</string>
+    <string name="restore_error_invalid_code">კოდი ვერ მოიძებნა. შეამოწმეთ სიტყვები და მათი თანმიმდევრობა, შემდეგ სცადეთ ხელახლა.</string>
+    <string name="restore_error_too_many_attempts">ძალიან ბევრი მცდელობა. დაელოდეთ რამდენიმე წუთს და სცადეთ ხელახლა.</string>
+    <string name="restore_error_sign_in_failed">ამჟამად შესვლა ვერ მოხერხდა. სცადეთ ხელახლა.</string>
+    <string name="restore_error_unknown">რაღაც შეფერხდა. სცადეთ ხელახლა.</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Ինչպե՞ս են Ձեզ անվանում ընկերները</string>
+    <string name="profile_setup_subtitle">Ձեր անունը տեսնում են Ձեր խմբերը և բոլոր նրանք, ովքեր ունեն Ձեր պրոֆիլի հղումը։</string>
+    <string name="profile_setup_avatar_color">Ավատարի գույն</string>
+    <string name="profile_setup_add_photo">Ավելացնել լուսանկար</string>
+    <string name="profile_setup_photo_error">Չհաջողվեց օգտագործել այս լուսանկարը։ Փորձեք մեկ այլը։</string>
+    <string name="profile_setup_name_label">Ձեր անունը</string>
+    <string name="profile_setup_name_placeholder">Արամ Պետրոսյան</string>
+    <string name="profile_setup_name_too_short">Մուտքագրեք առնվազն %d տառ։</string>
+    <string name="profile_setup_name_too_long">Օգտագործեք մինչև %d նիշ։</string>
+    <string name="profile_setup_name_hint">Կարող եք այն փոխել ավելի ուշ՝ Պրոֆիլում։</string>
+    <string name="profile_setup_saved_locally">Առայժմ պահված է միայն այս սարքում։</string>
+    <string name="profile_setup_continue">Շարունակել</string>
+</resources>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Հաշվեկշիռներ</string>
+    <string name="global_balances_profile">Պրոֆիլ</string>
+    <string name="global_balances_offline">Անցանց · այս սարքի հաշվեկշիռները</string>
+    <string name="global_balances_filter">Ցույց տալ</string>
+    <string name="global_balances_filter_all">Բոլորը</string>
+    <string name="global_balances_filter_you_owe">Վճարելու եք</string>
+    <string name="global_balances_filter_owes_you">Ստանալու եք</string>
+    <string name="global_balances_hint">Արդեն հաշվանցված է խմբերի միջև. յուրաքանչյուր անձ երևում է մեկ անգամ։</string>
+    <string name="global_balances_hint_empty">Գումարում ենք այս սարքի բոլոր խմբերը։</string>
+    <string name="global_balances_section_you_owe">Վճարելու եք · %d</string>
+    <string name="global_balances_section_owes_you">Ստանալու եք · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d խումբ</item>
+        <item quantity="other">%d խումբ</item>
+    </plurals>
+    <string name="global_balances_guest">%s · հյուր</string>
+    <string name="global_balances_you_owe">վճարելու եք</string>
+    <string name="global_balances_owes_you">ստանալու եք</string>
+    <string name="global_balances_by_group_show">Ցույց տալ ըստ խմբերի՝ %s</string>
+    <string name="global_balances_by_group_hide">Թաքցնել ըստ խմբերի՝ %s</string>
+    <string name="global_balances_received">Ստացված է</string>
+    <string name="global_balances_received_from">Ստացված է, վճարող՝ %s</string>
+    <string name="global_balances_settle">Մաքրել հաշիվները</string>
+    <string name="global_balances_settle_with">Մաքրել հաշիվները՝ %s</string>
+    <string name="global_balances_charge">Խնդրել գումար</string>
+    <string name="global_balances_charge_person">Խնդրել գումար՝ %s</string>
+    <string name="global_balances_detail_pane">Հաշվեկշիռ՝ %s</string>
+    <string name="global_balances_detail_owes_you">%s պետք է Ձեզ վճարի</string>
+    <string name="global_balances_detail_you_owe">Դուք պետք է վճարեք, ստացող՝ %s</string>
+    <string name="global_balances_detail_guest">%s · հյուր՝ առանց հավելվածի</string>
+    <string name="global_balances_detail_note_owed">Զուտ գումարն արդեն հաշվանցում է խմբերը. Խնդրել գումար և Ստացված է կոճակներն օգտագործում են %s գումարը։ Հավելվածը գրանցում է վճարում յուրաքանչյուր խմբում։</string>
+    <string name="global_balances_detail_note_settle">Զուտ գումարն արդեն հաշվանցում է խմբերը. Մաքրել հաշիվները կոճակն օգտագործում է %s գումարը։ Հավելվածը գրանցում է վճարում յուրաքանչյուր խմբում։</string>
+    <string name="global_balances_detail_note_single">Միայն մեկ խումբ է բաց հետևյալի հետ՝ %s։</string>
+    <string name="global_balances_settled_title">Բոլոր հաշիվները մաքրված են</string>
+    <string name="global_balances_settled_body">Ոչ ոք Ձեզ պարտք չէ, և Դուք ոչ ոքի պարտք չեք։ Երբ ինչ-որ մեկը ծախս ավելացնի, հաշվեկշիռը կհայտնվի այստեղ։</string>
+    <string name="global_balances_settled_action">Տեսնել խմբերը</string>
+    <string name="global_balances_nothing_to_pay_title">Դուք ոչինչ պարտք չեք</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Դուք մաքրել եք հաշիվները բոլորի հետ։ Դեռ պետք է ստանաք %2$s՝ %1$d անձից։</item>
+        <item quantity="other">Դուք մաքրել եք հաշիվները բոլորի հետ։ Դեռ պետք է ստանաք %2$s՝ %1$d անձից։</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Տեսնել, թե ով պետք է Ձեզ վճարի</string>
+    <string name="global_balances_nothing_to_receive_title">Ոչ ոք Ձեզ պարտք չէ</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Դուք դեռ պետք է վճարեք %2$s՝ %1$d անձի։</item>
+        <item quantity="other">Դուք դեռ պետք է վճարեք %2$s՝ %1$d անձի։</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Տեսնել, թե ում պետք է վճարեք</string>
+    <string name="global_balances_coming_soon">Շուտով</string>
+    <string name="global_balances_change_error">Չհաջողվեց պահել փոփոխությունը։ Փորձեք կրկին։</string>
+    <string name="global_balances_copied">Պատճենվեց</string>
+    <string name="global_balances_charge_title">Խնդրել գումար՝ %s</string>
+    <string name="global_balances_charge_owes">Պետք է Ձեզ վճարի %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Փակել</string>
+    <string name="global_balances_charge_guest">%s հյուր է՝ առանց հավելվածի։ Նա այդ մասին կիմանա միայն այս հաղորդագրությունից, ուստի այն արդեն նշում է, թե ինչ ծախսեր են ներառված։</string>
+    <string name="global_balances_charge_message">Հաղորդագրություն</string>
+    <string name="global_balances_charge_pix">Ներառել իմ Pix բանալին</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Պատճենել հաղորդագրությունը</string>
+    <string name="global_balances_charge_send">Ուղարկել</string>
+    <string name="global_balances_message">Ողջույն, %1$s։ Ըստ Blitz Split հավելվածի հաշվարկի՝ Դուք ինձ պարտք եք %2$s %3$s։</string>
+    <string name="global_balances_message_guest">Ողջույն, %1$s։ Դուք ինձ պարտք եք %2$s %3$s։ Դա Ձեր բաժինն է այս ծախսերում՝ %4$s։</string>
+    <string name="global_balances_message_guest_paid">Ողջույն, %1$s։ Դուք ինձ պարտք եք %2$s %3$s։ Դա Ձեր բաժինն է այս ծախսերում՝ %4$s, հանած արդեն վճարած %5$s գումարը։</string>
+    <string name="global_balances_message_group">%s խմբում</string>
+    <string name="global_balances_message_groups">%s խմբերում</string>
+    <string name="global_balances_message_pix">%1$s Pix՝ %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Հեռախոս</string>
+    <string name="global_balances_key_email">Էլ. փոստ</string>
+    <string name="global_balances_key_random">Պատահական բանալի</string>
+    <string name="global_balances_message_reroute">%1$s խմբում պարտքերը պարզեցվեցին, ուստի Դուք վճարում եք անմիջապես ինձ, ոչ թե հետևյալին՝ %2$s. Ձեր ընդհանուր գումարը չի փոխվել։</string>
+</resources>

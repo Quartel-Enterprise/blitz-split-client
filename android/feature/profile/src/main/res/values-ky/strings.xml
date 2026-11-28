@@ -125,6 +125,13 @@
     <string name="profile_language_basque">Баск тили</string>
     <string name="profile_language_galician">Галисия тили</string>
     <string name="profile_language_romansh">Романш тили</string>
+    <string name="profile_language_zulu">Зулу тили</string>
+    <string name="profile_language_afrikaans">Африкаанс тили</string>
+    <string name="profile_language_georgian">Грузин тили</string>
+    <string name="profile_language_armenian">Армян тили</string>
+    <string name="profile_language_albanian">Албан тили</string>
+    <string name="profile_language_macedonian">Македон тили</string>
+    <string name="profile_language_belarusian">Беларус тили</string>
     <string name="profile_language_system_detail">Түзмөк тили</string>
     <string name="profile_notifications">Билдирмелер</string>
     <plurals name="profile_notifications_active">

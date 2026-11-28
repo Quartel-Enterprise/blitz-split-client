@@ -127,6 +127,13 @@
     <string name="profile_language_basque">Baskų</string>
     <string name="profile_language_galician">Galisų</string>
     <string name="profile_language_romansh">Retoromanų</string>
+    <string name="profile_language_zulu">Zulu</string>
+    <string name="profile_language_afrikaans">Afrikanų</string>
+    <string name="profile_language_georgian">Gruzinų</string>
+    <string name="profile_language_armenian">Armėnų</string>
+    <string name="profile_language_albanian">Albanų</string>
+    <string name="profile_language_macedonian">Makedonų</string>
+    <string name="profile_language_belarusian">Baltarusių</string>
     <string name="profile_language_system_detail">Įrenginio kalba</string>
     <string name="profile_notifications">Pranešimai</string>
     <plurals name="profile_notifications_active">

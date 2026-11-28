@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · herstelkode</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Laat die kamera in Instellings toe om \'n foto te neem.</string>
+    <string name="platform_camera_settings">Instellings</string>
+    <string name="platform_receipt_source_camera">Neem foto</string>
+    <string name="platform_receipt_source_gallery">Kies uit galery</string>
+    <string name="platform_receipt_source_file">Kies lêer</string>
+    <string name="platform_receipt_camera_title">Skandeer strokie</string>
+    <string name="platform_receipt_camera_close">Maak toe</string>
+    <string name="platform_receipt_camera_flash_on">Skakel die flits aan</string>
+    <string name="platform_receipt_camera_flash_off">Skakel die flits af</string>
+    <string name="platform_receipt_camera_hint">Kry die hele strokie in die raam. Ons vul die bedrag, datum en beskrywing in; jy kontroleer voor jy stoor.</string>
+    <string name="platform_receipt_camera_gallery">Kies uit galery</string>
+    <string name="platform_receipt_camera_shutter">Neem foto</string>
+    <string name="platform_receipt_camera_unavailable">Die kamera is nie beskikbaar nie. Kies \'n foto van die strokie uit die galery.</string>
+    <string name="platform_receipt_camera_permission">Laat die kamera toe om die strokie te skandeer, of kies \'n foto uit die galery.</string>
+    <string name="platform_receipt_camera_allow">Laat kamera toe</string>
+    <string name="platform_receipt_camera_settings">Maak instellings oop</string>
+</resources>

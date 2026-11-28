@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">სიტყვები არ არის</string>
+    <string name="category_map_title">კატეგორიების რუკა</string>
+    <string name="category_map_search">სიტყვების ძიება</string>
+    <string name="category_map_add">სიტყვის დამატება</string>
+    <string name="category_map_more">სხვა პარამეტრები</string>
+    <string name="category_map_restore">ნაგულისხმევის აღდგენა</string>
+    <string name="category_map_back">უკან</string>
+    <string name="category_map_intro">როცა ხარჯის სათაურში ერთ-ერთი ეს სიტყვაა, კატეგორია თავისით ერთვება. “ტაქსი სახლამდე” ხდება ტრანსპორტი.</string>
+    <string name="category_map_intro_offline">რუკა ოფლაინაც მუშაობს: ცვლილებები ამ მოწყობილობაზე მაშინვე მოქმედებს, დანარჩენ მოწყობილობებზე კი ინტერნეტთან დაკავშირებისას აისახება.</string>
+    <string name="category_map_device_only">თქვენი რუკა მხოლოდ ამ მოწყობილობაზე ინახება. სხვა მოწყობილობებზე გადასატანად პროფილში შედით Google-ით ან Apple-ით.</string>
+    <string name="category_map_open_profile">პროფილის გახსნა</string>
+    <string name="category_map_longest_wins">როცა სათაურს ორი სიტყვა ემთხვევა, იმარჯვებს უფრო გრძელი.</string>
+    <string name="category_map_no_result">სიტყვა “%1$s” ვერ მოიძებნა</string>
+    <string name="category_map_no_result_body">დაამატეთ და ხარჯები, რომელთა სათაურშიც ეს სიტყვაა, სწორი კატეგორიით მოვა.</string>
+    <string name="category_map_add_query">დამატება: “%1$s”</string>
+    <string name="category_map_empty_title">თქვენი რუკა ცარიელია</string>
+    <string name="category_map_empty_body">სიტყვების გარეშე კატეგორია სათაურიდან არ განისაზღვრება: მას ყოველ ხარჯზე თავად ირჩევთ.</string>
+    <string name="category_map_group_category"> · კატეგორია ჯგუფიდან %1$s</string>
+    <string name="category_map_only_main">მხოლოდ %1$s</string>
+    <string name="category_map_only_in_group">მხოლოდ ჯგუფში %1$s</string>
+    <string name="category_map_no_terms_yet">სიტყვები ჯერ არ არის.</string>
+    <string name="category_map_add_in">სიტყვის დამატება კატეგორიაში %1$s</string>
+    <string name="category_map_tip">შეეხეთ სიტყვას, რომ შეცვალოთ მისი კატეგორია ან წაშალოთ. ემთხვევა მთელ სიტყვას, მახვილებისა და რეგისტრის გაუთვალისწინებლად.</string>
+    <string name="category_map_queued">რიგში</string>
+    <string name="category_map_term_action">%1$s, %2$s. რედაქტირება</string>
+    <string name="category_map_new_term">ახალი სიტყვა</string>
+    <string name="category_map_edit_term">სიტყვის რედაქტირება</string>
+    <string name="category_map_term_label">სიტყვა ან ფრაზა</string>
+    <string name="category_map_term_help">ემთხვევა მთელ სიტყვას, მახვილებისა და რეგისტრის გაუთვალისწინებლად.</string>
+    <string name="category_map_term_help_app">აპის სიტყვა. “ნაგულისხმევის აღდგენა” მას თავდაპირველი სახით დააბრუნებს.</string>
+    <string name="category_map_term_duplicate">“%1$s” უკვე ირჩევს კატეგორიას %2$s. თითოეულ სიტყვას ერთი კატეგორია აქვს.</string>
+    <string name="category_map_term_too_short">გამოიყენეთ მინიმუმ 2 ასო.</string>
+    <string name="category_map_term_too_long">გამოიყენეთ მაქსიმუმ 30 ასო.</string>
+    <string name="category_map_term_invalid">გამოიყენეთ მხოლოდ ასოები, ციფრები და ჰარები.</string>
+    <string name="category_map_category">კატეგორია</string>
+    <string name="category_map_category_help">შეიძლება იყოს კატეგორია ან ქვეკატეგორია.</string>
+    <string name="category_map_category_help_edit">აქ შეცვლა სიტყვას სხვა კატეგორიაში გადაიტანს.</string>
+    <string name="category_map_category_help_move">გადატანა სიტყვას ამოიღებს კატეგორიიდან %1$s.</string>
+    <string name="category_map_example">მაგალითი</string>
+    <string name="category_map_example_move">გადატანის შემთხვევაში</string>
+    <string name="category_map_remove">წაშლა</string>
+    <string name="category_map_cancel">გაუქმება</string>
+    <string name="category_map_save">შენახვა</string>
+    <string name="category_map_move_to">გადატანა კატეგორიაში %1$s</string>
+    <string name="category_map_removed">“%1$s” რუკიდან წაიშალა</string>
+    <string name="category_map_undo">დაბრუნება</string>
+    <string name="category_map_restore_title">აღვადგინოთ ნაგულისხმევი რუკა?</string>
+    <string name="category_map_restore_body">აპის 60 სიტყვა თავდაპირველი სახით დაბრუნდება, მათ შორის ისინიც, რომლებიც წაშალეთ ან გადაიტანეთ.</string>
+    <string name="category_map_restore_own_one">თქვენ მიერ შექმნილი სიტყვა “%1$s” დარჩება.</string>
+    <string name="category_map_restore_confirm">აღდგენა</string>
+    <string name="category_map_save_error">რუკის შენახვა ვერ მოხერხდა. სცადეთ ხელახლა.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d სიტყვა</item>
+        <item quantity="other">%d სიტყვა</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d ქვეკატეგორია</item>
+        <item quantity="other">%d ქვეკატეგორია</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d სიტყვა, შეიცავს: “%2$s”</item>
+        <item quantity="other">%1$d სიტყვა, შეიცავს: “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">ოფლაინ · რიგში %d ცვლილება</item>
+        <item quantity="other">ოფლაინ · რიგში %d ცვლილება</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">თქვენ მიერ შექმნილი %d სიტყვა დარჩება.</item>
+        <item quantity="other">თქვენ მიერ შექმნილი %d სიტყვა დარჩება.</item>
+    </plurals>
+    <string name="category_map_new_category">ახალი კატეგორია</string>
+    <string name="category_map_new_subcategory_in">ახალი ქვეკატეგორია კატეგორიაში %s</string>
+    <string name="category_map_edit_category">რედაქტირება: %s</string>
+    <string name="category_map_category_group">ჯგუფი</string>
+    <string name="category_map_change_color">ფერის შეცვლა: %1$s</string>
+    <string name="category_map_restore_color">ფერის აღდგენა</string>
+    <string name="category_map_color_done">მზადაა</string>
+</resources>

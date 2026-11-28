@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Նորություններ</string>
+    <string name="release_notes_show_beta">Ցույց տալ բետա տարբերակները</string>
+    <string name="release_notes_beta_badge">Բետա %1$d</string>
+    <string name="release_notes_installed_badge">Այս տարբերակը</string>
+    <string name="release_notes_empty">Նորություններ դեռ չկան։</string>
+    <string name="release_notes_empty_only_betas">Կայուն տարբերակ դեռ չկա։ Միացրեք բետա տարբերակները՝ տեսնելու, թե ինչ է փորձարկվում։</string>
+    <string name="release_notes_load_failed_title">Չհաջողվեց բեռնել նորությունները</string>
+    <string name="release_notes_load_failed_body">Ստուգեք կապը և փորձեք կրկին։</string>
+    <string name="release_notes_retry">Կրկին փորձել</string>
+    <string name="release_notes_open_on_github">Բացել GitHub-ում</string>
+</resources>

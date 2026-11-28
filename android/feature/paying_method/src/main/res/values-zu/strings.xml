@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Indlela entsha yokukhokha</string>
+    <string name="paying_method_edit_title">Hlela indlela yokukhokha</string>
+    <string name="paying_method_type">Uhlobo</string>
+    <string name="paying_method_name">Igama</string>
+    <string name="paying_method_name_optional">Igama (akuphoqelekile)</string>
+    <string name="paying_method_color">Umbala</string>
+    <string name="paying_method_default">Indlela ezenzakalelayo</string>
+    <string name="paying_method_default_hint">Izindleko ezintsha ozikhokhayo ziqala ngayo.</string>
+    <string name="paying_method_delete">Susa indlela yokukhokha</string>
+    <string name="paying_method_delete_title">Susa le ndlela yokukhokha?</string>
+    <string name="paying_method_delete_body">Izindleko owazimaka ngayo ngeke zisayibonisa.</string>
+    <string name="paying_method_delete_confirm">Susa</string>
+    <string name="paying_method_save">Londoloza</string>
+</resources>

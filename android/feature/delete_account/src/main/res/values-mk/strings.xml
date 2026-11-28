@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Избриши корисничка сметка</string>
+    <string name="delete_account_offline_title">Нема интернет.</string>
+    <string name="delete_account_offline_body">За бришење на корисничката сметка потребна е интернет-врска. Поврзете се и обидете се повторно.</string>
+    <string name="delete_account_heading">Да се избрише Вашата корисничка сметка и Вашите податоци?</string>
+    <string name="delete_account_deleted_title">Што се брише</string>
+    <string name="delete_account_deleted_profile">Вашиот профил (име, фотографија и боја)</string>
+    <string name="delete_account_deleted_keys">Вашите Pix и Bitcoin клучеви</string>
+    <string name="delete_account_deleted_provider">Поврзувањето со Вашата корисничка сметка на %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Вашиот код за враќање</string>
+    <string name="delete_account_deleted_device">Копијата од Вашите податоци на овој уред</string>
+    <string name="delete_account_kept_title">Што останува во Вашите групи</string>
+    <string name="delete_account_kept_groups">Групите, со нивните трошоци и плаќања, за другите членови</string>
+    <string name="delete_account_kept_member">Вашето име во секоја група, како член без корисничка сметка</string>
+    <string name="delete_account_kept_comments">Вашите коментари и фотографиите што ги додадовте, под Вашето име</string>
+    <string name="delete_account_export">Прво извези ги моите податоци</string>
+    <string name="delete_account_confirm">Разбирам дека ова не може да се врати</string>
+    <string name="delete_account_delete">Избриши корисничка сметка</string>
+    <string name="delete_account_cancel">Откажи</string>
+    <string name="delete_account_failed">Корисничката сметка не можеше да се избрише. Обидете се повторно.</string>
+</resources>

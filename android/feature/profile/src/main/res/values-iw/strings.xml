@@ -126,6 +126,13 @@
     <string name="profile_language_basque">בסקית</string>
     <string name="profile_language_galician">גליציאנית</string>
     <string name="profile_language_romansh">רומאנש</string>
+    <string name="profile_language_zulu">זולו</string>
+    <string name="profile_language_afrikaans">אפריקאנס</string>
+    <string name="profile_language_georgian">גאורגית</string>
+    <string name="profile_language_armenian">ארמנית</string>
+    <string name="profile_language_albanian">אלבנית</string>
+    <string name="profile_language_macedonian">מקדונית</string>
+    <string name="profile_language_belarusian">בלארוסית</string>
     <string name="profile_language_system_detail">שפת המכשיר</string>
     <string name="profile_notifications">התראות</string>
     <plurals name="profile_notifications_active">

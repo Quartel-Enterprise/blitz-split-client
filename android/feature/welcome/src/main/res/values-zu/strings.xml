@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Hlukanisa ibhili, ngaphandle kwenkathazo</string>
+    <string name="welcome_offline_title">Iyasebenza ungaxhunyiwe</string>
+    <string name="welcome_offline_body">Konke kuhlala kudivayisi yakho futhi kuvumelaniswa kamuva.</string>
+    <string name="welcome_optional_title">I-akhawunti ayiphoqelekile</string>
+    <string name="welcome_optional_body">I-Google noma i-Apple ikuvikela nje ekulahlekelweni yilutho lapho ushintsha idivayisi.</string>
+    <string name="welcome_invite_title">Mema ngelinki noma ngekhodi ye-QR</string>
+    <string name="welcome_invite_body">Abangane bajoyina iqembu ngaphandle kokudala i-akhawunti.</string>
+    <string name="welcome_no_connection_title">Akukho xhumano.</string>
+    <string name="welcome_no_connection_body">Ukungena ngemvume nge-akhawunti kudinga i-inthanethi. Yisebenzise ngaphandle kwe-akhawunti manje bese uxhuma kamuva kuphrofayela.</string>
+    <string name="welcome_or">noma</string>
+    <string name="welcome_use_without_account">Sebenzisa ngaphandle kwe-akhawunti</string>
+    <string name="welcome_used_on_another_device">Ngike ngayisebenzisa kwenye idivayisi</string>
+    <string name="welcome_sign_in_failed">Akukwazekanga ukungena ngemvume manje. Zama futhi.</string>
+    <string name="welcome_legal_notice">Ngokuqhubeka, wamukela okuthi %1$s futhi uyaqaphela okuthi %2$s.</string>
+    <string name="welcome_legal_terms">Imigomo Yesevisi</string>
+    <string name="welcome_legal_privacy">Inqubomgomo Yobumfihlo</string>
+    <string name="welcome_no_account_note">Ngaphandle kwe-akhawunti, idatha yakho isuswa ngemuva kwezinsuku ezingu-30 ingasetshenziswa. Xhuma i-Google noma i-Apple ukuze uyigcine.</string>
+    <string name="welcome_no_account_note_offline">Ngaphandle kwe-akhawunti, idatha yakho isuswa ngemuva kwezinsuku ezingu-30 ingasetshenziswa. Xhuma i-Google noma i-Apple kamuva, kuphrofayela, ukuze uyigcine.</string>
+    <string name="welcome_expired_title">Idatha yakho isusiwe</string>
+    <string name="welcome_expired_body">Ubusebenzisa uhlelo lokusebenza ngaphandle kwe-akhawunti futhi awuluvulanga izinsuku ezingu-30, ngakho idatha yakho isusiwe. Xhuma i-Google noma i-Apple ukuze uyigcine ngokuzayo.</string>
+    <string name="welcome_expired_ok">Kulungile</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">რას გეძახიან მეგობრები?</string>
+    <string name="profile_setup_subtitle">თქვენს სახელს ხედავენ თქვენი ჯგუფები და ყველა, ვისაც თქვენი პროფილის ბმული აქვს.</string>
+    <string name="profile_setup_avatar_color">ავატარის ფერი</string>
+    <string name="profile_setup_add_photo">ფოტოს დამატება</string>
+    <string name="profile_setup_photo_error">ამ ფოტოს გამოყენება ვერ მოხერხდა. სცადეთ სხვა.</string>
+    <string name="profile_setup_name_label">თქვენი სახელი</string>
+    <string name="profile_setup_name_placeholder">ნინო ბერიძე</string>
+    <string name="profile_setup_name_too_short">შეიყვანეთ მინიმუმ %d ასო.</string>
+    <string name="profile_setup_name_too_long">გამოიყენეთ მაქსიმუმ %d სიმბოლო.</string>
+    <string name="profile_setup_name_hint">მოგვიანებით შეგიძლიათ შეცვალოთ პროფილში.</string>
+    <string name="profile_setup_saved_locally">ჯერჯერობით მხოლოდ ამ მოწყობილობაზეა შენახული.</string>
+    <string name="profile_setup_continue">გაგრძელება</string>
+</resources>

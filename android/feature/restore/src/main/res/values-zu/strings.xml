@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Buyisela amaqembu akho</string>
+    <string name="restore_subtitle">Wake wangena ngemvume nge-akhawunti ngaphambili? Vele ungene ngemvume futhi. Uma kungenjalo, sebenzisa ikhodi yokubuyisela noma ikhodi ye-QR evela kudivayisi yakho endala.</string>
+    <string name="restore_no_connection_title">Akukho xhumano</string>
+    <string name="restore_no_connection_body">Ukungena ngemvume nge-akhawunti noma ngekhodi kudinga i-inthanethi ukuze kulandwe amaqembu akho. Okubhalile kugciniwe.</string>
+    <string name="restore_code_label">Noma sebenzisa ikhodi yokubuyisela</string>
+    <string name="restore_code_hint">Amagama angu-12 ngokulandelana. Wanamathisele wonke enkundleni eyodwa ukuze ugcwalise zonke izinkundla.</string>
+    <string name="restore_scan_qr_title">Skena ikhodi ye-QR evela kudivayisi yakho endala</string>
+    <string name="restore_scan_qr_body">Lapho: Iphrofayela › Ukubuyisela › Bonisa ikhodi ye-QR</string>
+    <string name="restore_recover">Buyisela</string>
+    <string name="restore_try_again">Zama futhi</string>
+    <string name="restore_start_fresh">Qala kabusha kule divayisi</string>
+    <string name="restore_error_invalid_code">Ikhodi ayitholakalanga. Hlola amagama nokulandelana kwawo, bese uzama futhi.</string>
+    <string name="restore_error_too_many_attempts">Imizamo eminingi kakhulu. Linda imizuzu embalwa bese uzama futhi.</string>
+    <string name="restore_error_sign_in_failed">Akukwazekanga ukungena ngemvume manje. Zama futhi.</string>
+    <string name="restore_error_unknown">Kukhona okungahambanga kahle. Zama futhi.</string>
+</resources>

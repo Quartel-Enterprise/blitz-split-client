@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Затвори</string>
+    <string name="invite_group_created">Групата е создадена</string>
+    <string name="invite_title">Поканете ги сите во групата %s</string>
+    <string name="invite_qr_description">QR код на линкот за покана во групата</string>
+    <string name="invite_copy">Копирај</string>
+    <string name="invite_copied">Копирано</string>
+    <string name="invite_who_picks">Кој ќе го отвори линкот избира кој е од списокот: %s. Не е потребна корисничка сметка.</string>
+    <string name="invite_names_or">%1$s или %2$s</string>
+    <string name="invite_anyone_joins">Кој ќе го отвори линкот се приклучува кон групата. Не е потребна корисничка сметка.</string>
+    <string name="invite_pending_title">Линкот е на чекање</string>
+    <string name="invite_pending_offline">Ќе се создаде штом ќе бидете онлајн.</string>
+    <string name="invite_pending_online">Се создава линкот…</string>
+    <string name="invite_failed_title">Линкот не можеше да се создаде</string>
+    <string name="invite_failed_body">Нешто тргна наопаку при синхронизирањето на групата.</string>
+    <string name="invite_retry">Обиди се повторно</string>
+    <string name="invite_share">Сподели линк</string>
+    <string name="invite_see_who_joined">Види кој се приклучи</string>
+    <string name="invite_add_person">Додај некого без апликацијата</string>
+    <string name="invite_go_to_group">Оди во групата</string>
+    <string name="invite_change_link">Промени линк</string>
+    <string name="invite_change_link_title">Да се промени линкот за покана?</string>
+    <string name="invite_change_link_message">Тековниот линк и QR кодот престануваат да работат, вклучително и неискористените лични покани. Тие што веќе се приклучија остануваат во групата.</string>
+    <string name="invite_change_link_failed">Линкот не можеше да се промени. Обидете се повторно.</string>
+    <string name="invite_share_message">Ајде да ги поделиме трошоците од групата %1$s во Blitz Split. Приклучете се со овој линк: %2$s</string>
+</resources>

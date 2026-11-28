@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">მხარდაჭერასთან დაკავშირება</string>
+    <string name="contact_support_description">გავხსნით თქვენს ელფოსტის აპს მზა შეტყობინებით. აღწერეთ, რა მოხდა, და გაგზავნეთ: ყველა შეტყობინებას ნამდვილი ადამიანები კითხულობენ.</string>
+    <string name="contact_support_to">ვის</string>
+    <string name="contact_support_diagnostics">ელფოსტაში დაერთვება</string>
+    <string name="contact_support_app_version">აპის ვერსია</string>
+    <string name="contact_support_platform">პლატფორმა</string>
+    <string name="contact_support_language">ენა</string>
+    <string name="contact_support_account">ანგარიში</string>
+    <string name="contact_support_profile">პროფილი</string>
+    <string name="contact_support_language_system">სისტემის</string>
+    <string name="contact_support_account_local">მხოლოდ ეს მოწყობილობა</string>
+    <string name="contact_support_account_anonymous">არ არის დაკავშირებული</string>
+    <string name="contact_support_open_email">ელფოსტის გახსნა</string>
+    <string name="contact_support_copy_email">ელფოსტის მისამართის კოპირება</string>
+    <string name="contact_support_notice_copied">ელფოსტის მისამართი დაკოპირდა.</string>
+    <string name="contact_support_notice_no_app">ელფოსტის აპი ვერ მოიძებნა. სანაცვლოდ მისამართი დაკოპირდა.</string>
+    <string name="contact_support_close">დახურვა</string>
+</resources>

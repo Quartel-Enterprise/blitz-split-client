@@ -117,6 +117,13 @@ const nativeLanguageNames: Record<string, string> = {
   eu: 'Euskara',
   gl: 'Galego',
   rm: 'Rumantsch',
+  zu: 'isiZulu',
+  af: 'Afrikaans',
+  ka: 'ქართული',
+  hy: 'Հայերեն',
+  sq: 'Shqip',
+  mk: 'Македонски',
+  be: 'Беларуская',
 }
 
 /** The same language in the app's language, "Portuguese (Brazil)", under its own name. */
@@ -192,6 +199,13 @@ const languageNames: Record<string, MessageKey> = {
   eu: 'profile_languageBasque',
   gl: 'profile_languageGalician',
   rm: 'profile_languageRomansh',
+  zu: 'profile_languageZulu',
+  af: 'profile_languageAfrikaans',
+  ka: 'profile_languageGeorgian',
+  hy: 'profile_languageArmenian',
+  sq: 'profile_languageAlbanian',
+  mk: 'profile_languageMacedonian',
+  be: 'profile_languageBelarusian',
 }
 
 /**

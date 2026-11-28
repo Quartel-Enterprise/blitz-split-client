@@ -124,6 +124,13 @@
     <string name="profile_language_basque">バスク語</string>
     <string name="profile_language_galician">ガリシア語</string>
     <string name="profile_language_romansh">ロマンシュ語</string>
+    <string name="profile_language_zulu">ズールー語</string>
+    <string name="profile_language_afrikaans">アフリカーンス語</string>
+    <string name="profile_language_georgian">ジョージア語</string>
+    <string name="profile_language_armenian">アルメニア語</string>
+    <string name="profile_language_albanian">アルバニア語</string>
+    <string name="profile_language_macedonian">マケドニア語</string>
+    <string name="profile_language_belarusian">ベラルーシ語</string>
     <string name="profile_language_system_detail">デバイスの言語</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

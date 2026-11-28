@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Maak toe</string>
+    <string name="invite_group_created">Groep geskep</string>
+    <string name="invite_title">Nooi almal na %s</string>
+    <string name="invite_qr_description">QR-kode van die groep se uitnodigingskakel</string>
+    <string name="invite_copy">Kopieer</string>
+    <string name="invite_copied">Gekopieer</string>
+    <string name="invite_who_picks">Wie die skakel oopmaak, kies wie hulle op die lys is: %s. Geen rekening nodig nie.</string>
+    <string name="invite_names_or">%1$s of %2$s</string>
+    <string name="invite_anyone_joins">Wie die skakel oopmaak, sluit by die groep aan. Geen rekening nodig nie.</string>
+    <string name="invite_pending_title">Skakel hangende</string>
+    <string name="invite_pending_offline">Dit word geskep sodra jy aanlyn is.</string>
+    <string name="invite_pending_online">Skep die skakel…</string>
+    <string name="invite_failed_title">Kon nie die skakel skep nie</string>
+    <string name="invite_failed_body">Iets het verkeerd geloop terwyl die groep gesinkroniseer is.</string>
+    <string name="invite_retry">Probeer weer</string>
+    <string name="invite_share">Deel skakel</string>
+    <string name="invite_see_who_joined">Sien wie aangesluit het</string>
+    <string name="invite_add_person">Voeg iemand sonder die app by</string>
+    <string name="invite_go_to_group">Gaan na die groep</string>
+    <string name="invite_change_link">Verander skakel</string>
+    <string name="invite_change_link_title">Verander die uitnodigingskakel?</string>
+    <string name="invite_change_link_message">Die huidige skakel en QR-kode werk nie meer nie, ongebruikte persoonlike uitnodigings ingesluit. Wie reeds aangesluit het, bly in die groep.</string>
+    <string name="invite_change_link_failed">Kon nie die skakel verander nie. Probeer weer.</string>
+    <string name="invite_share_message">Kom ons verdeel die uitgawes van %1$s op Blitz Split. Sluit aan met hierdie skakel: %2$s</string>
+</resources>

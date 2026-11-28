@@ -126,6 +126,13 @@
     <string name="profile_language_basque">Bască</string>
     <string name="profile_language_galician">Galiciană</string>
     <string name="profile_language_romansh">Romanșă</string>
+    <string name="profile_language_zulu">Zulu</string>
+    <string name="profile_language_afrikaans">Afrikaans</string>
+    <string name="profile_language_georgian">Georgiană</string>
+    <string name="profile_language_armenian">Armeană</string>
+    <string name="profile_language_albanian">Albaneză</string>
+    <string name="profile_language_macedonian">Macedoneană</string>
+    <string name="profile_language_belarusian">Belarusă</string>
     <string name="profile_language_system_detail">Limba dispozitivului</string>
     <string name="profile_notifications">Notificări</string>
     <plurals name="profile_notifications_active">

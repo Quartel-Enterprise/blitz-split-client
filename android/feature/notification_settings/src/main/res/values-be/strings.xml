@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Апавяшчэнні</string>
+    <string name="notification_settings_denied_title">Апавяшчэнні Blitz Split адключаны ў Android.</string>
+    <string name="notification_settings_denied_body">Уключыце іх у наладах сістэмы, каб атрымліваць апавяшчэнні ніжэй. Званочак працягвае працаваць.</string>
+    <string name="notification_settings_open_settings">Адкрыць налады</string>
+    <string name="notification_settings_refused_body">Android дазваляе ўключыць іх яшчэ раз, каб атрымліваць апавяшчэнні ніжэй. Званочак працягвае працаваць.</string>
+    <string name="notification_settings_turn_on">Уключыць</string>
+    <string name="notification_settings_blocked_in_android">Заблакіравана ў Android</string>
+    <string name="notification_settings_open_channel_settings_description">Адкрыць налады Android: %1$s</string>
+    <string name="notification_settings_push_switch">Push-апавяшчэнні</string>
+    <string name="notification_settings_push_switch_detail">Толькі на гэтай прыладзе</string>
+    <string name="notification_settings_section">Апавяшчаць пра</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">У праграме</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push адпраўляе апавяшчэнне на гэту прыладу. У праграме — пазначае яго як новае на званочку і ў Дзеяннях; калі выключана, яно ўсё роўна паказваецца ў Дзеяннях, ужо прачытаным.</string>
+    <string name="notification_settings_footer">Апавяшчэнні прыходзяць, калі ёсць інтэрнэт. Каб адключыць гук групы, скарыстайцеся меню ўнутры яе.</string>
+</resources>

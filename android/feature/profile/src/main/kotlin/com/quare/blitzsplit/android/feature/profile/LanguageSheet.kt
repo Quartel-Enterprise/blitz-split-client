@@ -409,6 +409,13 @@ internal fun languageName(language: AppLanguage): String = when (language) {
     AppLanguage.BASQUE -> stringResource(R.string.profile_language_native_basque)
     AppLanguage.GALICIAN -> stringResource(R.string.profile_language_native_galician)
     AppLanguage.ROMANSH -> stringResource(R.string.profile_language_native_romansh)
+    AppLanguage.ZULU -> stringResource(R.string.profile_language_native_zulu)
+    AppLanguage.AFRIKAANS -> stringResource(R.string.profile_language_native_afrikaans)
+    AppLanguage.GEORGIAN -> stringResource(R.string.profile_language_native_georgian)
+    AppLanguage.ARMENIAN -> stringResource(R.string.profile_language_native_armenian)
+    AppLanguage.ALBANIAN -> stringResource(R.string.profile_language_native_albanian)
+    AppLanguage.MACEDONIAN -> stringResource(R.string.profile_language_native_macedonian)
+    AppLanguage.BELARUSIAN -> stringResource(R.string.profile_language_native_belarusian)
     AppLanguage.CHINESE_TRADITIONAL -> stringResource(R.string.profile_language_native_chinese_traditional)
 }
 
@@ -486,5 +493,12 @@ private fun translatedLanguageName(language: AppLanguage): String = when (langua
     AppLanguage.BASQUE -> stringResource(R.string.profile_language_basque)
     AppLanguage.GALICIAN -> stringResource(R.string.profile_language_galician)
     AppLanguage.ROMANSH -> stringResource(R.string.profile_language_romansh)
+    AppLanguage.ZULU -> stringResource(R.string.profile_language_zulu)
+    AppLanguage.AFRIKAANS -> stringResource(R.string.profile_language_afrikaans)
+    AppLanguage.GEORGIAN -> stringResource(R.string.profile_language_georgian)
+    AppLanguage.ARMENIAN -> stringResource(R.string.profile_language_armenian)
+    AppLanguage.ALBANIAN -> stringResource(R.string.profile_language_albanian)
+    AppLanguage.MACEDONIAN -> stringResource(R.string.profile_language_macedonian)
+    AppLanguage.BELARUSIAN -> stringResource(R.string.profile_language_belarusian)
     AppLanguage.CHINESE_TRADITIONAL -> stringResource(R.string.profile_language_chinese_traditional)
 }

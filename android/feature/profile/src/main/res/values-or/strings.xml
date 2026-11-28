@@ -125,6 +125,13 @@
     <string name="profile_language_basque">ବାସ୍କ</string>
     <string name="profile_language_galician">ଗାଲିସିଆନ୍</string>
     <string name="profile_language_romansh">ରୋମାନଶ୍</string>
+    <string name="profile_language_zulu">ଜୁଲୁ</string>
+    <string name="profile_language_afrikaans">ଆଫ୍ରିକାନ୍ସ</string>
+    <string name="profile_language_georgian">ଜର୍ଜିଆନ୍</string>
+    <string name="profile_language_armenian">ଆର୍ମେନିଆନ୍</string>
+    <string name="profile_language_albanian">ଆଲବାନିଆନ୍</string>
+    <string name="profile_language_macedonian">ମାସେଡୋନିଆନ୍</string>
+    <string name="profile_language_belarusian">ବେଲାରୁସିଆନ୍</string>
     <string name="profile_language_system_detail">ଡିଭାଇସ୍ ଭାଷା</string>
     <string name="profile_notifications">ନୋଟିଫିକେସନ୍</string>
     <plurals name="profile_notifications_active">

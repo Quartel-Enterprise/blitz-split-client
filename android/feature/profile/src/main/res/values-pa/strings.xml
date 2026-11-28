@@ -125,6 +125,13 @@
     <string name="profile_language_basque">ਬਾਸਕ</string>
     <string name="profile_language_galician">ਗੈਲਿਸ਼ਿਅਨ</string>
     <string name="profile_language_romansh">ਰੋਮਾਂਸ਼</string>
+    <string name="profile_language_zulu">ਜ਼ੁਲੂ</string>
+    <string name="profile_language_afrikaans">ਅਫ਼ਰੀਕਾਨਸ</string>
+    <string name="profile_language_georgian">ਜਾਰਜੀਆਈ</string>
+    <string name="profile_language_armenian">ਅਰਮੀਨੀਆਈ</string>
+    <string name="profile_language_albanian">ਅਲਬਾਨੀਆਈ</string>
+    <string name="profile_language_macedonian">ਮੈਕਡੋਨੀਆਈ</string>
+    <string name="profile_language_belarusian">ਬੇਲਾਰੂਸੀ</string>
     <string name="profile_language_system_detail">ਡਿਵਾਈਸ ਦੀ ਭਾਸ਼ਾ</string>
     <string name="profile_notifications">ਸੂਚਨਾਵਾਂ</string>
     <plurals name="profile_notifications_active">

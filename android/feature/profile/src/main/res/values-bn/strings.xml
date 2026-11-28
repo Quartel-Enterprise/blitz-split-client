@@ -125,6 +125,13 @@
     <string name="profile_language_basque">বাস্ক</string>
     <string name="profile_language_galician">গ্যালিশিয়</string>
     <string name="profile_language_romansh">রোমানশ</string>
+    <string name="profile_language_zulu">জুলু</string>
+    <string name="profile_language_afrikaans">আফ্রিকান্স</string>
+    <string name="profile_language_georgian">জর্জিয়ান</string>
+    <string name="profile_language_armenian">আর্মেনিয়ান</string>
+    <string name="profile_language_albanian">আলবেনীয়</string>
+    <string name="profile_language_macedonian">ম্যাসেডোনীয়</string>
+    <string name="profile_language_belarusian">বেলারুশীয়</string>
     <string name="profile_language_system_detail">ডিভাইসের ভাষা</string>
     <string name="profile_notifications">নোটিফিকেশন</string>
     <plurals name="profile_notifications_active">

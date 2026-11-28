@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Ilinki yesimemo</string>
+    <string name="members_link_pending">Ayikadalwa okwamanje</string>
+    <string name="members_share">Yabelana</string>
+    <string name="members_me">%s (wena)</string>
+    <string name="members_status_this_device">Le divayisi</string>
+    <string name="members_status_joined">Ujoyinile</string>
+    <string name="members_status_not_joined">Akakajoyini</string>
+    <string name="members_options">Izinketho: %s</string>
+    <string name="members_rename">Qamba kabusha</string>
+    <string name="members_personal_invite">Isimemo somuntu siqu: %s</string>
+    <string name="members_personal_message">Noma ubani ovula le linki ujoyina ngqo ngegama elithi %s, ngaphandle kokukhetha ohlwini. Isebenza kanye.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Noma ubani ovula le linki ujoyina ngqo ngegama elithi %1$s, ngaphandle kokukhetha ohlwini, futhi usevele ubona isabelo sakhe, %2$s, esindlekweni esengezwe kuze kube manje. Isebenza kanye.</item>
+        <item quantity="other">Noma ubani ovula le linki ujoyina ngqo ngegama elithi %1$s, ngaphandle kokukhetha ohlwini, futhi usevele ubona isabelo sakhe, %2$s, ezindlekweni ezingu-%3$d ezengezwe kuze kube manje. Isebenza kanye.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopisha ilinki</string>
+    <string name="members_personal_copied">Kukopishiwe</string>
+    <string name="members_personal_share">Yabelana nalo muntu: %s</string>
+    <string name="members_personal_share_message">Joyina iqembu elithi %1$s ngegama elithi %2$s ku-Blitz Split: %3$s</string>
+    <string name="members_remove">Susa eqenjini</string>
+    <string name="members_remove_joined">%s usevele ujoyine iqembu</string>
+    <string name="members_remove_title">Susa eqenjini: %s?</string>
+    <string name="members_remove_message">%s akakajoyini. Ungaphinda umengeze kamuva.</string>
+    <string name="members_remove_confirm">Susa</string>
+    <string name="members_release">Khulula igama</string>
+    <string name="members_release_title">Khulula igama elithi %s?</string>
+    <string name="members_release_message">Lowo owajoyina ngegama elithi %1$s uyaphuma eqenjini. Igama elithi %1$s, umbala nezindleko kuyahlala, futhi %1$s angaphinde akhethwe ngelinki yeqembu.</string>
+    <string name="members_release_confirm">Khulula</string>
+    <string name="members_release_error">Akukwazekanga ukukhulula igama. Hlola uxhumano lwakho bese uzama futhi.</string>
+    <string name="members_add">Engeza umuntu</string>
+    <string name="members_invite_instead">Unalo uhlelo lokusebenza? Mema ngelinki</string>
+    <string name="members_name_label">Igama</string>
+    <string name="members_save">Londoloza</string>
+    <string name="members_cancel">Khansela</string>
+    <string name="members_change_error">Akukwazekanga ukulondoloza ushintsho. Zama futhi.</string>
+    <string name="members_remove_open_balance">%s unebhalansi evulekile</string>
+    <string name="members_balance_to_get_back">uzothola %s</string>
+    <string name="members_balance_owes">ukweleta %s</string>
+    <string name="members_balance_settled">Kuxazululiwe</string>
+</resources>
