@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">ୱାଚ୍ ସଂଯୋଗ କରନ୍ତୁ</string>
+    <string name="connect_watch_close">ବନ୍ଦ କରନ୍ତୁ</string>
+    <string name="connect_watch_body">ଆପଣଙ୍କ ୱାଚ୍ ଦେଖାଉଥିବା କୋଡ୍ ଟାଇପ୍ କରନ୍ତୁ। ଏହା ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ସାଇନ୍ ଇନ୍ କରେ ଏବଂ ତା\'ପରେ ନିଜେ ସିଙ୍କ୍ ହୁଏ।</string>
+    <string name="connect_watch_code_label">ୱାଚ୍ କୋଡ୍</string>
+    <string name="connect_watch_error_invalid">ଭୁଲ୍ ବା ମିଆଦ ସରିଥିବା କୋଡ୍। ୱାଚ୍‌ରେ ଏକ ନୂଆ କୋଡ୍ ନିଅନ୍ତୁ।</string>
+    <string name="connect_watch_error_too_many">ବହୁତ ଅଧିକ ଭୁଲ୍ କୋଡ୍। କିଛି ମିନିଟ୍ ଅପେକ୍ଷା କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="connect_watch_error_needs_account">ପ୍ରଥମେ ଏକ ଆକାଉଣ୍ଟ ସଂଯୋଗ କରନ୍ତୁ: ଆପଣଙ୍କ ଡାଟା କେବଳ ଏହି ଡିଭାଇସ୍‌ରେ ଅଛି।</string>
+    <string name="connect_watch_error_failed">ୱାଚ୍ ସଂଯୋଗ କରିହେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="connect_watch_offline">ୱାଚ୍ ସଂଯୋଗ କରିବାକୁ ଇଣ୍ଟରନେଟ୍ ଦରକାର।</string>
+    <string name="connect_watch_own_watch_only">କେବଳ ଆପଣଙ୍କ ନିଜ ୱାଚ୍‌ରେ ଦେଖାଯାଇଥିବା କୋଡ୍ ଟାଇପ୍ କରନ୍ତୁ: ଯାହା ପାଖରେ ସେହି ୱାଚ୍ ଅଛି, ସେ ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ପ୍ରବେଶ କରିବେ।</string>
+    <string name="connect_watch_validity">କୋଡ୍ 5 ମିନିଟ୍ ପାଇଁ, ଥରେ ବୈଧ।</string>
+    <string name="connect_watch_button">ସଂଯୋଗ କରନ୍ତୁ</string>
+    <string name="connect_watch_connected_title">ୱାଚ୍ ସଂଯୁକ୍ତ ହେଲା</string>
+    <string name="connect_watch_connected_body">ଏହା ଆପଣଙ୍କ ଗ୍ରୁପ୍ ଦେଖେ ଏବଂ ନିଜେ ସିଙ୍କ୍ ହୁଏ। ଏହାକୁ ବିଚ୍ଛିନ୍ନ କରିବାକୁ, ୱାଚ୍‌ରେ ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ।</string>
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · ରିକଭରି କୋଡ୍</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">ଫଟୋ ଉଠାଇବାକୁ ସେଟିଂସ୍‌ରେ କ୍ୟାମେରାକୁ ଅନୁମତି ଦିଅନ୍ତୁ।</string>
+    <string name="platform_camera_settings">ସେଟିଂସ୍</string>
+    <string name="platform_receipt_source_camera">ଫଟୋ ଉଠାନ୍ତୁ</string>
+    <string name="platform_receipt_source_gallery">ଗ୍ୟାଲେରୀରୁ ବାଛନ୍ତୁ</string>
+    <string name="platform_receipt_source_file">ଫାଇଲ୍ ବାଛନ୍ତୁ</string>
+    <string name="platform_receipt_camera_title">ରସିଦ ସ୍କାନ୍ କରନ୍ତୁ</string>
+    <string name="platform_receipt_camera_close">ବନ୍ଦ କରନ୍ତୁ</string>
+    <string name="platform_receipt_camera_flash_on">ଫ୍ଲାସ୍ ଅନ୍ କରନ୍ତୁ</string>
+    <string name="platform_receipt_camera_flash_off">ଫ୍ଲାସ୍ ଅଫ୍ କରନ୍ତୁ</string>
+    <string name="platform_receipt_camera_hint">ପୂରା ରସିଦଟି ଫ୍ରେମ୍ ଭିତରେ ରଖନ୍ତୁ। ଆମେ ରାଶି, ତାରିଖ ଓ ବିବରଣୀ ପୂରଣ କରୁ; ସେଭ୍ କରିବା ପୂର୍ବରୁ ଆପଣ ଯାଞ୍ଚ କରନ୍ତୁ।</string>
+    <string name="platform_receipt_camera_gallery">ଗ୍ୟାଲେରୀରୁ ବାଛନ୍ତୁ</string>
+    <string name="platform_receipt_camera_shutter">ଫଟୋ ଉଠାନ୍ତୁ</string>
+    <string name="platform_receipt_camera_unavailable">କ୍ୟାମେରା ଉପଲବ୍ଧ ନାହିଁ। ଗ୍ୟାଲେରୀରୁ ରସିଦର ଏକ ଫଟୋ ବାଛନ୍ତୁ।</string>
+    <string name="platform_receipt_camera_permission">ରସିଦ ସ୍କାନ୍ କରିବାକୁ କ୍ୟାମେରାକୁ ଅନୁମତି ଦିଅନ୍ତୁ, କିମ୍ବା ଗ୍ୟାଲେରୀରୁ ଏକ ଫଟୋ ବାଛନ୍ତୁ।</string>
+    <string name="platform_receipt_camera_allow">କ୍ୟାମେରାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</string>
+    <string name="platform_receipt_camera_settings">ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</string>
+</resources>

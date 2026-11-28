@@ -885,6 +885,7 @@ export const km: Record<MessageKey, string> = {
   profile_languageKannada: 'ខាណាដា',
   profile_languageBurmese: 'ភូមា',
   profile_languageKhmer: 'ខ្មែរ',
+  profile_languageOdia: 'អូឌៀ',
   profile_bitcoinInSats: 'Bitcoin ជា satoshi',
   profile_bitcoinInSatsDetail: 'បង្ហាញ និងវាយចំនួន bitcoin ជា sats (1 ₿ = 100,000,000 sats)។',
   profile_shareUsageData: 'ចែករំលែកទិន្នន័យការប្រើប្រាស់',

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">କୌଣସି ଶବ୍ଦ ନାହିଁ</string>
+    <string name="category_map_title">ବର୍ଗ ମ୍ୟାପ୍</string>
+    <string name="category_map_search">ଶବ୍ଦ ସନ୍ଧାନ କରନ୍ତୁ</string>
+    <string name="category_map_add">ଶବ୍ଦ ଯୋଡନ୍ତୁ</string>
+    <string name="category_map_more">ଅଧିକ ବିକଳ୍ପ</string>
+    <string name="category_map_restore">ଡିଫଲ୍ଟ ରିଷ୍ଟୋର୍ କରନ୍ତୁ</string>
+    <string name="category_map_back">ପଛକୁ</string>
+    <string name="category_map_intro">ଯେତେବେଳେ ଖର୍ଚ୍ଚର ଶୀର୍ଷକରେ ଏହି ଶବ୍ଦଗୁଡ଼ିକ ମଧ୍ୟରୁ କୌଣସି ଗୋଟିଏ ଥାଏ, ତାହାର ବର୍ଗ ନିଜେ ଆସିଯାଏ। “Uber ଘରକୁ” ପରିବହନ ହୋଇଯାଏ।</string>
+    <string name="category_map_intro_offline">ମ୍ୟାପ୍ ଅଫଲାଇନ୍ କାମ କରେ: ପରିବର୍ତ୍ତନ ଏହି ଡିଭାଇସ୍‌ରେ ତୁରନ୍ତ ଲାଗୁ ହୁଏ ଏବଂ ପୁଣି ଅନଲାଇନ୍ ହେଲେ ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସ୍‌ରେ ପହଞ୍ଚେ।</string>
+    <string name="category_map_device_only">ଆପଣଙ୍କ ମ୍ୟାପ୍ କେବଳ ଏହି ଡିଭାଇସ୍‌ରେ ରହେ। ଏହାକୁ ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସ୍‌କୁ ନେବାକୁ, ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ୍‌ରେ Google କିମ୍ବା Apple ସହ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</string>
+    <string name="category_map_open_profile">ପ୍ରୋଫାଇଲ୍ ଖୋଲନ୍ତୁ</string>
+    <string name="category_map_longest_wins">ଯେତେବେଳେ ଦୁଇଟି ଶବ୍ଦ ଗୋଟିଏ ଶୀର୍ଷକ ସହ ମେଳ ଖାଏ, ସବୁଠାରୁ ଲମ୍ବା ଶବ୍ଦଟି ଜିତେ।</string>
+    <string name="category_map_no_result">“%1$s” ସହ କୌଣସି ଶବ୍ଦ ନାହିଁ</string>
+    <string name="category_map_no_result_body">ଏହାକୁ ଯୋଡନ୍ତୁ, ତେବେ ଶୀର୍ଷକରେ ଏହି ଶବ୍ଦ ଥିବା ଖର୍ଚ୍ଚ ସଠିକ୍ ବର୍ଗ ସହ ଆସିବ।</string>
+    <string name="category_map_add_query">“%1$s” ଯୋଡନ୍ତୁ</string>
+    <string name="category_map_empty_title">ଆପଣଙ୍କ ମ୍ୟାପ୍ ଖାଲି ଅଛି</string>
+    <string name="category_map_empty_body">ଶବ୍ଦ ବିନା, ବର୍ଗ ଶୀର୍ଷକରୁ ଆସେ ନାହିଁ: ଆପଣ ପ୍ରତିଟି ଖର୍ଚ୍ଚରେ ଏହା ବାଛନ୍ତି।</string>
+    <string name="category_map_group_category"> · %1$s ଗ୍ରୁପ୍‌ର ବର୍ଗ</string>
+    <string name="category_map_only_main">କେବଳ %1$s</string>
+    <string name="category_map_only_in_group">କେବଳ %1$s ଗ୍ରୁପ୍‌ରେ</string>
+    <string name="category_map_no_terms_yet">ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଶବ୍ଦ ନାହିଁ।</string>
+    <string name="category_map_add_in">%1$s ବର୍ଗରେ ଶବ୍ଦ ଯୋଡନ୍ତୁ</string>
+    <string name="category_map_tip">ଏକ ଶବ୍ଦର ବର୍ଗ ବଦଳାଇବାକୁ ବା ଏହାକୁ ହଟାଇବାକୁ ଟାପ୍ କରନ୍ତୁ। ଏହା ମାତ୍ରା ଓ ବଡ଼-ଛୋଟ ଅକ୍ଷରକୁ ଅଣଦେଖା କରି ପୂରା ଶବ୍ଦ ସହ ମେଳ କରେ।</string>
+    <string name="category_map_queued">ଅପେକ୍ଷାରେ</string>
+    <string name="category_map_term_action">%1$s, %2$s। ଏଡିଟ୍ କରନ୍ତୁ</string>
+    <string name="category_map_new_term">ନୂଆ ଶବ୍ଦ</string>
+    <string name="category_map_edit_term">ଶବ୍ଦ ଏଡିଟ୍ କରନ୍ତୁ</string>
+    <string name="category_map_term_label">ଶବ୍ଦ ବା ବାକ୍ୟାଂଶ</string>
+    <string name="category_map_term_help">ମାତ୍ରା ଓ ବଡ଼-ଛୋଟ ଅକ୍ଷରକୁ ଅଣଦେଖା କରି ପୂରା ଶବ୍ଦ ସହ ମେଳ କରେ।</string>
+    <string name="category_map_term_help_app">ଆପ୍‌ର ଏକ ଶବ୍ଦ। ଡିଫଲ୍ଟ ରିଷ୍ଟୋର୍ କଲେ ଏହା ଯେପରି ଥିଲା ସେପରି ଫେରିଆସେ।</string>
+    <string name="category_map_term_duplicate">“%1$s” ପୂର୍ବରୁ %2$s ବର୍ଗ ବାଛେ। ପ୍ରତିଟି ଶବ୍ଦର ଗୋଟିଏ ବର୍ଗ ଥାଏ।</string>
+    <string name="category_map_term_too_short">ଅତି କମ୍‌ରେ 2ଟି ଅକ୍ଷର ବ୍ୟବହାର କରନ୍ତୁ।</string>
+    <string name="category_map_term_too_long">ସର୍ବାଧିକ 30ଟି ଅକ୍ଷର ବ୍ୟବହାର କରନ୍ତୁ।</string>
+    <string name="category_map_term_invalid">କେବଳ ଅକ୍ଷର, ଅଙ୍କ ଓ ସ୍ପେସ୍ ବ୍ୟବହାର କରନ୍ତୁ।</string>
+    <string name="category_map_category">ବର୍ଗ</string>
+    <string name="category_map_category_help">ଏହା ବର୍ଗ କିମ୍ବା ଉପବର୍ଗ ହୋଇପାରେ।</string>
+    <string name="category_map_category_help_edit">ଏଠାରେ ବଦଳାଇଲେ ଶବ୍ଦଟି ଅନ୍ୟ ବର୍ଗକୁ ଚାଲିଯାଏ।</string>
+    <string name="category_map_category_help_move">ଘୁଞ୍ଚାଇଲେ ଶବ୍ଦଟି %1$s ବର୍ଗରୁ ବାହାରିଯିବ।</string>
+    <string name="category_map_example">ଉଦାହରଣ</string>
+    <string name="category_map_example_move">ଘୁଞ୍ଚାଇଲେ</string>
+    <string name="category_map_remove">ହଟାନ୍ତୁ</string>
+    <string name="category_map_cancel">ବାତିଲ୍ କରନ୍ତୁ</string>
+    <string name="category_map_save">ସେଭ୍ କରନ୍ତୁ</string>
+    <string name="category_map_move_to">%1$s ବର୍ଗକୁ ଘୁଞ୍ଚାନ୍ତୁ</string>
+    <string name="category_map_removed">“%1$s” ମ୍ୟାପ୍‌ରୁ ହଟିଗଲା</string>
+    <string name="category_map_undo">ଅନଡୁ</string>
+    <string name="category_map_restore_title">ଡିଫଲ୍ଟ ମ୍ୟାପ୍ ରିଷ୍ଟୋର୍ କରିବେ?</string>
+    <string name="category_map_restore_body">ଆପ୍‌ର 60ଟି ଶବ୍ଦ ଯେପରି ଥିଲା ସେପରି ଫେରିଆସିବ, ଆପଣ ହଟାଇଥିବା ବା ଘୁଞ୍ଚାଇଥିବା ଶବ୍ଦ ସମେତ।</string>
+    <string name="category_map_restore_own_one">ଆପଣ ତିଆରି କରିଥିବା ଶବ୍ଦ “%1$s” ରହିବ।</string>
+    <string name="category_map_restore_confirm">ରିଷ୍ଟୋର୍ କରନ୍ତୁ</string>
+    <string name="category_map_save_error">ମ୍ୟାପ୍ ସେଭ୍ କରିହେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d ଟି ଶବ୍ଦ</item>
+        <item quantity="other">%d ଟି ଶବ୍ଦ</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d ଟି ଉପବର୍ଗ</item>
+        <item quantity="other">%d ଟି ଉପବର୍ଗ</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">“%2$s” ସହ %1$d ଟି ଶବ୍ଦ</item>
+        <item quantity="other">“%2$s” ସହ %1$d ଟି ଶବ୍ଦ</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">ଅଫଲାଇନ୍ · %d ଟି ପରିବର୍ତ୍ତନ ଅପେକ୍ଷାରେ</item>
+        <item quantity="other">ଅଫଲାଇନ୍ · %d ଟି ପରିବର୍ତ୍ତନ ଅପେକ୍ଷାରେ</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">ଆପଣ ତିଆରି କରିଥିବା %d ଟି ଶବ୍ଦ ରହିବ।</item>
+        <item quantity="other">ଆପଣ ତିଆରି କରିଥିବା %d ଟି ଶବ୍ଦ ରହିବ।</item>
+    </plurals>
+    <string name="category_map_new_category">ନୂଆ ବର୍ଗ</string>
+    <string name="category_map_new_subcategory_in">%s ବର୍ଗରେ ନୂଆ ଉପବର୍ଗ</string>
+    <string name="category_map_edit_category">ଏଡିଟ୍ କରନ୍ତୁ: %s</string>
+    <string name="category_map_category_group">ଗ୍ରୁପ୍</string>
+    <string name="category_map_change_color">%1$s ବର୍ଗର ରଙ୍ଗ ବଦଳାନ୍ତୁ</string>
+    <string name="category_map_restore_color">ରଙ୍ଗ ରିଷ୍ଟୋର୍ କରନ୍ତୁ</string>
+    <string name="category_map_color_done">ହୋଇଗଲା</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">ଖର୍ଚ୍ଚ ବାଣ୍ଟନ୍ତୁ, କୌଣସି ଝଞ୍ଜଟ ବିନା</string>
+    <string name="welcome_offline_title">ଅଫଲାଇନ୍ କାମ କରେ</string>
+    <string name="welcome_offline_body">ସବୁକିଛି ଆପଣଙ୍କ ଡିଭାଇସ୍‌ରେ ରହେ ଏବଂ ପରେ ସିଙ୍କ୍ ହୁଏ।</string>
+    <string name="welcome_optional_title">ଆକାଉଣ୍ଟ ଇଚ୍ଛାଧୀନ</string>
+    <string name="welcome_optional_body">Google କିମ୍ବା Apple କେବଳ ଡିଭାଇସ୍ ବଦଳାଇଲେ ଆପଣ କିଛି ନ ହରାନ୍ତୁ ସେଥିପାଇଁ।</string>
+    <string name="welcome_invite_title">ଲିଙ୍କ୍ କିମ୍ବା QR କୋଡ୍ ସହ ନିମନ୍ତ୍ରଣ କରନ୍ତୁ</string>
+    <string name="welcome_invite_body">ବନ୍ଧୁମାନେ ଆକାଉଣ୍ଟ ତିଆରି ନକରି ଗ୍ରୁପ୍‌ରେ ଯୋଗ ଦିଅନ୍ତି।</string>
+    <string name="welcome_no_connection_title">ସଂଯୋଗ ନାହିଁ।</string>
+    <string name="welcome_no_connection_body">ଆକାଉଣ୍ଟ ସହ ସାଇନ୍ ଇନ୍ କରିବାକୁ ଇଣ୍ଟରନେଟ୍ ଦରକାର। ଏବେ ଆକାଉଣ୍ଟ ବିନା ବ୍ୟବହାର କରନ୍ତୁ ଏବଂ ପରେ ପ୍ରୋଫାଇଲ୍‌ରେ ସଂଯୋଗ କରନ୍ତୁ।</string>
+    <string name="welcome_or">କିମ୍ବା</string>
+    <string name="welcome_use_without_account">ଆକାଉଣ୍ଟ ବିନା ବ୍ୟବହାର କରନ୍ତୁ</string>
+    <string name="welcome_used_on_another_device">ମୁଁ ଏହାକୁ ଅନ୍ୟ ଡିଭାଇସ୍‌ରେ ବ୍ୟବହାର କରିଛି</string>
+    <string name="welcome_sign_in_failed">ବର୍ତ୍ତମାନ ସାଇନ୍ ଇନ୍ କରିହେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="welcome_legal_notice">ଜାରି ରଖି, ଆପଣ %1$s ଗ୍ରହଣ କରୁଛନ୍ତି ଏବଂ %2$s ସ୍ୱୀକାର କରୁଛନ୍ତି।</string>
+    <string name="welcome_legal_terms">ସେବା ସର୍ତ୍ତାବଳୀ</string>
+    <string name="welcome_legal_privacy">ଗୋପନୀୟତା ନୀତି</string>
+    <string name="welcome_no_account_note">ଆକାଉଣ୍ଟ ବିନା, 30 ଦିନ ବ୍ୟବହାର ନହେଲେ ଆପଣଙ୍କ ଡାଟା ଡିଲିଟ୍ ହୋଇଯାଏ। ଏହାକୁ ରଖିବାକୁ Google କିମ୍ବା Apple ସଂଯୋଗ କରନ୍ତୁ।</string>
+    <string name="welcome_no_account_note_offline">ଆକାଉଣ୍ଟ ବିନା, 30 ଦିନ ବ୍ୟବହାର ନହେଲେ ଆପଣଙ୍କ ଡାଟା ଡିଲିଟ୍ ହୋଇଯାଏ। ଏହାକୁ ରଖିବାକୁ ପରେ ପ୍ରୋଫାଇଲ୍‌ରେ Google କିମ୍ବା Apple ସଂଯୋଗ କରନ୍ତୁ।</string>
+    <string name="welcome_expired_title">ଆପଣଙ୍କ ଡାଟା ଡିଲିଟ୍ ହୋଇଗଲା</string>
+    <string name="welcome_expired_body">ଆପଣ ଆକାଉଣ୍ଟ ବିନା ଆପ୍ ବ୍ୟବହାର କରୁଥିଲେ ଏବଂ 30 ଦିନ ଏହାକୁ ଖୋଲିନଥିଲେ, ତେଣୁ ଆପଣଙ୍କ ଡାଟା ଡିଲିଟ୍ ହୋଇଗଲା। ପରବର୍ତ୍ତୀ ଥର ଏହାକୁ ରଖିବାକୁ Google କିମ୍ବା Apple ସଂଯୋଗ କରନ୍ତୁ।</string>
+    <string name="welcome_expired_ok">ଠିକ୍ ଅଛି</string>
+</resources>

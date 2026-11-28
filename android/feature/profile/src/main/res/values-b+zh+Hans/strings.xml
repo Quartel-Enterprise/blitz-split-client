@@ -111,6 +111,7 @@
     <string name="profile_language_kannada">卡纳达语</string>
     <string name="profile_language_burmese">缅甸语</string>
     <string name="profile_language_khmer">高棉语</string>
+    <string name="profile_language_odia">奥里亚语</string>
     <string name="profile_language_system_detail">设备语言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

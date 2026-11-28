@@ -112,6 +112,7 @@
     <string name="profile_language_kannada">कन्नड़</string>
     <string name="profile_language_burmese">बर्मी</string>
     <string name="profile_language_khmer">खमेर</string>
+    <string name="profile_language_odia">ओड़िया</string>
     <string name="profile_language_system_detail">डिवाइस की भाषा</string>
     <string name="profile_notifications">नोटिफ़िकेशन</string>
     <plurals name="profile_notifications_active">

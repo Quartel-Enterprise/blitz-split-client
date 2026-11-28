@@ -111,6 +111,7 @@
     <string name="profile_language_kannada">ကန္နာဒါ</string>
     <string name="profile_language_burmese">မြန်မာ</string>
     <string name="profile_language_khmer">ခမာ</string>
+    <string name="profile_language_odia">အိုဒီယာ</string>
     <string name="profile_language_system_detail">စက်၏ ဘာသာစကား</string>
     <string name="profile_notifications">အသိပေးချက်များ</string>
     <plurals name="profile_notifications_active">

@@ -116,6 +116,7 @@
     <string name="profile_language_kannada">الكانادا</string>
     <string name="profile_language_burmese">البورمية</string>
     <string name="profile_language_khmer">الخميرية</string>
+    <string name="profile_language_odia">الأوديا</string>
     <string name="profile_language_system_detail">لغة الجهاز</string>
     <string name="profile_notifications">الإشعارات</string>
     <plurals name="profile_notifications_active">

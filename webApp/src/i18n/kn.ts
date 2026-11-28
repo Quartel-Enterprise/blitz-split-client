@@ -860,6 +860,7 @@ export const kn: Record<MessageKey, string> = {
   profile_languageKannada: 'ಕನ್ನಡ',
   profile_languageBurmese: 'ಬರ್ಮೀಸ್',
   profile_languageKhmer: 'ಖಮೇರ್',
+  profile_languageOdia: 'ಒಡಿಯಾ',
   profile_bitcoinInSats: 'ಸತೋಶಿಗಳಲ್ಲಿ Bitcoin',
   profile_bitcoinInSatsDetail: 'Bitcoin ಮೊತ್ತಗಳನ್ನು sats ನಲ್ಲಿ ತೋರಿಸುತ್ತದೆ ಮತ್ತು ಟೈಪ್ ಮಾಡಿಸುತ್ತದೆ (1 ₿ = 100,000,000 sats).',
   profile_shareUsageData: 'ಬಳಕೆಯ ಡೇಟಾ ಶೇರ್ ಮಾಡಿ',

@@ -113,6 +113,7 @@
     <string name="profile_language_kannada">Kannada</string>
     <string name="profile_language_burmese">Birman</string>
     <string name="profile_language_khmer">Khmer</string>
+    <string name="profile_language_odia">Odia</string>
     <string name="profile_language_system_detail">Langue de l’appareil</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">

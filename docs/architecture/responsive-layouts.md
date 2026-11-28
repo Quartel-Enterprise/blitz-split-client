@@ -271,7 +271,7 @@ at its right edge. The rules, the same on the three platforms:
   U+2068 … U+2069 (`MoneyFormatter`, `ExpenseFormat`, the web's `money.ts`), so "−R$ 12,50" never comes apart in a
   sentence, and so is its currency symbol ("US$", never "$US"); left to right languages get the same text as before.
   A "+" or "−" the app adds goes right before the digits, after the mark the language's own negative number puts
-  before its minus, so it sits where Arabic and Hebrew write it (on the left of the digits). Arabic, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Kannada, Burmese and Khmer write numbers, amounts and dates with
+  before its minus, so it sits where Arabic and Hebrew write it (on the left of the digits). Arabic, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Kannada, Burmese, Khmer and Odia write numbers, amounts and dates with
   Latin digits (`nu-latn`: Android's `LegacyAppLocale.wrap` for the whole context, Apple's `AppNumbers`, the web's
   `formattingLocale`), so a field shows what it parses.
 - **An amount field types left to right.** Its digits run left to right ("12." never shows as ".12") while the field,

@@ -32,8 +32,15 @@ export const LISTING_DIR = "store-listing";
  */
 const REGIONAL_LISTINGS = { en: ["en", "en-GB", "en-AU", "en-CA"], es: ["es", "es-ES"] };
 
-/** The languages a listing is written in: the release notes' and the regional ones of REGIONAL_LISTINGS. */
-export const LISTING_LANGS = LANGS.flatMap((lang) => REGIONAL_LISTINGS[lang] ?? [lang]);
+/**
+ * The release notes' languages the stores don't list yet (Pierre's call): Odia, which the apps speak while its store
+ * listing waits (blitz-split-client#600), so no release uploads a listing or screenshots for it and its store pages
+ * show the default language's.
+ */
+export const UNLISTED_LANGS = ["or"];
+
+/** The languages a listing is written in: the release notes' (but UNLISTED_LANGS) and the regional ones of REGIONAL_LISTINGS. */
+export const LISTING_LANGS = LANGS.filter((lang) => !UNLISTED_LANGS.includes(lang)).flatMap((lang) => REGIONAL_LISTINGS[lang] ?? [lang]);
 
 /**
  * A listing's fields, in the order its file has them: the heading that starts each one, the most characters its

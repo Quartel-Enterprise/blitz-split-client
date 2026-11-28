@@ -888,6 +888,7 @@ export const pa: Record<MessageKey, string> = {
   profile_languageKannada: 'ਕੰਨੜ',
   profile_languageBurmese: 'ਬਰਮੀ',
   profile_languageKhmer: 'ਖਮੇਰ',
+  profile_languageOdia: 'ਉੜੀਆ',
   profile_bitcoinInSats: 'ਸਤੋਸ਼ੀ ਵਿੱਚ ਬਿਟਕੋਇਨ',
   profile_bitcoinInSatsDetail: 'ਬਿਟਕੋਇਨ ਦੀਆਂ ਰਕਮਾਂ sats ਵਿੱਚ ਦਿਖਾਉਂਦਾ ਅਤੇ ਲਿਖਦਾ ਹੈ (1 ₿ = 100,000,000 sats)।',
   profile_shareUsageData: 'ਵਰਤੋਂ ਦਾ ਡਾਟਾ ਸਾਂਝਾ ਕਰੋ',

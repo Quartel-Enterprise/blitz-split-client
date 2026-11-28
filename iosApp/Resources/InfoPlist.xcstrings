@@ -209,6 +209,12 @@
             "value" : "Blitz Split"
           }
         },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "pa" : {
           "stringUnit" : {
             "state" : "translated",
@@ -534,6 +540,12 @@
           }
         },
         "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "or" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -869,6 +881,12 @@
             "value" : "Om de QR-code van een uitnodiging of van je oude apparaat te scannen, en om je profielfoto en foto’s van uitgaven te maken."
           }
         },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଏକ ନିମନ୍ତ୍ରଣର କିମ୍ବା ଆପଣଙ୍କ ପୁରୁଣା ଡିଭାଇସ୍‌ର QR କୋଡ୍ ସ୍କାନ୍ କରିବା ପାଇଁ, ଏବଂ ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ୍ ଫଟୋ ଓ ଖର୍ଚ୍ଚର ଫଟୋ ନେବା ପାଇଁ।"
+          }
+        },
         "pa" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1199,6 +1217,12 @@
             "value" : "Om mensen uit je contacten uit te nodigen met de link van een groep. Hun nummers blijven op dit apparaat."
           }
         },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଗ୍ରୁପ୍‌ର ଲିଙ୍କ୍ ଦ୍ୱାରା ଆପଣଙ୍କ କଣ୍ଟାକ୍ଟରୁ ଲୋକଙ୍କୁ ନିମନ୍ତ୍ରଣ କରିବା ପାଇଁ। ସେମାନଙ୍କ ନମ୍ବର ଏହି ଡିଭାଇସ୍‌ରେ ହିଁ ରହେ।"
+          }
+        },
         "pa" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1527,6 +1551,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Om de foto’s van een uitgave in je bibliotheek te bewaren."
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଖର୍ଚ୍ଚର ଫଟୋ ଆପଣଙ୍କ ଲାଇବ୍ରେରୀରେ ସେଭ୍ କରିବା ପାଇଁ।"
           }
         },
         "pa" : {

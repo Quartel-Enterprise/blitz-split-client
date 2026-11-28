@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">ଆପଣ ଏହି ଗ୍ରୁପ୍‌ରେ ନାହାନ୍ତି</string>
+    <string name="bill_link_not_in_group_message">ଏହି ମନ୍ତବ୍ୟ ଏପରି ଏକ ଗ୍ରୁପ୍‌ରେ ଅଛି ଯେଉଁଥିରେ ଆପଣ ନାହାନ୍ତି। ଯିଏ ଆପଣଙ୍କୁ ଲିଙ୍କ୍ ପଠାଇଥିଲେ, ତାଙ୍କଠାରୁ ନିମନ୍ତ୍ରଣ ମାଗନ୍ତୁ।</string>
+    <string name="bill_link_offline_title">ଇଣ୍ଟରନେଟ୍ ନାହିଁ</string>
+    <string name="bill_link_offline_message">ପୁଣି ଅନଲାଇନ୍ ହେଲେ ଲିଙ୍କ୍‌ଟି ପୁଣି ଖୋଲନ୍ତୁ।</string>
+    <string name="bill_link_go_home">ହୋମ୍‌କୁ ଯାଆନ୍ତୁ</string>
+    <string name="discard_changes_title">ପରିବର୍ତ୍ତନ ବାତିଲ୍ କରିବେ?</string>
+    <string name="discard_changes_message">ସେଭ୍ ହୋଇନଥିବା ପରିବର୍ତ୍ତନ ହଜିଯିବ।</string>
+    <string name="discard_changes_discard">ବାତିଲ୍ କରନ୍ତୁ</string>
+    <string name="discard_changes_keep_editing">ଏଡିଟ୍ ଜାରି ରଖନ୍ତୁ</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">ୱାଚ୍</string>
+    <string name="watch_connected_title">%1$s ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ସହ ସଂଯୁକ୍ତ ହେଲା</string>
+    <string name="watch_connected_title_unnamed">ୱାଚ୍ ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ସହ ସଂଯୁକ୍ତ ହେଲା</string>
+    <string name="watch_connected_text">ଏହା ଆପଣଙ୍କ ଗ୍ରୁପ୍ ଦେଖେ ଏବଂ ନିଜେ ସିଙ୍କ୍ ହୁଏ। ଏହାକୁ ବିଚ୍ଛିନ୍ନ କରିବାକୁ, ୱାଚ୍‌ରେ ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ।</string>
+</resources>

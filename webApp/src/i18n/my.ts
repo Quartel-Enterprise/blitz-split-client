@@ -886,6 +886,7 @@ export const my: Record<MessageKey, string> = {
   profile_languageKannada: 'ကန္နာဒါ',
   profile_languageBurmese: 'မြန်မာ',
   profile_languageKhmer: 'ခမာ',
+  profile_languageOdia: 'အိုဒီယာ',
   profile_bitcoinInSats: 'Bitcoin ကို satoshi ဖြင့်',
   profile_bitcoinInSatsDetail: 'bitcoin ပမာဏများကို sats ဖြင့် ပြပြီး ရိုက်ထည့်ပါသည် (1 ₿ = 100,000,000 sats)။',
   profile_shareUsageData: 'အသုံးပြုမှု ဒေတာ မျှဝေရန်',

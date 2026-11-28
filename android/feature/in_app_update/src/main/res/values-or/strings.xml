@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">ଅପଡେଟ୍ ଡାଉନଲୋଡ୍ ହେଉଛି…</string>
+    <string name="in_app_update_download_failed">ଅପଡେଟ୍ ଡାଉନଲୋଡ୍ କରିହେଲା ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+</resources>

@@ -1,8 +1,8 @@
 import Foundation
 
 /// What goes between the pieces of a sentence the code joins (two sentences of a detail): a space, but nothing in
-/// Japanese and Chinese, which write them with none and end a sentence with "。", not ".". Hindi, Bengali and Punjabi end
-/// one with their danda, "।", Urdu with "۔", Burmese with "။",
+/// Japanese and Chinese, which write them with none and end a sentence with "。", not ".". Hindi, Bengali, Odia and Punjabi
+/// end one with their danda, "।", Urdu with "۔", Burmese with "။",
 /// Khmer with "។", and Thai with nothing, the space between two being its stop. The same rule as the web's `wordGap` and
 /// Android's `wordGapUi`.
 enum WordGap {
@@ -16,7 +16,7 @@ enum WordGap {
     static var fullStop: String {
         if isUnspaced { return "。" }
         switch Bundle.appLanguageCode {
-        case "hi", "bn", "pa": return "।"
+        case "hi", "bn", "or", "pa": return "।"
         case "ur": return "۔"
         case "my": return "။"
         case "km": return "។"

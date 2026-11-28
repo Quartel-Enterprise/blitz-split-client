@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">ନୂଆ Pix କି</string>
+    <string name="payment_key_title_pix_edit">Pix କି ଏଡିଟ୍ କରନ୍ତୁ</string>
+    <string name="payment_key_title_bitcoin_new">ନୂଆ Bitcoin କି</string>
+    <string name="payment_key_title_bitcoin_edit">Bitcoin କି ଏଡିଟ୍ କରନ୍ତୁ</string>
+    <string name="payment_key_save">ସେଭ୍ କରନ୍ତୁ</string>
+
+    <string name="payment_key_pix_intro">ଯିଏ ଆପଣଙ୍କୁ ପେମେଣ୍ଟ କରନ୍ତି, ସେ ହିସାବ ମେଣ୍ଟାଇବା ସମୟରେ ଏହି କି ଦେଖନ୍ତି। କେଉଁ ପ୍ରକାରର କି?</string>
+    <string name="payment_key_pix_question">କେଉଁ ପ୍ରକାରର କି?</string>
+    <string name="payment_key_pix_explanation">ଯିଏ ଆପଣଙ୍କୁ ପେମେଣ୍ଟ କରନ୍ତି, ସେ ହିସାବ ମେଣ୍ଟାଇବା ସମୟରେ ଏହି କି ଦେଖନ୍ତି।</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">ଫୋନ୍</string>
+    <string name="payment_key_type_email">ଇମେଲ୍</string>
+    <string name="payment_key_type_random">ରାଣ୍ଡମ୍</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">ଏରିଆ କୋଡ୍ ସହ ମୋବାଇଲ୍ ନମ୍ବର</string>
+    <string name="payment_key_label_email">ଇମେଲ୍</string>
+    <string name="payment_key_label_random">ରାଣ୍ଡମ୍ କି</string>
+
+    <string name="payment_key_bitcoin_intro">ଆପଣ କିପରି ପାଇବାକୁ ଚାହାଁନ୍ତି?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">ଶୀଘ୍ର, କମ୍ ଫି</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">ବ୍ଲକଚେନ୍ ଉପରେ</string>
+    <string name="payment_key_label_lightning">Lightning Address କିମ୍ବା LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin ଠିକଣା</string>
+
+    <string name="payment_key_paste">ପେଷ୍ଟ କରନ୍ତୁ</string>
+
+    <string name="payment_key_hint_cpf">ଫର୍ମାଟ୍ 000.000.000-00</string>
+    <string name="payment_key_hint_phone">ଫର୍ମାଟ୍ +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">ଫର୍ମାଟ୍ name@domain.com</string>
+    <string name="payment_key_hint_random">32ଟି ଅକ୍ଷର ଓ ସଂଖ୍ୟା, ଆପଣଙ୍କ ବ୍ୟାଙ୍କ ଯେପରି ଦେଖାଏ</string>
+    <string name="payment_key_hint_lightning">ଯେପରି name@wallet.com କିମ୍ବା LNURL1…</string>
+    <string name="payment_key_hint_onchain">bc1q କିମ୍ବା bc1p ରେ ଆରମ୍ଭ ହେଉଥିବା mainnet ଠିକଣା</string>
+
+    <string name="payment_key_valid_cpf">ଫର୍ମାଟ୍ 000.000.000-00 · ଚେକ୍ ଡିଜିଟ୍ ମେଳ ଖାଉଛି</string>
+    <string name="payment_key_valid_phone">ଫର୍ମାଟ୍ +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">ଫର୍ମାଟ୍ name@domain.com</string>
+    <string name="payment_key_valid_random">ରାଣ୍ଡମ୍ କି ଚିହ୍ନଟ ହେଲା (32ଟି ଅକ୍ଷର)</string>
+    <string name="payment_key_valid_lightning_address">ବୈଧ Lightning Address</string>
+    <string name="payment_key_valid_lnurl">ବୈଧ LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">ଅବୈଧ CPF: ଚେକ୍ ଡିଜିଟ୍ ମେଳ ଖାଉନାହିଁ।</string>
+    <string name="payment_key_error_invalid_phone">ଅସମ୍ପୂର୍ଣ୍ଣ ମୋବାଇଲ୍ ନମ୍ବର: ଏରିଆ କୋଡ୍ ଏବଂ 9 ରେ ଆରମ୍ଭ ହେଉଥିବା 9ଟି ଅଙ୍କ ବ୍ୟବହାର କରନ୍ତୁ।</string>
+    <string name="payment_key_error_invalid_email">ଅସମ୍ପୂର୍ଣ୍ଣ ଇମେଲ୍: ଡୋମେନ୍ ନାହିଁ, ଯେପରି .com କିମ୍ବା .com.br।</string>
+    <string name="payment_key_error_invalid_random">ଅସମ୍ପୂର୍ଣ୍ଣ ରାଣ୍ଡମ୍ କି: ଏଥିରେ 32ଟି ଅକ୍ଷର ଓ ସଂଖ୍ୟା ଥାଏ।</string>
+    <string name="payment_key_error_invalid_lightning">ଏହା Lightning Address (name@wallet) କିମ୍ବା LNURL ନୁହେଁ।</string>
+    <string name="payment_key_error_lightning_invoice">ଏହା ଏକ Lightning invoice (lnbc…): ଏହା ଥରେ ପେମେଣ୍ଟ କରେ ଏବଂ ମିଆଦ ଶେଷ ହୋଇଯାଏ। ଏକ Lightning Address କିମ୍ବା LNURL ପେଷ୍ଟ କରନ୍ତୁ।</string>
+    <string name="payment_key_error_invalid_onchain">ଅବୈଧ ଠିକଣା। ଏକ mainnet bc1q କିମ୍ବା bc1p ଠିକଣା ବ୍ୟବହାର କରନ୍ତୁ।</string>
+    <string name="payment_key_error_testnet_address">ଏହା ଏକ testnet ଠିକଣା (tb1…)। ଏଠାରେ କେବଳ Bitcoin mainnet କାମ କରେ, bc1… ଠିକଣା ସହ।</string>
+    <string name="payment_key_error_already_saved">ଆପଣଙ୍କ ପାଖରେ ଏହି କି ପୂର୍ବରୁ ଅଛି।</string>
+
+    <string name="payment_key_switched_to_onchain">ଏହା ଏକ on-chain ଠିକଣା, ତେଣୁ ଆମେ On-chain କୁ ବଦଳାଇଲୁ।</string>
+    <string name="payment_key_switched_to_lightning">ଏହା ଏକ Lightning Address, ତେଣୁ ଆମେ Lightning କୁ ବଦଳାଇଲୁ।</string>
+    <string name="payment_key_cpf_notice">ଯିଏ ଆପଣଙ୍କୁ ପେମେଣ୍ଟ କରନ୍ତି, ସେ ଆପଣଙ୍କ ପୂରା CPF ଦେଖନ୍ତି। ଯଦି ଆପଣ ଏହା ସେୟାର୍ କରିବାକୁ ଚାହାଁନ୍ତି ନାହିଁ, ଫୋନ୍, ଇମେଲ୍ କିମ୍ବା ରାଣ୍ଡମ୍ କି ବ୍ୟବହାର କରନ୍ତୁ।</string>
+    <string name="payment_key_held_notice">ଆପଣ ଏହି ପ୍ରକାରର କେବଳ ଗୋଟିଏ Pix କି ରଖିପାରିବେ, ତେଣୁ ଏହା ଆପଣ ସେଭ୍ କରିଥିବା କି। ଚାହିଁଲେ ଏଠାରେ ବଦଳାନ୍ତୁ।</string>
+
+    <string name="payment_key_accepted_title">ଆମେ ଗ୍ରହଣ କରୁ</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">ଡିଫଲ୍ଟ Pix କି</string>
+    <string name="payment_key_default_bitcoin_title">ଡିଫଲ୍ଟ Bitcoin କି</string>
+    <string name="payment_key_default_pix_detail">ହିସାବ ମେଣ୍ଟାଇବା ସମୟରେ ପ୍ରଥମେ ଦେଖାଯାଏ।</string>
+    <string name="payment_key_default_bitcoin_detail">କେହି BTC ରେ ପେମେଣ୍ଟ କଲେ ପ୍ରଥମେ ଦେଖାଯାଏ।</string>
+    <string name="payment_key_default_now">ବର୍ତ୍ତମାନ: %1$s।</string>
+    <string name="payment_key_default_locked_editing">ଏହାକୁ ବଦଳାଇବାକୁ, ଅନ୍ୟ ଏକ କି କୁ ଡିଫଲ୍ଟ କରନ୍ତୁ।</string>
+    <string name="payment_key_default_locked_new">ଏହି ପ୍ରକାରର ଆପଣଙ୍କ ପ୍ରଥମ କି ହିଁ ଡିଫଲ୍ଟ।</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">ଫୋନ୍</string>
+    <string name="payment_key_default_type_email">ଇମେଲ୍</string>
+    <string name="payment_key_default_type_random">ରାଣ୍ଡମ୍ କି</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split ଟଙ୍କା ପଠାଏ ନାହିଁ: ଦେୟକାରୀ ନିଜ ବ୍ୟାଙ୍କ ଆପ୍‌ରେ ପେମେଣ୍ଟ କରନ୍ତି। କି ଟି ଆପଣଙ୍କ ନାମରେ ଅଛି କି ନାହିଁ ଯାଞ୍ଚ କରନ୍ତୁ।</string>
+    <string name="payment_key_footer_bitcoin">ହିସାବ ମେଣ୍ଟାଇବା ସମୟରେ, ଆମେ ବର୍ତ୍ତମାନର ଦରରେ ରାଶି sats ରେ ଦେଖାଉ। ଏହା କେବଳ ଏକ ଆକଳନ: ଦେୟକାରୀ ନିଜ ୱାଲେଟ୍‌ରେ ଏହା ନିଶ୍ଚିତ କରନ୍ତି।</string>
+
+    <string name="payment_key_delete">କି ଡିଲିଟ୍ କରନ୍ତୁ</string>
+    <string name="payment_key_delete_title">ଏହି କି ଡିଲିଟ୍ କରିବେ?</string>
+    <string name="payment_key_delete_body">ଯେଉଁମାନେ ଆପଣଙ୍କୁ ଦେବେ, ସେମାନେ ହିସାବ ମେଣ୍ଟାଇବା ସମୟରେ ଆଉ ଏହା ଦେଖିବେ ନାହିଁ।</string>
+    <string name="payment_key_delete_confirm">ଡିଲିଟ୍ କରନ୍ତୁ</string>
+</resources>

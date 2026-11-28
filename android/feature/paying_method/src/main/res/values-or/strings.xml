@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">ନୂଆ ପେମେଣ୍ଟ ପଦ୍ଧତି</string>
+    <string name="paying_method_edit_title">ପେମେଣ୍ଟ ପଦ୍ଧତି ଏଡିଟ୍ କରନ୍ତୁ</string>
+    <string name="paying_method_type">ପ୍ରକାର</string>
+    <string name="paying_method_name">ନାମ</string>
+    <string name="paying_method_name_optional">ନାମ (ଇଚ୍ଛାଧୀନ)</string>
+    <string name="paying_method_color">ରଙ୍ଗ</string>
+    <string name="paying_method_default">ଡିଫଲ୍ଟ ପଦ୍ଧତି</string>
+    <string name="paying_method_default_hint">ଆପଣ ଦେଉଥିବା ନୂଆ ଖର୍ଚ୍ଚ ଏହା ସହ ଆରମ୍ଭ ହୁଏ।</string>
+    <string name="paying_method_delete">ପେମେଣ୍ଟ ପଦ୍ଧତି ଡିଲିଟ୍ କରନ୍ତୁ</string>
+    <string name="paying_method_delete_title">ଏହି ପେମେଣ୍ଟ ପଦ୍ଧତି ଡିଲିଟ୍ କରିବେ?</string>
+    <string name="paying_method_delete_body">ଆପଣ ଏହା ସହ ଚିହ୍ନିତ କରିଥିବା ଖର୍ଚ୍ଚରେ ଏହା ଆଉ ଦେଖାଯିବ ନାହିଁ।</string>
+    <string name="paying_method_delete_confirm">ଡିଲିଟ୍ କରନ୍ତୁ</string>
+    <string name="paying_method_save">ସେଭ୍ କରନ୍ତୁ</string>
+</resources>

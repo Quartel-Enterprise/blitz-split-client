@@ -112,6 +112,7 @@
     <string name="profile_language_kannada">Kannada dili</string>
     <string name="profile_language_burmese">Birmanca</string>
     <string name="profile_language_khmer">Kmerce</string>
+    <string name="profile_language_odia">Oriya dili</string>
     <string name="profile_language_system_detail">Cihaz dili</string>
     <string name="profile_notifications">Bildirimler</string>
     <plurals name="profile_notifications_active">

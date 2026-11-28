@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">ନୋଟିଫିକେସନ୍</string>
+    <string name="notification_settings_denied_title">Android ରେ Blitz Split ନୋଟିଫିକେସନ୍ ବନ୍ଦ ଅଛି।</string>
+    <string name="notification_settings_denied_body">ତଳେ ଥିବା ପୁଶ୍ ପାଇବାକୁ ସିଷ୍ଟମ୍ ସେଟିଂସ୍‌ରେ ସେଗୁଡ଼ିକ ଅନ୍ କରନ୍ତୁ। ଘଣ୍ଟି କାମ କରିବା ଜାରି ରଖେ।</string>
+    <string name="notification_settings_open_settings">ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</string>
+    <string name="notification_settings_refused_body">ତଳେ ଥିବା ପୁଶ୍ ପାଇବାକୁ Android ଆପଣଙ୍କୁ ଆଉ ଥରେ ଅନୁମତି ଦେବାକୁ ଦିଏ। ଘଣ୍ଟି କାମ କରିବା ଜାରି ରଖେ।</string>
+    <string name="notification_settings_turn_on">ଅନ୍ କରନ୍ତୁ</string>
+    <string name="notification_settings_blocked_in_android">Android ରେ ବ୍ଲକ୍ ହୋଇଛି</string>
+    <string name="notification_settings_open_channel_settings_description">Android ସେଟିଂସ୍ ଖୋଲନ୍ତୁ: %1$s</string>
+    <string name="notification_settings_push_switch">ପୁଶ୍ ନୋଟିଫିକେସନ୍</string>
+    <string name="notification_settings_push_switch_detail">କେବଳ ଏହି ଡିଭାଇସ୍‌ରେ</string>
+    <string name="notification_settings_section">ମୋତେ ଏହି ବିଷୟରେ ଜଣାନ୍ତୁ</string>
+    <string name="notification_settings_push">ପୁଶ୍</string>
+    <string name="notification_settings_in_app">ଆପ୍‌ରେ</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">ପୁଶ୍ ଏହି ଡିଭାଇସ୍‌କୁ ଏକ ନୋଟିଫିକେସନ୍ ପଠାଏ। ଆପ୍‌ରେ ଏହାକୁ ଘଣ୍ଟିରେ ଏବଂ କାର୍ଯ୍ୟକଳାପରେ ନୂଆ ଭାବେ ଚିହ୍ନିତ କରେ; ବନ୍ଦ ଥିଲେ, ଏହା ତଥାପି କାର୍ଯ୍ୟକଳାପରେ ଦେଖାଯାଏ, ପୂର୍ବରୁ ପଢାଯାଇଥିବା ଭାବେ।</string>
+    <string name="notification_settings_footer">ଇଣ୍ଟରନେଟ୍ ଥିଲେ ସୂଚନା ଆସେ। ଏକ ଗ୍ରୁପ୍ ମ୍ୟୁଟ୍ କରିବାକୁ, ତା\' ଭିତରେ ଥିବା ମେନୁ ବ୍ୟବହାର କରନ୍ତୁ।</string>
+</resources>

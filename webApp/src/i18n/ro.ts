@@ -887,6 +887,7 @@ export const ro: Record<MessageKey, string> = {
   profile_languageKannada: 'Kannada',
   profile_languageBurmese: 'Birmană',
   profile_languageKhmer: 'Khmeră',
+  profile_languageOdia: 'Odia',
   profile_bitcoinInSats: 'Bitcoin în satoshi',
   profile_bitcoinInSatsDetail: 'Afișează și introduce sumele în bitcoin în sats (1 ₿ = 100.000.000 sats).',
   profile_shareUsageData: 'Trimite date de utilizare',

@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam, Kannada, Burmese and Khmer: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi, Malayalam, Kannada, Burmese, Khmer and Odia: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -356,7 +356,20 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     (`fullStopUi`, `WordGap.fullStop`, the web's `fullStop` and `clauseBreak`). Its plurals have one form. Its default
     digits are already 0-9, and the code keeps them even on a device set to Khmer digits (០-៩), in the Gregorian
     calendar. Its verbs don't change with the person, so its activity sentences need no rule. The picker names it
-    "ខ្មែរ", and its chip reads "KM". The Cambodian riel (KHR) comes with it (below). Lithuanian
+    "ខ្មែរ", and its chip reads "KM". The Cambodian riel (KHR) comes with it (below). Odia (Pierre's calls, issue
+    #600) is one variant for every `or` tag, in the Odia script, and talks to the user with the respectful "ଆପଣ" and
+    its honorific verb forms (as Hindi's "आप" and Malayalam's "നിങ്ങൾ"), in the plain everyday Odia Indian apps
+    write, English loanwords included where natural (ଗ୍ରୁପ୍, ବ୍ୟାଲାନ୍ସ, ଲିଙ୍କ୍); it calls the app Blitz Split, ends
+    a sentence with the danda "।", as Hindi, Bengali and Punjabi do (`fullStopUi`, `WordGap.fullStop`, the web's
+    `fullStop`), and its plurals have one and other. Its default digits are already 0-9, and the code keeps them even
+    on a device set to Odia digits ("nu-latn": `latinDigitLanguages`, `AppNumbers`, the web's `formattingKeys`),
+    never the Odia digits (୦-୯), with the Gregorian calendar. Its case endings join the word, so none is ever glued
+    to a value the app fills in: a name, a group, a bill or an amount stands as the subject, after a colon or before
+    a noun that carries the ending ("‘%1$s’ ଗ୍ରୁପ୍‌ରେ"). Its respectful past "-ଲେ" is the same for a name and for
+    "ଆପଣ", so, as Malayalam's, its activity sentences need no rule for the user
+    ([activity-and-push.md](activity-and-push.md)). The picker names it "ଓଡ଼ିଆ", and its chip reads "OR". It uses
+    INR, already supported. Its store listing is left for later (Pierre's call): the stores keep showing the default
+    language's for it. Lithuanian
     (Pierre's calls, issue #581) is one variant for every `lt` tag, talks to the user in the informal "tu" and calls
     the app Blitz Split. A name the app fills in is never declined: it stands as the subject or after a noun that
     carries the case ("narys Ana"). Its simple past says no gender, and every activity verb phrase starts with it,

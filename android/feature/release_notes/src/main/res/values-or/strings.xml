@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">ନୂଆ କ\'ଣ ଅଛି</string>
+    <string name="release_notes_show_beta">ବିଟା ସଂସ୍କରଣ ଦେଖାନ୍ତୁ</string>
+    <string name="release_notes_beta_badge">ବିଟା %1$d</string>
+    <string name="release_notes_installed_badge">ଏହି ସଂସ୍କରଣ</string>
+    <string name="release_notes_empty">ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ରିଲିଜ୍ ନୋଟ୍ ନାହିଁ।</string>
+    <string name="release_notes_empty_only_betas">ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ସ୍ଥିର ସଂସ୍କରଣ ନାହିଁ। କ\'ଣ ପରୀକ୍ଷା ହେଉଛି ଦେଖିବାକୁ ବିଟା ସଂସ୍କରଣ ଅନ୍ କରନ୍ତୁ।</string>
+    <string name="release_notes_load_failed_title">ରିଲିଜ୍ ନୋଟ୍ ଲୋଡ୍ କରିହେଲା ନାହିଁ</string>
+    <string name="release_notes_load_failed_body">ଆପଣଙ୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="release_notes_retry">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</string>
+    <string name="release_notes_open_on_github">GitHub ରେ ଖୋଲନ୍ତୁ</string>
+</resources>

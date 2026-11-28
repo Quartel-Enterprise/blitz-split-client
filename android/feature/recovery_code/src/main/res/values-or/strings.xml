@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">ଆପଣଙ୍କ ରିକଭରି କୋଡ୍ ସେଭ୍ କରନ୍ତୁ</string>
+    <string name="recovery_code_body">ଆପଣ ଏହାକୁ ଆକାଉଣ୍ଟ ବିନା ବ୍ୟବହାର କରୁଛନ୍ତି। ଆପଣ ଡିଭାଇସ୍ ବଦଳାଇଲେ ବା ହରାଇଲେ ଏହି 12ଟି ଶବ୍ଦ ଆପଣଙ୍କ ଡାଟା ଫେରାଇ ଆଣେ। ସେଗୁଡ଼ିକୁ କ୍ରମରେ ଲେଖି ରଖନ୍ତୁ। 30 ଦିନ ବ୍ୟବହାର ନହେଲେ, ଆପଣଙ୍କ ଡାଟା ଡିଲିଟ୍ ହୋଇଯାଏ ଏବଂ ଶବ୍ଦଗୁଡ଼ିକ କାମ କରିବା ବନ୍ଦ କରେ।</string>
+    <string name="recovery_code_copy">ଶବ୍ଦ କପି କରନ୍ତୁ</string>
+    <string name="recovery_code_save_to_password_manager">ପାସୱାର୍ଡ ମ୍ୟାନେଜର୍‌ରେ ସେଭ୍ କରନ୍ତୁ</string>
+    <string name="recovery_code_connect_instead">ତା\' ବଦଳରେ Google କିମ୍ବା Apple ସଂଯୋଗ କରନ୍ତୁ</string>
+    <string name="recovery_code_connect_instead_body">କୌଣସି କୋଡ୍ ଦରକାର ନାହିଁ</string>
+    <string name="recovery_code_sign_in_failed">ବର୍ତ୍ତମାନ ସଂଯୋଗ କରିହେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="recovery_code_also_in_profile">ଏହା ପ୍ରୋଫାଇଲ୍ › ରିକଭରିରେ ମଧ୍ୟ ଅଛି।</string>
+    <string name="recovery_code_remind_later">ମୋତେ ପରେ ମନେ ପକାନ୍ତୁ</string>
+    <string name="recovery_code_saved">ମୁଁ ସେଭ୍ କରିଛି</string>
+    <string name="recovery_code_download">ଡାଉନଲୋଡ୍ କରନ୍ତୁ</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · ରିକଭରି କୋଡ୍\n\n%1$s\n\nଆପଣଙ୍କ ଡାଟା ଫେରାଇ ଆଣିବାକୁ, \"ମୁଁ ଏହାକୁ ଅନ୍ୟ ଡିଭାଇସ୍‌ରେ ବ୍ୟବହାର କରିଛି\" ରେ ଏହା ବ୍ୟବହାର କରନ୍ତୁ।\n</string>
+</resources>

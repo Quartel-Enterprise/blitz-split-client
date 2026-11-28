@@ -859,6 +859,7 @@ export const hu: Record<MessageKey, string> = {
   profile_languageKannada: 'Kannada',
   profile_languageBurmese: 'Burmai',
   profile_languageKhmer: 'Khmer',
+  profile_languageOdia: 'Orija',
   profile_bitcoinInSats: 'Bitcoin satoshiban',
   profile_bitcoinInSatsDetail: 'A bitcoinösszegeket satsban mutatja és írja be (1 ₿ = 100 000 000 sats).',
   profile_shareUsageData: 'Használati adatok megosztása',

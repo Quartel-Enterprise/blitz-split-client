@@ -886,6 +886,7 @@ export const zhHant: Record<MessageKey, string> = {
   profile_languageKannada: '坎那達文',
   profile_languageBurmese: '緬甸文',
   profile_languageKhmer: '高棉文',
+  profile_languageOdia: '奧里亞文',
   profile_bitcoinInSats: '以聰為單位顯示比特幣',
   profile_bitcoinInSatsDetail: '以聰（sats）為單位顯示和輸入比特幣金額（1 ₿ = 100,000,000 sats）。',
   profile_shareUsageData: '分享使用資料',

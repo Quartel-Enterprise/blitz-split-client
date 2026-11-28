@@ -113,6 +113,7 @@
     <string name="profile_language_kannada">Kannadu</string>
     <string name="profile_language_burmese">Birmiešu</string>
     <string name="profile_language_khmer">Khmeru</string>
+    <string name="profile_language_odia">Oriju</string>
     <string name="profile_language_system_detail">Ierīces valoda</string>
     <string name="profile_notifications">Paziņojumi</string>
     <plurals name="profile_notifications_active">

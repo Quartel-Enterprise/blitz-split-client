@@ -69,8 +69,9 @@ each platform.
       `res/values-pa/strings.xml` (Gurmukhi, no postposition glued to a placeholder), in Malayalam in
       `res/values-ml/strings.xml` (no case ending glued to a placeholder), in Kannada in
       `res/values-kn/strings.xml` (no case ending glued to a placeholder), in Burmese in
-      `res/values-my/strings.xml` (Unicode, never Zawgyi; sentences end with "။") and in Khmer in
-      `res/values-km/strings.xml` (sentences end with "។")
+      `res/values-my/strings.xml` (Unicode, never Zawgyi; sentences end with "။"), in Khmer in
+      `res/values-km/strings.xml` (sentences end with "។") and in Odia in
+      `res/values-or/strings.xml` (no case ending glued to a placeholder; sentences end with "।")
 - [ ] A new English string with a word Britain or Canada writes differently ("color", "gray", "center", "math",
   "recognized", "toward") also in `values-b+en+001` and `values-en-rCA`, Apple's `en-GB`, `en-AU` and `en-CA`, and
   the web's `enGB.ts` or `enCA.ts` ([general.md](../product/general.md))
