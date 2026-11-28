@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Talde berria</string>
+    <string name="create_group_close">Itxi</string>
+    <string name="create_group_create">Sortu</string>
+    <string name="create_group_change_color">Aldatu taldearen kolorea</string>
+    <string name="create_group_name_label">Taldearen izena</string>
+    <string name="create_group_type_label">Talde mota</string>
+    <string name="create_group_members_title">Nor dago</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d pertsona</item>
+        <item quantity="other">%d pertsona</item>
+    </plurals>
+    <string name="create_group_me">zu</string>
+    <string name="create_group_remove_member">Kendu: %s</string>
+    <string name="create_group_add_placeholder">Gehitu izenaren bidez</string>
+    <string name="create_group_add">Gehitu</string>
+    <string name="create_group_no_app_notice">Orain inork ez du aplikazioa behar. Dagoeneko gehi ditzakezu gastuak guztientzat, eta esteka geroago bidali.</string>
+    <string name="create_group_currency">Moneta lehenetsia</string>
+    <string name="create_group_currency_caption">Gastu berriak moneta honetan hasten dira; gastu bakoitzak beste bat erabil dezake.</string>
+    <string name="create_group_save_error">Ezin izan da taldea gorde. Saiatu berriro.</string>
+    <string name="create_group_photo">Taldearen argazkia</string>
+    <string name="create_group_take_photo">Atera argazkia</string>
+    <string name="create_group_choose_photo">Aukeratu argazkia</string>
+    <string name="create_group_remove_photo">Kendu argazkia</string>
+    <string name="create_group_photo_error">Ezin izan da argazki hau erabili. Saiatu beste batekin.</string>
+</resources>

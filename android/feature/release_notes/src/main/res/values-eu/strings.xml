@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Berrikuntzak</string>
+    <string name="release_notes_show_beta">Erakutsi beta bertsioak</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Bertsio hau</string>
+    <string name="release_notes_empty">Oraindik ez dago berrikuntzarik.</string>
+    <string name="release_notes_empty_only_betas">Oraindik ez dago bertsio egonkorrik. Aktibatu beta bertsioak probatzen ari dena ikusteko.</string>
+    <string name="release_notes_load_failed_title">Ezin izan dira berrikuntzak kargatu</string>
+    <string name="release_notes_load_failed_body">Egiaztatu konexioa eta saiatu berriro.</string>
+    <string name="release_notes_retry">Saiatu berriro</string>
+    <string name="release_notes_open_on_github">Ireki GitHub webgunean</string>
+</resources>

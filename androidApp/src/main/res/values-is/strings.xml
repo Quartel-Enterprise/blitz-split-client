@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Þú ert ekki í þessum hópi</string>
+    <string name="bill_link_not_in_group_message">Þessi athugasemd er í hópi sem þú ert ekki í. Biddu þann sem sendi þér hlekkinn um boðið.</string>
+    <string name="bill_link_offline_title">Ekkert netsamband</string>
+    <string name="bill_link_offline_message">Opnaðu hlekkinn aftur þegar nettenging er komin aftur.</string>
+    <string name="bill_link_go_home">Fara á Heim</string>
+    <string name="discard_changes_title">Fleygja breytingum?</string>
+    <string name="discard_changes_message">Óvistaðar breytingar tapast.</string>
+    <string name="discard_changes_discard">Fleygja</string>
+    <string name="discard_changes_keep_editing">Halda áfram að breyta</string>
+    <string name="watch_channel_name">Úr</string>
+    <string name="watch_connected_title">Úr tengt við aðganginn þinn: %1$s</string>
+    <string name="watch_connected_title_unnamed">Úr tengt við aðganginn þinn</string>
+    <string name="watch_connected_text">Það sér hópana þína og samstillist sjálft. Til að aftengja það skaltu skrá þig út á úrinu.</string>
+</resources>

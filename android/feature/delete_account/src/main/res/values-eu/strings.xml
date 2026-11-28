@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Ezabatu kontua</string>
+    <string name="delete_account_offline_title">Interneterik ez.</string>
+    <string name="delete_account_offline_body">Kontua ezabatzeko interneteko konexioa behar da. Konektatu eta saiatu berriro.</string>
+    <string name="delete_account_heading">Zure kontua eta datuak ezabatu?</string>
+    <string name="delete_account_deleted_title">Zer ezabatzen den</string>
+    <string name="delete_account_deleted_profile">Zure profila (izena, argazkia eta kolorea)</string>
+    <string name="delete_account_deleted_keys">Zure Pix eta Bitcoin gakoak</string>
+    <string name="delete_account_deleted_provider">Zure kontuarekiko lotura (%1$s)</string>
+    <string name="delete_account_deleted_recovery_code">Zure berreskuratze-kodea</string>
+    <string name="delete_account_deleted_device">Gailu honetako zure datuen kopia</string>
+    <string name="delete_account_kept_title">Zer geratzen den zure taldeetan</string>
+    <string name="delete_account_kept_groups">Taldeak, beren gastu eta ordainketekin, gainerako kideentzat</string>
+    <string name="delete_account_kept_member">Zure izena talde bakoitzean, konturik gabeko kide gisa</string>
+    <string name="delete_account_kept_comments">Zure iruzkinak eta gehitu dituzun argazkiak, zure izenpean</string>
+    <string name="delete_account_export">Esportatu nire datuak lehenik</string>
+    <string name="delete_account_confirm">Ulertzen dut hau ezin dela desegin</string>
+    <string name="delete_account_delete">Ezabatu kontua</string>
+    <string name="delete_account_cancel">Utzi</string>
+    <string name="delete_account_failed">Ezin izan da zure kontua ezabatu. Saiatu berriro.</string>
+</resources>

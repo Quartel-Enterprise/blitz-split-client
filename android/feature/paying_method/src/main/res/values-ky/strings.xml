@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Жаңы төлөм ыкмасы</string>
+    <string name="paying_method_edit_title">Төлөм ыкмасын түзөтүү</string>
+    <string name="paying_method_type">Түрү</string>
+    <string name="paying_method_name">Аты</string>
+    <string name="paying_method_name_optional">Аты (милдеттүү эмес)</string>
+    <string name="paying_method_color">Түсү</string>
+    <string name="paying_method_default">Демейки ыкма</string>
+    <string name="paying_method_default_hint">Сиз төлөгөн жаңы чыгымдар ушул ыкма менен башталат.</string>
+    <string name="paying_method_delete">Төлөм ыкмасын өчүрүү</string>
+    <string name="paying_method_delete_title">Бул төлөм ыкмасын өчүрөсүзбү?</string>
+    <string name="paying_method_delete_body">Ушул ыкма менен белгиленген чыгымдарда ал мындан ары көрүнбөйт.</string>
+    <string name="paying_method_delete_confirm">Өчүрүү</string>
+    <string name="paying_method_save">Сактоо</string>
+</resources>

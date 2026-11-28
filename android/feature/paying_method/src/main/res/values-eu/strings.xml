@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Ordainketa-metodo berria</string>
+    <string name="paying_method_edit_title">Editatu ordainketa-metodoa</string>
+    <string name="paying_method_type">Mota</string>
+    <string name="paying_method_name">Izena</string>
+    <string name="paying_method_name_optional">Izena (aukerakoa)</string>
+    <string name="paying_method_color">Kolorea</string>
+    <string name="paying_method_default">Metodo lehenetsia</string>
+    <string name="paying_method_default_hint">Zuk ordaintzen dituzun gastu berriak harekin hasten dira.</string>
+    <string name="paying_method_delete">Ezabatu ordainketa-metodoa</string>
+    <string name="paying_method_delete_title">Ordainketa-metodo hau ezabatu?</string>
+    <string name="paying_method_delete_body">Harekin markatu dituzun gastuetan ez da gehiago agertuko.</string>
+    <string name="paying_method_delete_confirm">Ezabatu</string>
+    <string name="paying_method_save">Gorde</string>
+</resources>

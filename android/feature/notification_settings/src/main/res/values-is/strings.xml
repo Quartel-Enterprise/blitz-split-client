@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Tilkynningar</string>
+    <string name="notification_settings_denied_title">Slökkt er á tilkynningum Blitz Split í Android.</string>
+    <string name="notification_settings_denied_body">Kveiktu á þeim í kerfisstillingum til að fá tilkynningarnar hér fyrir neðan. Bjallan virkar áfram.</string>
+    <string name="notification_settings_open_settings">Opna stillingar</string>
+    <string name="notification_settings_refused_body">Android leyfir þér að heimila þær einu sinni enn til að fá tilkynningarnar hér fyrir neðan. Bjallan virkar áfram.</string>
+    <string name="notification_settings_turn_on">Kveikja</string>
+    <string name="notification_settings_blocked_in_android">Lokað í Android</string>
+    <string name="notification_settings_open_channel_settings_description">Opna Android-stillingar fyrir: %1$s</string>
+    <string name="notification_settings_push_switch">Ýtitilkynningar</string>
+    <string name="notification_settings_push_switch_detail">Aðeins á þessu tæki</string>
+    <string name="notification_settings_section">Láta mig vita um</string>
+    <string name="notification_settings_push">Ýti</string>
+    <string name="notification_settings_in_app">Í appi</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Ýti sendir tilkynningu á þetta tæki. Í appi merkir hana sem nýja á bjöllunni og í Virkni; ef slökkt er á því birtist hún samt í Virkni, þegar lesin.</string>
+    <string name="notification_settings_footer">Tilkynningar berast þegar nettenging er til staðar. Til að þagga niður í hópi skaltu nota valmyndina inni í honum.</string>
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Аккаунтту өчүрүү</string>
+    <string name="delete_account_offline_title">Интернет жок.</string>
+    <string name="delete_account_offline_body">Аккаунтуңузду өчүрүү үчүн интернет керек. Туташып, кайра аракет кылыңыз.</string>
+    <string name="delete_account_heading">Аккаунтуңузду жана маалыматыңызды өчүрөсүзбү?</string>
+    <string name="delete_account_deleted_title">Эмнелер өчүрүлөт</string>
+    <string name="delete_account_deleted_profile">Профилиңиз (аты, сүрөтү жана түсү)</string>
+    <string name="delete_account_deleted_keys">Pix жана Bitcoin ачкычтарыңыз</string>
+    <string name="delete_account_deleted_provider">%1$s аккаунтуңуз менен байланыш</string>
+    <string name="delete_account_deleted_recovery_code">Калыбына келтирүү кодуңуз</string>
+    <string name="delete_account_deleted_device">Бул түзмөктөгү маалыматыңыздын көчүрмөсү</string>
+    <string name="delete_account_kept_title">Топторуңузда эмнелер калат</string>
+    <string name="delete_account_kept_groups">Топтор, чыгымдары жана төлөмдөрү менен, башка мүчөлөр үчүн</string>
+    <string name="delete_account_kept_member">Ар бир топто атыңыз, аккаунтсуз мүчө катары</string>
+    <string name="delete_account_kept_comments">Сиздин атыңыз менен калтырган пикирлериңиз жана кошкон сүрөттөрүңүз</string>
+    <string name="delete_account_export">Адегенде маалыматымды экспорттоо</string>
+    <string name="delete_account_confirm">Муну кайтаруу мүмкүн эмес экенин түшүнөм</string>
+    <string name="delete_account_delete">Аккаунтту өчүрүү</string>
+    <string name="delete_account_cancel">Жокко чыгаруу</string>
+    <string name="delete_account_failed">Аккаунтуңузду өчүрө алган жокпуз. Кайра аракет кылыңыз.</string>
+</resources>

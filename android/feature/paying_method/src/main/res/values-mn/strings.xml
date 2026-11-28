@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Шинэ төлбөрийн хэрэгсэл</string>
+    <string name="paying_method_edit_title">Төлбөрийн хэрэгсэл засах</string>
+    <string name="paying_method_type">Төрөл</string>
+    <string name="paying_method_name">Нэр</string>
+    <string name="paying_method_name_optional">Нэр (заавал биш)</string>
+    <string name="paying_method_color">Өнгө</string>
+    <string name="paying_method_default">Үндсэн хэрэгсэл</string>
+    <string name="paying_method_default_hint">Таны төлөх шинэ зардлууд үүгээр эхэлнэ.</string>
+    <string name="paying_method_delete">Төлбөрийн хэрэгсэл устгах</string>
+    <string name="paying_method_delete_title">Энэ төлбөрийн хэрэгслийг устгах уу?</string>
+    <string name="paying_method_delete_body">Үүгээр тэмдэглэсэн зардлууд цаашид үүнийг харуулахгүй.</string>
+    <string name="paying_method_delete_confirm">Устгах</string>
+    <string name="paying_method_save">Хадгалах</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Jarri harremanetan laguntza-zerbitzuarekin</string>
+    <string name="contact_support_description">Zure posta elektronikoko aplikazioa irekiko dugu, mezu bat prest duela. Azaldu zer gertatu den eta bidali: benetako pertsonek irakurtzen dute mezu bakoitza.</string>
+    <string name="contact_support_to">Nori</string>
+    <string name="contact_support_diagnostics">Mezuan sartuko da</string>
+    <string name="contact_support_app_version">Aplikazioaren bertsioa</string>
+    <string name="contact_support_platform">Plataforma</string>
+    <string name="contact_support_language">Hizkuntza</string>
+    <string name="contact_support_account">Kontua</string>
+    <string name="contact_support_profile">Profila</string>
+    <string name="contact_support_language_system">Sistema</string>
+    <string name="contact_support_account_local">Gailu hau bakarrik</string>
+    <string name="contact_support_account_anonymous">Konektatu gabe</string>
+    <string name="contact_support_open_email">Ireki posta elektronikoa</string>
+    <string name="contact_support_copy_email">Kopiatu helbide elektronikoa</string>
+    <string name="contact_support_notice_copied">Helbide elektronikoa kopiatu da.</string>
+    <string name="contact_support_notice_no_app">Ez da posta elektronikoko aplikaziorik aurkitu. Horren ordez, helbidea kopiatu da.</string>
+    <string name="contact_support_close">Itxi</string>
+</resources>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Staða</string>
+    <string name="global_balances_profile">Prófíll</string>
+    <string name="global_balances_offline">Ótengt · staða þessa tækis</string>
+    <string name="global_balances_filter">Sýna</string>
+    <string name="global_balances_filter_all">Allt</string>
+    <string name="global_balances_filter_you_owe">Þú greiðir</string>
+    <string name="global_balances_filter_owes_you">Þú færð</string>
+    <string name="global_balances_hint">Þegar jafnað milli hópa: hver einstaklingur birtist einu sinni.</string>
+    <string name="global_balances_hint_empty">Leggur saman alla hópa á þessu tæki.</string>
+    <string name="global_balances_section_you_owe">Þú greiðir · %d</string>
+    <string name="global_balances_section_owes_you">Þú færð · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d hópur</item>
+        <item quantity="other">%d hópar</item>
+    </plurals>
+    <string name="global_balances_guest">%s · gestur</string>
+    <string name="global_balances_you_owe">þú greiðir</string>
+    <string name="global_balances_owes_you">þú færð</string>
+    <string name="global_balances_by_group_show">Sýna eftir hópum: %s</string>
+    <string name="global_balances_by_group_hide">Fela eftir hópum: %s</string>
+    <string name="global_balances_received">Móttekið</string>
+    <string name="global_balances_received_from">Móttekið frá: %s</string>
+    <string name="global_balances_settle">Gera upp</string>
+    <string name="global_balances_settle_with">Gera upp við: %s</string>
+    <string name="global_balances_charge">Rukka</string>
+    <string name="global_balances_charge_person">Rukka: %s</string>
+    <string name="global_balances_detail_pane">Staða gagnvart: %s</string>
+    <string name="global_balances_detail_owes_you">%s skuldar þér</string>
+    <string name="global_balances_detail_you_owe">Þú skuldar: %s</string>
+    <string name="global_balances_detail_guest">%s · gestur án appsins</string>
+    <string name="global_balances_detail_note_owed">Nettóupphæðin jafnar nú þegar hópana: Rukka og Móttekið nota %s. Appið skráir greiðslu í hverjum hópi.</string>
+    <string name="global_balances_detail_note_settle">Nettóupphæðin jafnar nú þegar hópana: Gera upp notar %s. Appið skráir greiðslu í hverjum hópi.</string>
+    <string name="global_balances_detail_note_single">Aðeins einn hópur opinn gagnvart: %s.</string>
+    <string name="global_balances_settled_title">Allt uppgert</string>
+    <string name="global_balances_settled_body">Enginn skuldar þér og þú skuldar engum. Þegar einhver bætir við kostnaði birtist staðan hér.</string>
+    <string name="global_balances_settled_action">Sjá hópa</string>
+    <string name="global_balances_nothing_to_pay_title">Þú skuldar ekkert</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Þú hefur gert upp við alla. Þú átt enn inni %2$s hjá %1$d einstaklingi.</item>
+        <item quantity="other">Þú hefur gert upp við alla. Þú átt enn inni %2$s hjá %1$d einstaklingum.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Sjá hverjir skulda þér</string>
+    <string name="global_balances_nothing_to_receive_title">Enginn skuldar þér</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Þú skuldar enn %1$d einstaklingi samtals %2$s.</item>
+        <item quantity="other">Þú skuldar enn %1$d einstaklingum samtals %2$s.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Sjá hverjum þú skuldar</string>
+    <string name="global_balances_coming_soon">Væntanlegt</string>
+    <string name="global_balances_change_error">Ekki tókst að vista breytinguna. Reyndu aftur.</string>
+    <string name="global_balances_copied">Afritað</string>
+    <string name="global_balances_charge_title">Rukka: %s</string>
+    <string name="global_balances_charge_owes">Skuldar þér %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Loka</string>
+    <string name="global_balances_charge_guest">%s er gestur án appsins. Viðkomandi fréttir aðeins af þessu í gegnum þessi skilaboð, svo þau segja nú þegar hvað fór í kostnaðinn.</string>
+    <string name="global_balances_charge_message">Skilaboð</string>
+    <string name="global_balances_charge_pix">Láta Pix-lykilinn minn fylgja</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Afrita skilaboð</string>
+    <string name="global_balances_charge_send">Senda</string>
+    <string name="global_balances_message">Hæ %1$s! Samkvæmt útreikningi Blitz Split skuldar þú mér %2$s í %3$s.</string>
+    <string name="global_balances_message_guest">Hæ %1$s! Þú skuldar mér %2$s í %3$s: þinn hlutur í kostnaðinum ‘%4$s’.</string>
+    <string name="global_balances_message_guest_paid">Hæ %1$s! Þú skuldar mér %2$s í %3$s: þinn hlutur í kostnaðinum ‘%4$s’, að frádregnum %5$s sem þú hefur þegar greitt.</string>
+    <string name="global_balances_message_group">hópnum ‘%s’</string>
+    <string name="global_balances_message_groups">hópunum ‘%s’</string>
+    <string name="global_balances_message_pix">Pix (%1$s): %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Sími</string>
+    <string name="global_balances_key_email">Netfang</string>
+    <string name="global_balances_key_random">Handahófslykill</string>
+    <string name="global_balances_message_reroute">%1$s einfaldaði skuldirnar, svo þú greiðir mér beint í stað þessa aðila: %2$s; heildarupphæðin þín breyttist ekki.</string>
+</resources>

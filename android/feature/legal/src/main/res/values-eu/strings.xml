@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">Pribatutasun-politika</string>
+    <string name="legal_terms">Zerbitzu-baldintzak</string>
+    <string name="legal_updated_privacy_policy">Eguneratze-data: %1$s</string>
+    <string name="legal_updated_terms">Eguneratze-data: %1$s</string>
+    <string name="legal_load_failed_title">Ezin izan da orri hau kargatu</string>
+    <string name="legal_load_failed_body">Egiaztatu konexioa eta saiatu berriro.</string>
+    <string name="legal_retry">Saiatu berriro</string>
+</resources>

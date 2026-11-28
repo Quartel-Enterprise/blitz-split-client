@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">Амхарски</string>
     <string name="profile_language_sinhala">Синхалски</string>
     <string name="profile_language_kazakh">Казахски</string>
+    <string name="profile_language_mongolian">Монголски</string>
+    <string name="profile_language_kyrgyz">Киргизки</string>
+    <string name="profile_language_lao">Лаоски</string>
+    <string name="profile_language_icelandic">Исландски</string>
+    <string name="profile_language_basque">Баски</string>
+    <string name="profile_language_galician">Галисийски</string>
+    <string name="profile_language_romansh">Реторомански</string>
     <string name="profile_language_system_detail">Език на устройството</string>
     <string name="profile_notifications">Известия</string>
     <plurals name="profile_notifications_active">

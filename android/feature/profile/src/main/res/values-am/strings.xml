@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">አማርኛ</string>
     <string name="profile_language_sinhala">ሲንሃልኛ</string>
     <string name="profile_language_kazakh">ካዛክኛ</string>
+    <string name="profile_language_mongolian">ሞንጎሊያኛ</string>
+    <string name="profile_language_kyrgyz">ኪርጊዝኛ</string>
+    <string name="profile_language_lao">ላኦኛ</string>
+    <string name="profile_language_icelandic">አይስላንድኛ</string>
+    <string name="profile_language_basque">ባስክኛ</string>
+    <string name="profile_language_galician">ጋሊሽያኛ</string>
+    <string name="profile_language_romansh">ሮማንሽኛ</string>
     <string name="profile_language_system_detail">የመሣሪያ ቋንቋ</string>
     <string name="profile_notifications">ማሳወቂያዎች</string>
     <plurals name="profile_notifications_active">

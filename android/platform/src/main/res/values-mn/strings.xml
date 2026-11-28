@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · сэргээх код</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Зураг авахын тулд Тохиргоо хэсэгт камерыг зөвшөөрнө үү.</string>
+    <string name="platform_camera_settings">Тохиргоо</string>
+    <string name="platform_receipt_source_camera">Зураг авах</string>
+    <string name="platform_receipt_source_gallery">Галерейгаас сонгох</string>
+    <string name="platform_receipt_source_file">Файл сонгох</string>
+    <string name="platform_receipt_camera_title">Баримт уншуулах</string>
+    <string name="platform_receipt_camera_close">Хаах</string>
+    <string name="platform_receipt_camera_flash_on">Гэрэл асаах</string>
+    <string name="platform_receipt_camera_flash_off">Гэрэл унтраах</string>
+    <string name="platform_receipt_camera_hint">Баримтыг бүхэлд нь хүрээнд багтаана уу. Бид дүн, огноо, тайлбарыг бөглөнө; та хадгалахаасаа өмнө шалгана.</string>
+    <string name="platform_receipt_camera_gallery">Галерейгаас сонгох</string>
+    <string name="platform_receipt_camera_shutter">Зураг авах</string>
+    <string name="platform_receipt_camera_unavailable">Камер ашиглах боломжгүй байна. Галерейгаас баримтын зургийг сонгоно уу.</string>
+    <string name="platform_receipt_camera_permission">Баримтыг уншуулахын тулд камерыг зөвшөөрөх эсвэл галерейгаас зураг сонгоно уу.</string>
+    <string name="platform_receipt_camera_allow">Камер зөвшөөрөх</string>
+    <string name="platform_receipt_camera_settings">Тохиргоо нээх</string>
+</resources>

@@ -120,6 +120,13 @@
     <string name="profile_language_amharic">Amharski</string>
     <string name="profile_language_sinhala">Syngaleski</string>
     <string name="profile_language_kazakh">Kazachski</string>
+    <string name="profile_language_mongolian">Mongolski</string>
+    <string name="profile_language_kyrgyz">Kirgiski</string>
+    <string name="profile_language_lao">Laotański</string>
+    <string name="profile_language_icelandic">Islandzki</string>
+    <string name="profile_language_basque">Baskijski</string>
+    <string name="profile_language_galician">Galicyjski</string>
+    <string name="profile_language_romansh">Retoromański</string>
     <string name="profile_language_system_detail">Język urządzenia</string>
     <string name="profile_notifications">Powiadomienia</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Топторуңузду кайтарыңыз</string>
+    <string name="restore_subtitle">Мурда аккаунт менен киргенсизби? Кайра кире коюңуз. Болбосо, калыбына келтирүү кодун же эски түзмөгүңүздөгү QR кодду колдонуңуз.</string>
+    <string name="restore_no_connection_title">Туташуу жок</string>
+    <string name="restore_no_connection_body">Аккаунт же код менен кирүү үчүн топторуңузду жүктөп алууга интернет керек. Жазганыңыз сакталат.</string>
+    <string name="restore_code_label">Же калыбына келтирүү кодун колдонуңуз</string>
+    <string name="restore_code_hint">12 сөз ирети менен. Бардык талааларды толтуруу үчүн баарын бир талаага коюңуз.</string>
+    <string name="restore_scan_qr_title">Эски түзмөгүңүздөгү QR кодду скандаңыз</string>
+    <string name="restore_scan_qr_body">Ал жакта: Профиль › Калыбына келтирүү › QR кодду көрсөтүү</string>
+    <string name="restore_recover">Калыбына келтирүү</string>
+    <string name="restore_try_again">Кайра аракет кылуу</string>
+    <string name="restore_start_fresh">Бул түзмөктө жаңыдан баштоо</string>
+    <string name="restore_error_invalid_code">Код табылган жок. Сөздөрдү жана алардын иретин текшерип, кайра аракет кылыңыз.</string>
+    <string name="restore_error_too_many_attempts">Аракеттер өтө көп. Бир нече мүнөт күтүп, кайра аракет кылыңыз.</string>
+    <string name="restore_error_sign_in_failed">Азыр кире алган жоксуз. Кайра аракет кылыңыз.</string>
+    <string name="restore_error_unknown">Бир ката кетти. Кайра аракет кылыңыз.</string>
+</resources>

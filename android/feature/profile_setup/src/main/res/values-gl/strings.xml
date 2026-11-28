@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Como lle chaman as súas amizades?</string>
+    <string name="profile_setup_subtitle">Os seus grupos e calquera persoa coa ligazón do seu perfil ven o seu nome.</string>
+    <string name="profile_setup_avatar_color">Cor do avatar</string>
+    <string name="profile_setup_add_photo">Engadir foto</string>
+    <string name="profile_setup_photo_error">Non foi posible usar esta foto. Probe con outra.</string>
+    <string name="profile_setup_name_label">O seu nome</string>
+    <string name="profile_setup_name_placeholder">Xan Pérez</string>
+    <string name="profile_setup_name_too_short">Escriba polo menos %d letras.</string>
+    <string name="profile_setup_name_too_long">Use ata %d caracteres.</string>
+    <string name="profile_setup_name_hint">Pode cambialo máis tarde en Perfil.</string>
+    <string name="profile_setup_saved_locally">Polo de agora, gardado só neste dispositivo.</string>
+    <string name="profile_setup_continue">Continuar</string>
+</resources>

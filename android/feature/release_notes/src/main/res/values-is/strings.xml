@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Nýjungar</string>
+    <string name="release_notes_show_beta">Sýna beta-útgáfur</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Þessi útgáfa</string>
+    <string name="release_notes_empty">Engar nýjungar enn.</string>
+    <string name="release_notes_empty_only_betas">Engin stöðug útgáfa er komin enn. Kveiktu á beta-útgáfum til að sjá hvað er verið að prófa.</string>
+    <string name="release_notes_load_failed_title">Ekki tókst að hlaða nýjungunum</string>
+    <string name="release_notes_load_failed_body">Athugaðu tenginguna og reyndu aftur.</string>
+    <string name="release_notes_retry">Reyna aftur</string>
+    <string name="release_notes_open_on_github">Opna á GitHub</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Konektatu erlojua</string>
+    <string name="connect_watch_close">Itxi</string>
+    <string name="connect_watch_body">Idatzi erlojuak erakusten duen kodea. Zure kontuan saioa hasten du eta gero bere kabuz sinkronizatzen da.</string>
+    <string name="connect_watch_code_label">Erlojuaren kodea</string>
+    <string name="connect_watch_error_invalid">Kode okerra edo iraungia. Lortu berri bat erlojuan.</string>
+    <string name="connect_watch_error_too_many">Kode oker gehiegi. Itxaron minutu batzuk eta saiatu berriro.</string>
+    <string name="connect_watch_error_needs_account">Konektatu kontu bat lehenik: zure datuak gailu honetan bakarrik daude.</string>
+    <string name="connect_watch_error_failed">Ezin izan da erlojua konektatu. Saiatu berriro.</string>
+    <string name="connect_watch_offline">Erlojua konektatzeko internet behar da.</string>
+    <string name="connect_watch_own_watch_only">Idatzi zure erlojuan agertzen den kodea bakarrik: erloju hori duenak zure kontura sarbidea izango du.</string>
+    <string name="connect_watch_validity">Kodeak 5 minutuz balio du, behin.</string>
+    <string name="connect_watch_button">Konektatu</string>
+    <string name="connect_watch_connected_title">Erlojua konektatuta</string>
+    <string name="connect_watch_connected_body">Zure taldeak ikusten ditu eta bere kabuz sinkronizatzen da. Deskonektatzeko, amaitu saioa erlojuan.</string>
+</resources>

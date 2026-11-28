@@ -117,6 +117,13 @@
     <string name="profile_language_amharic">Amharik</string>
     <string name="profile_language_sinhala">Sinhala</string>
     <string name="profile_language_kazakh">Kazakh</string>
+    <string name="profile_language_mongolian">Mongolia</string>
+    <string name="profile_language_kyrgyz">Kirgiz</string>
+    <string name="profile_language_lao">Lao</string>
+    <string name="profile_language_icelandic">Islandia</string>
+    <string name="profile_language_basque">Basque</string>
+    <string name="profile_language_galician">Galisia</string>
+    <string name="profile_language_romansh">Romansh</string>
     <string name="profile_language_system_detail">Bahasa perangkat</string>
     <string name="profile_notifications">Notifikasi</string>
     <plurals name="profile_notifications_active">

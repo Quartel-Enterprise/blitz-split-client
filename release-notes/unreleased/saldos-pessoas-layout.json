@@ -65,7 +65,14 @@
         "az": "Əsas bölməsindəki “İnsanlarla balans” artıq geniş pəncərə boyunca uzanmır: insanlar sabit enli kartlar kimi görünür.",
         "am": "በመነሻ ላይ ያለው “ከሰዎች ጋር ያለ ቀሪ ሂሳብ” ከአሁን በኋላ በሰፊ መስኮት ላይ አይለጠጥም: ሰዎች ቋሚ ስፋት ባላቸው ካርዶች ይታያሉ።",
         "si": "මුල් පිටුවේ “පුද්ගලයින් සමඟ ශේෂ” තවදුරටත් පළල් කවුළුවක් පුරා දිගු වෙන්නේ නැහැ: පුද්ගලයින් ස්ථාවර පළලක් ඇති කාඩ්පත් ලෙස පෙන්වනවා.",
-        "kk": "Басты беттегі “Адамдармен баланс” енді кең терезе бойына созылмайды: адамдар тұрақты ені бар карточкалар болып көрсетіледі."
+        "kk": "Басты беттегі “Адамдармен баланс” енді кең терезе бойына созылмайды: адамдар тұрақты ені бар карточкалар болып көрсетіледі.",
+        "mn": "Нүүр хэсгийн “Хүмүүстэй баланс” өргөн цонхонд сунахаа больсон: хүмүүс тогтмол өргөнтэй карт хэлбэрээр харагдана.",
+        "ky": "Башкы беттеги “Адамдар менен баланс” кең терезеде созулбай калды: адамдар туруктуу кеңдиктеги карточкалар болуп көрсөтүлөт.",
+        "lo": "“ຍອດຄົງເຫຼືອກັບຄົນອື່ນ” ໃນ ໜ້າຫຼັກ ບໍ່ຍືດເຕັມໜ້າຕ່າງກວ້າງອີກຕໍ່ໄປ ຄົນຈະສະແດງເປັນບັດທີ່ມີຄວາມກວ້າງຄົງທີ່",
+        "is": "“Staða við fólk” á Heim teygist ekki lengur yfir breiðan glugga: fólk birtist sem spjöld með fastri breidd.",
+        "eu": "Hasierako “Saldoak pertsonekin” ez da gehiago leiho zabal batean zehar luzatzen: pertsonak zabalera finkoko txartel gisa ageri dira.",
+        "gl": "“Saldos con persoas” en Inicio xa non se estira ao longo dunha xanela ancha: as persoas móstranse como tarxetas de largura fixa.",
+        "rm": "“Saldos cun persunas” sin Start na sa stenda betg pli sur ina fanestra largia: las persunas cumparan sco cartas cun ina largezza fixa."
       }
     },
     {
@@ -134,7 +141,14 @@
         "az": "Əsas bölməsindəki “İnsanlarla balans” hissəsində sığmayan insanlar üzləri və “+N” kimi görünür, bu da Balanslar bölməsini açır.",
         "am": "በመነሻ ላይ ባለው “ከሰዎች ጋር ያለ ቀሪ ሂሳብ” ውስጥ ቦታ ያልበቃቸው ሰዎች በፊታቸው እና በ“+N” ይታያሉ፣ እሱም ቀሪ ሂሳቦችን ይከፍታል።",
         "si": "මුල් පිටුවේ “පුද්ගලයින් සමඟ ශේෂ” තුළ ඉඩ මදි වන පුද්ගලයින් ඔවුන්ගේ මුහුණු සහ “+N” ලෙස පෙන්වනවා, එය ශේෂ විවෘත කරනවා.",
-        "kk": "Басты беттегі “Адамдармен баланс” бөлімінде сыймаған адамдар беттері мен “+N” ретінде көрсетіледі, ол Баланстар бөлімін ашады."
+        "kk": "Басты беттегі “Адамдармен баланс” бөлімінде сыймаған адамдар беттері мен “+N” ретінде көрсетіледі, ол Баланстар бөлімін ашады.",
+        "mn": "Нүүр хэсгийн “Хүмүүстэй баланс” дотор багтахгүй хүмүүс нүүрний зураг ба “+N” тэмдгээр харагдах бөгөөд үүнийг дарахад Баланс нээгдэнэ.",
+        "ky": "Башкы беттеги “Адамдар менен баланс” бөлүмүндө батпаган адамдар жүздөрү жана “+N” болуп көрүнөт, аны басканда Баланс ачылат.",
+        "lo": "ໃນ “ຍອດຄົງເຫຼືອກັບຄົນອື່ນ” ຂອງ ໜ້າຫຼັກ ຄົນທີ່ບໍ່ພໍບ່ອນຈະສະແດງເປັນຮູບໜ້າ ແລະ “+N” ເຊິ່ງເປີດ ຍອດຄົງເຫຼືອ",
+        "is": "Í “Staða við fólk” á Heim birtist fólk sem kemst ekki fyrir sem andlit og “+N”, sem opnar skjáinn Staða.",
+        "eu": "Hasierako “Saldoak pertsonekin” atalean, sartzen ez diren pertsonak aurpegiekin eta “+N” batekin ageri dira, eta horrek Saldoak irekitzen du.",
+        "gl": "En “Saldos con persoas” en Inicio, as persoas que non caben móstranse coas súas caras e “+N”, que abre Saldos.",
+        "rm": "En “Saldos cun persunas” sin Start cumparan las persunas che na han betg plaz sco lur fatschas e “+N”, che avra Saldos."
       }
     }
   ]

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">Sæki uppfærslu…</string>
+    <string name="in_app_update_download_failed">Ekki tókst að sækja uppfærsluna. Reyndu aftur seinna.</string>
+</resources>

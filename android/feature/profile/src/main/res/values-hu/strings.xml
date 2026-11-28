@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">Amhara</string>
     <string name="profile_language_sinhala">Szingaléz</string>
     <string name="profile_language_kazakh">Kazah</string>
+    <string name="profile_language_mongolian">Mongol</string>
+    <string name="profile_language_kyrgyz">Kirgiz</string>
+    <string name="profile_language_lao">Lao</string>
+    <string name="profile_language_icelandic">Izlandi</string>
+    <string name="profile_language_basque">Baszk</string>
+    <string name="profile_language_galician">Galíciai</string>
+    <string name="profile_language_romansh">Rétoromán</string>
     <string name="profile_language_system_detail">Az eszköz nyelve</string>
     <string name="profile_notifications">Értesítések</string>
     <plurals name="profile_notifications_active">

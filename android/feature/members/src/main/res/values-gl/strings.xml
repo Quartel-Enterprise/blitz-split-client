@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Ligazón de convite</string>
+    <string name="members_link_pending">Aínda non creada</string>
+    <string name="members_share">Compartir</string>
+    <string name="members_me">%s (vostede)</string>
+    <string name="members_status_this_device">Este dispositivo</string>
+    <string name="members_status_joined">Entrou</string>
+    <string name="members_status_not_joined">Aínda non entrou</string>
+    <string name="members_options">Opcións para %s</string>
+    <string name="members_rename">Cambiar o nome</string>
+    <string name="members_personal_invite">Convite persoal para %s</string>
+    <string name="members_personal_message">Quen abra esta ligazón entra directamente como %s, sen escoller na lista. Funciona unha vez.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Quen abra esta ligazón entra directamente como %1$s, sen escoller na lista, e xa ve a súa parte de %2$s no gasto engadido ata agora. Funciona unha vez.</item>
+        <item quantity="other">Quen abra esta ligazón entra directamente como %1$s, sen escoller na lista, e xa ve a súa parte de %2$s nos %3$d gastos engadidos ata agora. Funciona unha vez.</item>
+    </plurals>
+    <string name="members_personal_copy">Copiar ligazón</string>
+    <string name="members_personal_copied">Copiado</string>
+    <string name="members_personal_share">Compartir con %s</string>
+    <string name="members_personal_share_message">Entre en %1$s como %2$s en Blitz Split: %3$s</string>
+    <string name="members_remove">Quitar do grupo</string>
+    <string name="members_remove_joined">%s xa entrou no grupo</string>
+    <string name="members_remove_title">Quere quitar a %s do grupo?</string>
+    <string name="members_remove_message">%s aínda non entrou. Pode volver engadir esta persoa máis tarde.</string>
+    <string name="members_remove_confirm">Quitar</string>
+    <string name="members_release">Liberar o nome</string>
+    <string name="members_release_title">Quere liberar o nome de %s?</string>
+    <string name="members_release_message">Quen entrou como %1$s sae do grupo. O nome, a cor e os gastos de %1$s mantéñense, e %1$s pódese volver escoller coa ligazón do grupo.</string>
+    <string name="members_release_confirm">Liberar</string>
+    <string name="members_release_error">Non foi posible liberar o nome. Comprobe a súa conexión e ténteo de novo.</string>
+    <string name="members_add">Engadir persoa</string>
+    <string name="members_invite_instead">Ten a aplicación? Convide coa ligazón</string>
+    <string name="members_name_label">Nome</string>
+    <string name="members_save">Gardar</string>
+    <string name="members_cancel">Cancelar</string>
+    <string name="members_change_error">Non foi posible gardar o cambio. Ténteo de novo.</string>
+    <string name="members_remove_open_balance">%s ten un saldo aberto</string>
+    <string name="members_balance_to_get_back">recibe %s</string>
+    <string name="members_balance_owes">debe %s</string>
+    <string name="members_balance_settled">Liquidado</string>
+</resources>

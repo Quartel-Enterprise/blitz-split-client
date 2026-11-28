@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Профайл засах</string>
+    <string name="edit_profile_save">Хадгалах</string>
+    <string name="edit_profile_change_photo">Зураг солих</string>
+    <string name="edit_profile_take_photo">Зураг авах</string>
+    <string name="edit_profile_choose_photo">Галерейгаас сонгох</string>
+    <string name="edit_profile_use_account_photo">%1$s бүртгэлийн зургийг ашиглах</string>
+    <string name="edit_profile_remove_photo">Зураг устгах</string>
+    <string name="edit_profile_photo_error">Энэ зургийг ашиглаж чадсангүй. Өөр зураг сонгоно уу.</string>
+    <string name="edit_profile_avatar_color">Аватарын өнгө</string>
+    <string name="edit_profile_avatar_color_hint">Зураггүй үед харагдана.</string>
+    <string name="edit_profile_name_label">Таны нэр</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Дор хаяж %d үсэг бичнэ үү.</string>
+    <string name="edit_profile_name_too_long">%d хүртэл тэмдэгт ашиглана уу.</string>
+    <string name="edit_profile_account_notice">Нэр, зураг таны %1$s бүртгэлээс ирсэн. Энд өөрчлөх нь зөвхөн Blitz Split аппад хамаарах бөгөөд таны %1$s бүртгэлийг өөрчлөхгүй.</string>
+    <string name="edit_profile_footer">Таны бүлгүүд болон таны профайлын холбоостой хэн ч таны нэр, зургийг харна.</string>
+    <string name="profile_photo_close">Хаах</string>
+    <string name="profile_photo_camera">Камер</string>
+    <string name="profile_photo_gallery">Галерей</string>
+    <string name="profile_photo_remove">Устгах</string>
+    <string name="profile_photo_title">Профайлын зураг</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">ຕິດຕໍ່ຝ່າຍຊ່ວຍເຫຼືອ</string>
+    <string name="contact_support_description">ພວກເຮົາຈະເປີດແອັບອີເມວຂອງທ່ານພ້ອມຂໍ້ຄວາມທີ່ກຽມໄວ້ ກະລຸນາອະທິບາຍສິ່ງທີ່ເກີດຂຶ້ນ ແລ້ວສົ່ງ: ຄົນຈິງອ່ານທຸກຂໍ້ຄວາມ</string>
+    <string name="contact_support_to">ຫາ</string>
+    <string name="contact_support_diagnostics">ຈະລວມຢູ່ໃນອີເມວ</string>
+    <string name="contact_support_app_version">ເວີຊັນແອັບ</string>
+    <string name="contact_support_platform">ແພລດຟອມ</string>
+    <string name="contact_support_language">ພາສາ</string>
+    <string name="contact_support_account">ບັນຊີ</string>
+    <string name="contact_support_profile">ໂປຣໄຟລ໌</string>
+    <string name="contact_support_language_system">ລະບົບ</string>
+    <string name="contact_support_account_local">ສະເພາະອຸປະກອນນີ້</string>
+    <string name="contact_support_account_anonymous">ບໍ່ໄດ້ເຊື່ອມຕໍ່</string>
+    <string name="contact_support_open_email">ເປີດອີເມວ</string>
+    <string name="contact_support_copy_email">ສຳເນົາທີ່ຢູ່ອີເມວ</string>
+    <string name="contact_support_notice_copied">ສຳເນົາທີ່ຢູ່ອີເມວແລ້ວ</string>
+    <string name="contact_support_notice_no_app">ບໍ່ພົບແອັບອີເມວ ສຳເນົາທີ່ຢູ່ແທນແລ້ວ</string>
+    <string name="contact_support_close">ປິດ</string>
+</resources>

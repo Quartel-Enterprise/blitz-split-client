@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">ບໍ່ມີຄຳ</string>
+    <string name="category_map_title">ແຜນທີ່ໝວດໝູ່</string>
+    <string name="category_map_search">ຊອກຫາຄຳ</string>
+    <string name="category_map_add">ເພີ່ມຄຳ</string>
+    <string name="category_map_more">ຕົວເລືອກເພີ່ມເຕີມ</string>
+    <string name="category_map_restore">ກູ້ຄືນຄ່າເລີ່ມຕົ້ນ</string>
+    <string name="category_map_back">ກັບຄືນ</string>
+    <string name="category_map_intro">ເມື່ອຫົວຂໍ້ຂອງລາຍຈ່າຍມີຄຳໃດໜຶ່ງເຫຼົ່ານີ້ ໝວດໝູ່ຈະມາເອງ “Uber ກັບບ້ານ” ຈະກາຍເປັນ ການເດີນທາງ</string>
+    <string name="category_map_intro_offline">ແຜນທີ່ໃຊ້ໄດ້ແບບອອບລາຍ: ການປ່ຽນແປງມີຜົນທັນທີໃນອຸປະກອນນີ້ ແລະ ໄປຮອດອຸປະກອນອື່ນຂອງທ່ານເມື່ອກັບມາອອນລາຍ</string>
+    <string name="category_map_device_only">ແຜນທີ່ຂອງທ່ານຢູ່ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ ເພື່ອນຳໄປໃຊ້ໃນອຸປະກອນອື່ນ ກະລຸນາເຂົ້າສູ່ລະບົບດ້ວຍ Google ຫຼື Apple ໃນ ໂປຣໄຟລ໌ ຂອງທ່ານ</string>
+    <string name="category_map_open_profile">ເປີດໂປຣໄຟລ໌</string>
+    <string name="category_map_longest_wins">ເມື່ອມີສອງຄຳກົງກັບຫົວຂໍ້ ຄຳທີ່ຍາວກວ່າຈະຊະນະ</string>
+    <string name="category_map_no_result">ບໍ່ມີຄຳທີ່ມີ “%1$s”</string>
+    <string name="category_map_no_result_body">ເພີ່ມມັນ ແລ້ວລາຍຈ່າຍທີ່ມີຄຳນີ້ໃນຫົວຂໍ້ຈະມາພ້ອມໝວດໝູ່ທີ່ຖືກຕ້ອງ</string>
+    <string name="category_map_add_query">ເພີ່ມ “%1$s”</string>
+    <string name="category_map_empty_title">ແຜນທີ່ຂອງທ່ານວ່າງເປົ່າ</string>
+    <string name="category_map_empty_body">ຖ້າບໍ່ມີຄຳ ໝວດໝູ່ຈະບໍ່ມາຈາກຫົວຂໍ້: ທ່ານຕ້ອງເລືອກເອງໃນແຕ່ລະລາຍຈ່າຍ</string>
+    <string name="category_map_group_category"> · ໝວດໝູ່ຂອງ %1$s</string>
+    <string name="category_map_only_main">ສະເພາະ %1$s</string>
+    <string name="category_map_only_in_group">ສະເພາະໃນ %1$s</string>
+    <string name="category_map_no_terms_yet">ຍັງບໍ່ມີຄຳ</string>
+    <string name="category_map_add_in">ເພີ່ມຄຳໃນ %1$s</string>
+    <string name="category_map_tip">ແຕະຄຳເພື່ອປ່ຽນໝວດໝູ່ ຫຼື ເອົາອອກ ມັນກົງກັບຄຳທັງໝົດ ໂດຍບໍ່ສົນໃຈເຄື່ອງໝາຍ ແລະ ຕົວພິມໃຫຍ່ນ້ອຍ</string>
+    <string name="category_map_queued">ຢູ່ໃນຄິວ</string>
+    <string name="category_map_term_action">%1$s, %2$s ແກ້ໄຂ</string>
+    <string name="category_map_new_term">ຄຳໃໝ່</string>
+    <string name="category_map_edit_term">ແກ້ໄຂຄຳ</string>
+    <string name="category_map_term_label">ຄຳ ຫຼື ວະລີ</string>
+    <string name="category_map_term_help">ກົງກັບຄຳທັງໝົດ ໂດຍບໍ່ສົນໃຈເຄື່ອງໝາຍ ແລະ ຕົວພິມໃຫຍ່ນ້ອຍ</string>
+    <string name="category_map_term_help_app">ຄຳຂອງແອັບ ກູ້ຄືນຄ່າເລີ່ມຕົ້ນ ຈະນຳມັນກັບມາຄືເດີມ</string>
+    <string name="category_map_term_duplicate">“%1$s” ເລືອກ %2$s ຢູ່ແລ້ວ ແຕ່ລະຄຳມີໝວດໝູ່ດຽວ</string>
+    <string name="category_map_term_too_short">ກະລຸນາໃຊ້ຢ່າງໜ້ອຍ 2 ຕົວອັກສອນ</string>
+    <string name="category_map_term_too_long">ກະລຸນາໃຊ້ບໍ່ເກີນ 30 ຕົວອັກສອນ</string>
+    <string name="category_map_term_invalid">ກະລຸນາໃຊ້ສະເພາະຕົວອັກສອນ, ຕົວເລກ ແລະ ຍະຫວ່າງ</string>
+    <string name="category_map_category">ໝວດໝູ່</string>
+    <string name="category_map_category_help">ອາດເປັນໝວດໝູ່ ຫຼື ໝວດໝູ່ຍ່ອຍ</string>
+    <string name="category_map_category_help_edit">ການປ່ຽນຢູ່ນີ້ຈະຍ້າຍຄຳໄປໝວດໝູ່ອື່ນ</string>
+    <string name="category_map_category_help_move">ການຍ້າຍຈະເອົາຄຳອອກຈາກ %1$s</string>
+    <string name="category_map_example">ຕົວຢ່າງ</string>
+    <string name="category_map_example_move">ຖ້າຍ້າຍ</string>
+    <string name="category_map_remove">ເອົາອອກ</string>
+    <string name="category_map_cancel">ຍົກເລີກ</string>
+    <string name="category_map_save">ບັນທຶກ</string>
+    <string name="category_map_move_to">ຍ້າຍໄປ %1$s</string>
+    <string name="category_map_removed">“%1$s” ອອກຈາກແຜນທີ່ແລ້ວ</string>
+    <string name="category_map_undo">ຍ້ອນກັບ</string>
+    <string name="category_map_restore_title">ກູ້ຄືນແຜນທີ່ເລີ່ມຕົ້ນບໍ?</string>
+    <string name="category_map_restore_body">ຄຳ 60 ຄຳຂອງແອັບຈະກັບມາຄືເດີມ ລວມທັງຄຳທີ່ທ່ານເອົາອອກ ຫຼື ຍ້າຍ</string>
+    <string name="category_map_restore_own_one">ຄຳທີ່ທ່ານສ້າງ “%1$s” ຍັງຢູ່</string>
+    <string name="category_map_restore_confirm">ກູ້ຄືນ</string>
+    <string name="category_map_save_error">ບໍ່ສາມາດບັນທຶກແຜນທີ່ໄດ້ ກະລຸນາລອງໃໝ່</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="other">%d ຄຳ</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="other">ໝວດໝູ່ຍ່ອຍ %d ໝວດ</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="other">%1$d ຄຳທີ່ມີ “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="other">ອອບລາຍ · ການປ່ຽນແປງ %d ລາຍການຢູ່ໃນຄິວ</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="other">ຄຳ %d ຄຳທີ່ທ່ານສ້າງຍັງຢູ່</item>
+    </plurals>
+    <string name="category_map_new_category">ໝວດໝູ່ໃໝ່</string>
+    <string name="category_map_new_subcategory_in">ໝວດໝູ່ຍ່ອຍໃໝ່ໃນ %s</string>
+    <string name="category_map_edit_category">ແກ້ໄຂ %s</string>
+    <string name="category_map_category_group">ກຸ່ມ</string>
+    <string name="category_map_change_color">ປ່ຽນສີຂອງ %1$s</string>
+    <string name="category_map_restore_color">ກູ້ຄືນສີ</string>
+    <string name="category_map_color_done">ແລ້ວໆ</string>
+</resources>

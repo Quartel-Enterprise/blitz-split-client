@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">Amharic</string>
     <string name="profile_language_sinhala">Sinhala</string>
     <string name="profile_language_kazakh">Kazakh</string>
+    <string name="profile_language_mongolian">Mongolian</string>
+    <string name="profile_language_kyrgyz">Kyrgyz</string>
+    <string name="profile_language_lao">Lao</string>
+    <string name="profile_language_icelandic">Icelandic</string>
+    <string name="profile_language_basque">Basque</string>
+    <string name="profile_language_galician">Galician</string>
+    <string name="profile_language_romansh">Romansh</string>
     <string name="profile_language_system_detail">Wika ng device</string>
     <string name="profile_notifications">Mga notipikasyon</string>
     <plurals name="profile_notifications_active">

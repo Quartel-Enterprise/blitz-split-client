@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Ez zaude talde honetan</string>
+    <string name="bill_link_not_in_group_message">Iruzkin hau zu ez zauden talde batean dago. Eskatu gonbidapena esteka bidali dizunari.</string>
+    <string name="bill_link_offline_title">Interneterik ez</string>
+    <string name="bill_link_offline_message">Ireki esteka berriro linean zaudenean.</string>
+    <string name="bill_link_go_home">Joan Hasierara</string>
+    <string name="discard_changes_title">Aldaketak baztertu?</string>
+    <string name="discard_changes_message">Gorde gabeko aldaketak galdu egingo dira.</string>
+    <string name="discard_changes_discard">Baztertu</string>
+    <string name="discard_changes_keep_editing">Jarraitu editatzen</string>
+    <string name="watch_channel_name">Erlojua</string>
+    <string name="watch_connected_title">%1$s zure kontura konektatu da</string>
+    <string name="watch_connected_title_unnamed">Erlojua zure kontura konektatu da</string>
+    <string name="watch_connected_text">Zure taldeak ikusten ditu eta bere kabuz sinkronizatzen da. Deskonektatzeko, amaitu saioa erlojuan.</string>
+</resources>

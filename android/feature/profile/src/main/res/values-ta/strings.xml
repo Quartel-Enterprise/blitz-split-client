@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">அம்ஹாரிக்</string>
     <string name="profile_language_sinhala">சிங்களம்</string>
     <string name="profile_language_kazakh">கசாக்</string>
+    <string name="profile_language_mongolian">மங்கோலியன்</string>
+    <string name="profile_language_kyrgyz">கிர்கிஸ்</string>
+    <string name="profile_language_lao">லாவோ</string>
+    <string name="profile_language_icelandic">ஐஸ்லேண்டிக்</string>
+    <string name="profile_language_basque">பாஸ்க்</string>
+    <string name="profile_language_galician">காலிஸியன்</string>
+    <string name="profile_language_romansh">ரோமான்ஷ்</string>
     <string name="profile_language_system_detail">சாதனத்தின் மொழி</string>
     <string name="profile_notifications">அறிவிப்புகள்</string>
     <plurals name="profile_notifications_active">

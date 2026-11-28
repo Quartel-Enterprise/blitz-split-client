@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Editatu profila</string>
+    <string name="edit_profile_save">Gorde</string>
+    <string name="edit_profile_change_photo">Aldatu argazkia</string>
+    <string name="edit_profile_take_photo">Atera argazkia</string>
+    <string name="edit_profile_choose_photo">Aukeratu galeriatik</string>
+    <string name="edit_profile_use_account_photo">Erabili kontuaren argazkia (%1$s)</string>
+    <string name="edit_profile_remove_photo">Kendu argazkia</string>
+    <string name="edit_profile_photo_error">Ezin izan da argazki hau erabili. Saiatu beste batekin.</string>
+    <string name="edit_profile_avatar_color">Avatarraren kolorea</string>
+    <string name="edit_profile_avatar_color_hint">Argazkirik ez duzunean agertzen da.</string>
+    <string name="edit_profile_name_label">Zure izena</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Idatzi gutxienez %d letra.</string>
+    <string name="edit_profile_name_too_long">Erabili gehienez %d karaktere.</string>
+    <string name="edit_profile_account_notice">Izena eta argazkia zure kontutik etorri dira (%1$s). Hemen aldatzeak Blitz Split aplikazioan bakarrik du eragina, eta ez du aldatzen zure kontua (%1$s).</string>
+    <string name="edit_profile_footer">Zure taldeek eta zure profilaren esteka dutenek zure izena eta argazkia ikusten dituzte.</string>
+    <string name="profile_photo_close">Itxi</string>
+    <string name="profile_photo_camera">Kamera</string>
+    <string name="profile_photo_gallery">Galeria</string>
+    <string name="profile_photo_remove">Kendu</string>
+    <string name="profile_photo_title">Profileko argazkia</string>
+</resources>

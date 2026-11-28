@@ -402,6 +402,13 @@ internal fun languageName(language: AppLanguage): String = when (language) {
     AppLanguage.AMHARIC -> stringResource(R.string.profile_language_native_amharic)
     AppLanguage.SINHALA -> stringResource(R.string.profile_language_native_sinhala)
     AppLanguage.KAZAKH -> stringResource(R.string.profile_language_native_kazakh)
+    AppLanguage.MONGOLIAN -> stringResource(R.string.profile_language_native_mongolian)
+    AppLanguage.KYRGYZ -> stringResource(R.string.profile_language_native_kyrgyz)
+    AppLanguage.LAO -> stringResource(R.string.profile_language_native_lao)
+    AppLanguage.ICELANDIC -> stringResource(R.string.profile_language_native_icelandic)
+    AppLanguage.BASQUE -> stringResource(R.string.profile_language_native_basque)
+    AppLanguage.GALICIAN -> stringResource(R.string.profile_language_native_galician)
+    AppLanguage.ROMANSH -> stringResource(R.string.profile_language_native_romansh)
     AppLanguage.CHINESE_TRADITIONAL -> stringResource(R.string.profile_language_native_chinese_traditional)
 }
 
@@ -472,5 +479,12 @@ private fun translatedLanguageName(language: AppLanguage): String = when (langua
     AppLanguage.AMHARIC -> stringResource(R.string.profile_language_amharic)
     AppLanguage.SINHALA -> stringResource(R.string.profile_language_sinhala)
     AppLanguage.KAZAKH -> stringResource(R.string.profile_language_kazakh)
+    AppLanguage.MONGOLIAN -> stringResource(R.string.profile_language_mongolian)
+    AppLanguage.KYRGYZ -> stringResource(R.string.profile_language_kyrgyz)
+    AppLanguage.LAO -> stringResource(R.string.profile_language_lao)
+    AppLanguage.ICELANDIC -> stringResource(R.string.profile_language_icelandic)
+    AppLanguage.BASQUE -> stringResource(R.string.profile_language_basque)
+    AppLanguage.GALICIAN -> stringResource(R.string.profile_language_galician)
+    AppLanguage.ROMANSH -> stringResource(R.string.profile_language_romansh)
     AppLanguage.CHINESE_TRADITIONAL -> stringResource(R.string.profile_language_chinese_traditional)
 }

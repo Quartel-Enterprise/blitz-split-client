@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Loka</string>
+    <string name="invite_group_created">Hópur stofnaður</string>
+    <string name="invite_title">Bjóddu öllum í hópinn ‘%s’</string>
+    <string name="invite_qr_description">QR-kóði boðshlekks hópsins</string>
+    <string name="invite_copy">Afrita</string>
+    <string name="invite_copied">Afritað</string>
+    <string name="invite_who_picks">Sá sem opnar hlekkinn velur hver hann er á listanum: %s. Enginn aðgangur nauðsynlegur.</string>
+    <string name="invite_names_or">%1$s eða %2$s</string>
+    <string name="invite_anyone_joins">Sá sem opnar hlekkinn gengur í hópinn. Enginn aðgangur nauðsynlegur.</string>
+    <string name="invite_pending_title">Hlekkur í bið</string>
+    <string name="invite_pending_offline">Hann verður búinn til um leið og nettenging er komin.</string>
+    <string name="invite_pending_online">Verið er að búa til hlekkinn…</string>
+    <string name="invite_failed_title">Ekki tókst að búa til hlekkinn</string>
+    <string name="invite_failed_body">Eitthvað fór úrskeiðis við að samstilla hópinn.</string>
+    <string name="invite_retry">Reyna aftur</string>
+    <string name="invite_share">Deila hlekk</string>
+    <string name="invite_see_who_joined">Sjá hverjir hafa gengið í hópinn</string>
+    <string name="invite_add_person">Bæta við einhverjum án appsins</string>
+    <string name="invite_go_to_group">Fara í hópinn</string>
+    <string name="invite_change_link">Breyta hlekk</string>
+    <string name="invite_change_link_title">Breyta boðshlekknum?</string>
+    <string name="invite_change_link_message">Núverandi hlekkur og QR-kóði hætta að virka, ónotuð persónuleg boð meðtalin. Þeir sem hafa þegar gengið í hópinn verða áfram í honum.</string>
+    <string name="invite_change_link_failed">Ekki tókst að breyta hlekknum. Reyndu aftur.</string>
+    <string name="invite_share_message">Skiptum kostnaðinum í hópnum ‘%1$s’ í Blitz Split. Gakktu í hópinn með þessum hlekk: %2$s</string>
+</resources>

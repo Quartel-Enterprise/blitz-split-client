@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Калыбына келтирүү кодуңузду сактаңыз</string>
+    <string name="recovery_code_body">Сиз колдонмону аккаунтсуз колдонуп жатасыз. Түзмөгүңүздү алмаштырсаңыз же жоготсоңуз, бул 12 сөз маалыматыңызды кайтарат. Аларды ирети менен жазып алыңыз. 30 күн колдонулбаса, маалыматыңыз өчүрүлөт жана сөздөр иштебей калат.</string>
+    <string name="recovery_code_copy">Сөздөрдү көчүрүү</string>
+    <string name="recovery_code_save_to_password_manager">Сырсөз менеджерине сактоо</string>
+    <string name="recovery_code_connect_instead">Анын ордуна Google же Apple туташтыруу</string>
+    <string name="recovery_code_connect_instead_body">Коддун кереги жок</string>
+    <string name="recovery_code_sign_in_failed">Азыр туташа алган жоксуз. Кайра аракет кылыңыз.</string>
+    <string name="recovery_code_also_in_profile">Ал Профиль › Калыбына келтирүү бөлүмүндө да бар.</string>
+    <string name="recovery_code_remind_later">Кийинчерээк эскертүү</string>
+    <string name="recovery_code_saved">Сактап алдым</string>
+    <string name="recovery_code_download">Жүктөп алуу</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · калыбына келтирүү коду\n\n%1$s\n\nМаалыматыңызды кайтаруу үчүн аны \"Башка түзмөктө колдонгом\" бөлүмүндө колдонуңуз.\n</string>
+</resources>

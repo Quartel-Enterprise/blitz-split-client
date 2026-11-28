@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Skiptu reikningnum, án vesens</string>
+    <string name="welcome_offline_title">Virkar án nettengingar</string>
+    <string name="welcome_offline_body">Allt er geymt á tækinu þínu og samstillist seinna.</string>
+    <string name="welcome_optional_title">Aðgangur er valfrjáls</string>
+    <string name="welcome_optional_body">Google eða Apple tryggja bara að þú tapir engu þegar þú skiptir um tæki.</string>
+    <string name="welcome_invite_title">Bjóddu með hlekk eða QR-kóða</string>
+    <string name="welcome_invite_body">Vinir ganga í hópinn án þess að stofna aðgang.</string>
+    <string name="welcome_no_connection_title">Engin tenging.</string>
+    <string name="welcome_no_connection_body">Innskráning með aðgangi krefst nettengingar. Notaðu appið án aðgangs núna og tengdu aðgang seinna í prófílnum.</string>
+    <string name="welcome_or">eða</string>
+    <string name="welcome_use_without_account">Nota án aðgangs</string>
+    <string name="welcome_used_on_another_device">Ég hef notað appið í öðru tæki</string>
+    <string name="welcome_sign_in_failed">Ekki tókst að skrá inn núna. Reyndu aftur.</string>
+    <string name="welcome_legal_notice">Með því að halda áfram samþykkir þú eftirfarandi: %1$s. Þú staðfestir einnig að hafa kynnt þér: %2$s.</string>
+    <string name="welcome_legal_terms">Þjónustuskilmálar</string>
+    <string name="welcome_legal_privacy">Persónuverndarstefna</string>
+    <string name="welcome_no_account_note">Án aðgangs er gögnunum þínum eytt eftir 30 daga án notkunar. Tengdu Google eða Apple til að halda þeim.</string>
+    <string name="welcome_no_account_note_offline">Án aðgangs er gögnunum þínum eytt eftir 30 daga án notkunar. Tengdu Google eða Apple seinna, í prófílnum, til að halda þeim.</string>
+    <string name="welcome_expired_title">Gögnunum þínum var eytt</string>
+    <string name="welcome_expired_body">Þú notaðir appið án aðgangs og opnaðir það ekki í 30 daga, svo gögnunum þínum var eytt. Tengdu Google eða Apple til að halda þeim næst.</string>
+    <string name="welcome_expired_ok">Í lagi</string>
+</resources>

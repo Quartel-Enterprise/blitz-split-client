@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Novitads</string>
+    <string name="release_notes_show_beta">Mussar las versiuns beta</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Questa versiun</string>
+    <string name="release_notes_empty">Anc naginas novitads.</string>
+    <string name="release_notes_empty_only_betas">I na dat anc nagina versiun stabla. Activai las versiuns beta per vesair tge che vegn testà.</string>
+    <string name="release_notes_load_failed_title">Impussibel da chargiar las novitads</string>
+    <string name="release_notes_load_failed_body">Controllai Vossa connexiun ed empruvai anc ina giada.</string>
+    <string name="release_notes_retry">Empruvar anc ina giada</string>
+    <string name="release_notes_open_on_github">Avrir sin GitHub</string>
+</resources>

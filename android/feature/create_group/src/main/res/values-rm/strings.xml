@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Nova gruppa</string>
+    <string name="create_group_close">Serrar</string>
+    <string name="create_group_create">Crear</string>
+    <string name="create_group_change_color">Midar la colur da la gruppa</string>
+    <string name="create_group_name_label">Num da la gruppa</string>
+    <string name="create_group_type_label">Tip da gruppa</string>
+    <string name="create_group_members_title">Tgi è da la partida</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d persuna</item>
+        <item quantity="other">%d persunas</item>
+    </plurals>
+    <string name="create_group_me">Vus</string>
+    <string name="create_group_remove_member">Allontanar %s</string>
+    <string name="create_group_add_placeholder">Agiuntar cun il num</string>
+    <string name="create_group_add">Agiuntar</string>
+    <string name="create_group_no_app_notice">Nagin na dovra l\'app per il mument. Vus pudais gia agiuntar expensas per tuts e trametter la colliaziun pli tard.</string>
+    <string name="create_group_currency">Valuta da standard</string>
+    <string name="create_group_currency_caption">Novas expensas cumenzan en questa valuta; mintga expensa po duvrar in\'autra.</string>
+    <string name="create_group_save_error">Impussibel da memorisar la gruppa. Empruvai anc ina giada.</string>
+    <string name="create_group_photo">Foto da la gruppa</string>
+    <string name="create_group_take_photo">Far ina foto</string>
+    <string name="create_group_choose_photo">Tscherner ina foto</string>
+    <string name="create_group_remove_photo">Allontanar la foto</string>
+    <string name="create_group_photo_error">Impussibel da duvrar questa foto. Empruvai in\'autra.</string>
+</resources>

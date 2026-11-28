@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · code da recuperaziun</string>
+    <string name="platform_export_file_name">blitz-split-datas-%1$s.json</string>
+    <string name="platform_camera_denied">Permettai la camera en ils parameters per far ina foto.</string>
+    <string name="platform_camera_settings">Parameters</string>
+    <string name="platform_receipt_source_camera">Far ina foto</string>
+    <string name="platform_receipt_source_gallery">Tscherner da la galaria</string>
+    <string name="platform_receipt_source_file">Tscherner ina datoteca</string>
+    <string name="platform_receipt_camera_title">Scannar la quittanza</string>
+    <string name="platform_receipt_camera_close">Serrar</string>
+    <string name="platform_receipt_camera_flash_on">Activar il flash</string>
+    <string name="platform_receipt_camera_flash_off">Deactivar il flash</string>
+    <string name="platform_receipt_camera_hint">Plazzai l\'entira quittanza en il rom. Nus emplenin l\'import, la data e la descripziun; Vus controllais avant che memorisar.</string>
+    <string name="platform_receipt_camera_gallery">Tscherner da la galaria</string>
+    <string name="platform_receipt_camera_shutter">Far ina foto</string>
+    <string name="platform_receipt_camera_unavailable">La camera n\'è betg disponibla. Tschernai ina foto da la quittanza da la galaria.</string>
+    <string name="platform_receipt_camera_permission">Permettai la camera per scannar la quittanza, u tschernai ina foto da la galaria.</string>
+    <string name="platform_receipt_camera_allow">Permetter la camera</string>
+    <string name="platform_receipt_camera_settings">Avrir ils parameters</string>
+</resources>

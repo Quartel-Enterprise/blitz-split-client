@@ -120,6 +120,13 @@
     <string name="profile_language_amharic">Амхарська</string>
     <string name="profile_language_sinhala">Сингальська</string>
     <string name="profile_language_kazakh">Казахська</string>
+    <string name="profile_language_mongolian">Монгольська</string>
+    <string name="profile_language_kyrgyz">Киргизька</string>
+    <string name="profile_language_lao">Лаоська</string>
+    <string name="profile_language_icelandic">Ісландська</string>
+    <string name="profile_language_basque">Баскська</string>
+    <string name="profile_language_galician">Галісійська</string>
+    <string name="profile_language_romansh">Ретороманська</string>
     <string name="profile_language_system_detail">Мова пристрою</string>
     <string name="profile_notifications">Сповіщення</string>
     <plurals name="profile_notifications_active">

@@ -117,6 +117,13 @@
     <string name="profile_language_amharic">阿姆哈拉文</string>
     <string name="profile_language_sinhala">僧伽羅文</string>
     <string name="profile_language_kazakh">哈薩克文</string>
+    <string name="profile_language_mongolian">蒙古文</string>
+    <string name="profile_language_kyrgyz">吉爾吉斯文</string>
+    <string name="profile_language_lao">寮文</string>
+    <string name="profile_language_icelandic">冰島文</string>
+    <string name="profile_language_basque">巴斯克文</string>
+    <string name="profile_language_galician">加利西亞文</string>
+    <string name="profile_language_romansh">羅曼斯文</string>
     <string name="profile_language_system_detail">裝置語言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

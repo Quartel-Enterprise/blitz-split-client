@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Itxi</string>
+    <string name="invite_group_created">Taldea sortu da</string>
+    <string name="invite_title">Gonbidatu denak ‘%s’ taldera</string>
+    <string name="invite_qr_description">Taldearen gonbidapen-estekaren QR kodea</string>
+    <string name="invite_copy">Kopiatu</string>
+    <string name="invite_copied">Kopiatuta</string>
+    <string name="invite_who_picks">Esteka irekitzen duenak zerrendan nor den aukeratzen du: %s. Ez da konturik behar.</string>
+    <string name="invite_names_or">%1$s edo %2$s</string>
+    <string name="invite_anyone_joins">Esteka irekitzen duena taldean sartzen da. Ez da konturik behar.</string>
+    <string name="invite_pending_title">Esteka zain</string>
+    <string name="invite_pending_offline">Linean zauden bezain laster sortuko da.</string>
+    <string name="invite_pending_online">Esteka sortzen…</string>
+    <string name="invite_failed_title">Ezin izan da esteka sortu</string>
+    <string name="invite_failed_body">Zerbait gaizki joan da taldea sinkronizatzean.</string>
+    <string name="invite_retry">Saiatu berriro</string>
+    <string name="invite_share">Partekatu esteka</string>
+    <string name="invite_see_who_joined">Ikusi nor sartu den</string>
+    <string name="invite_add_person">Gehitu aplikaziorik gabeko norbait</string>
+    <string name="invite_go_to_group">Joan taldera</string>
+    <string name="invite_change_link">Aldatu esteka</string>
+    <string name="invite_change_link_title">Gonbidapen-esteka aldatu?</string>
+    <string name="invite_change_link_message">Uneko estekak eta QR kodeak funtzionatzeari uzten diote, erabili gabeko gonbidapen pertsonalak barne. Dagoeneko sartu direnak taldean geratzen dira.</string>
+    <string name="invite_change_link_failed">Ezin izan da esteka aldatu. Saiatu berriro.</string>
+    <string name="invite_share_message">Banatu ditzagun ‘%1$s’ taldeko gastuak Blitz Split aplikazioan. Sartu esteka honekin: %2$s</string>
+</resources>

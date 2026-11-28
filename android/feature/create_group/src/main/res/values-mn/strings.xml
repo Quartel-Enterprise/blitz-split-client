@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Шинэ бүлэг</string>
+    <string name="create_group_close">Хаах</string>
+    <string name="create_group_create">Үүсгэх</string>
+    <string name="create_group_change_color">Бүлгийн өнгийг солих</string>
+    <string name="create_group_name_label">Бүлгийн нэр</string>
+    <string name="create_group_type_label">Бүлгийн төрөл</string>
+    <string name="create_group_members_title">Оролцогчид</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d хүн</item>
+        <item quantity="other">%d хүн</item>
+    </plurals>
+    <string name="create_group_me">та</string>
+    <string name="create_group_remove_member">Хасах: %s</string>
+    <string name="create_group_add_placeholder">Нэрээр нэмэх</string>
+    <string name="create_group_add">Нэмэх</string>
+    <string name="create_group_no_app_notice">Одоогоор хэнд ч апп хэрэггүй. Та бүх хүнд зардал нэмж, холбоосыг дараа илгээж болно.</string>
+    <string name="create_group_currency">Үндсэн валют</string>
+    <string name="create_group_currency_caption">Шинэ зардлууд энэ валютаар эхэлнэ; зардал бүр өөр валют ашиглаж болно.</string>
+    <string name="create_group_save_error">Бүлгийг хадгалж чадсангүй. Дахин оролдоно уу.</string>
+    <string name="create_group_photo">Бүлгийн зураг</string>
+    <string name="create_group_take_photo">Зураг авах</string>
+    <string name="create_group_choose_photo">Зураг сонгох</string>
+    <string name="create_group_remove_photo">Зураг устгах</string>
+    <string name="create_group_photo_error">Энэ зургийг ашиглаж чадсангүй. Өөр зураг сонгоно уу.</string>
+</resources>

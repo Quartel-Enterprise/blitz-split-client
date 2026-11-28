@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">ଆମହାରିକ୍</string>
     <string name="profile_language_sinhala">ସିଂହଳ</string>
     <string name="profile_language_kazakh">କାଜାଖ୍</string>
+    <string name="profile_language_mongolian">ମଙ୍ଗୋଳିୟ</string>
+    <string name="profile_language_kyrgyz">କିର୍ଗିଜ୍</string>
+    <string name="profile_language_lao">ଲାଓ</string>
+    <string name="profile_language_icelandic">ଆଇସଲାଣ୍ଡିକ୍</string>
+    <string name="profile_language_basque">ବାସ୍କ</string>
+    <string name="profile_language_galician">ଗାଲିସିଆନ୍</string>
+    <string name="profile_language_romansh">ରୋମାନଶ୍</string>
     <string name="profile_language_system_detail">ଡିଭାଇସ୍ ଭାଷା</string>
     <string name="profile_notifications">ନୋଟିଫିକେସନ୍</string>
     <plurals name="profile_notifications_active">

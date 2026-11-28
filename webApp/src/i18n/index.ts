@@ -63,6 +63,13 @@ import { az } from './az'
 import { am } from './am'
 import { si } from './si'
 import { kk } from './kk'
+import { mn } from './mn'
+import { ky } from './ky'
+import { lo } from './lo'
+import { is } from './is'
+import { eu } from './eu'
+import { gl } from './gl'
+import { rm } from './rm'
 
 export type { MessageKey }
 /**
@@ -70,15 +77,15 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's; `zh-Hant` is Traditional Chinese, Taiwan's.
  */
-export type Locale = 'en' | 'en-GB' | 'en-AU' | 'en-CA' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'fa' | 'ta' | 'nb' | 'te' | 'bg' | 'mr' | 'sw' | 'ca' | 'da' | 'fi' | 'lv' | 'et' | 'gu' | 'sl' | 'lt' | 'pa' | 'ml' | 'kn' | 'my' | 'km' | 'or' | 'ne' | 'az' | 'am' | 'si' | 'kk'
+export type Locale = 'en' | 'en-GB' | 'en-AU' | 'en-CA' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'fa' | 'ta' | 'nb' | 'te' | 'bg' | 'mr' | 'sw' | 'ca' | 'da' | 'fi' | 'lv' | 'et' | 'gu' | 'sl' | 'lt' | 'pa' | 'ml' | 'kn' | 'my' | 'km' | 'or' | 'ne' | 'az' | 'am' | 'si' | 'kk' | 'mn' | 'ky' | 'lo' | 'is' | 'eu' | 'gl' | 'rm'
 
 // Why: Britain's English, which Australia's reads too: Canada's spelling, then the words Canada writes as the US.
 const britishEnglish = { ...en, ...enCA, ...enGB }
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, 'en-GB': britishEnglish, 'en-AU': britishEnglish, 'en-CA': { ...en, ...enCA }, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, fa, ta, nb, te, bg, mr, sw, ca, da, fi, lv, et, gu, sl, lt, pa, ml, kn, my, km, or, ne, az, am, si, kk }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, 'en-GB': britishEnglish, 'en-AU': britishEnglish, 'en-CA': { ...en, ...enCA }, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, fa, ta, nb, te, bg, mr, sw, ca, da, fi, lv, et, gu, sl, lt, pa, ml, kn, my, km, or, ne, az, am, si, kk, mn, ky, lo, is, eu, gl, rm }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'fa', 'ta', 'nb', 'te', 'bg', 'mr', 'sw', 'ca', 'da', 'fi', 'lv', 'et', 'gu', 'sl', 'lt', 'ml', 'kn', 'my', 'km', 'or', 'ne', 'az', 'am', 'si', 'kk']
+const bareLocales: readonly Locale[] = ['fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'fa', 'ta', 'nb', 'te', 'bg', 'mr', 'sw', 'ca', 'da', 'fi', 'lv', 'et', 'gu', 'sl', 'lt', 'ml', 'kn', 'my', 'km', 'or', 'ne', 'az', 'am', 'si', 'kk', 'lo', 'is', 'eu', 'gl', 'rm']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -100,6 +107,17 @@ function isGurmukhi(subtags: readonly string[]): boolean {
   const script = scriptOf(subtags)
   if (script) return script === 'guru'
   return regionOf(subtags) !== 'pk'
+}
+
+/**
+ * A Mongolian or Kyrgyz tag written in Cyrillic, the only script the app has them in: its script says so when it has
+ * one (mn-Cyrl, never mn-Mong or ky-Arab), else any region but China, whose mn-CN and ky-CN are written in the
+ * traditional Mongolian and the Arabic scripts by default. As AppLanguage's.
+ */
+function isCyrillic(subtags: readonly string[]): boolean {
+  const script = scriptOf(subtags)
+  if (script) return script === 'cyrl'
+  return regionOf(subtags) !== 'cn'
 }
 
 // Why: a tag's script, its four-letter subtag before any extension ("hant" of zh-Hant-TW), as AppLanguage.scriptOf.
@@ -131,11 +149,11 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag (es, es-MX,
  * es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`,
- * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `he`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk`, `fa`, `ta`, `nb` (or Norwegian's `no` and Nynorsk's `nn`), `te`, `bg`, `mr`, `sw`, `ca`, `da`, `fi`, `lv`, `et`, `gu`, `sl`, `lt`, `ml`, `kn`, `my`, `km`, `or`, `ne`, `az`, `am`, `si` or `kk` tag
+ * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `he`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk`, `fa`, `ta`, `nb` (or Norwegian's `no` and Nynorsk's `nn`), `te`, `bg`, `mr`, `sw`, `ca`, `da`, `fi`, `lv`, `et`, `gu`, `sl`, `lt`, `ml`, `kn`, `my`, `km`, `or`, `ne`, `az`, `am`, `si`, `kk`, `lo`, `is`, `eu`, `gl` or `rm` tag
  * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, he-IL, the legacy iw-IL, th-TH, vi-VN,
- * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, the legacy tl-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK, nb-NO, nn-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, ca-ES-valencia, da-DK, fi-FI, lv-LV, et-EE, gu-IN, sl-SI, lt-LT, ml-IN, kn-IN, my-MM, km-KH, or-IN, ne-NP, az-AZ, am-ET, si-LK, kk-KZ…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
- * Russian, Ukrainian, Korean, Hindi, Arabic, Hebrew, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil, Norwegian (Bokmål, whichever of the three), Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too), Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala or Kazakh, a `pa` tag in Gurmukhi (pa, pa-Guru, pa-IN) is
- * Punjabi, while one in Shahmukhi (pa-Arab, pa-Arab-PK) or Pakistan's with no script (pa-PK) is no language the app has, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
+ * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, the legacy tl-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK, nb-NO, nn-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, ca-ES-valencia, da-DK, fi-FI, lv-LV, et-EE, gu-IN, sl-SI, lt-LT, ml-IN, kn-IN, my-MM, km-KH, or-IN, ne-NP, az-AZ, am-ET, si-LK, kk-KZ, lo-LA, is-IS, eu-ES, gl-ES, rm-CH…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
+ * Russian, Ukrainian, Korean, Hindi, Arabic, Hebrew, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil, Norwegian (Bokmål, whichever of the three), Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too), Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala, Kazakh, Lao, Icelandic, Basque, Galician or Romansh, a `pa` tag in Gurmukhi (pa, pa-Guru, pa-IN) is
+ * Punjabi, while one in Shahmukhi (pa-Arab, pa-Arab-PK) or Pakistan's with no script (pa-PK) is no language the app has, an `mn` or `ky` tag in Cyrillic (mn, mn-Cyrl, mn-MN, ky-KG) is Mongolian or Kyrgyz, while one in another script (mn-Mong, ky-Arab) or China's with none (mn-CN, ky-CN) is no language the app has, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, `en-GB`, `en-AU` and `en-CA` are their regions'
  * English, an `en` tag of a region that writes as Britain (en-NZ, en-IE, en-IN, en-DE…) British English, any other
  * `en` tag (en, en-US, en-JP…) American English, and American English when none matches.
@@ -150,6 +168,10 @@ export function pickLocale(languages: readonly string[]): Locale {
     if (language === 'zh' && isTraditionalChinese(rest)) return 'zh-Hant'
     if (language === 'pa') {
       if (isGurmukhi(rest)) return 'pa'
+      continue
+    }
+    if (language === 'mn' || language === 'ky') {
+      if (isCyrillic(rest)) return language
       continue
     }
     if (bareLocales.includes(language as Locale)) return language as Locale
@@ -192,10 +214,10 @@ export const wordGap = isUnspaced ? '' : ' '
 
 /**
  * The end of a sentence the code finishes: Japanese's and Chinese's "。", Hindi's, Bengali's, Odia's, Nepali's and Punjabi's danda "।", Urdu's "۔", Burmese's "။",
- * Khmer's "។", Amharic's "።", nothing in Thai, which ends a sentence with none (the word gap's space parts two), the others' ".". Same rule as Android's
+ * Khmer's "។", Amharic's "።", nothing in Thai and Lao, which end a sentence with none (the word gap's space parts two), the others' ".". Same rule as Android's
  * `fullStopUi`.
  */
-const ownFullStops: Partial<Record<Locale, string>> = { hi: '।', bn: '।', or: '।', ne: '।', pa: '।', ur: '۔', my: '။', km: '។', am: '።', th: '' }
+const ownFullStops: Partial<Record<Locale, string>> = { hi: '।', bn: '।', or: '।', ne: '।', pa: '।', ur: '۔', my: '။', km: '។', am: '።', th: '', lo: '' }
 export const fullStop = isUnspaced ? '。' : (ownFullStops[locale] ?? '.')
 
 /** Every language's sentence stop, so a piece that already ends with one doesn't get a second. */
@@ -204,10 +226,10 @@ export const sentenceStops: readonly string[] = ['.', '。', ...Object.values(ow
 /**
  * Between two clauses of one sentence the code joins ("…pays you $64, and Ana no longer owes you"): Japanese ends the
  * first sentence instead ("…払います。…なくなりました"), Chinese takes its own comma ("…，Ana不再欠你"), Urdu and Persian their "،",
- * as their Android strings write it, Burmese its "၊", Amharic its "፣", and Thai and Khmer, which part
+ * as their Android strings write it, Burmese its "၊", Amharic its "፣", and Thai, Lao and Khmer, which part
  * clauses with a space, a space.
  */
-const ownClauseBreaks: Partial<Record<Locale, string>> = { ja: '。', zh: '，', 'zh-Hant': '，', ur: '، ', fa: '، ', my: '၊ ', am: '፣ ', th: ' ', km: ' ' }
+const ownClauseBreaks: Partial<Record<Locale, string>> = { ja: '。', zh: '，', 'zh-Hant': '，', ur: '، ', fa: '، ', my: '၊ ', am: '፣ ', th: ' ', lo: ' ', km: ' ' }
 export const clauseBreak = ownClauseBreaks[locale] ?? ', '
 
 const documentLanguages: Record<Locale, string> = {
@@ -275,6 +297,13 @@ const documentLanguages: Record<Locale, string> = {
   am: 'am',
   si: 'si',
   kk: 'kk',
+  mn: 'mn',
+  ky: 'ky',
+  lo: 'lo',
+  is: 'is',
+  eu: 'eu',
+  gl: 'gl',
+  rm: 'rm',
 }
 
 const documentLanguage = documentLanguages[locale]
@@ -303,7 +332,7 @@ export function isolated(text: string): string {
 }
 
 /**
- * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic, Thai, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Punjabi, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala and Kazakh,
+ * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic, Thai, Bengali, Urdu, Persian, Tamil, Telugu, Marathi, Gujarati, Punjabi, Malayalam, Kannada, Burmese, Khmer, Odia, Nepali, Azerbaijani, Amharic, Sinhala, Kazakh and Lao,
  * whose own ("١٢٫٥٠", "๑๒.๕๐", "১২.৫০", "۱۲٫۵۰", "௧௨.௫௦") the amount fields can't parse, and the Gregorian calendar for Thai,
  * whose default is the Buddhist era (2569 for 2026), and Persian, whose default is the Solar Hijri one (1405 for 2026),
  * so the web writes the year Android writes.
@@ -328,6 +357,7 @@ const formattingKeys: Readonly<Record<string, Readonly<Record<string, string>>>>
   am: { nu: 'latn' },
   si: { nu: 'latn' },
   kk: { nu: 'latn' },
+  lo: { nu: 'latn' },
   th: { nu: 'latn', ca: 'gregory' },
 }
 
@@ -477,6 +507,7 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
   et: { on: 'oled' },
   sl: { je: 'si' },
   ca: { ha: 'has', 'l’ha': 'l’has', "l'ha": "l'has" },
+  rm: { ha: 'avais' },
 }
 
 /**
@@ -515,7 +546,12 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * the user's "Siz" adds "-nız", "-niz", "-nuz" or "-nüz" to it after its last vowel: "böldü" becomes "böldünüz",
  * "etdi" "etdiniz"; Kazakh likewise "-ңыз" or "-ңіз": "бөлді" becomes "бөлдіңіз", "шықты" "шықтыңыз". Amharic's
  * respectful plural past is the same for a name and for "እርስዎ", and Sinhala's colloquial past doesn't change with the
- * person, so their verbs stay as they are.
+ * person, so their verbs stay as they are. Kyrgyz puts its simple past last as Kazakh does, and the user's "Сиз" adds
+ * "-ңыз", "-ңиз", "-ңуз" or "-ңүз" to it after its last vowel: "бөлдү" becomes "бөлдүңүз", "чыкты" "чыктыңыз".
+ * Romansh swaps its perfect's "ha" as Italian does: "ha partì" becomes "avais partì". Mongolian's and Lao's verbs
+ * don't change with the person, Icelandic's perfect "hefur" is the same for "þú" and for a name, Galician's
+ * respectful "vostede" takes a name's verb, and Basque writes each activity as a noun phrase, so their verbs stay as
+ * they are.
  * Kannada ones end as Tamil's do, with a respectful past in "-ರು" after a consonant, whose "ರು" becomes the user's
  * "ಿರಿ": "ಹಂಚಿದರು" becomes "ಹಂಚಿದಿರಿ".
  * Swahili's verb carries the subject's prefix: every verb phrase starts with a perfect "a-me-" or a past "a-li-", whose
@@ -540,6 +576,7 @@ export function verbForYou(verb: string): string {
   if (locale === 'kn') return kannadaVerbForYou(verb)
   if (locale === 'az') return harmonicVerbLastForYou(verb, '[dt]', { ı: 'nız', i: 'niz', u: 'nuz', ü: 'nüz' })
   if (locale === 'kk') return harmonicVerbLastForYou(verb, '[дт]', { ы: 'ңыз', і: 'ңіз' })
+  if (locale === 'ky') return harmonicVerbLastForYou(verb, '[дт]', { ы: 'ңыз', и: 'ңиз', у: 'ңуз', ү: 'ңүз' })
   if (locale === 'ko') return verb.replace(/^님이(?: |$)/, '')
   if (locale === 'hi') return verb.replace(/^ने(?: |$)/, '')
   if (locale === 'mr') return verb.replace(/^यांनी(?: |$)/, '')
@@ -608,7 +645,7 @@ function verbLastForYou(verb: string, past: string, ending: string, dropped = ''
 }
 
 /**
- * Azerbaijani and Kazakh put the verb last as Turkish does, so every verb phrase of theirs ends, before the colon that
+ * Azerbaijani, Kazakh and Kyrgyz put the verb last as Turkish does, so every verb phrase of theirs ends, before the colon that
  * leads to the object, with a simple past of `consonants` and a vowel, and the user's ending follows that vowel:
  * `endings` maps each one to it ("böldü" → "böldünüz", "etdi" → "etdiniz", "бөлді" → "бөлдіңіз", "шықты" →
  * "шықтыңыз"). Same rule as Android's `toVerbLastSecondPerson` and the Apple app's `harmonicVerbLastForYou`.

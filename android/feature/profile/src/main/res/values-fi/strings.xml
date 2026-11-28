@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">Amhara</string>
     <string name="profile_language_sinhala">Sinhala</string>
     <string name="profile_language_kazakh">Kazakki</string>
+    <string name="profile_language_mongolian">Mongoli</string>
+    <string name="profile_language_kyrgyz">Kirgiisi</string>
+    <string name="profile_language_lao">Lao</string>
+    <string name="profile_language_icelandic">Islanti</string>
+    <string name="profile_language_basque">Baski</string>
+    <string name="profile_language_galician">Galicia</string>
+    <string name="profile_language_romansh">Retoromaani</string>
     <string name="profile_language_system_detail">Laitteen kieli</string>
     <string name="profile_notifications">Ilmoitukset</string>
     <plurals name="profile_notifications_active">

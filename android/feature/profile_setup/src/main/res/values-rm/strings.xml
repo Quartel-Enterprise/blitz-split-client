@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Co As numnan Voss amis?</string>
+    <string name="profile_setup_subtitle">Vossas gruppas e tuts che han la colliaziun da Voss profil vesan Voss num.</string>
+    <string name="profile_setup_avatar_color">Colur da l\'avatar</string>
+    <string name="profile_setup_add_photo">Agiuntar ina foto</string>
+    <string name="profile_setup_photo_error">Impussibel da duvrar questa foto. Empruvai in\'autra.</string>
+    <string name="profile_setup_name_label">Voss num</string>
+    <string name="profile_setup_name_placeholder">Gion Caduff</string>
+    <string name="profile_setup_name_too_short">Endatai almain %d bustabs.</string>
+    <string name="profile_setup_name_too_long">Duvrai maximalmain %d caracters.</string>
+    <string name="profile_setup_name_hint">Vus pudais midar el pli tard en il profil.</string>
+    <string name="profile_setup_saved_locally">Per il mument memorisà mo sin quest apparat.</string>
+    <string name="profile_setup_continue">Cuntinuar</string>
+</resources>

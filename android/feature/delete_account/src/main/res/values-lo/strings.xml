@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">ລຶບບັນຊີ</string>
+    <string name="delete_account_offline_title">ບໍ່ມີອິນເຕີເນັດ</string>
+    <string name="delete_account_offline_body">ການລຶບບັນຊີຕ້ອງມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ ກະລຸນາເຊື່ອມຕໍ່ ແລ້ວລອງໃໝ່</string>
+    <string name="delete_account_heading">ລຶບບັນຊີ ແລະ ຂໍ້ມູນຂອງທ່ານບໍ?</string>
+    <string name="delete_account_deleted_title">ສິ່ງທີ່ຈະຖືກລຶບ</string>
+    <string name="delete_account_deleted_profile">ໂປຣໄຟລ໌ຂອງທ່ານ (ຊື່, ຮູບ ແລະ ສີ)</string>
+    <string name="delete_account_deleted_keys">ລະຫັດ Pix ແລະ Bitcoin ຂອງທ່ານ</string>
+    <string name="delete_account_deleted_provider">ການເຊື່ອມຕໍ່ກັບບັນຊີ %1$s ຂອງທ່ານ</string>
+    <string name="delete_account_deleted_recovery_code">ລະຫັດກູ້ຄືນຂອງທ່ານ</string>
+    <string name="delete_account_deleted_device">ສຳເນົາຂໍ້ມູນຂອງທ່ານໃນອຸປະກອນນີ້</string>
+    <string name="delete_account_kept_title">ສິ່ງທີ່ຍັງຢູ່ໃນກຸ່ມຂອງທ່ານ</string>
+    <string name="delete_account_kept_groups">ກຸ່ມຕ່າງໆ ພ້ອມລາຍຈ່າຍ ແລະ ການຈ່າຍເງິນ ສຳລັບສະມາຊິກຄົນອື່ນ</string>
+    <string name="delete_account_kept_member">ຊື່ຂອງທ່ານໃນແຕ່ລະກຸ່ມ ເປັນສະມາຊິກທີ່ບໍ່ມີບັນຊີ</string>
+    <string name="delete_account_kept_comments">ຄຳເຫັນ ແລະ ຮູບທີ່ທ່ານເພີ່ມ ພາຍໃຕ້ຊື່ຂອງທ່ານ</string>
+    <string name="delete_account_export">ສົ່ງອອກຂໍ້ມູນຂອງຂ້ອຍກ່ອນ</string>
+    <string name="delete_account_confirm">ຂ້ອຍເຂົ້າໃຈວ່າອັນນີ້ຍ້ອນກັບບໍ່ໄດ້</string>
+    <string name="delete_account_delete">ລຶບບັນຊີ</string>
+    <string name="delete_account_cancel">ຍົກເລີກ</string>
+    <string name="delete_account_failed">ບໍ່ສາມາດລຶບບັນຊີຂອງທ່ານໄດ້ ກະລຸນາລອງໃໝ່</string>
+</resources>

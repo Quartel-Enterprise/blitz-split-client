@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Conectar reloxo</string>
+    <string name="connect_watch_close">Pechar</string>
+    <string name="connect_watch_body">Escriba o código que mostra o seu reloxo. Inicia sesión na súa conta e despois sincronízase só.</string>
+    <string name="connect_watch_code_label">Código do reloxo</string>
+    <string name="connect_watch_error_invalid">Código incorrecto ou caducado. Obteña un novo no reloxo.</string>
+    <string name="connect_watch_error_too_many">Demasiados códigos incorrectos. Agarde uns minutos e ténteo de novo.</string>
+    <string name="connect_watch_error_needs_account">Conecte primeiro unha conta: os seus datos só están neste dispositivo.</string>
+    <string name="connect_watch_error_failed">Non foi posible conectar o reloxo. Ténteo de novo.</string>
+    <string name="connect_watch_offline">Para conectar o reloxo precisa internet.</string>
+    <string name="connect_watch_own_watch_only">Escriba só un código que mostre o seu propio reloxo: quen teña ese reloxo entra na súa conta.</string>
+    <string name="connect_watch_validity">O código é válido durante 5 minutos, unha vez.</string>
+    <string name="connect_watch_button">Conectar</string>
+    <string name="connect_watch_connected_title">Reloxo conectado</string>
+    <string name="connect_watch_connected_body">Ve os seus grupos e sincronízase só. Para desconectalo, peche sesión no reloxo.</string>
+</resources>

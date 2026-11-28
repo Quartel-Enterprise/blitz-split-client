@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Профилди түзөтүү</string>
+    <string name="edit_profile_save">Сактоо</string>
+    <string name="edit_profile_change_photo">Сүрөттү өзгөртүү</string>
+    <string name="edit_profile_take_photo">Сүрөткө тартуу</string>
+    <string name="edit_profile_choose_photo">Галереядан тандоо</string>
+    <string name="edit_profile_use_account_photo">%1$s аккаунтунун сүрөтүн колдонуу</string>
+    <string name="edit_profile_remove_photo">Сүрөттү өчүрүү</string>
+    <string name="edit_profile_photo_error">Бул сүрөттү колдоно алган жокпуз. Башкасын тандап көрүңүз.</string>
+    <string name="edit_profile_avatar_color">Аватардын түсү</string>
+    <string name="edit_profile_avatar_color_hint">Сүрөтүңүз жок болгондо көрүнөт.</string>
+    <string name="edit_profile_name_label">Атыңыз</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Кеминде %d тамга жазыңыз.</string>
+    <string name="edit_profile_name_too_long">Эң көп %d белги колдонуңуз.</string>
+    <string name="edit_profile_account_notice">Аты жана сүрөтү %1$s аккаунтуңуздан алынды. Аларды бул жерден өзгөртүү Blitz Split үчүн гана колдонулат жана %1$s аккаунтуңузду өзгөртпөйт.</string>
+    <string name="edit_profile_footer">Сиздин топторуңуз жана профиль шилтемеңиз бар адамдар атыңызды жана сүрөтүңүздү көрүшөт.</string>
+    <string name="profile_photo_close">Жабуу</string>
+    <string name="profile_photo_camera">Камера</string>
+    <string name="profile_photo_gallery">Галерея</string>
+    <string name="profile_photo_remove">Өчүрүү</string>
+    <string name="profile_photo_title">Профилдин сүрөтү</string>
+</resources>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">ຍອດຄົງເຫຼືອ</string>
+    <string name="global_balances_profile">ໂປຣໄຟລ໌</string>
+    <string name="global_balances_offline">ອອບລາຍ · ຍອດຄົງເຫຼືອຂອງອຸປະກອນນີ້</string>
+    <string name="global_balances_filter">ສະແດງ</string>
+    <string name="global_balances_filter_all">ທັງໝົດ</string>
+    <string name="global_balances_filter_you_owe">ທ່ານຕ້ອງຈ່າຍ</string>
+    <string name="global_balances_filter_owes_you">ທ່ານຈະໄດ້ຮັບ</string>
+    <string name="global_balances_hint">ຫັກລົບກັນລະຫວ່າງກຸ່ມແລ້ວ: ແຕ່ລະຄົນສະແດງຄັ້ງດຽວ</string>
+    <string name="global_balances_hint_empty">ກຳລັງລວມທຸກກຸ່ມໃນອຸປະກອນນີ້</string>
+    <string name="global_balances_section_you_owe">ທ່ານຕ້ອງຈ່າຍ · %d</string>
+    <string name="global_balances_section_owes_you">ທ່ານຈະໄດ້ຮັບ · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="other">%d ກຸ່ມ</item>
+    </plurals>
+    <string name="global_balances_guest">%s · ແຂກ</string>
+    <string name="global_balances_you_owe">ທ່ານຕ້ອງຈ່າຍ</string>
+    <string name="global_balances_owes_you">ທ່ານຈະໄດ້ຮັບ</string>
+    <string name="global_balances_by_group_show">ສະແດງ %s ຕາມກຸ່ມ</string>
+    <string name="global_balances_by_group_hide">ເຊື່ອງ %s ຕາມກຸ່ມ</string>
+    <string name="global_balances_received">ໄດ້ຮັບແລ້ວ</string>
+    <string name="global_balances_received_from">ໄດ້ຮັບຈາກ %s ແລ້ວ</string>
+    <string name="global_balances_settle">ຊຳລະໜີ້</string>
+    <string name="global_balances_settle_with">ຊຳລະໜີ້ກັບ %s</string>
+    <string name="global_balances_charge">ຂໍເງິນ</string>
+    <string name="global_balances_charge_person">ຂໍເງິນຈາກ %s</string>
+    <string name="global_balances_detail_pane">ຍອດຄົງເຫຼືອກັບ %s</string>
+    <string name="global_balances_detail_owes_you">%s ຕ້ອງຈ່າຍທ່ານ</string>
+    <string name="global_balances_detail_you_owe">ທ່ານຕ້ອງຈ່າຍ %s</string>
+    <string name="global_balances_detail_guest">%s · ແຂກທີ່ບໍ່ມີແອັບ</string>
+    <string name="global_balances_detail_note_owed">ຍອດສຸດທິຫັກລົບກຸ່ມຕ່າງໆແລ້ວ: ຂໍເງິນ ແລະ ໄດ້ຮັບແລ້ວ ໃຊ້ %s ແອັບຈະບັນທຶກການຈ່າຍເງິນໃນແຕ່ລະກຸ່ມ</string>
+    <string name="global_balances_detail_note_settle">ຍອດສຸດທິຫັກລົບກຸ່ມຕ່າງໆແລ້ວ: ຊຳລະໜີ້ ໃຊ້ %s ແອັບຈະບັນທຶກການຈ່າຍເງິນໃນແຕ່ລະກຸ່ມ</string>
+    <string name="global_balances_detail_note_single">ມີພຽງກຸ່ມດຽວທີ່ຍັງຄ້າງກັບ %s</string>
+    <string name="global_balances_settled_title">ຊຳລະຄົບແລ້ວ</string>
+    <string name="global_balances_settled_body">ບໍ່ມີໃຜຕິດໜີ້ທ່ານ ແລະ ທ່ານບໍ່ຕິດໜີ້ໃຜ ເມື່ອມີຄົນເພີ່ມລາຍຈ່າຍ ຍອດຄົງເຫຼືອຈະສະແດງຢູ່ນີ້</string>
+    <string name="global_balances_settled_action">ເບິ່ງກຸ່ມ</string>
+    <string name="global_balances_nothing_to_pay_title">ທ່ານບໍ່ຕ້ອງຈ່າຍຫຍັງ</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="other">ທ່ານຊຳລະໜີ້ກັບທຸກຄົນແລ້ວ ທ່ານຍັງມີ %2$s ທີ່ຈະໄດ້ຮັບຄືນຈາກ %1$d ຄົນ</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">ເບິ່ງວ່າໃຜຕ້ອງຈ່າຍທ່ານ</string>
+    <string name="global_balances_nothing_to_receive_title">ບໍ່ມີໃຜຕ້ອງຈ່າຍທ່ານ</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="other">ທ່ານຍັງຕ້ອງຈ່າຍ %2$s ໃຫ້ %1$d ຄົນ</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">ເບິ່ງວ່າທ່ານຕ້ອງຈ່າຍໃຜ</string>
+    <string name="global_balances_coming_soon">ໄວໆນີ້</string>
+    <string name="global_balances_change_error">ບໍ່ສາມາດບັນທຶກການປ່ຽນແປງໄດ້ ກະລຸນາລອງໃໝ່</string>
+    <string name="global_balances_copied">ສຳເນົາແລ້ວ</string>
+    <string name="global_balances_charge_title">ຂໍເງິນຈາກ %s</string>
+    <string name="global_balances_charge_owes">ຕ້ອງຈ່າຍທ່ານ %1$s · %2$s</string>
+    <string name="global_balances_charge_close">ປິດ</string>
+    <string name="global_balances_charge_guest">%s ເປັນແຂກທີ່ບໍ່ມີແອັບ ເຂົາຈະຮູ້ພຽງຈາກຂໍ້ຄວາມນີ້ ຈຶ່ງບອກໄວ້ແລ້ວວ່າມີຫຍັງຢູ່ໃນບິນ</string>
+    <string name="global_balances_charge_message">ຂໍ້ຄວາມ</string>
+    <string name="global_balances_charge_pix">ໃສ່ລະຫັດ Pix ຂອງຂ້ອຍ</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">ສຳເນົາຂໍ້ຄວາມ</string>
+    <string name="global_balances_charge_send">ສົ່ງ</string>
+    <string name="global_balances_message">ສະບາຍດີ %1$s! ຕາມການຄິດໄລ່ຂອງ Blitz Split ທ່ານຕ້ອງຈ່າຍຂ້ອຍ %2$s ຈາກ %3$s</string>
+    <string name="global_balances_message_guest">ສະບາຍດີ %1$s! ທ່ານຕ້ອງຈ່າຍຂ້ອຍ %2$s ຈາກ %3$s: ສ່ວນຂອງທ່ານໃນ %4$s</string>
+    <string name="global_balances_message_guest_paid">ສະບາຍດີ %1$s! ທ່ານຕ້ອງຈ່າຍຂ້ອຍ %2$s ຈາກ %3$s: ສ່ວນຂອງທ່ານໃນ %4$s ຫັກ %5$s ທີ່ທ່ານຈ່າຍແລ້ວ</string>
+    <string name="global_balances_message_group">ກຸ່ມ %s</string>
+    <string name="global_balances_message_groups">ກຸ່ມ %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">ໂທລະສັບ</string>
+    <string name="global_balances_key_email">ອີເມວ</string>
+    <string name="global_balances_key_random">ລະຫັດສຸ່ມ</string>
+    <string name="global_balances_message_reroute">%1$s ຫຍໍ້ໜີ້ສິນ ດັ່ງນັ້ນແທນທີ່ຈະຈ່າຍໃຫ້ %2$s ທ່ານຈ່າຍໃຫ້ຂ້ອຍໂດຍກົງ ຍອດລວມຂອງທ່ານບໍ່ປ່ຽນ</string>
+</resources>

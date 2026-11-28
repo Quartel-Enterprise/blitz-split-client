@@ -598,6 +598,13 @@ private struct LanguageName: View {
         case .amharic: "አማርኛ"
         case .sinhala: "සිංහල"
         case .kazakh: "Қазақ тілі"
+        case .mongolian: "Монгол"
+        case .kyrgyz: "Кыргызча"
+        case .lao: "ລາວ"
+        case .icelandic: "Íslenska"
+        case .basque: "Euskara"
+        case .galician: "Galego"
+        case .romansh: "Rumantsch"
         default: nil
         }
     }
@@ -921,6 +928,41 @@ private struct LanguageName: View {
         )
         case .kazakh: String(
             localized: "Kazakh",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .mongolian: String(
+            localized: "Mongolian",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .kyrgyz: String(
+            localized: "Kyrgyz",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .lao: String(
+            localized: "Lao",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .icelandic: String(
+            localized: "Icelandic",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .basque: String(
+            localized: "Basque",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .galician: String(
+            localized: "Galician",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .romansh: String(
+            localized: "Romansh",
             bundle: .appLanguage,
             comment: "A language of Profile › Language, in the app's language",
         )

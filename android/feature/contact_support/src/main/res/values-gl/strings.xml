@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Contactar co soporte</string>
+    <string name="contact_support_description">Abriremos a súa aplicación de correo electrónico cunha mensaxe lista. Describa o que pasou e envíea: persoas reais len cada mensaxe.</string>
+    <string name="contact_support_to">Para</string>
+    <string name="contact_support_diagnostics">Incluirase no correo electrónico</string>
+    <string name="contact_support_app_version">Versión da aplicación</string>
+    <string name="contact_support_platform">Plataforma</string>
+    <string name="contact_support_language">Idioma</string>
+    <string name="contact_support_account">Conta</string>
+    <string name="contact_support_profile">Perfil</string>
+    <string name="contact_support_language_system">Sistema</string>
+    <string name="contact_support_account_local">Só este dispositivo</string>
+    <string name="contact_support_account_anonymous">Sen conectar</string>
+    <string name="contact_support_open_email">Abrir o correo electrónico</string>
+    <string name="contact_support_copy_email">Copiar o enderezo de correo electrónico</string>
+    <string name="contact_support_notice_copied">Enderezo de correo electrónico copiado.</string>
+    <string name="contact_support_notice_no_app">Non se atopou ningunha aplicación de correo electrónico. Copiouse o enderezo no seu lugar.</string>
+    <string name="contact_support_close">Pechar</string>
+</resources>

@@ -172,6 +172,30 @@ class ExpenseRulesTest {
     }
 
     @Test
+    fun `GIVEN exactly 100 billion kip WHEN checking it THEN it is valid`() {
+        // Given
+        val amountMinor = 100_000_000_000L
+
+        // When
+        val isValid = ExpenseRules.isAmountValid(amountMinor, GroupCurrency.LAK)
+
+        // Then
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `GIVEN one kip over 100 billion WHEN checking it THEN it is invalid`() {
+        // Given
+        val amountMinor = 100_000_000_001L
+
+        // When
+        val isValid = ExpenseRules.isAmountValid(amountMinor, GroupCurrency.LAK)
+
+        // Then
+        assertFalse(isValid)
+    }
+
+    @Test
     fun `GIVEN exactly 5 trillion rials WHEN checking it THEN it is valid`() {
         // Given
         val amountMinor = 5_000_000_000_000L

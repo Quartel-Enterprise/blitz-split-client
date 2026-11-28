@@ -80,6 +80,13 @@ class ProfileUiStateTest {
             AppLanguage.AMHARIC -> listOf("አማርኛ", "Amharic")
             AppLanguage.SINHALA -> listOf("සිංහල", "Sinhala")
             AppLanguage.KAZAKH -> listOf("Қазақ тілі", "Kazakh")
+            AppLanguage.MONGOLIAN -> listOf("Монгол", "Mongolian")
+            AppLanguage.KYRGYZ -> listOf("Кыргызча", "Kyrgyz")
+            AppLanguage.LAO -> listOf("ລາວ", "Lao")
+            AppLanguage.ICELANDIC -> listOf("Íslenska", "Icelandic")
+            AppLanguage.BASQUE -> listOf("Euskara", "Basque")
+            AppLanguage.GALICIAN -> listOf("Galego", "Galician")
+            AppLanguage.ROMANSH -> listOf("Rumantsch", "Romansh")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -159,6 +166,13 @@ class ProfileUiStateTest {
         AppLanguage.AMHARIC,
         AppLanguage.SINHALA,
         AppLanguage.KAZAKH,
+        AppLanguage.MONGOLIAN,
+        AppLanguage.KYRGYZ,
+        AppLanguage.LAO,
+        AppLanguage.ICELANDIC,
+        AppLanguage.BASQUE,
+        AppLanguage.GALICIAN,
+        AppLanguage.ROMANSH,
     )
 
     @Test
@@ -781,6 +795,13 @@ class ProfileUiStateTest {
                 AppLanguage.AMHARIC,
                 AppLanguage.SINHALA,
                 AppLanguage.KAZAKH,
+                AppLanguage.MONGOLIAN,
+                AppLanguage.KYRGYZ,
+                AppLanguage.LAO,
+                AppLanguage.ICELANDIC,
+                AppLanguage.BASQUE,
+                AppLanguage.GALICIAN,
+                AppLanguage.ROMANSH,
             ),
             options,
         )
@@ -862,6 +883,13 @@ class ProfileUiStateTest {
                 AppLanguage.AMHARIC,
                 AppLanguage.SINHALA,
                 AppLanguage.KAZAKH,
+                AppLanguage.MONGOLIAN,
+                AppLanguage.KYRGYZ,
+                AppLanguage.LAO,
+                AppLanguage.ICELANDIC,
+                AppLanguage.BASQUE,
+                AppLanguage.GALICIAN,
+                AppLanguage.ROMANSH,
             ),
             options,
         )
@@ -1010,6 +1038,7 @@ class ProfileUiStateTest {
                 AppLanguage.BENGALI,
                 AppLanguage.SLOVAK,
                 AppLanguage.SLOVENIAN,
+                AppLanguage.ICELANDIC,
             ),
             options,
         )

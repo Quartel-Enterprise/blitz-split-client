@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Чакыруу шилтемеси</string>
+    <string name="members_link_pending">Али түзүлө элек</string>
+    <string name="members_share">Бөлүшүү</string>
+    <string name="members_me">%s (сиз)</string>
+    <string name="members_status_this_device">Бул түзмөк</string>
+    <string name="members_status_joined">Кошулган</string>
+    <string name="members_status_not_joined">Али кошула элек</string>
+    <string name="members_options">Параметрлер: %s</string>
+    <string name="members_rename">Атын өзгөртүү</string>
+    <string name="members_personal_invite">Жеке чакыруу: %s</string>
+    <string name="members_personal_message">Бул шилтемени ачкан адам тизмеден тандабай эле түз %s болуп кошулат. Бир жолу иштейт.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Бул шилтемени ачкан адам тизмеден тандабай эле түз %1$s болуп кошулат жана азырга чейин кошулган чыгымдагы өз үлүшүн дароо көрөт: %2$s. Бир жолу иштейт.</item>
+        <item quantity="other">Бул шилтемени ачкан адам тизмеден тандабай эле түз %1$s болуп кошулат жана азырга чейин кошулган %3$d чыгымдагы өз үлүшүн дароо көрөт: %2$s. Бир жолу иштейт.</item>
+    </plurals>
+    <string name="members_personal_copy">Шилтемени көчүрүү</string>
+    <string name="members_personal_copied">Көчүрүлдү</string>
+    <string name="members_personal_share">Бөлүшүү: %s</string>
+    <string name="members_personal_share_message">Blitz Split колдонмосунда ‘%1$s’ тобуна %2$s болуп кошулуңуз: %3$s</string>
+    <string name="members_remove">Топтон чыгаруу</string>
+    <string name="members_remove_joined">%s топко мурунтан эле кошулган</string>
+    <string name="members_remove_title">Топтон чыгарасызбы: %s?</string>
+    <string name="members_remove_message">%s али кошула элек. Кийин аны кайра кошсоңуз болот.</string>
+    <string name="members_remove_confirm">Чыгаруу</string>
+    <string name="members_release">Атты бошотуу</string>
+    <string name="members_release_title">Атты бошотосузбу: %s?</string>
+    <string name="members_release_message">%1$s болуп кошулган адам топтон чыгат. %1$s деген аты, түсү жана чыгымдары калат, жана %1$s деген атты топтун шилтемеси аркылуу кайра тандаса болот.</string>
+    <string name="members_release_confirm">Бошотуу</string>
+    <string name="members_release_error">Атты бошото алган жокпуз. Туташууну текшерип, кайра аракет кылыңыз.</string>
+    <string name="members_add">Адам кошуу</string>
+    <string name="members_invite_instead">Колдонмосу барбы? Шилтеме менен чакырыңыз</string>
+    <string name="members_name_label">Аты</string>
+    <string name="members_save">Сактоо</string>
+    <string name="members_cancel">Жокко чыгаруу</string>
+    <string name="members_change_error">Өзгөртүүнү сактай алган жокпуз. Кайра аракет кылыңыз.</string>
+    <string name="members_remove_open_balance">%s ачык балансы бар</string>
+    <string name="members_balance_to_get_back">%s алышы керек</string>
+    <string name="members_balance_owes">%s карыз</string>
+    <string name="members_balance_settled">Эсептешилди</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Tengja úr</string>
+    <string name="connect_watch_close">Loka</string>
+    <string name="connect_watch_body">Sláðu inn kóðann sem úrið sýnir. Það skráir sig inn á aðganginn þinn og samstillist svo sjálft.</string>
+    <string name="connect_watch_code_label">Kóði úrsins</string>
+    <string name="connect_watch_error_invalid">Rangur eða útrunninn kóði. Sæktu nýjan í úrinu.</string>
+    <string name="connect_watch_error_too_many">Of margir rangir kóðar. Bíddu í nokkrar mínútur og reyndu aftur.</string>
+    <string name="connect_watch_error_needs_account">Tengdu aðgang fyrst: gögnin þín eru aðeins á þessu tæki.</string>
+    <string name="connect_watch_error_failed">Ekki tókst að tengja úrið. Reyndu aftur.</string>
+    <string name="connect_watch_offline">Til að tengja úrið þarf nettengingu.</string>
+    <string name="connect_watch_own_watch_only">Sláðu aðeins inn kóða sem birtist á þínu eigin úri: sá sem er með það úr kemst inn á aðganginn þinn.</string>
+    <string name="connect_watch_validity">Kóðinn gildir í 5 mínútur, einu sinni.</string>
+    <string name="connect_watch_button">Tengja</string>
+    <string name="connect_watch_connected_title">Úr tengt</string>
+    <string name="connect_watch_connected_body">Það sér hópana þína og samstillist sjálft. Til að aftengja það skaltu skrá þig út á úrinu.</string>
+</resources>

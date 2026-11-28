@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">ກຸ່ມໃໝ່</string>
+    <string name="create_group_close">ປິດ</string>
+    <string name="create_group_create">ສ້າງ</string>
+    <string name="create_group_change_color">ປ່ຽນສີຂອງກຸ່ມ</string>
+    <string name="create_group_name_label">ຊື່ກຸ່ມ</string>
+    <string name="create_group_type_label">ປະເພດກຸ່ມ</string>
+    <string name="create_group_members_title">ມີໃຜແດ່</string>
+    <plurals name="create_group_member_count">
+        <item quantity="other">%d ຄົນ</item>
+    </plurals>
+    <string name="create_group_me">ທ່ານ</string>
+    <string name="create_group_remove_member">ເອົາ %s ອອກ</string>
+    <string name="create_group_add_placeholder">ເພີ່ມດ້ວຍຊື່</string>
+    <string name="create_group_add">ເພີ່ມ</string>
+    <string name="create_group_no_app_notice">ຕອນນີ້ບໍ່ມີໃຜຕ້ອງມີແອັບ ທ່ານສາມາດເພີ່ມລາຍຈ່າຍໃຫ້ທຸກຄົນໄດ້ເລີຍ ແລະ ສົ່ງລິ້ງພາຍຫຼັງ</string>
+    <string name="create_group_currency">ສະກຸນເງິນເລີ່ມຕົ້ນ</string>
+    <string name="create_group_currency_caption">ລາຍຈ່າຍໃໝ່ຈະເລີ່ມໃນສະກຸນເງິນນີ້ ແຕ່ລະລາຍຈ່າຍສາມາດໃຊ້ສະກຸນອື່ນໄດ້</string>
+    <string name="create_group_save_error">ບໍ່ສາມາດບັນທຶກກຸ່ມໄດ້ ກະລຸນາລອງໃໝ່</string>
+    <string name="create_group_photo">ຮູບກຸ່ມ</string>
+    <string name="create_group_take_photo">ຖ່າຍຮູບ</string>
+    <string name="create_group_choose_photo">ເລືອກຮູບ</string>
+    <string name="create_group_remove_photo">ເອົາຮູບອອກ</string>
+    <string name="create_group_photo_error">ບໍ່ສາມາດໃຊ້ຮູບນີ້ໄດ້ ກະລຸນາລອງຮູບອື່ນ</string>
+</resources>

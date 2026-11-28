@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Promemoria per pareggiar ils quints</string>
+    <string name="push_bill_created">%1$s ha agiuntà “%2$s” cun Vus</string>
+    <string name="push_bill_edited">%1$s ha modifitgà “%2$s”</string>
+    <string name="push_bill_deleted">%1$s ha stizzà “%2$s”</string>
+    <string name="push_comment_added">%1$s ha commentà “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s ha indicà d\'As avair pajà</string>
+    <string name="push_payment_to_you">%1$s ha indicà che %2$s As ha pajà</string>
+    <string name="push_payment_received_yours">%1$s ha marcà Voss pajament sco retschavì</string>
+    <string name="push_payment_from_you">%1$s ha indicà che Vus avais pajà a %2$s</string>
+    <string name="push_payment_undone">%1$s ha revocà in pajament cun Vus</string>
+    <string name="push_charge_sent">%1$s As ha tramess ina promemoria per pareggiar ils quints</string>
+    <string name="push_settle_reminder">Vus avais in saldo avert en %1$s</string>
+    <string name="push_settle_reminders">Vus avais saldos averts en %1$s gruppas</string>
+    <string name="push_added_to_group">%1$s As ha agiuntà a la gruppa</string>
+    <string name="push_member_joined">%1$s ha aderì a la gruppa</string>
+    <string name="push_debts_simplified_to_you">%1$s ha simplifitgà ils debits. Ussa As paja %2$s %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s ha simplifitgà ils debits. Ussa pajais Vus %3$s a %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s ha simplifitgà ils debits. Guardai co che quai è per Vus.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ha deactivà Simplifitgar ils debits. Ussa As paja %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ha deactivà Simplifitgar ils debits. Ussa pajais Vus %3$s a %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s ha deactivà Simplifitgar ils debits. Guardai co che quai è per Vus.</string>
+    <string name="notification_settings_bills">Expensas</string>
+    <string name="notification_settings_bills_detail">Expensas novas, modifitgadas u stizzadas che As concernan</string>
+    <string name="notification_settings_payments">Pajaments e pareggiaziuns</string>
+    <string name="notification_settings_payments_detail">Pajaments a Vus u da Vus, e debits simplifitgads</string>
+    <string name="notification_settings_comments">Commentaris</string>
+    <string name="notification_settings_comments_detail">Davart expensas che As concernan e discussiuns en las qualas Vus avais scrit</string>
+    <string name="notification_settings_people_and_groups">Persunas e gruppas</string>
+    <string name="notification_settings_people_and_groups_detail">Tgi che adera u banduna Vossas gruppas, e tge che sa mida en ellas</string>
+    <string name="notification_settings_payment_requests">Dumondas da pajament</string>
+    <string name="notification_settings_payment_requests_detail">Cur ch\'insatgi As dumonda da pajar</string>
+    <string name="notification_settings_balance_reminder">Promemoria da saldo avert</string>
+    <string name="notification_settings_balance_reminder_detail">Ina giada per emna, sch\'i dat in saldo avert</string>
+</resources>

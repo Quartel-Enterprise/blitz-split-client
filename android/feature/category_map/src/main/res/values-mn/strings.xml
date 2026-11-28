@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Үг алга</string>
+    <string name="category_map_title">Ангиллын зураглал</string>
+    <string name="category_map_search">Үг хайх</string>
+    <string name="category_map_add">Үг нэмэх</string>
+    <string name="category_map_more">Бусад сонголт</string>
+    <string name="category_map_restore">Анхны тохиргоог сэргээх</string>
+    <string name="category_map_back">Буцах</string>
+    <string name="category_map_intro">Зардлын гарчигт эдгээр үгийн аль нэг байвал ангилал нь өөрөө тохирно. “Uber гэр рүү” нь Тээвэр болно.</string>
+    <string name="category_map_intro_offline">Зураглал офлайн ажиллана: өөрчлөлт энэ төхөөрөмжид шууд хүчинтэй болж, онлайн болмогц таны бусад төхөөрөмжид хүрнэ.</string>
+    <string name="category_map_device_only">Таны зураглал зөвхөн энэ төхөөрөмжид хадгалагдана. Бусад төхөөрөмж рүүгээ авахын тулд Профайл хэсэгт Google эсвэл Apple бүртгэлээр нэвтэрнэ үү.</string>
+    <string name="category_map_open_profile">Профайл нээх</string>
+    <string name="category_map_longest_wins">Хоёр үг нэг гарчигт таарвал аль урт нь давамгайлна.</string>
+    <string name="category_map_no_result">“%1$s” гэсэн үг алга</string>
+    <string name="category_map_no_result_body">Үүнийг нэмбэл гарчигтаа энэ үгтэй зардлууд зөв ангилалтай орж ирнэ.</string>
+    <string name="category_map_add_query">“%1$s” нэмэх</string>
+    <string name="category_map_empty_title">Таны зураглал хоосон</string>
+    <string name="category_map_empty_body">Үггүй бол ангилал гарчгаас тохирохгүй: та зардал бүр дээр сонгоно.</string>
+    <string name="category_map_group_category"> · ангилал: %1$s</string>
+    <string name="category_map_only_main">Зөвхөн %1$s</string>
+    <string name="category_map_only_in_group">зөвхөн %1$s</string>
+    <string name="category_map_no_terms_yet">Одоогоор үг алга.</string>
+    <string name="category_map_add_in">Үг нэмэх: %1$s</string>
+    <string name="category_map_tip">Үгийг товшиж ангиллыг нь солих эсвэл хасна уу. Үг бүтнээрээ, өргөлт болон том жижиг үсгийг үл харгалзан таарна.</string>
+    <string name="category_map_queued">дараалалд</string>
+    <string name="category_map_term_action">%1$s, %2$s. Засах</string>
+    <string name="category_map_new_term">Шинэ үг</string>
+    <string name="category_map_edit_term">Үг засах</string>
+    <string name="category_map_term_label">Үг эсвэл хэллэг</string>
+    <string name="category_map_term_help">Үг бүтнээрээ, өргөлт болон том жижиг үсгийг үл харгалзан таарна.</string>
+    <string name="category_map_term_help_app">Аппын үг. Анхны тохиргоог сэргээх нь үүнийг анх байсан хэлбэрт нь буцаана.</string>
+    <string name="category_map_term_duplicate">“%1$s” аль хэдийн энэ ангиллыг сонгодог: %2$s. Үг бүр нэг ангилалтай.</string>
+    <string name="category_map_term_too_short">Дор хаяж 2 үсэг ашиглана уу.</string>
+    <string name="category_map_term_too_long">Дээд тал нь 30 үсэг ашиглана уу.</string>
+    <string name="category_map_term_invalid">Зөвхөн үсэг, цифр, зай ашиглана уу.</string>
+    <string name="category_map_category">Ангилал</string>
+    <string name="category_map_category_help">Энэ нь ангилал эсвэл дэд ангилал байж болно.</string>
+    <string name="category_map_category_help_edit">Энд өөрчилбөл үг өөр ангилал руу шилжинэ.</string>
+    <string name="category_map_category_help_move">Шилжүүлбэл үг энэ ангиллаас гарна: %1$s.</string>
+    <string name="category_map_example">Жишээ</string>
+    <string name="category_map_example_move">Шилжүүлбэл</string>
+    <string name="category_map_remove">Хасах</string>
+    <string name="category_map_cancel">Цуцлах</string>
+    <string name="category_map_save">Хадгалах</string>
+    <string name="category_map_move_to">Шилжүүлэх: %1$s</string>
+    <string name="category_map_removed">“%1$s” зураглалаас хасагдлаа</string>
+    <string name="category_map_undo">Буцаах</string>
+    <string name="category_map_restore_title">Анхны зураглалыг сэргээх үү?</string>
+    <string name="category_map_restore_body">Аппын 60 үг, таны хассан эсвэл шилжүүлсэн үгсийг оруулаад, анх байсан хэлбэрээрээ буцаж ирнэ.</string>
+    <string name="category_map_restore_own_one">Таны үүсгэсэн “%1$s” үг хэвээр үлдэнэ.</string>
+    <string name="category_map_restore_confirm">Сэргээх</string>
+    <string name="category_map_save_error">Зураглалыг хадгалж чадсангүй. Дахин оролдоно уу.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d үг</item>
+        <item quantity="other">%d үг</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d дэд ангилал</item>
+        <item quantity="other">%d дэд ангилал</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">“%2$s” гэсэн %1$d үг</item>
+        <item quantity="other">“%2$s” гэсэн %1$d үг</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Офлайн · %d өөрчлөлт дараалалд</item>
+        <item quantity="other">Офлайн · %d өөрчлөлт дараалалд</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Таны үүсгэсэн %d үг хэвээр үлдэнэ.</item>
+        <item quantity="other">Таны үүсгэсэн %d үг хэвээр үлдэнэ.</item>
+    </plurals>
+    <string name="category_map_new_category">Шинэ ангилал</string>
+    <string name="category_map_new_subcategory_in">Шинэ дэд ангилал: %s</string>
+    <string name="category_map_edit_category">Засах: %s</string>
+    <string name="category_map_category_group">Бүлэг</string>
+    <string name="category_map_change_color">Өнгө солих: %1$s</string>
+    <string name="category_map_restore_color">Өнгийг сэргээх</string>
+    <string name="category_map_color_done">Болсон</string>
+</resources>

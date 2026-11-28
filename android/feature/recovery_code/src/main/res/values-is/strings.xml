@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Vistaðu endurheimtarkóðann þinn</string>
+    <string name="recovery_code_body">Þú notar appið án aðgangs. Þessi 12 orð endurheimta gögnin þín ef þú skiptir um tæki eða týnir því. Skrifaðu þau niður í réttri röð. Eftir 30 daga án notkunar er gögnunum þínum eytt og orðin hætta að virka.</string>
+    <string name="recovery_code_copy">Afrita orð</string>
+    <string name="recovery_code_save_to_password_manager">Vista í lykilorðastjóra</string>
+    <string name="recovery_code_connect_instead">Tengja Google eða Apple í staðinn</string>
+    <string name="recovery_code_connect_instead_body">Enginn kóði nauðsynlegur</string>
+    <string name="recovery_code_sign_in_failed">Ekki tókst að tengjast núna. Reyndu aftur.</string>
+    <string name="recovery_code_also_in_profile">Hann er líka í Prófíll › Endurheimt.</string>
+    <string name="recovery_code_remind_later">Minna mig á seinna</string>
+    <string name="recovery_code_saved">Ég hef vistað hann</string>
+    <string name="recovery_code_download">Sækja</string>
+    <string name="recovery_code_file_name">blitz-split-endurheimtarkodi.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · endurheimtarkóði\n\n%1$s\n\nNotaðu hann í \"Ég hef notað appið í öðru tæki\" til að fá gögnin þín aftur.\n</string>
+</resources>

@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">Амхар тілі</string>
     <string name="profile_language_sinhala">Сингал тілі</string>
     <string name="profile_language_kazakh">Қазақ тілі</string>
+    <string name="profile_language_mongolian">Моңғол тілі</string>
+    <string name="profile_language_kyrgyz">Қырғыз тілі</string>
+    <string name="profile_language_lao">Лао тілі</string>
+    <string name="profile_language_icelandic">Исланд тілі</string>
+    <string name="profile_language_basque">Баск тілі</string>
+    <string name="profile_language_galician">Галисия тілі</string>
+    <string name="profile_language_romansh">Романш тілі</string>
     <string name="profile_language_system_detail">Құрылғы тілі</string>
     <string name="profile_notifications">Хабарландырулар</string>
     <plurals name="profile_notifications_active">

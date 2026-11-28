@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">Нууцлалын бодлого</string>
+    <string name="legal_terms">Үйлчилгээний нөхцөл</string>
+    <string name="legal_updated_privacy_policy">Шинэчилсэн: %1$s</string>
+    <string name="legal_updated_terms">Шинэчилсэн: %1$s</string>
+    <string name="legal_load_failed_title">Энэ хуудсыг ачаалж чадсангүй</string>
+    <string name="legal_load_failed_body">Холболтоо шалгаад дахин оролдоно уу.</string>
+    <string name="legal_retry">Дахин оролдох</string>
+</resources>

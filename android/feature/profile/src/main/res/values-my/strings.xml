@@ -117,6 +117,13 @@
     <string name="profile_language_amharic">အမ်ဟာရစ်</string>
     <string name="profile_language_sinhala">စင်ဟာလာ</string>
     <string name="profile_language_kazakh">ကာဇာခ်</string>
+    <string name="profile_language_mongolian">မွန်ဂိုလီးယား</string>
+    <string name="profile_language_kyrgyz">ကာဂျစ်</string>
+    <string name="profile_language_lao">လာအို</string>
+    <string name="profile_language_icelandic">အိုက်စ်လန်</string>
+    <string name="profile_language_basque">ဘာစ်က်</string>
+    <string name="profile_language_galician">ဂါလီစီယာ</string>
+    <string name="profile_language_romansh">ရောမန်ချ်</string>
     <string name="profile_language_system_detail">စက်၏ ဘာသာစကား</string>
     <string name="profile_notifications">အသိပေးချက်များ</string>
     <plurals name="profile_notifications_active">

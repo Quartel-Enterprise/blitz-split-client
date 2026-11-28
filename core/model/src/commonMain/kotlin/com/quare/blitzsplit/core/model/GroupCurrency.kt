@@ -148,6 +148,14 @@ class GroupCurrency private constructor(
         // Why: no decimals, as the kyat: ISO gives it 2, but no price in Kazakhstan shows tiyn.
         val KZT = GroupCurrency("KZT", setOf("KZ"), fractionDigits = 0)
 
+        // Why: no decimals, as the tenge: ISO gives it 2, but no price in Mongolia shows möngö.
+        val MNT = GroupCurrency("MNT", setOf("MN"), fractionDigits = 0)
+        val KGS = GroupCurrency("KGS", setOf("KG"))
+
+        // Why: no decimals, as the riel: ISO gives it 2, but no price in Laos shows att.
+        val LAK = GroupCurrency("LAK", setOf("LA"), fractionDigits = 0)
+        val ISK = GroupCurrency("ISK", setOf("IS"), fractionDigits = 0)
+
         // Why: no decimals, as the rupiah: ISO gives it 2, but no price in Iran shows a fraction of a rial.
         val IRR = GroupCurrency("IRR", setOf("IR"), fractionDigits = 0)
 
@@ -229,6 +237,10 @@ class GroupCurrency private constructor(
             ETB,
             LKR,
             KZT,
+            MNT,
+            KGS,
+            LAK,
+            ISK,
             BTC,
             ETH,
         )

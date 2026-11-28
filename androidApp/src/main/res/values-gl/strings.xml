@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Non está neste grupo</string>
+    <string name="bill_link_not_in_group_message">Este comentario está nun grupo no que non está. Pídalle o convite a quen lle enviou a ligazón.</string>
+    <string name="bill_link_offline_title">Sen internet</string>
+    <string name="bill_link_offline_message">Abra de novo a ligazón cando volva ter conexión.</string>
+    <string name="bill_link_go_home">Ir a Inicio</string>
+    <string name="discard_changes_title">Quere descartar os cambios?</string>
+    <string name="discard_changes_message">Perderanse os cambios sen gardar.</string>
+    <string name="discard_changes_discard">Descartar</string>
+    <string name="discard_changes_keep_editing">Seguir editando</string>
+    <string name="watch_channel_name">Reloxo</string>
+    <string name="watch_connected_title">%1$s conectado á súa conta</string>
+    <string name="watch_connected_title_unnamed">Reloxo conectado á súa conta</string>
+    <string name="watch_connected_text">Ve os seus grupos e sincronízase só. Para desconectalo, peche sesión no reloxo.</string>
+</resources>

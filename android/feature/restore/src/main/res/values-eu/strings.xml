@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Berreskuratu zure taldeak</string>
+    <string name="restore_subtitle">Lehen kontu batekin hasi zenuen saioa? Hasi saioa berriro. Bestela, erabili berreskuratze-kodea edo gailu zaharreko QR kodea.</string>
+    <string name="restore_no_connection_title">Konexiorik ez</string>
+    <string name="restore_no_connection_body">Kontu edo kode batekin saioa hasteko internet behar da, zure taldeak deskargatzeko. Idatzi duzuna gorde egiten da.</string>
+    <string name="restore_code_label">Edo erabili berreskuratze-kodea</string>
+    <string name="restore_code_hint">12 hitzak ordenan. Itsatsi denak eremu batean, eremu guztiak betetzeko.</string>
+    <string name="restore_scan_qr_title">Eskaneatu gailu zaharreko QR kodea</string>
+    <string name="restore_scan_qr_body">Han: Profila › Berreskuratzea › Erakutsi QR kodea</string>
+    <string name="restore_recover">Berreskuratu</string>
+    <string name="restore_try_again">Saiatu berriro</string>
+    <string name="restore_start_fresh">Hasi hutsetik gailu honetan</string>
+    <string name="restore_error_invalid_code">Ez da kodea aurkitu. Egiaztatu hitzak eta haien ordena, eta saiatu berriro.</string>
+    <string name="restore_error_too_many_attempts">Saiakera gehiegi. Itxaron minutu batzuk eta saiatu berriro.</string>
+    <string name="restore_error_sign_in_failed">Ezin izan da saioa hasi orain. Saiatu berriro.</string>
+    <string name="restore_error_unknown">Zerbait gaizki joan da. Saiatu berriro.</string>
+</resources>

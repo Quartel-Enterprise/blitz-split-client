@@ -119,6 +119,13 @@
     <string name="profile_language_amharic">אמהרית</string>
     <string name="profile_language_sinhala">סינהלה</string>
     <string name="profile_language_kazakh">קזחית</string>
+    <string name="profile_language_mongolian">מונגולית</string>
+    <string name="profile_language_kyrgyz">קירגיזית</string>
+    <string name="profile_language_lao">לאית</string>
+    <string name="profile_language_icelandic">איסלנדית</string>
+    <string name="profile_language_basque">בסקית</string>
+    <string name="profile_language_galician">גליציאנית</string>
+    <string name="profile_language_romansh">רומאנש</string>
     <string name="profile_language_system_detail">שפת המכשיר</string>
     <string name="profile_notifications">התראות</string>
     <plurals name="profile_notifications_active">

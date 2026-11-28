@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Contactar il support</string>
+    <string name="contact_support_description">Nus avrin Vossa app d\'e-mail cun in messadi pront. Descrivai tge ch\'è capità e tramettai el: persunas veras legian mintga messadi.</string>
+    <string name="contact_support_to">A</string>
+    <string name="contact_support_diagnostics">Vegn integrà en l\'e-mail</string>
+    <string name="contact_support_app_version">Versiun da l\'app</string>
+    <string name="contact_support_platform">Plattafurma</string>
+    <string name="contact_support_language">Lingua</string>
+    <string name="contact_support_account">Conto</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">Sistem</string>
+    <string name="contact_support_account_local">Mo quest apparat</string>
+    <string name="contact_support_account_anonymous">Betg collià</string>
+    <string name="contact_support_open_email">Avrir l\'e-mail</string>
+    <string name="contact_support_copy_email">Copiar l\'adressa d\'e-mail</string>
+    <string name="contact_support_notice_copied">Adressa d\'e-mail copiada.</string>
+    <string name="contact_support_notice_no_app">Nagina app d\'e-mail chattada. L\'adressa è vegnida copiada empè.</string>
+    <string name="contact_support_close">Serrar</string>
+</resources>

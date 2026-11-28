@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Áminning um uppgjör</string>
+    <string name="push_bill_created">%1$s bætti við kostnaðinum “%2$s” með þér</string>
+    <string name="push_bill_edited">%1$s breytti kostnaðinum “%2$s”</string>
+    <string name="push_bill_deleted">%1$s eyddi kostnaðinum “%2$s”</string>
+    <string name="push_comment_added">%1$s skrifaði athugasemd við kostnaðinn “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s merkti að hafa greitt þér</string>
+    <string name="push_payment_to_you">%1$s merkti að %2$s hefði greitt þér</string>
+    <string name="push_payment_received_yours">%1$s merkti greiðsluna þína sem móttekna</string>
+    <string name="push_payment_from_you">%1$s merkti greiðslu frá þér. Viðtakandi: %2$s</string>
+    <string name="push_payment_undone">%1$s afturkallaði greiðslu milli ykkar</string>
+    <string name="push_charge_sent">%1$s sendi þér áminningu um að gera upp</string>
+    <string name="push_settle_reminder">Þú ert með opna stöðu í hópnum ‘%1$s’</string>
+    <string name="push_settle_reminders">Þú ert með opna stöðu í %1$s hópum</string>
+    <string name="push_added_to_group">%1$s bætti þér í hópinn</string>
+    <string name="push_member_joined">%1$s gekk í hópinn</string>
+    <string name="push_debts_simplified_to_you">%1$s einfaldaði skuldirnar. Nú greiðir %2$s þér %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s einfaldaði skuldirnar. Nú greiðir þú %3$s. Viðtakandi: %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s einfaldaði skuldirnar. Sjáðu hvernig það snertir þig.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s slökkti á Einfalda skuldir. Nú greiðir %2$s þér %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s slökkti á Einfalda skuldir. Nú greiðir þú %3$s. Viðtakandi: %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s slökkti á Einfalda skuldir. Sjáðu hvernig það snertir þig.</string>
+    <string name="notification_settings_bills">Kostnaður</string>
+    <string name="notification_settings_bills_detail">Nýr, breyttur eða eyddur kostnaður sem þú ert hluti af</string>
+    <string name="notification_settings_payments">Greiðslur og uppgjör</string>
+    <string name="notification_settings_payments_detail">Greiðslur til þín eða frá þér, og einfaldaðar skuldir</string>
+    <string name="notification_settings_comments">Athugasemdir</string>
+    <string name="notification_settings_comments_detail">Við kostnað sem þú ert hluti af og þræði sem þú skrifaðir í</string>
+    <string name="notification_settings_people_and_groups">Fólk og hópar</string>
+    <string name="notification_settings_people_and_groups_detail">Hverjir ganga í eða yfirgefa hópana þína og hvað breytist í þeim</string>
+    <string name="notification_settings_payment_requests">Greiðslubeiðnir</string>
+    <string name="notification_settings_payment_requests_detail">Þegar einhver biður þig um að greiða</string>
+    <string name="notification_settings_balance_reminder">Áminning um opna stöðu</string>
+    <string name="notification_settings_balance_reminder_detail">Einu sinni í viku, ef það er opin staða</string>
+</resources>

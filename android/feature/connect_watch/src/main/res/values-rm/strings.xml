@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Colliar l\'ura</string>
+    <string name="connect_watch_close">Serrar</string>
+    <string name="connect_watch_body">Endatai il code che Vossa ura mussa. Ella s\'annunzia en Voss conto e sa sincronisescha lura da sasezza.</string>
+    <string name="connect_watch_code_label">Code da l\'ura</string>
+    <string name="connect_watch_error_invalid">Code fallà u scadì. Dumandai in nov sin l\'ura.</string>
+    <string name="connect_watch_error_too_many">Memia blers codes fallads. Spetgai in pèr minutas ed empruvai anc ina giada.</string>
+    <string name="connect_watch_error_needs_account">Colliai l\'emprim in conto: Vossas datas èn mo sin quest apparat.</string>
+    <string name="connect_watch_error_failed">Impussibel da colliar l\'ura. Empruvai anc ina giada.</string>
+    <string name="connect_watch_offline">Per colliar l\'ura dovri internet.</string>
+    <string name="connect_watch_own_watch_only">Endatai mo in code che vegn mussà sin Vossa atgna ura: tgi che ha questa ura ha access a Voss conto.</string>
+    <string name="connect_watch_validity">Il code è valid 5 minutas, ina giada.</string>
+    <string name="connect_watch_button">Colliar</string>
+    <string name="connect_watch_connected_title">Ura colliada</string>
+    <string name="connect_watch_connected_body">Ella vesa Vossas gruppas e sa sincronisescha da sasezza. Per la deconnectar, sortì sin l\'ura.</string>
+</resources>

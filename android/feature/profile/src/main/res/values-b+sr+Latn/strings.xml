@@ -119,6 +119,13 @@
     <string name="profile_language_amharic">Amharski</string>
     <string name="profile_language_sinhala">Sinhaleški</string>
     <string name="profile_language_kazakh">Kazaški</string>
+    <string name="profile_language_mongolian">Mongolski</string>
+    <string name="profile_language_kyrgyz">Kirgiski</string>
+    <string name="profile_language_lao">Laoski</string>
+    <string name="profile_language_icelandic">Islandski</string>
+    <string name="profile_language_basque">Baskijski</string>
+    <string name="profile_language_galician">Galicijski</string>
+    <string name="profile_language_romansh">Retoromanski</string>
     <string name="profile_language_system_detail">Jezik uređaja</string>
     <string name="profile_notifications">Obaveštenja</string>
     <plurals name="profile_notifications_active">

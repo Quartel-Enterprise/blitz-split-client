@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">ນຳກຸ່ມຂອງທ່ານກັບຄືນມາ</string>
+    <string name="restore_subtitle">ເຄີຍເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີມາກ່ອນບໍ? ພຽງເຂົ້າສູ່ລະບົບອີກຄັ້ງ ຖ້າບໍ່ ກະລຸນາໃຊ້ລະຫັດກູ້ຄືນ ຫຼື QR ໂຄດຈາກອຸປະກອນເກົ່າຂອງທ່ານ</string>
+    <string name="restore_no_connection_title">ບໍ່ມີການເຊື່ອມຕໍ່</string>
+    <string name="restore_no_connection_body">ການເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ ຫຼື ລະຫັດຕ້ອງໃຊ້ອິນເຕີເນັດເພື່ອດາວໂຫຼດກຸ່ມຂອງທ່ານ ສິ່ງທີ່ທ່ານພິມໄວ້ຍັງຢູ່</string>
+    <string name="restore_code_label">ຫຼື ໃຊ້ລະຫັດກູ້ຄືນ</string>
+    <string name="restore_code_hint">ຄຳ 12 ຄຳຕາມລຳດັບ ວາງທັງໝົດໃສ່ຊ່ອງດຽວເພື່ອຕື່ມທຸກຊ່ອງ</string>
+    <string name="restore_scan_qr_title">ສະແກນ QR ໂຄດຈາກອຸປະກອນເກົ່າຂອງທ່ານ</string>
+    <string name="restore_scan_qr_body">ຢູ່ທີ່ນັ້ນ: ໂປຣໄຟລ໌ › ການກູ້ຄືນ › ສະແດງ QR ໂຄດ</string>
+    <string name="restore_recover">ກູ້ຄືນ</string>
+    <string name="restore_try_again">ລອງໃໝ່</string>
+    <string name="restore_start_fresh">ເລີ່ມໃໝ່ໃນອຸປະກອນນີ້</string>
+    <string name="restore_error_invalid_code">ບໍ່ພົບລະຫັດ ກະລຸນາກວດເບິ່ງຄຳ ແລະ ລຳດັບຂອງມັນ ແລ້ວລອງໃໝ່</string>
+    <string name="restore_error_too_many_attempts">ພະຍາຍາມຫຼາຍເກີນໄປ ກະລຸນາລໍຖ້າສອງສາມນາທີ ແລ້ວລອງໃໝ່</string>
+    <string name="restore_error_sign_in_failed">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບໄດ້ໃນຕອນນີ້ ກະລຸນາລອງໃໝ່</string>
+    <string name="restore_error_unknown">ມີບາງຢ່າງຜິດພາດ ກະລຸນາລອງໃໝ່</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Найзууд тань таныг юу гэж дууддаг вэ?</string>
+    <string name="profile_setup_subtitle">Таны бүлгүүд болон таны профайлын холбоостой хэн ч таны нэрийг харна.</string>
+    <string name="profile_setup_avatar_color">Аватарын өнгө</string>
+    <string name="profile_setup_add_photo">Зураг нэмэх</string>
+    <string name="profile_setup_photo_error">Энэ зургийг ашиглаж чадсангүй. Өөр зураг сонгоно уу.</string>
+    <string name="profile_setup_name_label">Таны нэр</string>
+    <string name="profile_setup_name_placeholder">Бат Болд</string>
+    <string name="profile_setup_name_too_short">Дор хаяж %d үсэг бичнэ үү.</string>
+    <string name="profile_setup_name_too_long">%d хүртэл тэмдэгт ашиглана уу.</string>
+    <string name="profile_setup_name_hint">Дараа нь Профайл хэсэгт өөрчилж болно.</string>
+    <string name="profile_setup_saved_locally">Одоогоор зөвхөн энэ төхөөрөмжид хадгалагдсан.</string>
+    <string name="profile_setup_continue">Үргэлжлүүлэх</string>
+</resources>

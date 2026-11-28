@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Nova metoda da pajament</string>
+    <string name="paying_method_edit_title">Modifitgar la metoda da pajament</string>
+    <string name="paying_method_type">Tip</string>
+    <string name="paying_method_name">Num</string>
+    <string name="paying_method_name_optional">Num (facultativ)</string>
+    <string name="paying_method_color">Colur</string>
+    <string name="paying_method_default">Metoda da standard</string>
+    <string name="paying_method_default_hint">Novas expensas che Vus pajais cumenzan cun ella.</string>
+    <string name="paying_method_delete">Stizzar la metoda da pajament</string>
+    <string name="paying_method_delete_title">Stizzar questa metoda da pajament?</string>
+    <string name="paying_method_delete_body">Expensas che Vus avais marcà cun ella na la mussan betg pli.</string>
+    <string name="paying_method_delete_confirm">Stizzar</string>
+    <string name="paying_method_save">Memorisar</string>
+</resources>

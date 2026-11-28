@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Та энэ бүлэгт байхгүй</string>
+    <string name="bill_link_not_in_group_message">Энэ сэтгэгдэл таны ороогүй бүлэгт байна. Холбоосыг илгээсэн хүнээс урилга хүснэ үү.</string>
+    <string name="bill_link_offline_title">Интернэт алга</string>
+    <string name="bill_link_offline_message">Онлайн болмогц холбоосыг дахин нээнэ үү.</string>
+    <string name="bill_link_go_home">Нүүр рүү очих</string>
+    <string name="discard_changes_title">Өөрчлөлтөөс татгалзах уу?</string>
+    <string name="discard_changes_message">Хадгалаагүй өөрчлөлт алга болно.</string>
+    <string name="discard_changes_discard">Татгалзах</string>
+    <string name="discard_changes_keep_editing">Үргэлжлүүлэн засах</string>
+    <string name="watch_channel_name">Цаг</string>
+    <string name="watch_connected_title">%1$s таны бүртгэлд холбогдлоо</string>
+    <string name="watch_connected_title_unnamed">Цаг таны бүртгэлд холбогдлоо</string>
+    <string name="watch_connected_text">Энэ нь таны бүлгүүдийг харж, өөрөө синхрончлогдоно. Салгахын тулд цаг дээрээ гарна уу.</string>
+</resources>

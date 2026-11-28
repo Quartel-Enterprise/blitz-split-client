@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Колдоо кызматына жазуу</string>
+    <string name="contact_support_description">Электрондук почта колдонмоңузду даяр билдирүү менен ачабыз. Эмне болгонун жазып, жөнөтүңүз: ар бир билдирүүнү чыныгы адамдар окушат.</string>
+    <string name="contact_support_to">Кимге</string>
+    <string name="contact_support_diagnostics">Катка кошулат</string>
+    <string name="contact_support_app_version">Колдонмонун версиясы</string>
+    <string name="contact_support_platform">Платформа</string>
+    <string name="contact_support_language">Тил</string>
+    <string name="contact_support_account">Аккаунт</string>
+    <string name="contact_support_profile">Профиль</string>
+    <string name="contact_support_language_system">Тутум</string>
+    <string name="contact_support_account_local">Ушул түзмөк гана</string>
+    <string name="contact_support_account_anonymous">Туташтырылган эмес</string>
+    <string name="contact_support_open_email">Электрондук почтаны ачуу</string>
+    <string name="contact_support_copy_email">Электрондук почта дарегин көчүрүү</string>
+    <string name="contact_support_notice_copied">Электрондук почта дареги көчүрүлдү.</string>
+    <string name="contact_support_notice_no_app">Электрондук почта колдонмосу табылган жок. Анын ордуна дарек көчүрүлдү.</string>
+    <string name="contact_support_close">Жабуу</string>
+</resources>

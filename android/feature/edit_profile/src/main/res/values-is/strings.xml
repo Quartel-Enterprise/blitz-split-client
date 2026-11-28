@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Breyta prófíl</string>
+    <string name="edit_profile_save">Vista</string>
+    <string name="edit_profile_change_photo">Breyta mynd</string>
+    <string name="edit_profile_take_photo">Taka mynd</string>
+    <string name="edit_profile_choose_photo">Velja úr myndasafni</string>
+    <string name="edit_profile_use_account_photo">Nota mynd aðgangs: %1$s</string>
+    <string name="edit_profile_remove_photo">Fjarlægja mynd</string>
+    <string name="edit_profile_photo_error">Ekki tókst að nota þessa mynd. Prófaðu aðra.</string>
+    <string name="edit_profile_avatar_color">Litur prófílmyndar</string>
+    <string name="edit_profile_avatar_color_hint">Birtist þegar þú ert ekki með mynd.</string>
+    <string name="edit_profile_name_label">Nafnið þitt</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Sláðu inn að minnsta kosti %d stafi.</string>
+    <string name="edit_profile_name_too_long">Notaðu í mesta lagi %d stafi.</string>
+    <string name="edit_profile_account_notice">Nafn og mynd komu frá aðganginum þínum (%1$s). Breytingar hér gilda aðeins í Blitz Split og breyta ekki aðganginum þínum (%1$s).</string>
+    <string name="edit_profile_footer">Hóparnir þínir og allir sem eru með hlekkinn á prófílinn þinn sjá nafnið þitt og myndina.</string>
+    <string name="profile_photo_close">Loka</string>
+    <string name="profile_photo_camera">Myndavél</string>
+    <string name="profile_photo_gallery">Myndasafn</string>
+    <string name="profile_photo_remove">Fjarlægja</string>
+    <string name="profile_photo_title">Prófílmynd</string>
+</resources>

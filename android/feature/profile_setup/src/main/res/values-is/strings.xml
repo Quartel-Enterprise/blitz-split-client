@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Hvað kalla vinir þínir þig?</string>
+    <string name="profile_setup_subtitle">Hóparnir þínir og allir sem eru með hlekkinn á prófílinn þinn sjá nafnið þitt.</string>
+    <string name="profile_setup_avatar_color">Litur prófílmyndar</string>
+    <string name="profile_setup_add_photo">Bæta við mynd</string>
+    <string name="profile_setup_photo_error">Ekki tókst að nota þessa mynd. Prófaðu aðra.</string>
+    <string name="profile_setup_name_label">Nafnið þitt</string>
+    <string name="profile_setup_name_placeholder">Jón Jónsson</string>
+    <string name="profile_setup_name_too_short">Sláðu inn að minnsta kosti %d stafi.</string>
+    <string name="profile_setup_name_too_long">Notaðu í mesta lagi %d stafi.</string>
+    <string name="profile_setup_name_hint">Þú getur breytt því seinna í prófílnum.</string>
+    <string name="profile_setup_saved_locally">Aðeins vistað á þessu tæki í bili.</string>
+    <string name="profile_setup_continue">Halda áfram</string>
+</resources>

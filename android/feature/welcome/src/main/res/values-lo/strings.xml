@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">ແບ່ງບິນ ບໍ່ຫຍຸ້ງຍາກ</string>
+    <string name="welcome_offline_title">ໃຊ້ໄດ້ແບບອອບລາຍ</string>
+    <string name="welcome_offline_body">ທຸກຢ່າງຢູ່ໃນອຸປະກອນຂອງທ່ານ ແລະ ຊິງຂໍ້ມູນພາຍຫຼັງ</string>
+    <string name="welcome_optional_title">ບັນຊີແມ່ນທາງເລືອກ</string>
+    <string name="welcome_optional_body">Google ຫຼື Apple ພຽງແຕ່ຊ່ວຍບໍ່ໃຫ້ທ່ານສູນເສຍຫຍັງເມື່ອປ່ຽນອຸປະກອນ</string>
+    <string name="welcome_invite_title">ເຊີນດ້ວຍລິ້ງ ຫຼື QR ໂຄດ</string>
+    <string name="welcome_invite_body">ໝູ່ເຂົ້າຮ່ວມກຸ່ມໄດ້ໂດຍບໍ່ຕ້ອງສ້າງບັນຊີ</string>
+    <string name="welcome_no_connection_title">ບໍ່ມີການເຊື່ອມຕໍ່</string>
+    <string name="welcome_no_connection_body">ການເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີຕ້ອງໃຊ້ອິນເຕີເນັດ ໃຊ້ໂດຍບໍ່ມີບັນຊີດຽວນີ້ ແລ້ວເຊື່ອມຕໍ່ພາຍຫຼັງໃນ ໂປຣໄຟລ໌</string>
+    <string name="welcome_or">ຫຼື</string>
+    <string name="welcome_use_without_account">ໃຊ້ໂດຍບໍ່ມີບັນຊີ</string>
+    <string name="welcome_used_on_another_device">ຂ້ອຍເຄີຍໃຊ້ໃນອຸປະກອນອື່ນ</string>
+    <string name="welcome_sign_in_failed">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບໄດ້ໃນຕອນນີ້ ກະລຸນາລອງໃໝ່</string>
+    <string name="welcome_legal_notice">ເມື່ອດຳເນີນການຕໍ່ ທ່ານຍອມຮັບ %1$s ແລະ ຮັບຮູ້ %2$s</string>
+    <string name="welcome_legal_terms">ເງື່ອນໄຂການໃຫ້ບໍລິການ</string>
+    <string name="welcome_legal_privacy">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</string>
+    <string name="welcome_no_account_note">ຖ້າບໍ່ມີບັນຊີ ຂໍ້ມູນຂອງທ່ານຈະຖືກລຶບຫຼັງຈາກບໍ່ໄດ້ໃຊ້ 30 ມື້ ເຊື່ອມຕໍ່ Google ຫຼື Apple ເພື່ອເກັບມັນໄວ້</string>
+    <string name="welcome_no_account_note_offline">ຖ້າບໍ່ມີບັນຊີ ຂໍ້ມູນຂອງທ່ານຈະຖືກລຶບຫຼັງຈາກບໍ່ໄດ້ໃຊ້ 30 ມື້ ເຊື່ອມຕໍ່ Google ຫຼື Apple ພາຍຫຼັງໃນ ໂປຣໄຟລ໌ ເພື່ອເກັບມັນໄວ້</string>
+    <string name="welcome_expired_title">ຂໍ້ມູນຂອງທ່ານຖືກລຶບແລ້ວ</string>
+    <string name="welcome_expired_body">ທ່ານໃຊ້ແອັບໂດຍບໍ່ມີບັນຊີ ແລະ ບໍ່ໄດ້ເປີດມັນ 30 ມື້ ຂໍ້ມູນຂອງທ່ານຈຶ່ງຖືກລຶບ ເຊື່ອມຕໍ່ Google ຫຼື Apple ເພື່ອເກັບມັນໄວ້ໃນຄັ້ງຕໍ່ໄປ</string>
+    <string name="welcome_expired_ok">ຕົກລົງ</string>
+</resources>

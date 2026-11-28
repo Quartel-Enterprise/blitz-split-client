@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">ແກ້ໄຂໂປຣໄຟລ໌</string>
+    <string name="edit_profile_save">ບັນທຶກ</string>
+    <string name="edit_profile_change_photo">ປ່ຽນຮູບ</string>
+    <string name="edit_profile_take_photo">ຖ່າຍຮູບ</string>
+    <string name="edit_profile_choose_photo">ເລືອກຈາກຄັງຮູບ</string>
+    <string name="edit_profile_use_account_photo">ໃຊ້ຮູບບັນຊີ %1$s</string>
+    <string name="edit_profile_remove_photo">ເອົາຮູບອອກ</string>
+    <string name="edit_profile_photo_error">ບໍ່ສາມາດໃຊ້ຮູບນີ້ໄດ້ ກະລຸນາລອງຮູບອື່ນ</string>
+    <string name="edit_profile_avatar_color">ສີຮູບແທນຕົວ</string>
+    <string name="edit_profile_avatar_color_hint">ສະແດງເມື່ອທ່ານບໍ່ມີຮູບ</string>
+    <string name="edit_profile_name_label">ຊື່ຂອງທ່ານ</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">ກະລຸນາພິມຢ່າງໜ້ອຍ %d ຕົວອັກສອນ</string>
+    <string name="edit_profile_name_too_long">ກະລຸນາໃຊ້ບໍ່ເກີນ %d ຕົວອັກສອນ</string>
+    <string name="edit_profile_account_notice">ຊື່ ແລະ ຮູບມາຈາກບັນຊີ %1$s ຂອງທ່ານ ການປ່ຽນຢູ່ນີ້ມີຜົນສະເພາະໃນ Blitz Split ແລະ ບໍ່ປ່ຽນບັນຊີ %1$s ຂອງທ່ານ</string>
+    <string name="edit_profile_footer">ກຸ່ມຂອງທ່ານ ແລະ ທຸກຄົນທີ່ມີລິ້ງໂປຣໄຟລ໌ຂອງທ່ານຈະເຫັນຊື່ ແລະ ຮູບຂອງທ່ານ</string>
+    <string name="profile_photo_close">ປິດ</string>
+    <string name="profile_photo_camera">ກ້ອງ</string>
+    <string name="profile_photo_gallery">ຄັງຮູບ</string>
+    <string name="profile_photo_remove">ເອົາອອກ</string>
+    <string name="profile_photo_title">ຮູບໂປຣໄຟລ໌</string>
+</resources>

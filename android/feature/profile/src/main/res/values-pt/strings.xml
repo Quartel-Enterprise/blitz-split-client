@@ -118,6 +118,13 @@
     <string name="profile_language_amharic">Amárico</string>
     <string name="profile_language_sinhala">Cingalês</string>
     <string name="profile_language_kazakh">Cazaque</string>
+    <string name="profile_language_mongolian">Mongol</string>
+    <string name="profile_language_kyrgyz">Quirguiz</string>
+    <string name="profile_language_lao">Laosiano</string>
+    <string name="profile_language_icelandic">Islandês</string>
+    <string name="profile_language_basque">Basco</string>
+    <string name="profile_language_galician">Galego</string>
+    <string name="profile_language_romansh">Romanche</string>
     <string name="profile_language_system_detail">Idioma do aparelho</string>
     <string name="profile_notifications">Notificações</string>
     <plurals name="profile_notifications_active">

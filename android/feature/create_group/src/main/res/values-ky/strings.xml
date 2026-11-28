@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Жаңы топ</string>
+    <string name="create_group_close">Жабуу</string>
+    <string name="create_group_create">Түзүү</string>
+    <string name="create_group_change_color">Топтун түсүн өзгөртүү</string>
+    <string name="create_group_name_label">Топтун аты</string>
+    <string name="create_group_type_label">Топтун түрү</string>
+    <string name="create_group_members_title">Кимдер бар</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d адам</item>
+        <item quantity="other">%d адам</item>
+    </plurals>
+    <string name="create_group_me">сиз</string>
+    <string name="create_group_remove_member">Өчүрүү: %s</string>
+    <string name="create_group_add_placeholder">Аты менен кошуу</string>
+    <string name="create_group_add">Кошуу</string>
+    <string name="create_group_no_app_notice">Азыр эч кимге колдонмонун кереги жок. Баары үчүн чыгымдарды азыр эле кошуп, шилтемени кийин жөнөтсөңүз болот.</string>
+    <string name="create_group_currency">Демейки валюта</string>
+    <string name="create_group_currency_caption">Жаңы чыгымдар ушул валютада башталат; ар бир чыгым башка валютаны колдоно алат.</string>
+    <string name="create_group_save_error">Топту сактай алган жокпуз. Кайра аракет кылыңыз.</string>
+    <string name="create_group_photo">Топтун сүрөтү</string>
+    <string name="create_group_take_photo">Сүрөткө тартуу</string>
+    <string name="create_group_choose_photo">Сүрөт тандоо</string>
+    <string name="create_group_remove_photo">Сүрөттү өчүрүү</string>
+    <string name="create_group_photo_error">Бул сүрөттү колдоно алган жокпуз. Башкасын тандап көрүңүз.</string>
+</resources>

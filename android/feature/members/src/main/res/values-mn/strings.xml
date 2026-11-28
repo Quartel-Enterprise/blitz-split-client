@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Урилгын холбоос</string>
+    <string name="members_link_pending">Хараахан үүсгээгүй</string>
+    <string name="members_share">Хуваалцах</string>
+    <string name="members_me">%s (та)</string>
+    <string name="members_status_this_device">Энэ төхөөрөмж</string>
+    <string name="members_status_joined">Нэгдсэн</string>
+    <string name="members_status_not_joined">Хараахан нэгдээгүй</string>
+    <string name="members_options">Сонголтууд: %s</string>
+    <string name="members_rename">Нэр өөрчлөх</string>
+    <string name="members_personal_invite">Хувийн урилга: %s</string>
+    <string name="members_personal_message">Энэ холбоосыг нээсэн хүн жагсаалтаас сонголгүйгээр шууд дараах нэрээр нэгдэнэ: %s. Нэг л удаа ажиллана.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Энэ холбоосыг нээсэн хүн жагсаалтаас сонголгүйгээр шууд дараах нэрээр нэгдэнэ: %1$s. Одоог хүртэл нэмсэн зардалд ногдох %2$s хэсгээ шууд харна. Нэг л удаа ажиллана.</item>
+        <item quantity="other">Энэ холбоосыг нээсэн хүн жагсаалтаас сонголгүйгээр шууд дараах нэрээр нэгдэнэ: %1$s. Одоог хүртэл нэмсэн %3$d зардалд ногдох %2$s хэсгээ шууд харна. Нэг л удаа ажиллана.</item>
+    </plurals>
+    <string name="members_personal_copy">Холбоос хуулах</string>
+    <string name="members_personal_copied">Хуулсан</string>
+    <string name="members_personal_share">Хуваалцах: %s</string>
+    <string name="members_personal_share_message">Blitz Split дээр ‘%1$s’ бүлэгт нэгдээрэй, таны нэр: %2$s. Холбоос: %3$s</string>
+    <string name="members_remove">Бүлгээс хасах</string>
+    <string name="members_remove_joined">%s аль хэдийн бүлэгт нэгдсэн</string>
+    <string name="members_remove_title">Бүлгээс хасах уу: %s?</string>
+    <string name="members_remove_message">%s хараахан нэгдээгүй. Дараа нь дахин нэмж болно.</string>
+    <string name="members_remove_confirm">Хасах</string>
+    <string name="members_release">Нэр чөлөөлөх</string>
+    <string name="members_release_title">Нэрийг чөлөөлөх үү: %s?</string>
+    <string name="members_release_message">%1$s нэрээр нэгдсэн хүн бүлгээс гарна. %1$s гэх нэр, өнгө, зардлууд хэвээр үлдэж, бүлгийн холбоосоор %1$s нэрийг дахин сонгож болно.</string>
+    <string name="members_release_confirm">Чөлөөлөх</string>
+    <string name="members_release_error">Нэрийг чөлөөлж чадсангүй. Холболтоо шалгаад дахин оролдоно уу.</string>
+    <string name="members_add">Хүн нэмэх</string>
+    <string name="members_invite_instead">Апптай юу? Холбоосоор урих</string>
+    <string name="members_name_label">Нэр</string>
+    <string name="members_save">Хадгалах</string>
+    <string name="members_cancel">Цуцлах</string>
+    <string name="members_change_error">Өөрчлөлтийг хадгалж чадсангүй. Дахин оролдоно уу.</string>
+    <string name="members_remove_open_balance">%s нээлттэй баланстай</string>
+    <string name="members_balance_to_get_back">Авах: %s</string>
+    <string name="members_balance_owes">Өртэй: %s</string>
+    <string name="members_balance_settled">Тооцоо хаагдсан</string>
+</resources>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Nagins pleds</string>
+    <string name="category_map_title">Carta da categorias</string>
+    <string name="category_map_search">Tschertgar pleds</string>
+    <string name="category_map_add">Agiuntar in pled</string>
+    <string name="category_map_more">Ulteriuras opziuns</string>
+    <string name="category_map_restore">Restaurar il standard</string>
+    <string name="category_map_back">Enavos</string>
+    <string name="category_map_intro">Cur ch\'il titel d\'in\'expensa cuntegna in da quests pleds, vegn la categoria da sasezza. “Uber a chasa” daventa Transport.</string>
+    <string name="category_map_intro_offline">La carta funcziuna offline: las midadas valan immediat sin quest apparat e cuntanschan Voss auters apparats uschespert ch\'i dat puspè ina connexiun.</string>
+    <string name="category_map_device_only">Vossa carta resta mo sin quest apparat. Per la prender sin Voss auters apparats, faschai l\'annunzia cun Google u Apple en Voss profil.</string>
+    <string name="category_map_open_profile">Avrir il profil</string>
+    <string name="category_map_longest_wins">Cur che dus pleds correspundan ad in titel, gudogna il pli lung.</string>
+    <string name="category_map_no_result">Nagin pled cun “%1$s”</string>
+    <string name="category_map_no_result_body">Agiuntai el ed expensas cun quest pled en il titel arrivan cun la dretga categoria.</string>
+    <string name="category_map_add_query">Agiuntar “%1$s”</string>
+    <string name="category_map_empty_title">Vossa carta è vida</string>
+    <string name="category_map_empty_body">Senza pleds na vegn la categoria betg dal titel: Vus la tschernis per mintga expensa.</string>
+    <string name="category_map_group_category"> · categoria da %1$s</string>
+    <string name="category_map_only_main">Mo %1$s</string>
+    <string name="category_map_only_in_group">mo en %1$s</string>
+    <string name="category_map_no_terms_yet">Anc nagins pleds.</string>
+    <string name="category_map_add_in">Agiuntar in pled en %1$s</string>
+    <string name="category_map_tip">Smatgai sin in pled per midar sia categoria u per l\'allontanar. El correspunda al pled entir, senza resguardar accents e maiusclas.</string>
+    <string name="category_map_queued">en spetga</string>
+    <string name="category_map_term_action">%1$s, %2$s. Modifitgar</string>
+    <string name="category_map_new_term">Nov pled</string>
+    <string name="category_map_edit_term">Modifitgar il pled</string>
+    <string name="category_map_term_label">Pled u frasa</string>
+    <string name="category_map_term_help">Correspunda al pled entir, senza resguardar accents e maiusclas.</string>
+    <string name="category_map_term_help_app">In pled da l\'app. Restaurar il standard al restituescha sco ch\'el era.</string>
+    <string name="category_map_term_duplicate">“%1$s” tscherna gia %2$s. Mintga pled ha ina categoria.</string>
+    <string name="category_map_term_too_short">Duvrai almain 2 bustabs.</string>
+    <string name="category_map_term_too_long">Duvrai maximalmain 30 bustabs.</string>
+    <string name="category_map_term_invalid">Duvrai mo bustabs, cifras e spazis.</string>
+    <string name="category_map_category">Categoria</string>
+    <string name="category_map_category_help">I po esser la categoria u ina subcategoria.</string>
+    <string name="category_map_category_help_edit">Sche Vus midais quai qua, vegn il pled spostà en in\'autra categoria.</string>
+    <string name="category_map_category_help_move">Cun spostar vegn il pled prendì ord %1$s.</string>
+    <string name="category_map_example">Exempel</string>
+    <string name="category_map_example_move">Sch\'el vegn spostà</string>
+    <string name="category_map_remove">Allontanar</string>
+    <string name="category_map_cancel">Interrumper</string>
+    <string name="category_map_save">Memorisar</string>
+    <string name="category_map_move_to">Spostar en %1$s</string>
+    <string name="category_map_removed">“%1$s” è vegnì allontanà da la carta</string>
+    <string name="category_map_undo">Revocar</string>
+    <string name="category_map_restore_title">Restaurar la carta da standard?</string>
+    <string name="category_map_restore_body">Ils 60 pleds da l\'app returnan sco ch\'els eran, inclus quels che Vus avais allontanà u spostà.</string>
+    <string name="category_map_restore_own_one">Il pled che Vus avais creà, “%1$s”, resta.</string>
+    <string name="category_map_restore_confirm">Restaurar</string>
+    <string name="category_map_save_error">Impussibel da memorisar la carta. Empruvai anc ina giada.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d pled</item>
+        <item quantity="other">%d pleds</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d subcategoria</item>
+        <item quantity="other">%d subcategorias</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d pled cun “%2$s”</item>
+        <item quantity="other">%1$d pleds cun “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline · %d midada en spetga</item>
+        <item quantity="other">Offline · %d midadas en spetga</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">%d pled che Vus avais creà resta.</item>
+        <item quantity="other">Ils %d pleds che Vus avais creà restan.</item>
+    </plurals>
+    <string name="category_map_new_category">Nova categoria</string>
+    <string name="category_map_new_subcategory_in">Nova subcategoria en %s</string>
+    <string name="category_map_edit_category">Modifitgar %s</string>
+    <string name="category_map_category_group">Gruppa</string>
+    <string name="category_map_change_color">Midar la colur da %1$s</string>
+    <string name="category_map_restore_color">Restaurar la colur</string>
+    <string name="category_map_color_done">Finì</string>
+</resources>

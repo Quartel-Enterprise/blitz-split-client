@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Serrar</string>
+    <string name="invite_group_created">Gruppa creada</string>
+    <string name="invite_title">Envidai tuts en la gruppa %s</string>
+    <string name="invite_qr_description">Code QR da la colliaziun d\'invitaziun da la gruppa</string>
+    <string name="invite_copy">Copiar</string>
+    <string name="invite_copied">Copià</string>
+    <string name="invite_who_picks">Tgi che avra la colliaziun tscherna ses num sin la glista: %s. Nagin conto necessari.</string>
+    <string name="invite_names_or">%1$s u %2$s</string>
+    <string name="invite_anyone_joins">Tgi che avra la colliaziun adera a la gruppa. Nagin conto necessari.</string>
+    <string name="invite_pending_title">Colliaziun en spetga</string>
+    <string name="invite_pending_offline">Ella vegn creada uschespert che Vus essas online.</string>
+    <string name="invite_pending_online">La colliaziun vegn creada…</string>
+    <string name="invite_failed_title">Impussibel da crear la colliaziun</string>
+    <string name="invite_failed_body">Insatge è ì mal durant la sincronisaziun da la gruppa.</string>
+    <string name="invite_retry">Empruvar anc ina giada</string>
+    <string name="invite_share">Cundivider la colliaziun</string>
+    <string name="invite_see_who_joined">Mussar tgi che ha aderì</string>
+    <string name="invite_add_person">Agiuntar insatgi senza l\'app</string>
+    <string name="invite_go_to_group">Ir a la gruppa</string>
+    <string name="invite_change_link">Midar la colliaziun</string>
+    <string name="invite_change_link_title">Midar la colliaziun d\'invitaziun?</string>
+    <string name="invite_change_link_message">La colliaziun actuala ed il code QR na funcziunan betg pli, inclus las invitaziuns persunalas betg duvradas. Tgi che ha gia aderì resta en la gruppa.</string>
+    <string name="invite_change_link_failed">Impussibel da midar la colliaziun. Empruvai anc ina giada.</string>
+    <string name="invite_share_message">Partin las expensas da %1$s sin Blitz Split. Questa colliaziun maina en la gruppa: %2$s</string>
+</resources>
