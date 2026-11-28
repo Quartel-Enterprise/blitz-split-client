@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">ବନ୍ଦ କରନ୍ତୁ</string>
+    <string name="invite_group_created">ଗ୍ରୁପ୍ ତିଆରି ହେଲା</string>
+    <string name="invite_title">ସମସ୍ତଙ୍କୁ %s ଗ୍ରୁପ୍‌କୁ ନିମନ୍ତ୍ରଣ କରନ୍ତୁ</string>
+    <string name="invite_qr_description">ଗ୍ରୁପ୍‌ର ନିମନ୍ତ୍ରଣ ଲିଙ୍କ୍‌ର QR କୋଡ୍</string>
+    <string name="invite_copy">କପି କରନ୍ତୁ</string>
+    <string name="invite_copied">କପି ହେଲା</string>
+    <string name="invite_who_picks">ଯିଏ ଲିଙ୍କ୍ ଖୋଲିବେ, ସେ ତାଲିକାରୁ ନିଜେ କିଏ ତାହା ବାଛିବେ: %s। କୌଣସି ଆକାଉଣ୍ଟ ଦରକାର ନାହିଁ।</string>
+    <string name="invite_names_or">%1$s କିମ୍ବା %2$s</string>
+    <string name="invite_anyone_joins">ଯିଏ ଲିଙ୍କ୍ ଖୋଲିବେ, ସେ ଗ୍ରୁପ୍‌ରେ ଯୋଗ ଦେବେ। କୌଣସି ଆକାଉଣ୍ଟ ଦରକାର ନାହିଁ।</string>
+    <string name="invite_pending_title">ଲିଙ୍କ୍ ବାକି ଅଛି</string>
+    <string name="invite_pending_offline">ଆପଣ ଅନଲାଇନ୍ ହେବା ମାତ୍ରେ ଏହା ତିଆରି ହେବ।</string>
+    <string name="invite_pending_online">ଲିଙ୍କ୍ ତିଆରି ହେଉଛି…</string>
+    <string name="invite_failed_title">ଲିଙ୍କ୍ ତିଆରି କରିହେଲା ନାହିଁ</string>
+    <string name="invite_failed_body">ଗ୍ରୁପ୍ ସିଙ୍କ୍ କରିବା ସମୟରେ କିଛି ଭୁଲ୍ ହେଲା।</string>
+    <string name="invite_retry">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</string>
+    <string name="invite_share">ଲିଙ୍କ୍ ସେୟାର୍ କରନ୍ତୁ</string>
+    <string name="invite_see_who_joined">କିଏ ଯୋଗ ଦେଲେ ଦେଖନ୍ତୁ</string>
+    <string name="invite_add_person">ଆପ୍ ନଥିବା କାହାକୁ ଯୋଡନ୍ତୁ</string>
+    <string name="invite_go_to_group">ଗ୍ରୁପ୍‌କୁ ଯାଆନ୍ତୁ</string>
+    <string name="invite_change_link">ଲିଙ୍କ୍ ବଦଳାନ୍ତୁ</string>
+    <string name="invite_change_link_title">ନିମନ୍ତ୍ରଣ ଲିଙ୍କ୍ ବଦଳାଇବେ?</string>
+    <string name="invite_change_link_message">ବର୍ତ୍ତମାନର ଲିଙ୍କ୍ ଓ QR କୋଡ୍ କାମ କରିବା ବନ୍ଦ କରିବ, ବ୍ୟବହାର ହୋଇନଥିବା ବ୍ୟକ୍ତିଗତ ନିମନ୍ତ୍ରଣ ସମେତ। ଯିଏ ପୂର୍ବରୁ ଯୋଗ ଦେଇସାରିଛନ୍ତି, ସେ ଗ୍ରୁପ୍‌ରେ ରହିବେ।</string>
+    <string name="invite_change_link_failed">ଲିଙ୍କ୍ ବଦଳାଇହେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="invite_share_message">ଆସନ୍ତୁ Blitz Split ଆପ୍‌ରେ %1$s ଗ୍ରୁପ୍‌ର ଖର୍ଚ୍ଚ ବାଣ୍ଟିବା। ଏହି ଲିଙ୍କ୍ ସହ ଯୋଗ ଦିଅନ୍ତୁ: %2$s</string>
+</resources>

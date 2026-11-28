@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">ଆପଣଙ୍କ ଗ୍ରୁପ୍ ଫେରାଇ ଆଣନ୍ତୁ</string>
+    <string name="restore_subtitle">ପୂର୍ବରୁ ଆକାଉଣ୍ଟ ସହ ସାଇନ୍ ଇନ୍ କରିଥିଲେ କି? କେବଳ ପୁଣି ସାଇନ୍ ଇନ୍ କରନ୍ତୁ। ନଚେତ୍, ରିକଭରି କୋଡ୍ କିମ୍ବା ଆପଣଙ୍କ ପୁରୁଣା ଡିଭାଇସ୍‌ର QR କୋଡ୍ ବ୍ୟବହାର କରନ୍ତୁ।</string>
+    <string name="restore_no_connection_title">ସଂଯୋଗ ନାହିଁ</string>
+    <string name="restore_no_connection_body">ଆକାଉଣ୍ଟ ବା କୋଡ୍ ସହ ସାଇନ୍ ଇନ୍ କରିବାକୁ ଆପଣଙ୍କ ଗ୍ରୁପ୍ ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ ଇଣ୍ଟରନେଟ୍ ଦରକାର। ଆପଣ ଟାଇପ୍ କରିଥିବା ରଖାଯାଇଛି।</string>
+    <string name="restore_code_label">କିମ୍ବା ରିକଭରି କୋଡ୍ ବ୍ୟବହାର କରନ୍ତୁ</string>
+    <string name="restore_code_hint">12ଟି ଶବ୍ଦ କ୍ରମରେ। ସବୁ ଫିଲ୍ଡ ପୂରଣ କରିବାକୁ ସବୁ ଶବ୍ଦ ଗୋଟିଏ ଫିଲ୍ଡରେ ପେଷ୍ଟ କରନ୍ତୁ।</string>
+    <string name="restore_scan_qr_title">ଆପଣଙ୍କ ପୁରୁଣା ଡିଭାଇସ୍‌ର QR କୋଡ୍ ସ୍କାନ୍ କରନ୍ତୁ</string>
+    <string name="restore_scan_qr_body">ସେଠାରେ: ପ୍ରୋଫାଇଲ୍ › ରିକଭରି › QR କୋଡ୍ ଦେଖାନ୍ତୁ</string>
+    <string name="restore_recover">ରିଷ୍ଟୋର୍ କରନ୍ତୁ</string>
+    <string name="restore_try_again">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</string>
+    <string name="restore_start_fresh">ଏହି ଡିଭାଇସ୍‌ରେ ନୂଆ କରି ଆରମ୍ଭ କରନ୍ତୁ</string>
+    <string name="restore_error_invalid_code">କୋଡ୍ ମିଳିଲା ନାହିଁ। ଶବ୍ଦ ଓ ସେଗୁଡ଼ିକର କ୍ରମ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="restore_error_too_many_attempts">ବହୁତ ଅଧିକ ଚେଷ୍ଟା। କିଛି ମିନିଟ୍ ଅପେକ୍ଷା କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="restore_error_sign_in_failed">ବର୍ତ୍ତମାନ ସାଇନ୍ ଇନ୍ କରିହେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="restore_error_unknown">କିଛି ଭୁଲ୍ ହେଲା। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+</resources>

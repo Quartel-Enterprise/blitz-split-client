@@ -112,6 +112,7 @@
     <string name="profile_language_kannada">Kannada</string>
     <string name="profile_language_burmese">Birmaans</string>
     <string name="profile_language_khmer">Khmer</string>
+    <string name="profile_language_odia">Odia</string>
     <string name="profile_language_system_detail">Taal van het apparaat</string>
     <string name="profile_notifications">Meldingen</string>
     <plurals name="profile_notifications_active">

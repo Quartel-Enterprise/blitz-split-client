@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">ନୂଆ ଗ୍ରୁପ୍</string>
+    <string name="create_group_close">ବନ୍ଦ କରନ୍ତୁ</string>
+    <string name="create_group_create">ତିଆରି କରନ୍ତୁ</string>
+    <string name="create_group_change_color">ଗ୍ରୁପ୍‌ର ରଙ୍ଗ ବଦଳାନ୍ତୁ</string>
+    <string name="create_group_name_label">ଗ୍ରୁପ୍‌ର ନାମ</string>
+    <string name="create_group_type_label">ଗ୍ରୁପ୍‌ର ପ୍ରକାର</string>
+    <string name="create_group_members_title">କିଏ କିଏ ଅଛନ୍ତି</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d ଜଣ</item>
+        <item quantity="other">%d ଜଣ</item>
+    </plurals>
+    <string name="create_group_me">ଆପଣ</string>
+    <string name="create_group_remove_member">ହଟାନ୍ତୁ: %s</string>
+    <string name="create_group_add_placeholder">ନାମ ଦେଇ ଯୋଡନ୍ତୁ</string>
+    <string name="create_group_add">ଯୋଡନ୍ତୁ</string>
+    <string name="create_group_no_app_notice">ଏବେ କାହାକୁ ଆପ୍ ଦରକାର ନାହିଁ। ଆପଣ ଏବେଠାରୁ ସମସ୍ତଙ୍କ ପାଇଁ ଖର୍ଚ୍ଚ ଯୋଡିପାରିବେ ଏବଂ ପରେ ଲିଙ୍କ୍ ପଠାଇପାରିବେ।</string>
+    <string name="create_group_currency">ଡିଫଲ୍ଟ ମୁଦ୍ରା</string>
+    <string name="create_group_currency_caption">ନୂଆ ଖର୍ଚ୍ଚ ଏହି ମୁଦ୍ରାରେ ଆରମ୍ଭ ହୁଏ; ପ୍ରତିଟି ଖର୍ଚ୍ଚ ଅନ୍ୟ ମୁଦ୍ରା ବ୍ୟବହାର କରିପାରେ।</string>
+    <string name="create_group_save_error">ଗ୍ରୁପ୍ ସେଭ୍ କରିହେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="create_group_photo">ଗ୍ରୁପ୍ ଫଟୋ</string>
+    <string name="create_group_take_photo">ଫଟୋ ଉଠାନ୍ତୁ</string>
+    <string name="create_group_choose_photo">ଫଟୋ ବାଛନ୍ତୁ</string>
+    <string name="create_group_remove_photo">ଫଟୋ ହଟାନ୍ତୁ</string>
+    <string name="create_group_photo_error">ଏହି ଫଟୋ ବ୍ୟବହାର କରିହେଲା ନାହିଁ। ଅନ୍ୟ ଏକ ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+</resources>

@@ -112,6 +112,7 @@
     <string name="profile_language_kannada">Kannada</string>
     <string name="profile_language_burmese">Birma</string>
     <string name="profile_language_khmer">Khmeeri</string>
+    <string name="profile_language_odia">Oria</string>
     <string name="profile_language_system_detail">Seadme keel</string>
     <string name="profile_notifications">Teavitused</string>
     <plurals name="profile_notifications_active">

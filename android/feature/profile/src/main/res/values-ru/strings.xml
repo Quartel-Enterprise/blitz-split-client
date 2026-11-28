@@ -114,6 +114,7 @@
     <string name="profile_language_kannada">Каннада</string>
     <string name="profile_language_burmese">Бирманский</string>
     <string name="profile_language_khmer">Кхмерский</string>
+    <string name="profile_language_odia">Ория</string>
     <string name="profile_language_system_detail">Язык устройства</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_notifications">Уведомления</string>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">ନିମନ୍ତ୍ରଣ ଲିଙ୍କ୍</string>
+    <string name="members_link_pending">ଏପର୍ଯ୍ୟନ୍ତ ତିଆରି ହୋଇନାହିଁ</string>
+    <string name="members_share">ସେୟାର୍ କରନ୍ତୁ</string>
+    <string name="members_me">%s (ଆପଣ)</string>
+    <string name="members_status_this_device">ଏହି ଡିଭାଇସ୍</string>
+    <string name="members_status_joined">ଯୋଗ ଦେଇଛନ୍ତି</string>
+    <string name="members_status_not_joined">ଏପର୍ଯ୍ୟନ୍ତ ଯୋଗ ଦେଇନାହାନ୍ତି</string>
+    <string name="members_options">ବିକଳ୍ପ: %s</string>
+    <string name="members_rename">ନାମ ବଦଳାନ୍ତୁ</string>
+    <string name="members_personal_invite">ବ୍ୟକ୍ତିଗତ ନିମନ୍ତ୍ରଣ: %s</string>
+    <string name="members_personal_message">ଯିଏ ଏହି ଲିଙ୍କ୍ ଖୋଲିବେ, ସେ ତାଲିକାରୁ ବାଛିବା ବିନା ସିଧା %s ଭାବେ ଯୋଗ ଦେବେ। ଏହା ଥରେ କାମ କରେ।</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">ଯିଏ ଏହି ଲିଙ୍କ୍ ଖୋଲିବେ, ସେ ତାଲିକାରୁ ବାଛିବା ବିନା ସିଧା %1$s ଭାବେ ଯୋଗ ଦେବେ, ଏବଂ ଏପର୍ଯ୍ୟନ୍ତ ଯୋଡାଯାଇଥିବା ଖର୍ଚ୍ଚରେ ନିଜର %2$s ଭାଗ ପୂର୍ବରୁ ଦେଖିବେ। ଏହା ଥରେ କାମ କରେ।</item>
+        <item quantity="other">ଯିଏ ଏହି ଲିଙ୍କ୍ ଖୋଲିବେ, ସେ ତାଲିକାରୁ ବାଛିବା ବିନା ସିଧା %1$s ଭାବେ ଯୋଗ ଦେବେ, ଏବଂ ଏପର୍ଯ୍ୟନ୍ତ ଯୋଡାଯାଇଥିବା %3$d ଟି ଖର୍ଚ୍ଚରେ ନିଜର %2$s ଭାଗ ପୂର୍ବରୁ ଦେଖିବେ। ଏହା ଥରେ କାମ କରେ।</item>
+    </plurals>
+    <string name="members_personal_copy">ଲିଙ୍କ୍ କପି କରନ୍ତୁ</string>
+    <string name="members_personal_copied">କପି ହେଲା</string>
+    <string name="members_personal_share">ସେୟାର୍ କରନ୍ତୁ: %s</string>
+    <string name="members_personal_share_message">Blitz Split ଆପ୍‌ରେ %1$s ଗ୍ରୁପ୍‌ରେ %2$s ଭାବେ ଯୋଗ ଦିଅନ୍ତୁ: %3$s</string>
+    <string name="members_remove">ଗ୍ରୁପ୍‌ରୁ ହଟାନ୍ତୁ</string>
+    <string name="members_remove_joined">%s ପୂର୍ବରୁ ଗ୍ରୁପ୍‌ରେ ଯୋଗ ଦେଇସାରିଛନ୍ତି</string>
+    <string name="members_remove_title">%s ନାମକ ସଦସ୍ୟଙ୍କୁ ଗ୍ରୁପ୍‌ରୁ ହଟାଇବେ?</string>
+    <string name="members_remove_message">%s ଏପର୍ଯ୍ୟନ୍ତ ଯୋଗ ଦେଇନାହାନ୍ତି। ଆପଣ ତାଙ୍କୁ ପରେ ପୁଣି ଯୋଡିପାରିବେ।</string>
+    <string name="members_remove_confirm">ହଟାନ୍ତୁ</string>
+    <string name="members_release">ନାମ ମୁକ୍ତ କରନ୍ତୁ</string>
+    <string name="members_release_title">%s ନାମଟି ମୁକ୍ତ କରିବେ?</string>
+    <string name="members_release_message">ଯିଏ %1$s ଭାବେ ଯୋଗ ଦେଇଥିଲେ, ସେ ଗ୍ରୁପ୍ ଛାଡିବେ। %1$s ନାମକ ସଦସ୍ୟଙ୍କ ନାମ, ରଙ୍ଗ ଓ ଖର୍ଚ୍ଚ ରହିବ, ଏବଂ ଗ୍ରୁପ୍‌ର ଲିଙ୍କ୍ ମାଧ୍ୟମରେ %1$s ନାମଟି ପୁଣି ବଛାଯାଇପାରିବ।</string>
+    <string name="members_release_confirm">ମୁକ୍ତ କରନ୍ତୁ</string>
+    <string name="members_release_error">ନାମ ମୁକ୍ତ କରିହେଲା ନାହିଁ। ଆପଣଙ୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="members_add">ବ୍ୟକ୍ତି ଯୋଡନ୍ତୁ</string>
+    <string name="members_invite_instead">ଆପ୍ ଅଛି କି? ଲିଙ୍କ୍ ସହ ନିମନ୍ତ୍ରଣ କରନ୍ତୁ</string>
+    <string name="members_name_label">ନାମ</string>
+    <string name="members_save">ସେଭ୍ କରନ୍ତୁ</string>
+    <string name="members_cancel">ବାତିଲ୍ କରନ୍ତୁ</string>
+    <string name="members_change_error">ପରିବର୍ତ୍ତନ ସେଭ୍ କରିହେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="members_remove_open_balance">ବାକି ବ୍ୟାଲାନ୍ସ ଅଛି: %s</string>
+    <string name="members_balance_to_get_back">%s ପାଇବାକୁ ଅଛି</string>
+    <string name="members_balance_owes">%s ଦେବାକୁ ଅଛି</string>
+    <string name="members_balance_settled">ହିସାବ ମେଣ୍ଟିଗଲା</string>
+</resources>

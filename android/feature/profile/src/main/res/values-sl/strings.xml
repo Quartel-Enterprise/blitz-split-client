@@ -114,6 +114,7 @@
     <string name="profile_language_kannada">Kanareščina</string>
     <string name="profile_language_burmese">Burmanščina</string>
     <string name="profile_language_khmer">Kmerščina</string>
+    <string name="profile_language_odia">Odijščina</string>
     <string name="profile_language_system_detail">Jezik naprave</string>
     <string name="profile_notifications">Obvestila</string>
     <plurals name="profile_notifications_active">

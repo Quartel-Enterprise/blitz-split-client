@@ -74,6 +74,7 @@ class ProfileUiStateTest {
             AppLanguage.KANNADA -> listOf("ಕನ್ನಡ", "Kannada")
             AppLanguage.BURMESE -> listOf("မြန်မာ", "Burmese")
             AppLanguage.KHMER -> listOf("ខ្មែរ", "Khmer")
+            AppLanguage.ODIA -> listOf("ଓଡ଼ିଆ", "Odia")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -147,6 +148,7 @@ class ProfileUiStateTest {
         AppLanguage.KANNADA,
         AppLanguage.BURMESE,
         AppLanguage.KHMER,
+        AppLanguage.ODIA,
     )
 
     @Test
@@ -763,6 +765,7 @@ class ProfileUiStateTest {
                 AppLanguage.KANNADA,
                 AppLanguage.BURMESE,
                 AppLanguage.KHMER,
+                AppLanguage.ODIA,
             ),
             options,
         )
@@ -838,6 +841,7 @@ class ProfileUiStateTest {
                 AppLanguage.KANNADA,
                 AppLanguage.BURMESE,
                 AppLanguage.KHMER,
+                AppLanguage.ODIA,
             ),
             options,
         )

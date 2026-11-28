@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">ଆପଣଙ୍କ ବନ୍ଧୁମାନେ ଆପଣଙ୍କୁ କ\'ଣ ବୋଲି ଡାକନ୍ତି?</string>
+    <string name="profile_setup_subtitle">ଆପଣଙ୍କ ଗ୍ରୁପ୍ ଏବଂ ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ୍ ଲିଙ୍କ୍ ଥିବା ଯେକେହି ଆପଣଙ୍କ ନାମ ଦେଖନ୍ତି।</string>
+    <string name="profile_setup_avatar_color">ଅବତାର ରଙ୍ଗ</string>
+    <string name="profile_setup_add_photo">ଫଟୋ ଯୋଡନ୍ତୁ</string>
+    <string name="profile_setup_photo_error">ଏହି ଫଟୋ ବ୍ୟବହାର କରିହେଲା ନାହିଁ। ଅନ୍ୟ ଏକ ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="profile_setup_name_label">ଆପଣଙ୍କ ନାମ</string>
+    <string name="profile_setup_name_placeholder">ସୁମିତ୍ରା ଦାସ</string>
+    <string name="profile_setup_name_too_short">ଅତି କମ୍‌ରେ %d ଟି ଅକ୍ଷର ଟାଇପ୍ କରନ୍ତୁ।</string>
+    <string name="profile_setup_name_too_long">ସର୍ବାଧିକ %d ଟି ଅକ୍ଷର ବ୍ୟବହାର କରନ୍ତୁ।</string>
+    <string name="profile_setup_name_hint">ଆପଣ ଏହାକୁ ପରେ ପ୍ରୋଫାଇଲ୍‌ରେ ବଦଳାଇପାରିବେ।</string>
+    <string name="profile_setup_saved_locally">ଏବେ ପାଇଁ କେବଳ ଏହି ଡିଭାଇସ୍‌ରେ ସେଭ୍ ହୋଇଛି।</string>
+    <string name="profile_setup_continue">ଜାରି ରଖନ୍ତୁ</string>
+</resources>

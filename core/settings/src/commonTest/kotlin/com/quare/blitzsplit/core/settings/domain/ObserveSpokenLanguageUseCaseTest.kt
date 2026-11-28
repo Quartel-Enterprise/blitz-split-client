@@ -161,6 +161,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.KANNADA,
                 AppLanguage.BURMESE,
                 AppLanguage.KHMER,
+                AppLanguage.ODIA,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
 
@@ -224,6 +225,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "kn",
                     "my",
                     "km",
+                    "or",
                     "zh-Hant",
                 ),
                 spoken,
@@ -302,6 +304,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "kn",
             "my",
             "km",
+            "or",
             "zh-Hant",
         )
 
@@ -374,6 +377,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "kn-IN",
                 "my-MM",
                 "km-KH",
+                "or-IN",
                 "zh-TW",
             )
 
@@ -439,6 +443,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "kn",
                     "my",
                     "km",
+                    "or",
                     "zh-Hant",
                 ),
                 spoken,

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">ହିସାବ ମେଣ୍ଟାଇବା ରିମାଇଣ୍ଡର୍</string>
+    <string name="push_bill_created">%1$s ଆପଣଙ୍କ ସହ ଏକ ଖର୍ଚ୍ଚ ଯୋଡିଲେ: “%2$s”</string>
+    <string name="push_bill_edited">%1$s ଏକ ଖର୍ଚ୍ଚ ଏଡିଟ୍ କଲେ: “%2$s”</string>
+    <string name="push_bill_deleted">%1$s ଏକ ଖର୍ଚ୍ଚ ଡିଲିଟ୍ କଲେ: “%2$s”</string>
+    <string name="push_comment_added">%1$s “%2$s” ଖର୍ଚ୍ଚରେ ମନ୍ତବ୍ୟ କଲେ: %3$s</string>
+    <string name="push_payment_paid_you">%1$s ଚିହ୍ନିତ କଲେ ଯେ ସେ ଆପଣଙ୍କୁ ପେମେଣ୍ଟ କଲେ</string>
+    <string name="push_payment_to_you">%1$s ଚିହ୍ନିତ କଲେ ଯେ %2$s ଆପଣଙ୍କୁ ପେମେଣ୍ଟ କଲେ</string>
+    <string name="push_payment_received_yours">%1$s ଆପଣଙ୍କ ପେମେଣ୍ଟ ପାଇଲେ ବୋଲି ଚିହ୍ନିତ କଲେ</string>
+    <string name="push_payment_from_you">%1$s ଚିହ୍ନିତ କଲେ ଯେ ଆପଣ ପେମେଣ୍ଟ କଲେ, ପ୍ରାପକ: %2$s</string>
+    <string name="push_payment_undone">%1$s ଆପଣଙ୍କ ସହ ଏକ ପେମେଣ୍ଟ ପୂର୍ବାବସ୍ଥାକୁ ଫେରାଇଲେ</string>
+    <string name="push_charge_sent">%1$s ଆପଣଙ୍କୁ ହିସାବ ମେଣ୍ଟାଇବାକୁ ଏକ ରିମାଇଣ୍ଡର୍ ପଠାଇଲେ</string>
+    <string name="push_settle_reminder">%1$s ଗ୍ରୁପ୍‌ରେ ଆପଣଙ୍କର ବାକି ବ୍ୟାଲାନ୍ସ ଅଛି</string>
+    <string name="push_settle_reminders">%1$s ଟି ଗ୍ରୁପ୍‌ରେ ଆପଣଙ୍କର ବାକି ବ୍ୟାଲାନ୍ସ ଅଛି</string>
+    <string name="push_added_to_group">%1$s ଆପଣଙ୍କୁ ଗ୍ରୁପ୍‌ରେ ଯୋଡିଲେ</string>
+    <string name="push_member_joined">%1$s ଗ୍ରୁପ୍‌ରେ ଯୋଗ ଦେଲେ</string>
+    <string name="push_debts_simplified_to_you">%1$s ଋଣ ସରଳ କଲେ। ବର୍ତ୍ତମାନ %2$s ଆପଣଙ୍କୁ %3$s ଦେବେ।</string>
+    <string name="push_debts_simplified_from_you">%1$s ଋଣ ସରଳ କଲେ। ବର୍ତ୍ତମାନ ଆପଣ → %2$s: %3$s ଦେବାକୁ ଅଛି।</string>
+    <string name="push_debts_simplified_other">%1$s ଋଣ ସରଳ କଲେ। ଆପଣଙ୍କ ପାଇଁ ଏହା କିପରି, ଦେଖନ୍ତୁ।</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ଋଣ ସରଳୀକରଣ ବନ୍ଦ କଲେ। ବର୍ତ୍ତମାନ %2$s ଆପଣଙ୍କୁ %3$s ଦେବେ।</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ଋଣ ସରଳୀକରଣ ବନ୍ଦ କଲେ। ବର୍ତ୍ତମାନ ଆପଣ → %2$s: %3$s ଦେବାକୁ ଅଛି।</string>
+    <string name="push_debts_unsimplified_other">%1$s ଋଣ ସରଳୀକରଣ ବନ୍ଦ କଲେ। ଆପଣଙ୍କ ପାଇଁ ଏହା କିପରି, ଦେଖନ୍ତୁ।</string>
+    <string name="notification_settings_bills">ଖର୍ଚ୍ଚ</string>
+    <string name="notification_settings_bills_detail">ଆପଣ ଥିବା ନୂଆ, ଏଡିଟ୍ ବା ଡିଲିଟ୍ ହୋଇଥିବା ଖର୍ଚ୍ଚ</string>
+    <string name="notification_settings_payments">ପେମେଣ୍ଟ ଓ ହିସାବ ମେଣ୍ଟାଇବା</string>
+    <string name="notification_settings_payments_detail">ଆପଣଙ୍କୁ ବା ଆପଣଙ୍କଠାରୁ ପେମେଣ୍ଟ, ଏବଂ ସରଳୀକୃତ ଋଣ</string>
+    <string name="notification_settings_comments">ମନ୍ତବ୍ୟ</string>
+    <string name="notification_settings_comments_detail">ଆପଣ ଥିବା ଖର୍ଚ୍ଚରେ ଏବଂ ଆପଣ ଲେଖିଥିବା ଆଲୋଚନାରେ</string>
+    <string name="notification_settings_people_and_groups">ଲୋକ ଓ ଗ୍ରୁପ୍</string>
+    <string name="notification_settings_people_and_groups_detail">କିଏ ଆପଣଙ୍କ ଗ୍ରୁପ୍‌ରେ ଯୋଗ ଦିଅନ୍ତି ବା ଛାଡନ୍ତି, ଏବଂ ସେଥିରେ କ\'ଣ ବଦଳେ</string>
+    <string name="notification_settings_payment_requests">ପେମେଣ୍ଟ ଅନୁରୋଧ</string>
+    <string name="notification_settings_payment_requests_detail">ଯେତେବେଳେ କେହି ଆପଣଙ୍କୁ ପେମେଣ୍ଟ କରିବାକୁ କୁହନ୍ତି</string>
+    <string name="notification_settings_balance_reminder">ବାକି ବ୍ୟାଲାନ୍ସ ରିମାଇଣ୍ଡର୍</string>
+    <string name="notification_settings_balance_reminder_detail">ସପ୍ତାହରେ ଥରେ, ଯଦି ବାକି ବ୍ୟାଲାନ୍ସ ଥାଏ</string>
+</resources>

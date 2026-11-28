@@ -112,6 +112,7 @@
     <string name="profile_language_kannada">Kikannada</string>
     <string name="profile_language_burmese">Kiburma</string>
     <string name="profile_language_khmer">Kikambodia</string>
+    <string name="profile_language_odia">Kioriya</string>
     <string name="profile_language_system_detail">Lugha ya kifaa</string>
     <string name="profile_notifications">Arifa</string>
     <plurals name="profile_notifications_active">

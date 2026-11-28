@@ -144,3 +144,8 @@ listing of a language the release notes already have, as Spain's Spanish, goes i
 its locale from its language's list. A language one store has no locale for, as Filipino, Serbian, Persian, Bulgarian, Swahili and Estonian on the App Store, have
 an empty list there (`fil: []`, `sr: []`, `fa: []`, `bg: []`, `sw: []`, `et: []`): its listing goes to the other store alone. The check then
 passes, and the next `upload_listing` creates the listing in that locale. The `add-language` skill lists the rest.
+
+A language the apps speak before the stores list it, as Odia (Pierre's call, issue #600), goes in `UNLISTED_LANGS`:
+it stays in `LANGS` for the release notes but has no listing file and no locales, so no release uploads a listing or
+screenshots for it and its store pages show the default language's. Its listing is added later by taking it out of
+`UNLISTED_LANGS` and following the steps above.

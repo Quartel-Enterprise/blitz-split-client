@@ -106,6 +106,7 @@ private const val GUJARATI_AGENT = "એ"
 private const val PUNJABI = "pa"
 private const val PUNJABI_ERGATIVE = "ਨੇ"
 private const val MALAYALAM = "ml"
+private const val ODIA = "or"
 private const val TAMIL_THIRD_PERSON_PAST = "ார்"
 private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
 private const val SWAHILI = "sw"
@@ -159,6 +160,7 @@ private val youSubjectLanguages = setOf(
     PUNJABI,
     MALAYALAM,
     KANNADA,
+    ODIA,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -229,7 +231,8 @@ private val irregularSecondPerson = mapOf(
  * Punjabi does as Gujarati with its ergative "ਨੇ", which the user's "ਤੁਸੀਂ"
  * doesn't take ("Ana ਨੇ ਖਰਚਾ ਵੰਡਿਆ", "ਤੁਸੀਂ ਖਰਚਾ ਵੰਡਿਆ").
  * Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb stays as it is ("Ana ചെലവ് വിഭജിച്ചു",
- * "നിങ്ങൾ ചെലവ് വിഭജിച്ചു"). Same rules as the web's and the Apple
+ * "നിങ്ങൾ ചെലവ് വിഭജിച്ചു"). Odia's respectful past "-ଲେ" is the same for a name and for "ଆପଣ", so its verb
+ * stays as it is too ("Ana ଏକ ଖର୍ଚ୍ଚ ବାଣ୍ଟିଲେ", "ଆପଣ ଏକ ଖର୍ଚ୍ଚ ବାଣ୍ଟିଲେ"). Same rules as the web's and the Apple
  * app's `verbForYou`.
  */
 fun toSecondPerson(
@@ -389,7 +392,8 @@ private fun toSpanishSecondPerson(verb: String): String {
  * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule, and
  * Telugu "మీరు తొలగించారు: …", its verb not changing with the person, Marathi "तुम्ही … हटवला", with its rule,
  * Swahili "Wewe ulifuta…", with its own, Gujarati "તમે … ડિલીટ કર્યો", with its rule, Punjabi "ਤੁਸੀਂ … ਮਿਟਾਇਆ",
- * with its own, Malayalam "നിങ്ങൾ ഡിലീറ്റ് ചെയ്തു: …", its verb not changing with the person, and Kannada "ನೀವು ಅಳಿಸಿದಿರಿ: …", with its own.
+ * with its own, Malayalam "നിങ്ങൾ ഡിലീറ്റ് ചെയ്തു: …", its verb not changing with the person, Kannada "ನೀವು ಅಳಿಸಿದಿರಿ: …", with its own, and Odia "ଆପଣ ଡିଲିଟ୍ କଲେ: …", its verb not changing
+ * with the person.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">ସହାୟତା ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ</string>
+    <string name="contact_support_description">ଆମେ ଏକ ପ୍ରସ୍ତୁତ ମେସେଜ୍ ସହ ଆପଣଙ୍କ ଇମେଲ୍ ଆପ୍ ଖୋଲିବୁ। କ\'ଣ ହେଲା ବର୍ଣ୍ଣନା କରି ପଠାନ୍ତୁ: ପ୍ରକୃତ ଲୋକମାନେ ପ୍ରତିଟି ମେସେଜ୍ ପଢନ୍ତି।</string>
+    <string name="contact_support_to">ପ୍ରାପକ</string>
+    <string name="contact_support_diagnostics">ଇମେଲ୍‌ରେ ସାମିଲ୍ ହେବ</string>
+    <string name="contact_support_app_version">ଆପ୍ ସଂସ୍କରଣ</string>
+    <string name="contact_support_platform">ପ୍ଲାଟଫର୍ମ</string>
+    <string name="contact_support_language">ଭାଷା</string>
+    <string name="contact_support_account">ଆକାଉଣ୍ଟ</string>
+    <string name="contact_support_profile">ପ୍ରୋଫାଇଲ୍</string>
+    <string name="contact_support_language_system">ସିଷ୍ଟମ୍</string>
+    <string name="contact_support_account_local">କେବଳ ଏହି ଡିଭାଇସ୍</string>
+    <string name="contact_support_account_anonymous">ସଂଯୁକ୍ତ ନୁହେଁ</string>
+    <string name="contact_support_open_email">ଇମେଲ୍ ଖୋଲନ୍ତୁ</string>
+    <string name="contact_support_copy_email">ଇମେଲ୍ ଠିକଣା କପି କରନ୍ତୁ</string>
+    <string name="contact_support_notice_copied">ଇମେଲ୍ ଠିକଣା କପି ହେଲା।</string>
+    <string name="contact_support_notice_no_app">କୌଣସି ଇମେଲ୍ ଆପ୍ ମିଳିଲା ନାହିଁ। ତା\' ବଦଳରେ ଠିକଣାଟି କପି କରାଗଲା।</string>
+    <string name="contact_support_close">ବନ୍ଦ କରନ୍ତୁ</string>
+</resources>

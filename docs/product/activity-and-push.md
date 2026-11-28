@@ -166,6 +166,10 @@ The feed, unread state, real time and push notifications.
     Malayalam: നിങ്ങളെ, നിങ്ങൾക്ക്) stands after a colon, which keeps every name free of case endings too. Its
     deleted-item notice starts with who deleted it ("നിങ്ങൾ ഡിലീറ്റ് ചെയ്തു: …", `youSubjectLanguages`), and "You"
     is "നിങ്ങൾ" everywhere.
+    Odia needs no rule either: its respectful past "-ଲେ" is the same for a name and for "ଆପଣ" ("Ana ଏକ ଖର୍ଚ୍ଚ
+    ବାଣ୍ଟିଲେ: ଡିନର୍", "ଆପଣ ଏକ ଖର୍ଚ୍ଚ ବାଣ୍ଟିଲେ: ଡିନର୍"), and an object that can be the user ("ଆପଣଙ୍କୁ") stands after a
+    colon, which keeps every name free of case endings too. Its deleted-item notice starts with who deleted it ("ଆପଣ
+    ଡିଲିଟ୍ କଲେ: …", `youSubjectLanguages`), and "You" is "ଆପଣ" everywhere.
     Bulgarian needs no rule: every Bulgarian verb phrase starts with an aorist, whose second and third person singular
     are the same ("Ana раздели разхода…", "Ти раздели разхода…"), and which says nothing of the gender either. Its
     deleted-item notice starts with who deleted it too ("Ти изтри…", `youSubjectLanguages`).

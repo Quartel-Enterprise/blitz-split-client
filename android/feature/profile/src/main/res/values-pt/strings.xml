@@ -112,6 +112,7 @@
     <string name="profile_language_kannada">Canarim</string>
     <string name="profile_language_burmese">Birmanês</string>
     <string name="profile_language_khmer">Khmer</string>
+    <string name="profile_language_odia">Oriá</string>
     <string name="profile_language_system_detail">Idioma do aparelho</string>
     <string name="profile_notifications">Notificações</string>
     <plurals name="profile_notifications_active">

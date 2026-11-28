@@ -11,6 +11,7 @@ import {
   APP_STORE_LOCALES,
   FIELDS,
   LISTING_LANGS,
+  UNLISTED_LANGS,
   ListingError,
   PLAY_LOCALES,
   appStoreCopyright,
@@ -125,11 +126,11 @@ test("every language of the listings has a file the stores take", () => {
   assert.deepEqual(Object.keys(listings), LISTING_LANGS);
 });
 
-test("the listings are written in the release notes' languages and the regional ones, after their language's", () => {
+test("the listings are written in the release notes' languages but the unlisted ones, and the regional ones, after their language's", () => {
   const regional = ["es-ES", "en-GB", "en-AU", "en-CA"];
   assert.deepEqual(
     LISTING_LANGS.filter((lang) => !regional.includes(lang)),
-    LANGS,
+    LANGS.filter((lang) => !UNLISTED_LANGS.includes(lang)),
   );
   assert.equal(LISTING_LANGS[LISTING_LANGS.indexOf("es") + 1], "es-ES");
   assert.deepEqual(LISTING_LANGS.slice(LISTING_LANGS.indexOf("en"), LISTING_LANGS.indexOf("en") + 4), ["en", "en-GB", "en-AU", "en-CA"]);
